@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import DownArrow from "../../../../public/down-arrow.svg";
 import Email from "../../../../public/email.svg";
-import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
+import { DEFAULT_LANG, SUPPORTED_LANGS, WP_BASE } from "@/config";
 
 import {
   buildTeamFilters,
@@ -15,11 +15,21 @@ import {
 export default function TeamSection({ data, lang, prefetchedTeam }) {
   const currentLang = lang || DEFAULT_LANG;
 
+  // Path segment WordPress is installed under (e.g. "/caspeco"), derived from
+  // WP_BASE so this keeps working if the WP install path or brand changes.
+  const basePath = (() => {
+    try {
+      return new URL(WP_BASE).pathname.replace(/\/wp-json\/?$/, "") || "";
+    } catch {
+      return "";
+    }
+  })();
+
   function filterByLang(res) {
     if (!Array.isArray(res)) return [];
     return res.filter((m) => {
       if (!m?.link) return false;
-      const afterBase = m.link.split("/caspeco Agency/")[1] || "";
+      const afterBase = m.link.split(`${basePath}/`)[1] || "";
       if (currentLang !== DEFAULT_LANG) return afterBase.startsWith(`${currentLang}/`);
       const nonDefaultLangs = SUPPORTED_LANGS.filter((l) => l !== DEFAULT_LANG);
       return !nonDefaultLangs.some((l) => afterBase.startsWith(`${l}/`));

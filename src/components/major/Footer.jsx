@@ -177,7 +177,7 @@ export default async function Footer({ lang = DEFAULT_LANG }) {
               <p className="mt-3 text-sm text-(--color-navy) leading-5">
                 Digital Activation Agency
                 <br />
-                by caspecooration Art
+                by Collaboration Art
               </p>
             </div>
 

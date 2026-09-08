@@ -14,7 +14,7 @@ const AskAI = dynamic(() => import("../sections/home/HomeAIAsk"));
 const HomePartners = dynamic(() => import("../sections/home/HomePartners"));
 const InnerHero = dynamic(() => import("../sections/inner-pages/InnerHero"));
 const Overview = dynamic(() => import("../sections/inner-pages/Overview"));
-const caspecoorationSection = dynamic(() => import("../sections/inner-pages/caspecoorationSection"));
+const CollaborationSection = dynamic(() => import("../sections/inner-pages/CollaborationSection"));
 const TeamSection = dynamic(() => import("../sections/inner-pages/Teams"));
 const CoreValueSection = dynamic(() => import("../sections/inner-pages/CoreValue"));
 const LargeContent = dynamic(() => import("../sections/inner-pages/LargeContent"));
@@ -89,7 +89,7 @@ export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
             return <Overview key={i} data={block} lang={lang} />;
 
           case "caspecooration_section":
-            return <caspecoorationSection key={i} data={block} lang={lang} />;
+            return <CollaborationSection key={i} data={block} lang={lang} />;
 
           case "team_section":
             return <TeamSection key={i} data={block} lang={lang} prefetchedTeam={prefetched.team} />;

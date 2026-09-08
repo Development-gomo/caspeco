@@ -4,7 +4,7 @@ import Image from "next/image";
 import React from "react";
 import { motion } from "framer-motion";
 
-const caspecoorationSection = ({ data }) => {
+const CollaborationSection = ({ data }) => {
   const {
     sub_heading,
     heading,
@@ -108,4 +108,4 @@ const caspecoorationSection = ({ data }) => {
   );
 };
 
-export default caspecoorationSection;
+export default CollaborationSection;
