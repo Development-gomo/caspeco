@@ -21,6 +21,7 @@ const LargeContent = dynamic(() => import("../sections/inner-pages/LargeContent"
 const Connectform = dynamic(() => import("../sections/inner-pages/Cform"));
 const CaseStudyListing = dynamic(() => import("../sections/inner-pages/CaseStusyListing"));
 const HomeColumnSection = dynamic(() => import("../sections/home/HomeColumnSection"));
+const HomePossibilities = dynamic(() => import("../sections/home/HomePossibilities"));
 
 // Detect which data the page needs and fetch it all in parallel (server-side)
 async function prefetchSectionData(sections, lang) {
@@ -102,6 +103,9 @@ export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
 
           case "home_column_section":
             return <HomeColumnSection key={i} data={block} lang={lang} />;
+
+          case "possibilities_section":
+            return <HomePossibilities key={i} data={block} lang={lang} />;
 
           case "contact_form_section":
             return <Connectform key={i} data={block} lang={lang} />;
