@@ -1,0 +1,736 @@
+@import "tailwindcss";
+
+/* ==========================================
+   BRAND: caspeco.
+========================================== */
+:root {
+  /* Typography */
+  --font-primary: var(--font-outfit), "Outfit", system-ui, sans-serif;
+  --font-serif: var(--font-primary);
+
+  /* caspeco. brand palette */
+
+  /**Primary colors */
+  --color-warm-stone: #eceae5;
+  --color-clay: #cca890;
+  --color-navy: #15243b;
+
+  /* Secondary colors */
+  --color-warm-stand: #ddc4ab;
+  --color-teracotta: #a55f40;
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+
+  /** Accent colors */
+  --color-purple: #1F0276;
+  --color-blue: #306994;
+  --color-mint: #8CE3D3;
+ 
+
+  /* Legacy tokens re-pointed at the new palette so every existing
+     bg-(--color-x) / text-(--color-x) usage site-wide picks up the rebrand */
+  --color-dark: var(--color-navy);
+  --color-light: var(--color-white);
+  --color-grey: color-mix(in srgb, var(--color-navy) 55%, var(--color-warm-stone));
+  --color-accent: var(--color-mint);
+  --color-brand: var(--color-navy);
+  --color-bg: var(--color-navy);
+}
+
+/* Notes us this class
+  bg-(--color-accent)
+  bg-(--color-brand)
+  bg-(--color-bg)
+*/
+
+body {
+  font-family: var(--font-primary);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  background-color: var(--color-warm-stone);
+  color: var(--color-navy);
+}
+
+/* Global heading tags default */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-primary);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+/* Global container */
+.web-width {
+  max-width: 1328px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+i,
+em {
+  font-family: var(--font-serif) !important;
+  font-style: italic;
+}
+/* 
+.text-white * {
+  color: var(--color-light) !important;
+} */
+
+/* ==========================================
+   HERO HEADING (heading-xl)
+   Mobile-first → larger breakpoints added
+========================================== */
+
+.heading-xl,
+.heading-xl h1,
+.heading-xl p {
+  font-family: var(--font-primary);
+  font-size: 34px;
+  line-height: 40px;
+  color: var(--color-light);
+}
+
+.heading-xl p i,
+.heading-xl p em,
+.heading-xl h1 em {
+  font-family: var(--font-serif) !important;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 38px;
+}
+
+.highlighted-heading {
+  font-family: var(--font-primary);
+  font-weight: 700;
+  font-size: 34px;
+  line-height: 40px;
+}
+
+.hero-bg img {
+    top: 0px !important;
+}
+
+.btn-hide {
+    display: none;
+}
+
+/* ==========================================
+   HOME HERO — diagonal panel shape
+========================================== */
+.hero-diagonal-panel {
+  clip-path: polygon(0% 8%, 100% 30%, 100% 100%, 0% 100%);
+}
+
+@media (min-width: 640px) {
+  .hero-diagonal-panel {
+    clip-path: polygon(0% 8%, 100% 30%, 100% 100%, 0% 100%);
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-diagonal-panel {
+    clip-path: polygon(0% 0%, 100% 60%, 100% 100%, 0% 100%);
+  }
+}
+
+/* ==========================================
+   HOME ABOUT — diagonal panel shape
+========================================== */
+@media (min-width: 1024px) {
+  .about-diagonal-panel {
+    clip-path: polygon(0% 0%, 100% 0%, 78% 100%, 0% 100%);
+  }
+}
+
+.about-panel-heading,
+.about-panel-heading p,
+.about-panel-heading h2 {
+  font-family: var(--font-primary);
+  font-size: 28px;
+  line-height: 34px;
+}
+
+@media (min-width: 768px) {
+  .about-panel-heading,
+  .about-panel-heading p,
+  .about-panel-heading h2 {
+    font-size: 34px;
+    line-height: 40px;
+  }
+}
+
+/* ==========================================
+   HOME COLUMN SECTION — steps
+========================================== */
+.step-number {
+  font-family: var(--font-primary);
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.step-icon {
+  position: relative;
+  z-index: 1;
+  width: 48px;
+  height: 48px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-heading {
+  font-family: var(--font-primary);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 26px;
+  color: var(--color-navy);
+}
+
+.step-heading b,
+.step-heading strong {
+  color: var(--step-accent, var(--color-navy));
+  font-weight: 700;
+}
+
+.step-arrow {
+  display: inline-block;
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* Timeline connector running through the step icons */
+.step-connector-line {
+  position: absolute;
+  top: 48px;
+  bottom: 48px;
+  left: 40px;
+  width: 1px;
+  background: var(--color-warm-stand);
+  z-index: 0;
+}
+
+/* ==========================================
+   HOME CASE STUDIES — carousel
+========================================== */
+@keyframes case-progress-fill {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .case-progress-fill {
+    animation: none !important;
+    width: 100% !important;
+  }
+}
+
+.case-swiper .swiper-slide {
+  opacity: 0.55;
+  transform: scale(0.94);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.case-swiper .swiper-slide-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .case-swiper .swiper-slide {
+    transition: none;
+  }
+}
+
+.step-row {
+  position: relative;
+  z-index: 1;
+}
+
+/* Heartbeat / ping pulse behind the active step's icon */
+.step-pulse-wrap {
+  position: relative;
+  width: 48px;
+  height: 48px;
+}
+
+.step-pulse-ring {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border-radius: 9999px;
+  background-color: var(--step-color, var(--color-navy));
+  animation: step-pulse 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.step-pulse-ring-delay {
+  animation-delay: 0.7s;
+}
+
+@keyframes step-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  75%,
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+/* ==========================================
+   HOME HERO — diagonal white panel heading
+========================================== */
+.hero-panel-heading,
+.hero-panel-heading p,
+.hero-panel-heading h1 {
+  font-family: var(--font-primary);
+  font-weight: 900;
+  font-size: 30px;
+  line-height: 34px;
+}
+
+.hero-panel-heading em,
+.hero-panel-heading i {
+  font-family: var(--font-primary) !important;
+  font-style: normal;
+  font-weight: 900;
+  color: var(--color-teracotta);
+}
+
+.hero-panel-heading span {
+  color: var(--color-teracotta);
+}
+
+.about-section {
+  /* border-top: 1px solid var(--color-warm-stand); */
+}
+
+.hero-panel-subtext span {
+  background-image: linear-gradient(var(--color-mint), var(--color-mint));
+  background-repeat: no-repeat;
+  background-size: 0% 100%;
+  color: var(--color-navy);
+  font-weight: 600;
+  padding: 1px 4px;
+  border-radius: 2px;
+  animation: hero-highlight-paint 0.6s ease-out forwards;
+  animation-delay: 0.9s;
+}
+
+@keyframes hero-highlight-paint {
+  to {
+    background-size: 100% 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-panel-subtext span {
+    animation: none;
+    background-size: 100% 100%;
+  }
+}
+
+/* Hero scroll cue */
+.hero-scroll-cue-arrow {
+  display: inline-block;
+  font-size: 16px;
+  animation: hero-scroll-bounce 1.6s ease-in-out infinite;
+}
+
+@keyframes hero-scroll-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-scroll-cue-arrow {
+    animation: none;
+  }
+}
+
+    .hero-panel-heading {
+      text-transform: uppercase;
+    }
+
+@media (min-width: 768px) {
+  .hero-panel-heading,
+  .hero-panel-heading p,
+  .hero-panel-heading h1 {
+    font-size: 38px;
+    line-height: 46px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .hero-panel-heading,
+  .hero-panel-heading p,
+  .hero-panel-heading h1 {
+    font-size: 50px;
+    line-height: 60px;
+  }
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .heading-xl,
+  .heading-xl h1,
+  .heading-xl p {
+    font-size: 50px;
+    line-height: 58px;
+  }
+  .heading-xl h1 em,
+  .heading-xl p em,
+  .heading-xl p i {
+    line-height: 58px;
+  }
+
+  section#case-section {
+    padding-bottom: 120px;
+  }
+
+  #home #services-section {
+    padding-top: 0;
+  }
+  /* main#home section#case-section {
+    padding-bottom: 0px; 
+  } */
+}
+
+/* Medium Screens */
+@media (min-width: 1024px) {
+  .heading-xl,
+  .heading-xl h1,
+  .heading-xl p {
+    font-size: 60px;
+    line-height: 72px;
+  }
+  .heading-xl h1 em,
+  .heading-xl p em,
+  .heading-xl p i {
+    line-height: 70px;
+  }
+  .cta-fix img.rounded-sm.object-cover:nth-child(1) {
+    height: 215px !important;
+  }
+
+  .cta-fix img.rounded-sm.object-cover:nth-child(3) {
+    height: 45px !important;
+  }
+}
+
+/* Large Desktop */
+@media (min-width: 1280px) {
+  .highlighted-heading {
+    font-size: 48px;
+    line-height: 58px;
+  }
+
+  .heading-xl {
+    font-size: 60px;
+    line-height: 72px;
+  }
+
+  .heading-xl p,
+  .heading-xl h1 {
+    font-size: 100px;
+    line-height: 100px;
+  }
+  .heading-xl p i,
+  .heading-xl p em,
+  .heading-xl h1 em {
+    line-height: 100px;
+  }
+}
+
+@media (min-width: 1500px) and (max-width: 3840px) {
+}
+
+/* ==========================================
+   BODY TEXT
+========================================== */
+.body-text {
+  font-family: var(--font-primary);
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--color-dark);
+}
+
+/* Hero variation (white text) */
+.hero .body-text {
+  color: var(--color-white);
+  font-size: 18px;
+}
+
+/* ==========================================
+   ABOUT SECTION TYPOGRAPHY
+========================================== */
+
+/* Label with dot */
+.subheading-label {
+  font-size: 12px;
+  line-height: 24px;
+  font-weight: 500;
+  letter-spacing: 0.6px;
+  color: var(--color-teracotta);
+  text-transform: uppercase;
+}
+
+.subheading-label.text-white {
+  color: var(--color-white);
+}
+/* Main H2 title */
+.section-heading {
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: 700 !important;
+  color: var(--color-navy);
+}
+
+.section-heading.text-white {
+  color: var(--color-white);
+}
+
+span.subheading-label.text-\[var\(--color-accent\)\],
+#inner-hero .subheading-label {
+  color: var(--color-accent) !important;
+}
+
+.section-heading, .section-heading * {
+  text-transform: uppercase;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .section-heading {
+    font-size: 34px;
+    line-height: 40px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .img-120 {
+    height: 120px;
+  }
+}
+/* Desktop */
+@media (min-width: 1280px) {
+  .section-heading {
+    font-size: 34px;
+    line-height: 40px;
+  }
+}
+
+.overflow-visible.service-swiper {
+  overflow: visible !important;
+}
+
+/* Content heading */
+.content-heading {
+  font-size: 22px;
+  line-height: 30px;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+.content-heading.text-white {
+  color: var(--color-white);
+}
+
+.space-y-1 p {
+  margin-top: 12px;
+}
+
+/* Desktop */
+@media (min-width: 1280px) {
+  .content-heading {
+    font-size: 32px;
+    line-height: 38px;
+  }
+}
+
+/* One-liner */
+.left-oneliner {
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 500;
+}
+
+.analyser-index button:nth-last-child(1) span {
+  opacity: 0;
+  border: none;
+  margin: 0;
+}
+
+.border-btm button:after {
+  content: "";
+  position: absolute;
+  border-bottom: 1px solid #91929f4d;
+  width: 97%;
+  bottom: 0;
+  right: 0;
+}
+
+.bullet-box ul {
+  margin-top: 40px;
+  list-style: disc;
+  list-style-position: inside;
+}
+
+.bullet-box ul li {
+  padding: 16px 0;
+  border-bottom: 1px solid #91929f59;
+}
+
+.team-filter {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -o-appearance: none;
+}
+
+.marquee-wrapper {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 4s linear infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.team-title {
+  font-family: var(--font-serif) !important;
+}
+
+.core-text {
+  font-weight: 600 !important;
+  letter-spacing: 5.6px;
+}
+
+.tracking-widest {
+  letter-spacing: 0.6px;
+  color: var(--color-grey) !important;
+}
+
+.service-link img {
+  height: 24px !important;
+  width: auto !important;
+}
+
+.footer-quick-link:nth-child(1) img {
+  top: 15px;
+}
+
+.copyright-social-gap p a:hover {
+  color: #fff;
+  transition: color 0.3s ease;
+}
+
+.privacy-text p {
+  margin-bottom: 1em;
+}
+
+.privacy-text p b {
+  font-size: 20px;
+}
+
+.privacy-text ul {
+  margin-bottom: 1em;
+  list-style: disc;
+  list-style-position: outside;
+  margin-left: 25px;
+}
+
+.privacy-text ul li {
+  margin-bottom: 0.5em;
+}
+
+.result-number:nth-child(1) .suffix-text {
+  font-size: 70px;
+}
+
+#key-problems .gap-4 img.object-contain {
+  height: 30px;
+  width: auto;
+}
+
+#key-problems .gap-4 img.object-contain.manual-workload {
+  height: 29px;
+}
+
+/*==========================================
+   SLIDER TEXT (client logos)
+==========================================*/
+.caption-text {
+  font-family: var(--font-primary);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--color-white);
+}
+
+.client-title {
+  font-family: var(--font-primary);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 24px;
+  color: var(--color-white);
+}
+
+.ticker-wrapper img {
+  height: 38px !important;
+  width: auto !important;
+}
+
+.partner-logo {
+  width: auto;
+  /* height: 33px; */
+}
+
+.body-text.max-w-\[500px\] p {
+  margin-bottom: 15px;
+}
+
+.body-text.max-w-\[500px\] p a:hover,
+.w-\[200px\] a:hover {
+    text-decoration: underline;
+}
+
+@media screen and (max-width: 767px) {
+  .heading-xl h1 {
+    font-size: 50px;
+    line-height: 58px;
+  }
+  .heading-xl h1 em {
+    line-height: 58px;
+  }
+  .section-heading br {
+    display: none;
+  }
+  section#case-section {
+    padding-bottom: 60px;
+  }
+  .core-text {
+    letter-spacing: 2.6px;
+    font-weight: 600 !important;
+    font-size: 32px;
+  }
+}
+
+@media (max-height: 720px) {
+  .mobile-height {
+    justify-content: flex-start;
+  }
+}
