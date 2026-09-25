@@ -14,7 +14,7 @@ export default function GlobalNotFound() {
           <h1 className="text-4xl font-semibold">Page not found</h1>
           <p className="text-gray-600 max-w-lg">
             We couldn&apos;t find the page you were looking for. Try starting
-            from the English homepage.
+            from the homepage.
           </p>
         </div>
         <CtaButton href="/">Go to Home</CtaButton>
