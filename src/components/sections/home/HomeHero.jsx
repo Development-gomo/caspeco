@@ -12,7 +12,7 @@ export default function HomeHero({ data }) {
     target: sectionRef,
     offset: ["start start", "end start"],
   });
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "-15%"]);
+  const bgY = useTransform(scrollYProgress, [0, 1], ["-10%", "0%"]);
 
   const bgImage = data?.bg_image?.url || "";
   const bgVideo = data?.bg_video?.url || "";
