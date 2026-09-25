@@ -1,8 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
-import ArrowSvg from "../../../../public/right-arrow.svg";
+import CtaButton from "@/components/ui/CtaButton";
 
 export default function CaseIntroduction({ data }) {
   if (!data) return null;
@@ -120,52 +118,7 @@ export default function CaseIntroduction({ data }) {
 
             {/* CTA */}
             {cta_text && cta_url && (
-              <Link
-                href={cta_url}
-                className="
-                gap-3 group relative inline-flex items-center select-none 
-                rounded-sm bg-(--color-brand) px-6 py-4 text-white 
-                transition-all duration-300 hover:bg-(--color-brand) 
-                w-[210px] overflow-hidden
-              "
-              >
-                {/* DOT */}
-                <span className="relative w-6 flex items-center justify-center">
-                  <span
-                    className="
-                    absolute h-2 w-2 rounded-full bg-[#27E0C0]
-                    transition-all duration-300 ease-out
-                    group-hover:opacity-0 group-hover:-translate-x-1
-                  "
-                  />
-                </span>
-
-                {/* TEXT */}
-                <span
-                  className="
-                  flex-1 text-[16px] leading-none
-                  transition-all duration-300 ease-out 
-                  group-hover:-translate-x-4
-                  whitespace-nowrap
-                "
-                >
-                  {cta_text}
-                </span>
-
-                {/* ARROW */}
-                <span className="relative w-4 flex items-center justify-center">
-                  <span
-                    className="
-                    w-4 absolute text-[16px]
-                    opacity-0 -translate-x-4
-                    transition-all duration-300 ease-out
-                    group-hover:opacity-100 group-hover:-translate-x-2
-                  "
-                  >
-                    <Image src={ArrowSvg} alt="arrow" width={13} height={13} />
-                  </span>
-                </span>
-              </Link>
+              <CtaButton href={cta_url}>{cta_text}</CtaButton>
             )}
           </div>
         </div>

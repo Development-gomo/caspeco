@@ -3,10 +3,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { DEFAULT_LANG } from "@/config";
-import ArrowSvg from "../../../../public/right-arrow.svg";
+import CtaButton from "@/components/ui/CtaButton";
 
 function AnimatedNumber({ value, duration = 2000 }) {
   const ref = useRef(null);
@@ -110,48 +109,7 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
 
           {/* CTA BUTTON */}
           {cta_text && cta_url && (
-            <Link
-              href={cta_url}
-              className="
-                gap-3 group relative inline-flex items-center
-                rounded-sm bg-(--color-brand) px-6 py-4 text-white
-                transition-all duration-300 hover:bg-(--color-brand)
-                w-[154px] overflow-hidden select-none">
-              {/* DOT */}
-              <span className="relative w-6 flex items-center justify-center">
-                <span
-                  className="
-                    absolute h-2 w-2 rounded-full bg-(--color-mint)
-                    transition-all duration-300 ease-out
-                    group-hover:opacity-0 group-hover:-translate-x-1
-                  "
-                ></span>
-              </span>
-
-              {/* TEXT */}
-              <span
-                className="
-                  flex-1 text-[16px] leading-none whitespace-nowrap
-                  transition-all duration-300 ease-out
-                  group-hover:-translate-x-3
-                "
-              >
-                {cta_text}
-              </span>
-
-              {/* ARROW */}
-              <span className="relative w-4 flex items-center justify-center">
-                <span
-                  className="
-                    w-4 absolute opacity-0 -translate-x-4
-                    transition-all duration-300 ease-out
-                    group-hover:opacity-100 group-hover:-translate-x-1
-                  "
-                >
-                  <Image src={ArrowSvg} width={13} height={13} alt="arrow" />
-                </span>
-              </span>
-            </Link>
+            <CtaButton href={cta_url}>{cta_text}</CtaButton>
           )}
         </div>
 

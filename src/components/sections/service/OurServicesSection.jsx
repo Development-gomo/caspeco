@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import PlusIcon from "../../../../public/plus-light.svg";
-import ArrowSvgB from "../../../../public/right-arrow-black.png";
 import Arrowdown from "../../../../public/down-arrow-black.svg";
+import CtaButton from "@/components/ui/CtaButton";
 
 export default function OurServicesSection({ data }) {
   const { sub_heading, heading, section_image, service_list = [] } = data;
@@ -94,38 +93,9 @@ export default function OurServicesSection({ data }) {
                       <div className="ml-8 mt-6">
                         <div className="text-white max-w-[540px]">{service.short_text}</div>
                         {service.cta_text && service.cta_url && (
-                          <Link
-                            href={service.cta_url}
-                            className="mt-6 gap-3 group relative inline-flex items-center
-                                    rounded-sm bg-(--color-accent) px-6 py-[14px] text-white
-                                    transition-all duration-300 hover:bg-(--color-accent)
-                                    w-[155px] overflow-hidden select-none"
-                          >
-                            {/* LEFT DOT */}
-                            <span className="relative w-6 flex items-center justify-center">
-                              <span className="absolute h-2 w-2 rounded-full bg-[#191F68] transition-all duration-300 ease-out group-hover:opacity-0 group-hover:-translate-x-1"></span>
-                            </span>
-
-                            {/* TEXT */}
-                            <span className="text-black flex-1 text-[16px] leading-none transition-all duration-300 ease-out group-hover:-translate-x-4 whitespace-nowrap">
-                              {service.cta_text}
-                            </span>
-
-                            {/* ARROW */}
-                            <span className="relative w-4 flex items-center justify-center">
-                              <span className="
-                          w-4 absolute opacity-0 -translate-x-4
-                          transition-all duration-300 ease-out
-                          group-hover:opacity-100 group-hover:-translate-x-2">
-                                <Image
-                                  src={ArrowSvgB}
-                                  width={13}
-                                  height={13}
-                                  alt="arrow"
-                                />
-                              </span>
-                            </span>
-                          </Link>
+                          <CtaButton href={service.cta_url} className="mt-6">
+                            {service.cta_text}
+                          </CtaButton>
                         )}
                       </div>
                     )}

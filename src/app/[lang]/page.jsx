@@ -9,7 +9,7 @@ import { resolveParams } from "@/lib/params";
 import { notFound } from "next/navigation";
 import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
 
-export const revalidate = 3600;
+export const revalidate = 300;
 
 export async function generateStaticParams() {
   return SUPPORTED_LANGS.map((lang) => ({ lang }));
@@ -35,8 +35,8 @@ export default async function LangHomePage({ params }) {
         entryType="pages"
         entryId={page?.id}
         prefetchedMenu={menu}
-        prefetchedOptions={themeOptions?.header || {}}
-        logoUrl={themeOptions?.header?.logo_light?.url || ""}
+        prefetchedOptions={themeOptions || {}}
+        logoUrl={themeOptions?.logo_light?.url || ""}
       />
       <main id="home">
         <PageBuilder sections={page?.acf?.page_builder} lang={lang} />

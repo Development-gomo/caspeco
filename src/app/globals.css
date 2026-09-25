@@ -1,40 +1,47 @@
 @import "tailwindcss";
 
 /* ==========================================
-   BRAND: caspeco.
+   BRAND: caspeco. (2026 refresh — Figma "Caspeco_Home_Page_Updated_Mockups")
 ========================================== */
 :root {
   /* Typography */
-  --font-primary: var(--font-outfit), "Outfit", system-ui, sans-serif;
+  --font-primary: var(--font-tenon), "Tenon", system-ui, sans-serif;
   --font-serif: var(--font-primary);
 
   /* caspeco. brand palette */
 
-  /**Primary colors */
-  --color-warm-stone: #eceae5;
-  --color-clay: #cca890;
-  --color-navy: #15243b;
-
-  /* Secondary colors */
-  --color-warm-stand: #ddc4ab;
-  --color-teracotta: #a55f40;
-  --color-white: #FFFFFF;
-  --color-black: #000000;
+  /** Primary colors */
+  --color-yellow: #FFC120;
+  --color-black: #151411;
+  --color-white: #FBFAF9;
 
   /** Accent colors */
+  --color-petrol: #1F8690;
+  --color-dark-petrol: #0B2533;
+
+  /** Greys */
+  --color-grey-medium: #DADCDD;
+  --color-grey-medium-dark: #8F8D88;
+  --color-grey-dark: #3F3E3C;
+
+  /* Old palette, kept only so any stray reference still resolves */
+  --color-warm-stone: var(--color-white);
+  --color-clay: var(--color-petrol);
+  --color-navy: var(--color-black);
+  --color-warm-stand: var(--color-grey-medium);
+  --color-teracotta: var(--color-petrol);
   --color-purple: #1F0276;
   --color-blue: #306994;
-  --color-mint: #8CE3D3;
- 
+  --color-mint: var(--color-yellow);
 
   /* Legacy tokens re-pointed at the new palette so every existing
      bg-(--color-x) / text-(--color-x) usage site-wide picks up the rebrand */
-  --color-dark: var(--color-navy);
+  --color-dark: var(--color-black);
   --color-light: var(--color-white);
-  --color-grey: color-mix(in srgb, var(--color-navy) 55%, var(--color-warm-stone));
-  --color-accent: var(--color-mint);
-  --color-brand: var(--color-navy);
-  --color-bg: var(--color-navy);
+  --color-grey: var(--color-grey-medium-dark);
+  --color-accent: var(--color-yellow);
+  --color-brand: var(--color-black);
+  --color-bg: var(--color-black);
 }
 
 /* Notes us this class
@@ -66,7 +73,7 @@ h6 {
 
 /* Global container */
 .web-width {
-  max-width: 1328px;
+  max-width: 1272px;
   margin-left: auto;
   margin-right: auto;
 }

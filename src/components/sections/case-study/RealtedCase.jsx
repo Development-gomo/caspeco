@@ -2,11 +2,8 @@
 "use client";
 
 import React, { useEffect } from "react";
-import Link from "next/link";
 import Image from "next/image";
 
-import ArrowSvg from "../../../../public/right-arrow.svg";
-import ArrowSvgB from "../../../../public/right-arrow-black.png";
 import CheckSvg from "../../../../public/check.svg";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -16,6 +13,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 
 import { DEFAULT_LANG, langHref } from "@/config";
+import CtaButton from "@/components/ui/CtaButton";
 
 export default function RealtedCase({ data, lang = DEFAULT_LANG, prefetchedCases }) {
   const cases = prefetchedCases || [];
@@ -54,47 +52,7 @@ export default function RealtedCase({ data, lang = DEFAULT_LANG, prefetchedCases
           />
 
           {cta_text && cta_url && (
-            <Link
-              href={cta_url}
-              className="
-              gap-3 group relative inline-flex items-center
-              rounded-sm bg-(--color-brand) px-6 py-4 text-white
-              transition-all duration-300 hover:bg-(--color-brand)
-              w-40 overflow-hidden select-none"
-            >
-              {/* LEFT DOT */}
-              <span className="relative w-6 flex items-center justify-center">
-                <span
-                  className="
-                  absolute h-2 w-2 rounded-full bg-(--color-accent)
-                  transition-all duration-300 ease-out
-                  group-hover:opacity-0 group-hover:-translate-x-1"
-                ></span>
-              </span>
-
-              {/* TEXT */}
-              <span
-                className="
-                flex-1 text-[16px] leading-none
-                transition-all duration-300 ease-out
-                group-hover:-translate-x-4
-                whitespace-nowrap"
-              >
-                {cta_text}
-              </span>
-
-              {/* ARROW */}
-              <span className="relative w-4 flex items-center justify-center">
-                <span
-                  className="
-                  w-4 absolute opacity-0 -translate-x-4
-                  transition-all duration-300 ease-out
-                  group-hover:opacity-100 group-hover:-translate-x-2"
-                >
-                  <Image src={ArrowSvg} width={13} height={13} alt="arrow" />
-                </span>
-              </span>
-            </Link>
+            <CtaButton href={cta_url}>{cta_text}</CtaButton>
           )}
         </div>
       </div>
@@ -135,51 +93,12 @@ export default function RealtedCase({ data, lang = DEFAULT_LANG, prefetchedCases
                       className="text-[24px] leading-8 md:text-[32px] lg:leading-10"
                       dangerouslySetInnerHTML={{ __html: title }}
                     />
-                    <Link
+                    <CtaButton
                       href={langHref(`/case-study/${item.slug}`, lang)}
-                      className=" mt-8
-                      gap-3 group relative inline-flex items-center
-                      rounded-sm bg-(--color-accent) px-6 py-4 text-white
-                      transition-all duration-300 hover:bg-(--color-accent)
-                      w-[155px] overflow-hidden select-none mb-15"
+                      className="mt-8 mb-15"
                     >
-                      {/* LEFT DOT */}
-                      <span className="relative w-6 flex items-center justify-center">
-                        <span
-                          className="
-                          absolute h-2 w-2 rounded-full bg-[#191F68]
-                          transition-all duration-300 ease-out
-                          group-hover:opacity-0 group-hover:-translate-x-1"
-                        ></span>
-                      </span>
-
-                      {/* TEXT */}
-                      <span
-                        className="text-black 
-                        flex-1 text-[16px] leading-none
-                        transition-all duration-300 ease-out
-                        group-hover:-translate-x-4
-                        whitespace-nowrap"
-                      >
-                        {read_more_text}
-                      </span>
-
-                      {/* ARROW */}
-                      <span className="relative w-4 flex items-center justify-center">
-                        <span
-                          className="
-                          w-4 absolute opacity-0 -translate-x-4
-                          transition-all duration-300 ease-out
-                          group-hover:opacity-100 group-hover:-translate-x-2">
-                          <Image
-                            src={ArrowSvgB}
-                            width={13}
-                            height={13}
-                            alt="arrow"
-                          />
-                        </span>
-                      </span>
-                    </Link>
+                      {read_more_text}
+                    </CtaButton>
 
                     {/* Achievements */}
                     {sliderData?.length > 0 && (

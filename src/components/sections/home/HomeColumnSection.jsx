@@ -2,10 +2,10 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import Link from "next/link";
 import Image from "next/image";
 import ArrowSvg from "../../../../public/right-arrow.svg";
 import { DEFAULT_LANG, langHref } from "@/config";
+import CtaButton from "@/components/ui/CtaButton";
 
 const STEP_COLORS = ["--color-navy", "--color-teracotta", "--color-mint"];
 
@@ -73,22 +73,12 @@ export default function HomeColumnSection({ data, lang = DEFAULT_LANG }) {
                 transition={{ duration: 0.5, delay: columns_side.length * 0.1 + 0.3 }}
                 viewport={{ once: true }}
               >
-                <Link
+                <CtaButton
                   href={langHref(cta_url, lang)}
-                  className="gap-3 group relative inline-flex items-center rounded-sm bg-(--color-brand) px-6 py-4 text-white transition-all duration-300 hover:bg-(--color-brand) w-[235px] overflow-hidden select-none mt-8 md:mt-10"
+                  className="mt-8 md:mt-10"
                 >
-                  <span className="relative w-6 flex items-center justify-center">
-                    <span className="absolute h-2 w-2 rounded-full bg-(--color-mint) transition-all duration-300 ease-out group-hover:opacity-0 group-hover:-translate-x-1"></span>
-                  </span>
-                  <span className="flex-1 text-[16px] leading-none transition-all duration-300 ease-out group-hover:-translate-x-4 whitespace-nowrap">
-                    {cta_text}
-                  </span>
-                  <span className="relative w-4 flex items-center justify-center">
-                    <span className="w-4 absolute opacity-0 -translate-x-4 transition-all duration-300 ease-out group-hover:opacity-100 group-hover:-translate-x-2">
-                      <Image src={ArrowSvg} width={13} height={13} alt="arrow" />
-                    </span>
-                  </span>
-                </Link>
+                  {cta_text}
+                </CtaButton>
               </motion.div>
             )}
           </div>

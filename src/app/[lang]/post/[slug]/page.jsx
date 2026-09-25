@@ -11,7 +11,7 @@ import { notFound } from "next/navigation";
 import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
 import Link from "next/link";
 
-export const revalidate = 3600;
+export const revalidate = 300;
 
 export async function generateStaticParams() {
   const results = await Promise.all(
@@ -104,8 +104,8 @@ export default async function postSinglePage({ params }) {
         pathPrefix="post"
         entryId={post?.id}
         prefetchedMenu={menu}
-        prefetchedOptions={themeOptions?.header || {}}
-        logoUrl={themeOptions?.header?.logo_light?.url || ""}
+        prefetchedOptions={themeOptions || {}}
+        logoUrl={themeOptions?.logo_light?.url || ""}
       />
       <div className="h-28 w-full bg-black"></div>
       <main className="py-15 md:py-30 web-width px-6">

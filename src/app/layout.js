@@ -1,18 +1,22 @@
 import "./globals.css";
-import { Outfit } from "next/font/google";
+import localFont from "next/font/local";
 import { DEFAULT_LANG } from "@/config";
 import { headers } from "next/headers";
-import NextTopLoader from "nextjs-toploader";
 import LangSyncer from "@/components/LangSyncer";
 import ScrollProgress from "@/components/ScrollProgress";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 //import Script from "next/script"; // uncomment when adding tracking scripts
 
-const outfit = Outfit({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700","900"],
-  variable: "--font-outfit",
+const tenon = localFont({
+  src: [
+    { path: "./fonts/tenon-regular.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/tenon-medium.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/tenon-bold.woff2", weight: "700", style: "normal" },
+    { path: "./fonts/tenon-xbold.woff2", weight: "800", style: "normal" },
+  ],
+  variable: "--font-tenon",
+  fallback: ["system-ui", "sans-serif"],
   display: "swap",
 });
 
@@ -27,7 +31,7 @@ export default async function RootLayout({ children }) {
   const lang = h.get("x-lang") || DEFAULT_LANG;
 
   return (
-    <html lang={lang} className={outfit.variable} suppressHydrationWarning>
+    <html lang={lang} className={tenon.variable} suppressHydrationWarning>
       <head>
         {/* ── Cookiebot ── add data-cbid and uncomment when live
         <Script
@@ -58,12 +62,6 @@ export default async function RootLayout({ children }) {
         </noscript>
         
 
-        <NextTopLoader
-          color="#8CE3D3"
-          height={3}
-          showSpinner={false}
-          shadow="0 0 10px #8CE3D3,0 0 5px #8CE3D3"
-        />
         <LangSyncer />
         <ScrollProgress />
         {children}

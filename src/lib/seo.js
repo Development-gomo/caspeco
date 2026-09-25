@@ -62,7 +62,7 @@ export function buildMetadataFromYoast(entry, options = {}) {
       description: yoast?.og_description || description,
       url: yoast?.og_url,
       siteName: yoast?.og_site_name,
-      type: yoast?.og_type || (entry?.type === "case_study" ? "article" : "website"),
+      type: yoast?.og_type || (entry?.type === "casestudies" ? "article" : "website"),
       locale: yoast?.og_locale || LOCALE_MAP[lang] || LOCALE_MAP[DEFAULT_LANG],
       images: mapOgImages(yoast?.og_image),
     },

@@ -7,6 +7,7 @@ import Image from "next/image";
 import ArrowSvg from "../../../../public/right-arrow.svg";
 import CalenerSvg from "../../../../public/calender.svg";
 import { DEFAULT_LANG, langHref } from "@/config";
+import CtaButton from "@/components/ui/CtaButton";
 
 function TiltCard({ children, className }) {
   const rotateX = useSpring(useMotionValue(0), { stiffness: 200, damping: 20 });
@@ -94,51 +95,7 @@ export default function HomeNews({ data, lang = DEFAULT_LANG, prefetchedPosts })
         />
 
         {cta_text && cta_url && (
-          <Link
-            href={langHref(cta_url, lang)}
-            className="
-              gap-3 group relative inline-flex items-center
-              rounded-sm bg-(--color-brand) px-6 py-4 text-white
-              transition-all duration-300 hover:bg-(--color-brand)
-              w-[235px] overflow-hidden select-none
-            "
-          >
-            {/* LEFT DOT */}
-            <span className="relative w-6 flex items-center justify-center">
-              <span
-                className="
-                  absolute h-2 w-2 rounded-full bg-(--color-mint)
-                  transition-all duration-300 ease-out
-                  group-hover:opacity-0 group-hover:-translate-x-1
-                "
-              ></span>
-            </span>
-
-            {/* TEXT */}
-            <span
-              className="
-                flex-1 text-[16px] leading-none
-                transition-all duration-300 ease-out
-                group-hover:-translate-x-4
-                whitespace-nowrap
-              "
-            >
-              {cta_text}
-            </span>
-
-            {/* ARROW */}
-            <span className="relative w-4 flex items-center justify-center">
-              <span
-                className="
-                  w-4 absolute opacity-0 -translate-x-4
-                  transition-all duration-300 ease-out
-                  group-hover:opacity-100 group-hover:-translate-x-2
-                "
-              >
-                <Image src={ArrowSvg} width={13} height={13} alt="arrow" />
-              </span>
-            </span>
-          </Link>
+          <CtaButton href={langHref(cta_url, lang)}>{cta_text}</CtaButton>
         )}
       </div>
 

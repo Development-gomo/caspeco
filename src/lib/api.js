@@ -46,11 +46,23 @@ export async function getPageBySlug(slug, lang = DEFAULT_LANG) {
 }
 
 export async function getServiceBySlug(slug, lang = DEFAULT_LANG) {
-  return getSingleEntry("services", slug, lang);
+  return getSingleEntry("solutions", slug, lang);
 }
 
 export async function getCaseStudyBySlug(slug, lang = DEFAULT_LANG) {
-  return getSingleEntry("case_study", slug, lang);
+  return getSingleEntry("casestudies", slug, lang);
+}
+
+export async function getProductBySlug(slug, lang = DEFAULT_LANG) {
+  return getSingleEntry("products", slug, lang);
+}
+
+export async function getIndustryBySlug(slug, lang = DEFAULT_LANG) {
+  return getSingleEntry("industries", slug, lang);
+}
+
+export async function getPartnerBySlug(slug, lang = DEFAULT_LANG) {
+  return getSingleEntry("partner", slug, lang);
 }
 
 export async function getPostBySlug(slug, lang = DEFAULT_LANG) {
@@ -72,7 +84,7 @@ export async function getPostBySlug(slug, lang = DEFAULT_LANG) {
 
 export async function getAllTeam(lang = DEFAULT_LANG) {
   return await fetchWP(
-    `/wp/v2/team?per_page=100&_embed&lang=${lang}`
+    `/wp/v2/teammembers?per_page=100&_embed&lang=${lang}`
   );
 }
 
@@ -85,22 +97,22 @@ export async function getMediaById(id) {
   }
 }
 
-// Menus — cache for 1 hour (menus rarely change)
+// Menus
 export async function getMenu(lang = DEFAULT_LANG) {
-  const menu = await fetchWP(`/myroutes/v1/menus?lang=${lang}`, { revalidate: 3600 });
+  const menu = await fetchWP(`/myroutes/v1/menus?lang=${lang}`, { revalidate: 300 });
   return menu;
 }
 
-// Footer widgets — cache for 1 hour
+// Footer widgets
 export async function getFooterWidgets(lang = DEFAULT_LANG) {
-  const footer = await fetchWP(`/myroutes/v1/footer-widgets?lang=${lang}`, { revalidate: 3600 });
+  const footer = await fetchWP(`/myroutes/v1/footer-widgets?lang=${lang}`, { revalidate: 300 });
   return footer;
 }
 
-// Theme options (logo, colours, socials) — cache for 24 hours
+// Theme options (logo, colours, socials)
 export async function getThemeOptions(lang = DEFAULT_LANG) {
   try {
-    const options = await fetchWP(`/densou/v1/theme-options?lang=${lang}`, { revalidate: 86400 });
+    const options = await fetchWP(`/headless/v1/theme-options?lang=${lang}`, { revalidate: 300 });
     if (!options) {
       return { header: {}, footer: {} };
     }
@@ -131,15 +143,15 @@ export async function getPageById(id, lang) {
 }
 
 export async function getServiceById(id, lang) {
-  return await getEntryById("services", id, lang);
+  return await getEntryById("solutions", id, lang);
 }
 
 export async function getAllServices(lang = DEFAULT_LANG) {
-  return await fetchWP(`/wp/v2/services?lang=${lang}&per_page=100&_embed`);
+  return await fetchWP(`/wp/v2/solutions?lang=${lang}&per_page=100&_embed`);
 }
 
 export async function getCaseStudies(lang = DEFAULT_LANG) {
-  return await fetchWP(`/wp/v2/case_study?lang=${lang}&per_page=100&_embed`);
+  return await fetchWP(`/wp/v2/casestudies?lang=${lang}&per_page=100&_embed`);
 }
 
 export async function getAllPosts(lang) {
@@ -147,7 +159,31 @@ export async function getAllPosts(lang) {
 }
 
 export async function getCaseStudyById(id, lang) {
-  return await getEntryById("case_study", id, lang);
+  return await getEntryById("casestudies", id, lang);
+}
+
+export async function getProductById(id, lang) {
+  return await getEntryById("products", id, lang);
+}
+
+export async function getAllProducts(lang = DEFAULT_LANG) {
+  return await fetchWP(`/wp/v2/products?lang=${lang}&per_page=100&_embed`);
+}
+
+export async function getIndustryById(id, lang) {
+  return await getEntryById("industries", id, lang);
+}
+
+export async function getAllIndustries(lang = DEFAULT_LANG) {
+  return await fetchWP(`/wp/v2/industries?lang=${lang}&per_page=100&_embed`);
+}
+
+export async function getPartnerById(id, lang) {
+  return await getEntryById("partner", id, lang);
+}
+
+export async function getAllPartners(lang = DEFAULT_LANG) {
+  return await fetchWP(`/wp/v2/partner?lang=${lang}&per_page=100&_embed`);
 }
 
 // Get translations for any entry type - try custom endpoint first, then fallback
@@ -173,10 +209,16 @@ export async function getTranslationBySlug(slug, currentLang, targetLang, postTy
   // Map postType to WordPress REST endpoint names
   const endpointMap = {
     page: "pages",
-    service: "services",
-    case_study: "case_study",
+    service: "solutions",
+    solution: "solutions",
+    case_study: "casestudies",
+    casestudies: "casestudies",
+    product: "products",
+    industry: "industries",
+    partner: "partner",
     posts: "posts",
     post: "posts",
+    team: "teammembers",
   };
   const endpoint = endpointMap[postType] || postType;
 
@@ -378,12 +420,12 @@ export function getTeamImage(member) {
 
 // ✅ schema endpoint you already exposed
 export async function getCf7FormSchema(formId, lang = DEFAULT_LANG) {
-  return await fetchWP(`/densou/v1/cf7-form/${formId}?lang=${lang}`);
+  return await fetchWP(`/headless/v1/cf7-form/${formId}?lang=${lang}`);
 }
 
 // ✅ recommended: submit via your proxy endpoint (stable)
 export async function submitCf7FormProxy(formId, payload) {
-  const res = await fetch(`${WP_BASE}/densou/v1/cf7-submit/${formId}`, {
+  const res = await fetch(`${WP_BASE}/headless/v1/cf7-submit/${formId}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

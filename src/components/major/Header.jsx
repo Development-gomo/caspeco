@@ -5,9 +5,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import ArrowSvg from "../../../public/right-arrow.svg";
 import DownSvg from "../../../public/down-arrow.svg";
-import ArrowSvgB from "../../../public/right-arrow-black.png";
 import { getMenu, getThemeOptions, getEntryTranslations } from "@/lib/api";
 import { DEFAULT_LANG, SUPPORTED_LANGS, langHref, langHome } from "@/config";
 
@@ -23,9 +21,49 @@ export default function Header({
 }) {
   const [menu, setMenu] = useState(prefetchedMenu);
   const [options, setOptions] = useState(prefetchedOptions);
-  const [altLangUrl, setAltLangUrl] = useState(langHome(SUPPORTED_LANGS.filter((l) => l !== lang)[0]));
-  const [scrolled, setScrolled] = useState(false);
+  const altLangs = SUPPORTED_LANGS.filter((l) => l !== lang);
+  const [altLangUrls, setAltLangUrls] = useState(
+    Object.fromEntries(altLangs.map((l) => [l, langHome(l)]))
+  );
   const isLoading = !menu;
+  const [scrolled, setScrolled] = useState(false);
+
+  // Nav items come from the ACF "mega_menu" repeater when it has real
+  // entries (menu_title set) — each entry's columns/links/card drive the
+  // dropdown. Falls back to the plain WP menu (no dropdown) otherwise.
+  const megaMenuItems = (options?.mega_menu || []).filter((entry) => entry.menu_title);
+  const navItems = megaMenuItems.length > 0
+    ? megaMenuItems.map((entry, i) => {
+        const columns = (entry.columns || []).filter(
+          (col) => col.links?.length > 0 || col.card?.title
+        );
+        const card = columns.map((col) => col.card).find((c) => c?.title);
+        const children = columns.flatMap((col, ci) =>
+          (col.links || []).map((link, li) => ({
+            id: `mega-${i}-${ci}-${li}`,
+            title: link.label,
+            url: link.url?.url || "#",
+          }))
+        );
+        return {
+          id: `mega-${i}`,
+          title: entry.menu_title,
+          url: entry.menu_title_link?.url || "#",
+          columns,
+          card,
+          sideImage: entry.side_image?.url || null,
+          children,
+        };
+      })
+    : (menu?.main || []).map((item) => ({
+        id: item.id,
+        title: item.title,
+        url: item.url,
+        columns: null,
+        card: null,
+        sideImage: null,
+        children: item.children || [],
+      }));
 
   // Only fetch client-side if no prefetched data was provided
   useEffect(() => {
@@ -37,7 +75,7 @@ export default function Header({
           getThemeOptions(lang),
         ]);
         setMenu(menuData);
-        setOptions(themeOptions?.header || {});
+        setOptions(themeOptions || {});
       } catch {
         setMenu([]);
         setOptions({});
@@ -46,19 +84,18 @@ export default function Header({
     loadData();
   }, [lang, prefetchedMenu]);
 
-  // scroll listener for sticky animation
+  // Header starts transparent; the dark blurred overlay fades in once the
+  // page has scrolled.
   useEffect(() => {
-    const handler = () => {
-      setScrolled(window.scrollY > 30);
-    };
+    const handler = () => setScrolled(window.scrollY > 30);
+    handler();
     window.addEventListener("scroll", handler);
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
-  // Sticky header classes
-  const headerClasses = scrolled
-    ? "fixed top-0 w-full z-50 text-(--color-navy) transition-all duration-300 py-4 bg-(--color-warm-stone) shadow-sm"
-    : "fixed top-0 w-full z-50 text-white transition-all duration-300 bg-transparent scrolled py-8";
+  const headerClasses = `fixed top-0 w-full z-50 text-(--color-white) transition-[background-color,backdrop-filter] duration-300 ${
+    scrolled ? "backdrop-blur-[8px] bg-(--color-black)/40" : "bg-transparent"
+  }`;
 
   // Mobile menu state
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -93,74 +130,83 @@ export default function Header({
   }, []);
 
   useEffect(() => {
-    async function fetchAltLangUrl() {
-      try {
-        const altLang = SUPPORTED_LANGS.filter((l) => l !== lang)[0];
+    async function fetchAltLangUrls() {
+      const altLangList = SUPPORTED_LANGS.filter((l) => l !== lang);
+      const fallback = Object.fromEntries(altLangList.map((l) => [l, langHome(l)]));
 
-        // Use entryId for dynamic translation lookup if available
-        if (entryId) {
+      // Homepage never passes currentSlug — the translated homepage always
+      // lives at that language's root, regardless of its WP slug.
+      if (!currentSlug) {
+        setAltLangUrls(fallback);
+        return;
+      }
+
+      // Use entryId for dynamic translation lookup if available
+      if (entryId) {
+        try {
           const translations = await getEntryTranslations(entryId, entryType, lang);
 
-          if (translations && translations[altLang]?.slug) {
-            const translatedSlug = translations[altLang].slug;
+          const urls = { ...fallback };
+          for (const altLang of altLangList) {
+            const translatedSlug = translations?.[altLang]?.slug;
+            if (!translatedSlug) continue;
             // "frontpage" is the WP homepage slug — map it to the lang root
             if (translatedSlug === "frontpage") {
-              setAltLangUrl(langHome(altLang));
-              return;
+              urls[altLang] = langHome(altLang);
+              continue;
             }
             const prefix = pathPrefix ? `/${pathPrefix}` : "";
             const langPrefix = altLang === DEFAULT_LANG ? "" : `/${altLang}`;
-            setAltLangUrl(`${langPrefix}${prefix}/${translatedSlug}`);
-            return;
+            urls[altLang] = `${langPrefix}${prefix}/${translatedSlug}`;
           }
+          setAltLangUrls(urls);
+          return;
+        } catch (error) {
+          setAltLangUrls(fallback);
+          return;
         }
-
-        // Fallback: if no entryId or translation not found, go to homepage
-        setAltLangUrl(langHome(altLang));
-
-      } catch (error) {
-        setAltLangUrl(langHome(SUPPORTED_LANGS.filter((l) => l !== lang)[0]));
       }
+
+      // Fallback: if no entryId, go to homepage for each language
+      setAltLangUrls(fallback);
     }
 
     if (entryId || (currentSlug && currentSlug !== "/")) {
-      fetchAltLangUrl();
+      fetchAltLangUrls();
     }
   }, [lang, currentSlug, entryType, pathPrefix, entryId]);
 
   return (
     <header className={headerClasses}>
-      <div className="web-width mx-auto px-6 flex items-center justify-between relative">
-        {/* LOGO */}
-        <Link
-          href={langHome(lang)}
-          className="flex relative h-8 w-[100px] md:h-10 md:w-[100px]"
-        >
-          {(() => {
-            const lightLogo = logoUrl || options?.logo_light?.url;
-            const darkLogo = options?.logo_dark?.url;
-            const activeLogo = scrolled ? (darkLogo || lightLogo) : (lightLogo || darkLogo);
+      <div className="w-full px-6 lg:px-[120px] py-4 lg:py-0 lg:h-[84px] flex items-center justify-between relative">
+        {/* LOGO + DESKTOP LINKS */}
+        <div className="flex items-center gap-8 lg:gap-16">
+          <Link
+            href={langHome(lang)}
+            className="flex relative h-8 w-[100px] lg:h-[26px] lg:w-[170px]"
+          >
+            {(() => {
+              // Header is always the dark translucent bar, so always use the light logo variant
+              const activeLogo = logoUrl || options?.logo_light?.url || options?.logo_dark?.url;
 
-            if (!activeLogo) return null;
+              if (!activeLogo) return null;
 
-            return (
-              <Image
-                src={activeLogo}
-                alt="caspeco. logo"
-                width={100}
-                height={16}
-                className="object-contain"
-                priority
-              />
-            );
-          })()}
-        </Link>
+              return (
+                <Image
+                  src={activeLogo}
+                  alt="caspeco. logo"
+                  width={170}
+                  height={26}
+                  className="object-contain"
+                  priority
+                />
+              );
+            })()}
+          </Link>
 
-        {/* DESKTOP MENU */}
-        <nav className="hidden lg:flex items-center gap-4 ">
-          {/* Centered glass menu wrapper */}
-          <div className="px-8 py-4 flex items-center gap-8 {/*lg:absolute lg:left-[338px]*/}">
-            <ul className="flex items-center gap-9 relative">
+          {/* DESKTOP MENU */}
+          <nav className="hidden lg:flex items-center">
+            <ul className="flex items-center gap-12 relative">
               {isLoading ? (
                 // SKELETON MENU (no jump)
                 <>
@@ -173,14 +219,13 @@ export default function Header({
                 </>
               ) : (
                 // REAL MENU
-                menu.main.map((item) => (
+                navItems.map((item) => (
                   <li key={item.id} className="relative group">
                     <Link
                       href={langHref(item.url, lang)}
                       prefetch={true}
                       onClick={(e) => handleNavClick(e, item.url)}
-                      className={`
-                            ${scrolled ? "text-(--color-navy)/90 hover:text-(--color-navy)" : "text-white/90 hover:text-white"} relative z-9 text-[15px] transition leading-[18px] flex items-center gap-2`}
+                      className="text-(--color-white)/90 hover:text-(--color-white) relative z-9 text-[18px] font-bold transition leading-[18px] flex items-center gap-2"
                     >
                       {item.title}
 
@@ -191,29 +236,91 @@ export default function Header({
                             alt="arrow"
                             width={10}
                             height={10}
-                            className={scrolled ? "brightness-0" : ""}
                           />
                         </span>
                       )}
                     </Link>
 
-                    {/* SUBMENU */}
-                    {item.children?.length > 0 && (
+                    {/* MEGA MENU PANEL — multi-column, driven by ACF columns/links/card */}
+                    {item.columns?.length > 0 ? (
                       <div
-                        className={`
-                            ${scrolled ? "top-[15px]" : "top-0" }
+                        className="
+                            top-[15px]
+                            absolute left-1/2 mt-1
+                            -translate-x-1/2 min-w-[520px]
+                            pt-8
+                            pointer-events-none
+                            group-hover:pointer-events-auto
+                         z-2
+                          "
+                      >
+                        <div className="
+                            opacity-0 translate-x-4
+                            group-hover:opacity-100 group-hover:translate-x-0
+                            transition-all duration-300 ease-out bg-(--color-white) text-(--color-black) rounded-sm shadow-lg overflow-hidden
+                            flex
+                          "
+                        >
+                          <div className="flex flex-1 divide-x divide-(--color-black)/10">
+                            {item.columns.map((col, ci) => (
+                              <ul key={ci} className="min-w-[180px] py-2">
+                                {(col.links || []).map((link, li) => (
+                                  <li key={li}>
+                                    <Link
+                                      href={langHref(link.url?.url || "#", lang)}
+                                      prefetch={true}
+                                      onClick={(e) => handleNavClick(e, link.url?.url)}
+                                      target={link.url?.target || undefined}
+                                      className="block px-4 py-3 text-(--color-black) text-sm hover:text-(--color-black)/70 transition"
+                                    >
+                                      {link.label}
+                                    </Link>
+                                  </li>
+                                ))}
+                              </ul>
+                            ))}
+                          </div>
+
+                          {item.card && (
+                            <div className="w-[220px] shrink-0 bg-(--color-black)/5 p-5 flex flex-col gap-2">
+                              {item.sideImage && (
+                                <div className="relative w-full h-[100px] mb-2">
+                                  <Image src={item.sideImage} alt="" fill className="object-cover rounded-sm" />
+                                </div>
+                              )}
+                              <p className="font-bold text-sm">{item.card.title}</p>
+                              {item.card.description && (
+                                <p className="text-xs text-(--color-black)/70">{item.card.description}</p>
+                              )}
+                              {item.card.button_link?.url && (
+                                <Link
+                                  href={langHref(item.card.button_link.url, lang)}
+                                  target={item.card.button_link.target || undefined}
+                                  className="mt-2 text-sm font-bold text-(--color-petrol) hover:underline"
+                                >
+                                  {item.card.button_link.title || "Learn more"}
+                                </Link>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : item.children?.length > 0 && (
+                      <div
+                        className="
+                            top-[15px]
                             absolute left-1/2  mt-1
                             -translate-x-1/2 min-w-[180px]
                             pt-8
                             pointer-events-none
                             group-hover:pointer-events-auto
                          z-2
-                          `}
+                          "
                       >
                         <ul className="
                             opacity-0 translate-x-4
                             group-hover:opacity-100 group-hover:translate-x-0
-                            transition-all duration-300 ease-out bg-(--color-warm-stone) text-(--color-navy) rounded-sm shadow-lg overflow-hidden
+                            transition-all duration-300 ease-out bg-(--color-white) text-(--color-black) rounded-sm shadow-lg overflow-hidden
                           "
                         >
                           {item.children.map((sub) => (
@@ -223,8 +330,8 @@ export default function Header({
                                 prefetch={true}
                                 onClick={(e) => handleNavClick(e, sub.url)}
                                 className="
-                                    block px-4 py-3 text-(--color-navy) text-sm
-                                    hover:text-(--color-navy)/70 transition
+                                    block px-4 py-3 text-(--color-black) text-sm
+                                    hover:text-(--color-black)/70 transition
                                   "
                               >
                                 {sub.title}
@@ -238,31 +345,26 @@ export default function Header({
                 ))
               )}
             </ul>
-          </div>
+          </nav>
+        </div>
 
+        {/* RIGHT SIDE — lang switcher, log in, CTA */}
+        <div className="hidden lg:flex items-center gap-6">
           {/* Language Switcher */}
-          {/* <div ref={langRef} className="relative">
+          <div ref={langRef} className="relative">
             <button
               type="button"
               onClick={() => setLangOpen((v) => !v)}
-              className={`
-                            ${scrolled ? " text-black hover:text-black/95  bg-(--color-accent) " : ""} flex items-center gap-2 cursor-pointer px-4 py-4 rounded-sm text-sm leading-3.5
-            transition`}>
+              className="flex items-center gap-2 cursor-pointer px-4 py-4 rounded-sm text-sm leading-3.5 text-(--color-white) transition"
+            >
               <span>{lang.toUpperCase()}</span>
 
-            
               <span
                 className={`transition-transform duration-300 ${
                   langOpen ? "rotate-180" : ""
                 }`}
               >
-                <Image
-                  src={DownSvg}
-                  alt="arrow"
-                  width={10}
-                  height={10}
-                  className={scrolled ? "brightness-0" : ""}
-                />
+                <Image src={DownSvg} alt="arrow" width={10} height={10} />
               </span>
             </button>
 
@@ -270,75 +372,52 @@ export default function Header({
               <div
                 className="absolute right-0 mt-2 min-w-full rounded-sm border border-[#FFFFFF33] shadow-lg overflow-hidden z-50"
               >
-                <Link
-                  href={altLangUrl}
-                  onClick={() => setLangOpen(false)}
-                  className="block px-4 py-3 text-sm text-black bg-white  hover:text-black/95 transition"
-                >
-                  {SUPPORTED_LANGS.filter((l) => l !== lang)[0].toUpperCase()}
-                </Link>
+                {altLangs.map((altLang) => (
+                  <Link
+                    key={altLang}
+                    href={altLangUrls[altLang] || langHome(altLang)}
+                    onClick={() => setLangOpen(false)}
+                    className="block px-4 py-3 text-sm text-(--color-black) bg-(--color-white) hover:text-(--color-black)/70 transition whitespace-nowrap"
+                  >
+                    {altLang.toUpperCase()}
+                  </Link>
+                ))}
               </div>
             )}
-          </div> */}
+          </div>
+
+          {/* LOG IN LINK */}
+          {options?.login_text && options?.login_url && (
+            <Link
+              href={options.login_url}
+              className="px-2 text-[18px] font-bold text-(--color-yellow) hover:text-(--color-yellow)/80 transition"
+            >
+              {options.login_text}
+            </Link>
+          )}
 
           {/* CTA BUTTON */}
           {!options?.button_text || !options?.button_url ? (
             // SKELETON PLACEHOLDER (prevents jump)
-            <div className="w-[135px] h-[42px] rounded-sm bg-white/20 animate-pulse"></div>
+            <div className="w-[135px] h-[42px] rounded-full bg-white/20 animate-pulse"></div>
           ) : (
             <Link
               href={langHref(options.button_url, lang)}
               onClick={(e) => handleNavClick(e, options.button_url)}
-              className="gap-3 group relative inline-flex items-center select-none
-                    rounded-sm px-6 py-4 text-white
-                    transition-all duration-300
-                    w-[150px] overflow-hidden
-                    bg-(--color-brand)"
+              className="inline-flex items-center justify-center select-none
+                    rounded-full px-8 py-3 text-(--color-black)
+                    text-[14px] font-extrabold whitespace-nowrap
+                    transition-colors duration-300
+                    bg-(--color-yellow) hover:bg-(--color-yellow)/90"
             >
-              {/* LEFT SLOT (dot area, fixed width) */}
-              <span className="relative w-6 flex items-center justify-center">
-                <span
-                  className="
-                        absolute h-2 w-2 rounded-full
-                        transition-all duration-300 ease-out
-                        group-hover:opacity-0 group-hover:-translate-x-1
-                        bg-(--color-accent)"
-                ></span>
-              </span>
-
-              {/* TEXT (slides left on hover) */}
-              <span
-                className="
-                      flex-1 text-[16px] leading-none text-white
-                      transition-all duration-300 ease-out
-                      group-hover:-translate-x-4
-                      whitespace-nowrap"
-              >
-                {options.button_text}
-              </span>
-
-              {/* RIGHT SLOT (arrow area, fixed width) */}
-              <span className="relative w-4 flex items-center justify-center">
-                <span
-                  className="
-                        w-4 absolute text-[16px]
-                        opacity-0 -translate-x-4
-                        transition-all duration-300 ease-out
-                        group-hover:opacity-100 group-hover:-translate-x-2
-                      "
-                >
-                  <Image src={ArrowSvg} alt="arrow" width={13} height={13} />
-                </span>
-              </span>
+              {options.button_text}
             </Link>
           )}
-        </nav>
+        </div>
 
         {/* MOBILE MENU BUTTON */}
         <button
-          className={`lg:hidden text-3xl transition-colors ${
-            scrolled ? "text-(--color-navy)" : "text-white"
-          }`}
+          className="lg:hidden text-3xl text-(--color-white)"
           onClick={() => setMobileOpen(true)}
         >
           ☰
@@ -369,7 +448,7 @@ export default function Header({
                     openSubmenu ? "-translate-x-full" : "translate-x-0"
                   }`}
                 >
-                  {menu?.main?.map((item) => {
+                  {navItems.map((item) => {
                     const hasChildren = item.children?.length > 0;
 
                     const parentHref = langHref(item.url, lang);
@@ -411,7 +490,7 @@ export default function Header({
                 </div>
 
                 {/* SUBMENU PANEL */}
-                {menu?.main?.map((item) => {
+                {navItems.map((item) => {
                   if (openSubmenu !== item.id) return null;
 
                   return (
@@ -465,62 +544,47 @@ export default function Header({
               {/* FOOTER (STATIC) */}
               <div className="p-6 border-t border-white/10 flex flex-col gap-4">
                 {/* Language Switcher */}
-                {/* <Link
-                  href={altLangUrl}
-                  className="text-white/80 mb-4"
-                  onClick={() => {
-                    setMobileOpen(false);
-                    setOpenSubmenu(null);
-                  }}
-                >
-                  {SUPPORTED_LANGS.filter((l) => l !== lang)[0].toUpperCase()}
-                </Link> */}
+                <div className="flex flex-wrap gap-4 mb-2">
+                  {altLangs.map((altLang) => (
+                    <Link
+                      key={altLang}
+                      href={altLangUrls[altLang] || langHome(altLang)}
+                      className="text-white/80 hover:text-white transition"
+                      onClick={() => {
+                        setMobileOpen(false);
+                        setOpenSubmenu(null);
+                      }}
+                    >
+                      {altLang.toUpperCase()}
+                    </Link>
+                  ))}
+                </div>
+
+                {/* Log in */}
+                {options?.login_text && options?.login_url && (
+                  <Link
+                    href={options.login_url}
+                    className="text-[16px] font-bold text-(--color-yellow) hover:text-(--color-yellow)/80 transition"
+                    onClick={() => {
+                      setMobileOpen(false);
+                      setOpenSubmenu(null);
+                    }}
+                  >
+                    {options.login_text}
+                  </Link>
+                )}
 
                 {/* CTA */}
                 {options?.button_text && (
                   <Link
                     href={langHref(options.button_url, lang)}
-                    className="gap-3 group relative inline-flex items-center
-                      rounded-sm bg-(--color-accent) px-6 py-4 text-white
-                      transition-all duration-300 hover:bg-(--color-accent)
-                      w-[154px] overflow-hidden select-none"
+                    className="inline-flex items-center justify-center select-none
+                      rounded-full bg-(--color-yellow) px-8 py-3 text-(--color-black)
+                      text-[14px] font-extrabold transition-colors duration-300
+                      hover:bg-(--color-yellow)/90 w-fit"
                     onClick={(e) => handleNavClick(e, options.button_url, true)}
                   >
-                    <span className="relative w-6 flex items-center justify-center">
-                      <span
-                        className="
-                            absolute h-2 w-2 rounded-full bg-(--color-navy)
-                            transition-all duration-300 ease-out
-                            group-hover:opacity-0 group-hover:-translate-x-1
-                          "
-                      ></span>
-                    </span>
-                    <span
-                      className="text-(--color-navy)
-                            flex-1 text-[16px] leading-none
-                            transition-all duration-300 ease-out
-                            group-hover:-translate-x-4
-                            whitespace-nowrap"
-                    >
-                      {options.button_text}
-                    </span>
-
-                    <span className="relative w-4 flex items-center justify-center">
-                      <span
-                        className="
-                              w-4 absolute opacity-0 -translate-x-4
-                              transition-all duration-300 ease-out
-                              group-hover:opacity-100 group-hover:-translate-x-2
-                            "
-                      >
-                        <Image
-                          src={ArrowSvgB}
-                          width={13}
-                          height={13}
-                          alt="arrow"
-                        />
-                      </span>
-                    </span>
+                    {options.button_text}
                   </Link>
                 )}
               </div>

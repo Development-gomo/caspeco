@@ -1,9 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
-import ArrowSvg from "../../../../public/right-arrow-black.png";
 import { DEFAULT_LANG, langHref } from "@/config";
+import CtaButton from "@/components/ui/CtaButton";
 
 export default function CaseCtaBanner({ data, lang = DEFAULT_LANG }) {
   if (!data) return null;
@@ -28,52 +26,7 @@ export default function CaseCtaBanner({ data, lang = DEFAULT_LANG }) {
             {short_text && <p className="text-white text-[18px] mb-6">{short_text}</p>}
 
             {cta_text && cta_url && (
-              <Link
-                href={langHref(cta_url, lang)}
-                className="
-                  gap-3 group relative inline-flex items-center
-                  rounded-sm bg-(--color-accent) px-6 py-4
-                  text-black  
-                  transition-all duration-300
-                  w-[144px] overflow-hidden select-none
-                "
-              >
-                {/* LEFT DOT */}
-                <span className="relative w-6 flex items-center justify-center">
-                  <span
-                    className="
-                      absolute h-2 w-2 rounded-full bg-[#191F68]
-                      transition-all duration-300 ease-out
-                      group-hover:opacity-0 group-hover:-translate-x-1
-                    "
-                  />
-                </span>
-
-                {/* TEXT */}
-                <span
-                  className="
-                    flex-1 text-[16px] leading-none
-                    transition-all duration-300 ease-out
-                    group-hover:-translate-x-4
-                    whitespace-nowrap
-                  "
-                >
-                  {cta_text}
-                </span>
-
-                {/* ARROW */}
-                <span className="relative w-4 flex items-center justify-center">
-                  <span
-                    className="
-                      w-4 absolute opacity-0 -translate-x-4
-                      transition-all duration-300 ease-out
-                      group-hover:opacity-100 group-hover:-translate-x-2
-                    "
-                  >
-                    <Image src={ArrowSvg} width={13} height={13} alt="arrow" />
-                  </span>
-                </span>
-              </Link>
+              <CtaButton href={langHref(cta_url, lang)}>{cta_text}</CtaButton>
             )}
           </div>
         </div>

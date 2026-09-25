@@ -6,13 +6,12 @@ import { SUPPORTED_LANGS } from "@/config";
 
 // Map WordPress post types to Next.js URL segments
 const POST_TYPE_PREFIX = {
-  page:       "",            // /en/about-us
-  pages:      "",
-  service:    "service",     // /en/service/seo
-  services:   "service",
-  case_study: "case-study",  // /en/case-study/project-x
-  post:       "post",        // /en/post/my-article
-  posts:      "post",
+  page:        "",            // /en/about-us
+  pages:       "",
+  solutions:   "service",     // /en/service/seo
+  casestudies: "case-study",  // /en/case-study/project-x
+  post:        "post",        // /en/post/my-article
+  posts:       "post",
 };
 
 export async function POST(req) {

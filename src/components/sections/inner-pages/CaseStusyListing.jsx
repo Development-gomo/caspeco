@@ -3,14 +3,13 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import Link from "next/link";
 import Image from "next/image";
 
 import ArrowSvg from "../../../../public/right-arrow.svg";
-import ArrowSvgB from "../../../../public/right-arrow-black.png";
 import CheckSvg from "../../../../public/check.svg";
 
 import { DEFAULT_LANG, langHref } from "@/config";
+import CtaButton from "@/components/ui/CtaButton";
 
 export default function CaseStudyListing({
   data,
@@ -69,46 +68,7 @@ export default function CaseStudyListing({
             />
 
             {cta_text && cta_url && (
-              <Link
-                href={cta_url}
-                className="gap-3 group relative inline-flex items-center
-              rounded-sm bg-(--color-brand) px-6 py-4 text-white
-              transition-all duration-300 hover:bg-(--color-brand)
-              w-40 overflow-hidden select-none"
-              >
-                {/* LEFT DOT */}
-                <span className="relative w-6 flex items-center justify-center">
-                  <span
-                    className="
-                  absolute h-2 w-2 rounded-full bg-[#27E0C0]
-                  transition-all duration-300 ease-out
-                  group-hover:opacity-0 group-hover:-translate-x-1"
-                  ></span>
-                </span>
-
-                {/* TEXT */}
-                <span
-                  className="
-                flex-1 text-[16px] leading-none
-                transition-all duration-300 ease-out
-                group-hover:-translate-x-4
-                whitespace-nowrap"
-                >
-                  {cta_text}
-                </span>
-
-                {/* ARROW */}
-                <span className="relative w-4 flex items-center justify-center">
-                  <span
-                    className="
-                  w-4 absolute opacity-0 -translate-x-4
-                  transition-all duration-300 ease-out
-                  group-hover:opacity-100 group-hover:-translate-x-2"
-                  >
-                    <Image src={ArrowSvg} width={13} height={13} alt="arrow" />
-                  </span>
-                </span>
-              </Link>
+              <CtaButton href={cta_url}>{cta_text}</CtaButton>
             )}
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6"  >
@@ -195,49 +155,12 @@ export default function CaseStudyListing({
                         </div>
                       </>
                     )}
-                    <Link
+                    <CtaButton
                       href={langHref(`/case-study/${item.slug}`, lang)}
-                      className="mt-8 gap-3 group relative inline-flex items-center
-                      rounded-sm bg-(--color-accent) px-6 py-4 text-white
-                      transition-all duration-300 hover:bg-(--color-accent)
-                      w-40 overflow-hidden select-none">
-                      {/* LEFT DOT */}
-                      <span className="relative w-6 flex items-center justify-center">
-                        <span
-                          className="
-                          absolute h-2 w-2 rounded-full bg-[#191F68]
-                          transition-all duration-300 ease-out
-                          group-hover:opacity-0 group-hover:-translate-x-1"
-                        ></span>
-                      </span>
-
-                      {/* TEXT */}
-                      <span
-                        className="text-black 
-                        flex-1 text-[16px] leading-none
-                        transition-all duration-300 ease-out
-                        group-hover:-translate-x-4
-                        whitespace-nowrap">
-                        {read_more_text}
-                      </span>
-
-                      {/* ARROW */}
-                      <span className="relative w-4 flex items-center justify-center">
-                        <span
-                          className="
-                          w-4 absolute opacity-0 -translate-x-4
-                          transition-all duration-300 ease-out
-                          group-hover:opacity-100 group-hover:-translate-x-2"
-                        >
-                          <Image
-                            src={ArrowSvgB}
-                            width={13}
-                            height={13}
-                            alt="arrow"
-                          />
-                        </span>
-                      </span>
-                    </Link>
+                      className="mt-8"
+                    >
+                      {read_more_text}
+                    </CtaButton>
                   </div>
                 </motion.div>
               );

@@ -9,7 +9,7 @@ import { buildMetadataFromYoast } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
 
-export const revalidate = 3600;
+export const revalidate = 300;
 
 export async function generateStaticParams() {
   const results = await Promise.all(
@@ -42,12 +42,12 @@ export default async function ServiceSinglePage({ params }) {
       <Header
         lang={lang}
         currentSlug={slug}
-        entryType="services"
+        entryType="solutions"
         pathPrefix="service"
         entryId={service?.id}
         prefetchedMenu={menu}
-        prefetchedOptions={themeOptions?.header || {}}
-        logoUrl={themeOptions?.header?.logo_light?.url || ""}
+        prefetchedOptions={themeOptions || {}}
+        logoUrl={themeOptions?.logo_light?.url || ""}
       />
       <main>
         <ServicePageBuilder sections={service?.acf?.services_page_builder} lang={lang} />
