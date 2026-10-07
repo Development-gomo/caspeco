@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
-import { getAllServices, getCaseStudies, getAllPosts, getAllTeam } from "@/lib/api";
+import { getAllServices, getCaseStudies, getAllPosts, getAllTeam, getPostsByIds } from "@/lib/api";
 
 const Hero = dynamic(() => import("../sections/home/HomeHero"));
 const AboutUs = dynamic(() => import("../sections/home/HomeAbout"));
@@ -22,11 +22,26 @@ const Connectform = dynamic(() => import("../sections/inner-pages/Cform"));
 const CaseStudyListing = dynamic(() => import("../sections/inner-pages/CaseStusyListing"));
 const HomeColumnSection = dynamic(() => import("../sections/home/HomeColumnSection"));
 
+// 2026 homepage sections (Figma "Home_Page_Updated_29th_September")
+const HomeIntroVideo = dynamic(() => import("../sections/home/HomeIntroVideo"));
+const HomeKpi = dynamic(() => import("../sections/home/HomeKpi"));
+const HomeRestaurantMap = dynamic(() => import("../sections/home/HomeRestaurantMap"));
+const HomeHelpTabs = dynamic(() => import("../sections/home/HomeHelpTabs"));
+const HomeDataInsight = dynamic(() => import("../sections/home/HomeDataInsight"));
+const HomeCasperAI = dynamic(() => import("../sections/home/HomeCasperAI"));
+const HomeBusinessTwin = dynamic(() => import("../sections/home/HomeBusinessTwin"));
+const HomeProductCards = dynamic(() => import("../sections/home/HomeProductCards"));
+const HomeIndustrySlider = dynamic(() => import("../sections/home/HomeIndustrySlider"));
+const HomeIntegrations = dynamic(() => import("../sections/home/HomeIntegrations"));
+const HomeInsights = dynamic(() => import("../sections/home/HomeInsights"));
+const HomeFaq = dynamic(() => import("../sections/home/HomeFaq"));
+
 // Detect which data the page needs and fetch it all in parallel (server-side)
 async function prefetchSectionData(sections, lang) {
   if (!sections) return {};
 
   const needs = { services: false, cases: false, posts: false, team: false };
+  const pickedPostIds = [];
 
   for (const block of sections) {
     if (block.acf_fc_layout === "services_section") needs.services = true;
@@ -34,16 +49,22 @@ async function prefetchSectionData(sections, lang) {
     if (block.acf_fc_layout === "case_study_listing") needs.cases = true;
     if (block.acf_fc_layout === "news_section") needs.posts = true;
     if (block.acf_fc_layout === "team_section") needs.team = true;
+    if (block.acf_fc_layout === "insights_section") {
+      const ids = Array.isArray(block.posts) ? block.posts.map((p) => (typeof p === "object" ? p.ID || p.id : p)) : [];
+      if (ids.length) pickedPostIds.push(...ids);
+      else needs.posts = true;
+    }
   }
 
-  const [services, cases, posts, team] = await Promise.all([
+  const [services, cases, posts, team, pickedPosts] = await Promise.all([
     needs.services ? getAllServices(lang) : null,
     needs.cases ? getCaseStudies(lang) : null,
     needs.posts ? getAllPosts(lang) : null,
     needs.team ? getAllTeam(lang) : null,
+    pickedPostIds.length ? getPostsByIds(pickedPostIds, lang) : null,
   ]);
 
-  return { services, cases, posts, team };
+  return { services, cases, posts, team, pickedPosts };
 }
 
 export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
@@ -105,6 +126,42 @@ export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
 
           case "contact_form_section":
             return <Connectform key={i} data={block} lang={lang} />;
+
+          case "intro_video_section":
+            return <HomeIntroVideo key={i} data={block} lang={lang} />;
+
+          case "home_kpi_section":
+            return <HomeKpi key={i} data={block} lang={lang} />;
+
+          case "home_restaurant_map_section":
+            return <HomeRestaurantMap key={i} data={block} lang={lang} />;
+
+          case "home_tab_section":
+            return <HomeHelpTabs key={i} data={block} lang={lang} />;
+
+          case "data_insight_section":
+            return <HomeDataInsight key={i} data={block} lang={lang} />;
+
+          case "home_ai_section":
+            return <HomeCasperAI key={i} data={block} lang={lang} />;
+
+          case "home_casestudy_section":
+            return <HomeBusinessTwin key={i} data={block} lang={lang} />;
+
+          case "product_cards_section":
+            return <HomeProductCards key={i} data={block} lang={lang} />;
+
+          case "industry_slider_section":
+            return <HomeIndustrySlider key={i} data={block} lang={lang} />;
+
+          case "integrations_section":
+            return <HomeIntegrations key={i} data={block} lang={lang} />;
+
+          case "insights_section":
+            return <HomeInsights key={i} data={block} lang={lang} prefetchedPosts={prefetched.pickedPosts || prefetched.posts} />;
+
+          case "faq_section":
+            return <HomeFaq key={i} data={block} lang={lang} />;
 
           default:
             return null;

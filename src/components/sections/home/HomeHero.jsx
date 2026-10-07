@@ -12,7 +12,7 @@ export default function HomeHero({ data }) {
     target: sectionRef,
     offset: ["start start", "end start"],
   });
-  const bgY = useTransform(scrollYProgress, [0, 1], ["-10%", "0%"]);
+  const bgY = useTransform(scrollYProgress, [0, 1], ["-2%", "0%"]);
 
   const bgImage = data?.bg_image?.url || "";
   const bgVideo = data?.bg_video?.url || "";
@@ -86,7 +86,7 @@ export default function HomeHero({ data }) {
               initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="w-full text-[40px] leading-11 tracking-[-1.6px]
+              className="w-full normal-case text-[40px] leading-11 tracking-[-1.6px]
                 md:text-[64px] md:leading-16 md:tracking-[-2.4px]
                 lg:text-[88px] lg:leading-[84px] lg:tracking-[-3.2px]"
               dangerouslySetInnerHTML={{ __html: heading }}

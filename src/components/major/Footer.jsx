@@ -117,7 +117,7 @@ export default async function Footer({ lang = DEFAULT_LANG }) {
       {enable_section && (
       <section
         id="footer"
-        className="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-[184px] px-6 lg:px-[120px] py-12 lg:py-[72px]"
+        className="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-[184px] lg:px-[120px] py-12 lg:py-[72px]"
         style={{ backgroundColor: background_colour || "#0b2533" }}
       >
         <div className="flex flex-col gap-4 items-start w-full lg:w-[476px] shrink-0">
@@ -145,7 +145,7 @@ export default async function Footer({ lang = DEFAULT_LANG }) {
         </div>
 
         {quickContactFormId ? (
-          <div className="w-full lg:w-[493px] shrink-0 rounded-lg bg-(--color-white) border-6 border-white/50 shadow-[0px_2px_4.5px_0px_rgba(0,0,0,0.1)] px-6 py-7">
+          <div className="w-full lg:w-[493px] shrink-0 rounded-lg bg-(--color-white) border-6 border-white/50 shadow-[0px_2px_4.5px_0px_rgba(0,0,0,0.1)] py-7">
             <ContactForm formId={quickContactFormId} lang={lang} submitLabel={cta_text || "Get a call"} />
           </div>
         ) : (
@@ -159,8 +159,8 @@ export default async function Footer({ lang = DEFAULT_LANG }) {
       {/* =====================================================
           FOOTER
          ===================================================== */}
-      <footer className="bg-(--color-black) text-(--color-white) relative z-10">
-        <div className="mx-auto w-full web-width px-6  pt-16 pb-16 lg:pt-[72px] lg:pb-[144px] flex flex-col gap-12">
+      <footer className="bg-black text-white relative z-10">
+        <div className="mx-auto w-full web-width pt-16 pb-16 lg:pt-[72px] lg:pb-36 flex flex-col gap-12">
           {/* ============ MAIN ROW: contact / stat card / nav columns ============ */}
           <div className="flex flex-col lg:flex-row lg:items-start gap-12 lg:gap-24">
             {/* LOGO + CONTACT INFO */}

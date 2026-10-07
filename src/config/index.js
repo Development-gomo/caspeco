@@ -1,19 +1,21 @@
 // src/config/index.js
 
-export const DEFAULT_LANG = process.env.NEXT_PUBLIC_DEFAULT_LANG;
+// Fallback to "sv" so a missing env var on the host can't produce "/undefined" routes
+export const DEFAULT_LANG = process.env.NEXT_PUBLIC_DEFAULT_LANG || "sv";
 export const WP_BASE = process.env.NEXT_PUBLIC_WP_BASE;
 
 // ─── Add new languages here — everything else updates automatically ───────────
-export const SUPPORTED_LANGS = ["sv", "en", "no", "da", "fi", "de"];
+// Codes must match the WPML language codes in WordPress.
+export const SUPPORTED_LANGS = ["sv", "en", "no", "fr", "frbg", "nl"];
 
-// Locale map for OG/SEO tags (add new entries when adding languages)
+// Locale map for OG/SEO tags (matches WPML "Default locale")
 export const LOCALE_MAP = {
   sv: "sv_SE",
   en: "en_US",
-  no: "no_NO",
-  da: "da_DK",
-  fi: "fi_FI",
-  de: "de_DE",
+  no: "nb_NO",
+  fr: "fr_FR",
+  frbg: "fr_BE",
+  nl: "nl_NL",
 };
 
 /** Prefix a local path with the current language (skip prefix for default lang) */
@@ -34,8 +36,7 @@ export function altLangs(lang) {
 
 /** Detect language from a pathname */
 export function langFromPath(pathname) {
-  for (const l of SUPPORTED_LANGS) {
-    if (l !== DEFAULT_LANG && pathname.includes(`/${l}`)) return l;
-  }
-  return DEFAULT_LANG;
+  // Match the first segment exactly so "/frbg" isn't mistaken for "/fr"
+  const firstSegment = (pathname || "").split("/")[1] || "";
+  return SUPPORTED_LANGS.includes(firstSegment) ? firstSegment : DEFAULT_LANG;
 }

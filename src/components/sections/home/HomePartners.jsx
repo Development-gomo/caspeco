@@ -18,31 +18,31 @@ export default function HomePartners({ data }) {
   const logos = [...partners_logo, ...partners_logo];
 
   return (
-    <section className="partners-section pb-10 pt-10 relative overflow-hidden bg-white">
+    <section
+      className="partners-section relative overflow-hidden"
+      style={{ background: data?.bg_color || "var(--color-light-grey)" }}
+    >
       {bgImage ? (
         <div className="absolute inset-0 -z-2" style={{ backgroundImage: `url(${bgImage})`, backgroundPosition: '100% -10%', backgroundRepeat: 'no-repeat', backgroundSize: 'auto' }} suppressHydrationWarning />
       ) : null}
-    
-      {/* MARQUEE SLIDER */}
+
+      {/* MARQUEE SLIDER — Figma "Customer logos desktop": plain dark logos, 120px apart, 97px strip */}
       <div className="partners-marquee-mask overflow-hidden">
         <div
-          className="partners-marquee-track flex gap-4"
+          className="partners-marquee-track flex items-center h-[97px]"
           style={{
             width: "max-content",
             animation: "partners-marquee 30s linear infinite",
           }}
         >
           {logos.map((logo, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-center bg-(--color-warm-stone) rounded-sm px-8 py-6 min-w-[220px] h-[110px] shrink-0"
-            >
+            <div key={index} className="flex items-center justify-center shrink-0 pr-16 lg:pr-[120px]">
               <Image
                 src={logo.url}
-                alt={logo.alt || "Partner logo"}
-                width={140}
-                height={40}
-                className="partner-logo w-auto"
+                alt={logo.alt || logo.title || ""}
+                width={logo.width || 120}
+                height={34}
+                className="partner-logo h-[34px] w-auto max-w-[120px] object-contain "
               />
             </div>
           ))}

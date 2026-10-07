@@ -21,22 +21,22 @@ export const NOT_FOUND_MESSAGES = {
       "Den kan ha blitt fjernet, endret navn eller er midlertidig utilgjengelig. Sjekk nettadressen eller gå tilbake til forsiden.",
     buttonText: "Gå til forsiden",
   },
-  da: {
-    title: "Siden du leder efter findes ikke.",
+  fr: {
+    title: "La page que vous recherchez n'existe pas.",
     description:
-      "Den kan være blevet fjernet, omdøbt eller er midlertidigt utilgængelig. Tjek venligst URL'en eller vend tilbage til forsiden.",
-    buttonText: "Gå til forsiden",
+      "Elle a peut-être été supprimée, renommée ou est temporairement indisponible. Veuillez vérifier l'URL ou revenir à la page d'accueil.",
+    buttonText: "Retour à l'accueil",
   },
-  de: {
-    title: "Die gesuchte Seite existiert nicht.",
+  frbg: {
+    title: "La page que vous recherchez n'existe pas.",
     description:
-      "Sie wurde möglicherweise entfernt, umbenannt oder ist vorübergehend nicht verfügbar. Bitte überprüfen Sie die URL oder kehren Sie zur Startseite zurück.",
-    buttonText: "Zur Startseite",
+      "Elle a peut-être été supprimée, renommée ou est temporairement indisponible. Veuillez vérifier l'URL ou revenir à la page d'accueil.",
+    buttonText: "Retour à l'accueil",
   },
-  fi: {
-    title: "Etsimääsi sivua ei ole olemassa.",
+  nl: {
+    title: "De pagina die u zoekt bestaat niet.",
     description:
-      "Se on saatettu poistaa, nimetä uudelleen tai se on tilapäisesti pois käytöstä. Tarkista osoite tai palaa etusivulle.",
-    buttonText: "Etusivulle",
+      "Deze is mogelijk verwijderd, hernoemd of tijdelijk niet beschikbaar. Controleer de URL of ga terug naar de startpagina.",
+    buttonText: "Naar de startpagina",
   },
 };

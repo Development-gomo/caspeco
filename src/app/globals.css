@@ -68,7 +68,6 @@ h5,
 h6 {
   font-family: var(--font-primary);
   font-weight: 900;
-  text-transform: uppercase;
 }
 
 /* Global container */
@@ -362,10 +361,6 @@ em {
     animation: none;
   }
 }
-
-    .hero-panel-heading {
-      text-transform: uppercase;
-    }
 
 @media (min-width: 768px) {
   .hero-panel-heading,
@@ -740,4 +735,108 @@ span.subheading-label.text-\[var\(--color-accent\)\],
   .mobile-height {
     justify-content: flex-start;
   }
+}
+
+/* ==========================================
+   2026 HOMEPAGE — Figma "Home_Page_Updated_29th_September"
+   Type scale + shared helpers used by the new section components.
+   Desktop values are the Figma tokens; mobile/tablet are scaled down.
+========================================== */
+:root {
+  --color-light-grey: #fdfdfd;
+  --color-yellow-dark-bg: #ffe38f;
+  --color-yellow-light-bg: #fff3d0;
+  --shadow-card: 0px 2px 9px 0px rgba(0, 0, 0, 0.1);
+}
+
+/* 1272px content width at ≥1320px viewports = 120px side gutters on the 1512 frame */
+.cs-container {
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+/* H2 — Tenon X-Bold 80/78, -3.2 */
+.cs-h2 {
+  font-family: var(--font-primary);
+  font-weight: 800;
+  font-size: 40px;
+  line-height: 42px;
+  letter-spacing: -1.6px;
+  text-transform: none;
+}
+@media (min-width: 768px) {
+  .cs-h2 { font-size: 56px; line-height: 56px; letter-spacing: -2.24px; }
+}
+@media (min-width: 1280px) {
+  .cs-h2 { font-size: 80px; line-height: 78px; letter-spacing: -3.2px; }
+}
+
+/* H3 — Tenon Bold 54/56, -2.16 */
+.cs-h3 {
+  font-family: var(--font-primary);
+  font-weight: 700;
+  font-size: 34px;
+  line-height: 38px;
+  letter-spacing: -1.36px;
+  text-transform: none;
+}
+@media (min-width: 1024px) {
+  .cs-h3 { font-size: 54px; line-height: 56px; letter-spacing: -2.16px; }
+}
+
+/* H4 — Tenon Bold 32/32, -0.64 */
+.cs-h4 {
+  font-family: var(--font-primary);
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 28px;
+  letter-spacing: -0.52px;
+  text-transform: none;
+}
+@media (min-width: 1024px) {
+  .cs-h4 { font-size: 32px; line-height: 32px; letter-spacing: -0.64px; }
+}
+
+/* P1 — Tenon Medium 24/28, -0.48 */
+.cs-p1 {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 24px;
+  letter-spacing: -0.36px;
+}
+@media (min-width: 1024px) {
+  .cs-p1 { font-size: 24px; line-height: 28px; letter-spacing: -0.48px; }
+}
+
+/* P2 — Tenon Regular 20/24, -0.4 */
+.cs-p2 {
+  font-size: 18px;
+  line-height: 22px;
+  letter-spacing: -0.36px;
+}
+@media (min-width: 1024px) {
+  .cs-p2 { font-size: 20px; line-height: 24px; letter-spacing: -0.4px; }
+}
+
+/* CMS rich text: bold/strong = yellow highlight (works in any language's word order) */
+.cs-rich p { margin: 0; }
+.cs-rich p + p { margin-top: 8px; }
+.cs-highlight strong,
+.cs-highlight b {
+  color: var(--color-yellow);
+  font-weight: inherit;
+}
+
+@keyframes cs-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.cs-marquee {
+  width: max-content;
+  animation: cs-marquee 40s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cs-marquee { animation: none; }
 }

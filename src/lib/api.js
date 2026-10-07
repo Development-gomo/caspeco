@@ -158,6 +158,13 @@ export async function getAllPosts(lang) {
   return fetchWP(`/wp/v2/posts?lang=${lang}&per_page=10&_embed`);
 }
 
+// Specific posts in the given order (e.g. an ACF relationship field)
+export async function getPostsByIds(ids, lang) {
+  if (!Array.isArray(ids) || ids.length === 0) return [];
+  const posts = await fetchWP(`/wp/v2/posts?include=${ids.join(",")}&orderby=include&per_page=${ids.length}&_embed&lang=${lang}`);
+  return Array.isArray(posts) ? posts : [];
+}
+
 export async function getCaseStudyById(id, lang) {
   return await getEntryById("casestudies", id, lang);
 }
