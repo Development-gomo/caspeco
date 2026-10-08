@@ -65,7 +65,7 @@ export async function generateMetadata({ params }) {
 
   if (!slug) {
     return {
-      title: "Case Study | caspeco Agency",
+      title: "Case Study | Caspeco Agency",
     };
   }
 

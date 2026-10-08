@@ -158,6 +158,21 @@ export async function getAllPosts(lang) {
   return fetchWP(`/wp/v2/posts?lang=${lang}&per_page=10&_embed`);
 }
 
+// Case studies for the Business Twin section — newest first, without the post body
+export async function getTwinCaseStudies(lang = DEFAULT_LANG) {
+  const list = await fetchWP(
+    `/wp/v2/casestudies?lang=${lang}&per_page=100&orderby=date&order=desc&_embed=wp:featuredmedia&_fields=id,slug,date,title,acf,_links,_embedded`
+  );
+  return Array.isArray(list) ? list : [];
+}
+
+// Several media items in one request (resolves ACF image/file IDs to URLs)
+export async function getMediaByIds(ids) {
+  if (!Array.isArray(ids) || ids.length === 0) return [];
+  const media = await fetchWP(`/wp/v2/media?include=${ids.join(",")}&per_page=100&_fields=id,source_url,alt_text`);
+  return Array.isArray(media) ? media : [];
+}
+
 // Specific posts in the given order (e.g. an ACF relationship field)
 export async function getPostsByIds(ids, lang) {
   if (!Array.isArray(ids) || ids.length === 0) return [];
