@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
-import { getAllServices, getCaseStudies, getAllPosts, getAllTeam, getPostsByIds } from "@/lib/api";
+import { getAllServices, getCaseStudies, getAllPosts, getAllTeam, getPostsByIds, getAllIndustries } from "@/lib/api";
 
 const Hero = dynamic(() => import("../sections/home/HomeHero"));
 const AboutUs = dynamic(() => import("../sections/home/HomeAbout"));
@@ -40,7 +40,7 @@ const HomeFaq = dynamic(() => import("../sections/home/HomeFaq"));
 async function prefetchSectionData(sections, lang) {
   if (!sections) return {};
 
-  const needs = { services: false, cases: false, posts: false, team: false };
+  const needs = { services: false, cases: false, posts: false, team: false, industries: false };
   const pickedPostIds = [];
 
   for (const block of sections) {
@@ -49,6 +49,7 @@ async function prefetchSectionData(sections, lang) {
     if (block.acf_fc_layout === "case_study_listing") needs.cases = true;
     if (block.acf_fc_layout === "news_section") needs.posts = true;
     if (block.acf_fc_layout === "team_section") needs.team = true;
+    if (block.acf_fc_layout === "industry_slider_section") needs.industries = true;
     if (block.acf_fc_layout === "insights_section") {
       const ids = Array.isArray(block.posts) ? block.posts.map((p) => (typeof p === "object" ? p.ID || p.id : p)) : [];
       if (ids.length) pickedPostIds.push(...ids);
@@ -56,15 +57,16 @@ async function prefetchSectionData(sections, lang) {
     }
   }
 
-  const [services, cases, posts, team, pickedPosts] = await Promise.all([
+  const [services, cases, posts, team, pickedPosts, industries] = await Promise.all([
     needs.services ? getAllServices(lang) : null,
     needs.cases ? getCaseStudies(lang) : null,
     needs.posts ? getAllPosts(lang) : null,
     needs.team ? getAllTeam(lang) : null,
     pickedPostIds.length ? getPostsByIds(pickedPostIds, lang) : null,
+    needs.industries ? getAllIndustries(lang) : null,
   ]);
 
-  return { services, cases, posts, team, pickedPosts };
+  return { services, cases, posts, team, pickedPosts, industries };
 }
 
 export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
@@ -152,7 +154,7 @@ export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
             return <HomeProductCards key={i} data={block} lang={lang} />;
 
           case "industry_slider_section":
-            return <HomeIndustrySlider key={i} data={block} lang={lang} />;
+            return <HomeIndustrySlider key={i} data={block} lang={lang} prefetchedIndustries={prefetched.industries} />;
 
           case "integrations_section":
             return <HomeIntegrations key={i} data={block} lang={lang} />;

@@ -1,6 +1,6 @@
 // src/components/sections/home/HomeIntegrations.jsx
 // ACF layout: integrations_section — "100+ integrations" with a three-row logo wall.
-// Rows 1 and 3 are static; the middle row scrolls (Figma "Middle row/Variant3").
+// All rows scroll: rows 1 and 3 left → right, the middle row right → left.
 // Logos from the gallery are reused in order if there are fewer than the wall needs.
 
 import Image from "next/image";
@@ -32,6 +32,30 @@ function Tile({ logo, variant }) {
 }
 
 const take = (list, start, count) => Array.from({ length: count }, (_, i) => list[(start + i) % list.length]);
+
+// Durations give all rows the same pixel speed: the track moves half its width per loop
+// (outer half = 12 × 177px, middle half = 14 × 203px at desktop → 30s vs 40s).
+const ROW_DURATION = { top: "30s", middle: "40s", bottom: "30s" };
+
+// Seamless marquee: 4 copies so each half of the track is wider than the viewport.
+// Spacing is padding (not gap) so the -50% loop point lines up exactly.
+function MarqueeRow({ logos, variant, reverse = false }) {
+  const spacing = variant === "middle" ? "pr-6 lg:pr-24" : "pr-[22px] lg:pr-[89px]";
+  return (
+    <div className="w-full overflow-hidden">
+      <div
+        className="cs-marquee flex"
+        style={{ animation: `${reverse ? "cs-marquee-right" : "cs-marquee"} ${ROW_DURATION[variant]} linear infinite` }}
+      >
+        {[...logos, ...logos, ...logos, ...logos].map((logo, i) => (
+          <div key={i} className={spacing}>
+            <Tile logo={logo} variant={variant} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function HomeIntegrations({ data, lang = DEFAULT_LANG }) {
   const logos = rows(data?.logos).filter((l) => mediaUrl(l));
@@ -74,24 +98,9 @@ export default function HomeIntegrations({ data, lang = DEFAULT_LANG }) {
             WebkitMaskImage: "linear-gradient(90deg, transparent 0%, #000 22%, #000 78%, transparent 100%)",
           }}
         >
-          <div className="flex gap-[22px] lg:gap-[89px]">
-            {top.map((logo, i) => <Tile key={i} logo={logo} variant="top" />)}
-          </div>
-
-          <div className="w-full overflow-hidden">
-            {/* 4 copies: each half of the track is wider than the viewport, so the -50% loop is seamless */}
-            <div className="cs-marquee flex">
-              {[...middle, ...middle, ...middle, ...middle].map((logo, i) => (
-                <div key={i} className="pr-6 lg:pr-24">
-                  <Tile logo={logo} variant="middle" />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex gap-[22px] lg:gap-[89px]">
-            {bottom.map((logo, i) => <Tile key={i} logo={logo} variant="bottom" />)}
-          </div>
+          <MarqueeRow logos={top} variant="top" reverse />
+          <MarqueeRow logos={middle} variant="middle" />
+          <MarqueeRow logos={bottom} variant="bottom" reverse />
         </div>
       )}
     </section>

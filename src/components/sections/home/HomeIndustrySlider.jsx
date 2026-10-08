@@ -1,5 +1,8 @@
 // src/components/sections/home/HomeIndustrySlider.jsx
 // ACF layout: industry_slider_section — "Pick your industry" card slider.
+// Cards come from the "industries" CPT (current language, fetched in PageBuilder):
+// title, featured image and permalink. An optional ACF `icon` image on the CPT
+// overrides the default fork-and-knife icon from the Figma design.
 // Cards run off the right edge (Figma "Card presentation more than 4"); dots page through.
 
 "use client";
@@ -9,8 +12,21 @@ import Image from "next/image";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
+import DefaultIcon from "../../../../public/icons/home/industry-icon.svg";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
+import { mediaUrl, sectionBackground, toHtml } from "@/lib/content";
+
+// CPT entry → card data
+function toCard(post) {
+  const media = post?._embedded?.["wp:featuredmedia"]?.[0];
+  return {
+    id: post.id,
+    title: post?.title?.rendered || "",
+    image: media?.source_url ? { url: media.source_url, alt: media.alt_text || "" } : null,
+    icon: post?.acf?.icon || null,
+    link_url: post?.slug ? `/industries/${post.slug}` : "",
+  };
+}
 
 function IndustryCard({ card, lang }) {
   const href = card.link_url ? langHref(card.link_url, lang) : "";
@@ -38,11 +54,11 @@ function IndustryCard({ card, lang }) {
         }}
       />
       <span className="absolute inset-x-6 top-[139px] flex flex-col items-center gap-[7px] text-center">
-        {mediaUrl(card.icon) && <Image src={mediaUrl(card.icon)} alt="" width={64} height={64} className="size-16" />}
+        <Image src={mediaUrl(card.icon) || DefaultIcon} alt="" width={64} height={64} className="size-16" />
         {card.title && (
           <span
             className="font-bold text-[26px] leading-[1.1] tracking-[-0.52px] uppercase text-(--color-light-grey)"
-            dangerouslySetInnerHTML={{ __html: toHtml(card.title) }}
+            dangerouslySetInnerHTML={{ __html: card.title }}
           />
         )}
       </span>
@@ -50,8 +66,8 @@ function IndustryCard({ card, lang }) {
   );
 }
 
-export default function HomeIndustrySlider({ data, lang = DEFAULT_LANG }) {
-  const cards = rows(data?.cards).filter((c) => c.title || mediaUrl(c.image));
+export default function HomeIndustrySlider({ data, lang = DEFAULT_LANG, prefetchedIndustries }) {
+  const cards = (Array.isArray(prefetchedIndustries) ? prefetchedIndustries : []).map(toCard).filter((c) => c.title);
   const swiperRef = React.useRef(null);
   const [pages, setPages] = React.useState(1);
   const [active, setActive] = React.useState(0);

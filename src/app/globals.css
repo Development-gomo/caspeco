@@ -837,6 +837,11 @@ span.subheading-label.text-\[var\(--color-accent\)\],
   width: max-content;
   animation: cs-marquee 40s linear infinite;
 }
+/* Left → right variant (own keyframes, so it never depends on animation-direction) */
+@keyframes cs-marquee-right {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
 @media (prefers-reduced-motion: reduce) {
-  .cs-marquee { animation: none; }
+  .cs-marquee { animation: none !important; }
 }
