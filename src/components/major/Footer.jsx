@@ -6,8 +6,7 @@ import Image from "next/image";
 import { getThemeOptions } from "@/lib/api";
 import { DEFAULT_LANG, langHref } from "@/config";
 import MoreLocationsToggle from "./MoreLocationsToggle";
-import ContactForm from "@/components/sections/contact-form/ContactForm";
-import CtaButton from "@/components/ui/CtaButton";
+import QuickContact from "@/components/sections/contact-form/QuickContact";
 
 import PhoneIcon from "../../../public/icons/footer-phone.svg";
 import MailIcon from "../../../public/icons/footer-mail.svg";
@@ -49,25 +48,12 @@ const SOCIAL_ICONS = {
   ),
 };
 
-export default async function Footer({ lang = DEFAULT_LANG }) {
+export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = false }) {
   const themeOptions = await getThemeOptions(lang);
 
-  // ================================
-  //   GET IN TOUCH SECTION DATA — ACF "Theme option — Get in Touch"
-  // ================================
-  const {
-    enable_section,
-    background_colour,
-    sub_heading,
-    heading,
-    short_description,
-    cta_text,
-    cta_url,
-    form_shortcode,
-  } = themeOptions || {};
-
-  // The field is a raw CF7 shortcode, e.g. [contact-form-7 id="982" title="..."]
-  const quickContactFormId = form_shortcode?.match(/id=["'](\d+)["']/)?.[1];
+  // GET IN TOUCH — ACF "Theme option — Get in Touch". Hidden when the page
+  // renders its own quick_contact_section (e.g. product pages).
+  const showQuickContact = themeOptions?.enable_section && !hideQuickContact;
 
   // FOOTER DATA — theme-options is a single flat ACF object shared by
   // header + footer + get-in-touch, not nested under header/footer keys.
@@ -114,47 +100,7 @@ export default async function Footer({ lang = DEFAULT_LANG }) {
 
   return (
     <>
-      {enable_section && (
-      <section
-        id="footer"
-        className="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-[184px] lg:px-[120px] py-12 lg:py-[72px]"
-        style={{ backgroundColor: background_colour || "#0b2533" }}
-      >
-        <div className="flex flex-col gap-4 items-start w-full lg:w-[476px] shrink-0">
-          {sub_heading && (
-            <p className="italic text-[24px] leading-7 tracking-[-0.48px] text-(--color-white)">
-              {sub_heading}
-            </p>
-          )}
-
-          {heading && (
-            <h2 className="text-[40px] lg:text-[80px] leading-tight lg:leading-[78px] tracking-[-3.2px] font-extrabold text-white normal-case">
-              {heading}
-            </h2>
-          )}
-
-          {(sub_heading || heading) && (
-            <div className="h-1 w-full bg-(--color-yellow)" />
-          )}
-
-          {short_description && (
-            <p className="text-[20px] leading-6 tracking-[-0.4px] text-(--color-white)">
-              {short_description}
-            </p>
-          )}
-        </div>
-
-        {quickContactFormId ? (
-          <div className="w-full lg:w-[493px] shrink-0 rounded-lg bg-(--color-white) border-6 border-white/50 shadow-[0px_2px_4.5px_0px_rgba(0,0,0,0.1)] py-7">
-            <ContactForm formId={quickContactFormId} lang={lang} submitLabel={cta_text || "Get a call"} />
-          </div>
-        ) : (
-          cta_text && cta_url && (
-            <CtaButton href={langHref(cta_url, lang)}>{cta_text}</CtaButton>
-          )
-        )}
-      </section>
-      )}
+      {showQuickContact && <QuickContact id="footer" data={themeOptions} lang={lang} />}
 
       {/* =====================================================
           FOOTER

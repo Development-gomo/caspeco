@@ -12,7 +12,7 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 
-import { DEFAULT_LANG, langHref } from "@/config";
+import { DEFAULT_LANG, entryHref } from "@/config";
 import CtaButton from "@/components/ui/CtaButton";
 
 export default function RealtedCase({ data, lang = DEFAULT_LANG, prefetchedCases }) {
@@ -94,7 +94,7 @@ export default function RealtedCase({ data, lang = DEFAULT_LANG, prefetchedCases
                       dangerouslySetInnerHTML={{ __html: title }}
                     />
                     <CtaButton
-                      href={langHref(`/case-study/${item.slug}`, lang)}
+                      href={entryHref("casestudy", item.slug, lang)}
                       className="mt-8 mb-15"
                     >
                       {read_more_text}

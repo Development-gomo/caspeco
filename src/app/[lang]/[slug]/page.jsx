@@ -35,7 +35,8 @@ export default async function SinglePage({ params }) {
     getThemeOptions(lang),
   ]);
 
-  if (!data) notFound();
+  // child pages only live under their parent's path ([lang]/[slug]/[...rest])
+  if (!data || data.parent) notFound();
   const acf = data?.acf || {};
 
   return (

@@ -10,8 +10,8 @@ import {
 
 // Field styling matches the Figma "phone-contact-form" card:
 // bold dark-grey label, rounded-xl input with a light border, grey placeholder.
-const LABEL_CLASSES = "text-[16px] font-bold tracking-[-0.32px] text-(--color-grey-dark)";
-const INPUT_CLASSES =
+export const LABEL_CLASSES = "text-[16px] font-bold tracking-[-0.32px] text-(--color-grey-dark)";
+export const INPUT_CLASSES =
   "w-full rounded-[12px] border p-4 text-[16px] text-(--color-grey-dark) outline-none " +
   "placeholder:text-(--color-grey-medium-dark) bg-white";
 

@@ -7,13 +7,15 @@ import Link from "next/link";
 import Image from "next/image";
 import DownSvg from "../../../public/down-arrow.svg";
 import { getMenu, getThemeOptions, getEntryTranslations } from "@/lib/api";
-import { DEFAULT_LANG, SUPPORTED_LANGS, langHref, langHome } from "@/config";
+import { DEFAULT_LANG, SUPPORTED_LANGS, langHref, langHome, entryHref } from "@/config";
 
 export default function Header({
   lang = DEFAULT_LANG,
   currentSlug = "",
   entryType = "page",
   pathPrefix = "",
+  // ROUTE_TYPES key ("post", "casestudy", …): the switcher then uses each language's own URL base
+  routeType = null,
   entryId = null,
   prefetchedMenu = null,
   prefetchedOptions = null,
@@ -155,6 +157,10 @@ export default function Header({
               urls[altLang] = langHome(altLang);
               continue;
             }
+            if (routeType) {
+              urls[altLang] = entryHref(routeType, translatedSlug, altLang);
+              continue;
+            }
             const prefix = pathPrefix ? `/${pathPrefix}` : "";
             const langPrefix = altLang === DEFAULT_LANG ? "" : `/${altLang}`;
             urls[altLang] = `${langPrefix}${prefix}/${translatedSlug}`;
@@ -174,7 +180,7 @@ export default function Header({
     if (entryId || (currentSlug && currentSlug !== "/")) {
       fetchAltLangUrls();
     }
-  }, [lang, currentSlug, entryType, pathPrefix, entryId]);
+  }, [lang, currentSlug, entryType, pathPrefix, routeType, entryId]);
 
   return (
     <header className={headerClasses}>

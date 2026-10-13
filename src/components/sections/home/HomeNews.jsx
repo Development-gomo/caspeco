@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import ArrowSvg from "../../../../public/right-arrow.svg";
 import CalenerSvg from "../../../../public/calender.svg";
-import { DEFAULT_LANG, langHref } from "@/config";
+import { DEFAULT_LANG, langHref, entryHref } from "@/config";
 import CtaButton from "@/components/ui/CtaButton";
 
 function TiltCard({ children, className }) {
@@ -105,7 +105,7 @@ export default function HomeNews({ data, lang = DEFAULT_LANG, prefetchedPosts })
            LEFT BIG WEBINAR CARD
         ------------------------------------------------------------ */}
         <Link
-          href={langHref(`/post/${webinarPost.slug}`, lang)}
+          href={entryHref("post", webinarPost.slug, lang)}
           className="block"
         >
         <TiltCard className="relative rounded-lg overflow-hidden group">
@@ -208,7 +208,7 @@ export default function HomeNews({ data, lang = DEFAULT_LANG, prefetchedPosts })
                 viewport={{ once: true }}
               >
               <Link
-                href={langHref(`/post/${post.slug}`, lang)}
+                href={entryHref("post", post.slug, lang)}
                 className="flex gap-6 group items-center"
               >
                 {/* IMAGE */}

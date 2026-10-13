@@ -18,6 +18,35 @@ export const LOCALE_MAP = {
   nl: "nl_NL",
 };
 
+// ─── URL bases per content type — copied from the live caspeco.com structure ──
+// Keep in sync with the WordPress permalink / WPML slug-translation settings so
+// URLs stay identical after the switch (no redirects, no 404s).
+// key = internal type, rest = WP REST base, base = per-language path segment.
+const allLangs = (segment) => Object.fromEntries(SUPPORTED_LANGS.map((l) => [l, segment]));
+
+export const ROUTE_TYPES = {
+  post: {
+    rest: "posts",
+    base: { sv: "artiklar", en: "articles", no: "artikler", fr: "articles", frbg: "articles", nl: "artikelen" },
+  },
+  casestudy: { rest: "casestudies", base: allLangs("case") },
+  product: { rest: "products", base: { ...allLangs("produkt"), en: "product" } },
+  partner: { rest: "partner", base: allLangs("partner") },
+  partnerCategory: { rest: "partner_category", taxonomy: true, base: allLangs("partner-category") },
+};
+
+/** Localized URL of a single entry, e.g. entryHref("post", "my-slug", "en") → "/en/articles/my-slug" */
+export function entryHref(type, slug, lang = DEFAULT_LANG) {
+  const base = ROUTE_TYPES[type]?.base[lang] || ROUTE_TYPES[type]?.base[DEFAULT_LANG];
+  if (!base || !slug) return langHome(lang);
+  return langHref(`/${base}/${slug}`, lang);
+}
+
+/** Content type for a URL base in a language ("artiklar", "sv" → "post"), or null */
+export function typeFromBase(base, lang = DEFAULT_LANG) {
+  return Object.keys(ROUTE_TYPES).find((type) => ROUTE_TYPES[type].base[lang] === base) || null;
+}
+
 /** Prefix a local path with the current language (skip prefix for default lang) */
 export function langHref(url, lang) {
   if (!url || !url.startsWith("/") || lang === DEFAULT_LANG) return url || "/";

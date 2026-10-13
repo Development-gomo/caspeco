@@ -1,0 +1,57 @@
+// src/components/sections/contact-form/QuickContact.jsx
+// Figma "Quick contact": italic sub heading, big heading, yellow rule, text and the
+// phone form card. Used by:
+//  - the Footer (ACF Theme option — Get in Touch): CF7 form from form_shortcode
+//  - the product_builder layout quick_contact_section: form built from ACF
+//    form_fields and sent to form_provider (CF7 / HubSpot …, see lib/forms.js)
+
+import ContactForm from "./ContactForm";
+import QuickContactForm from "./QuickContactForm";
+import CtaButton from "@/components/ui/CtaButton";
+import { DEFAULT_LANG, langHref } from "@/config";
+import { toHtml, rows } from "@/lib/content";
+import { cf7FormId } from "@/lib/forms";
+
+export default function QuickContact({ data, lang = DEFAULT_LANG, id }) {
+  const { background_colour, sub_heading, heading, short_description, cta_text, cta_url, form_shortcode } = data || {};
+  const hasAcfForm = rows(data?.form_fields).some((f) => f.name);
+  const cf7Id = !hasAcfForm && cf7FormId(form_shortcode);
+  if (!heading && !hasAcfForm && !cf7Id) return null;
+
+  return (
+    <section
+      id={id}
+      className="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-[184px] px-6 lg:px-[120px] py-12 lg:py-[72px]"
+      style={{ backgroundColor: background_colour || "#0b2533" }}
+    >
+      <div className="flex flex-col gap-4 items-start w-full lg:w-[476px] shrink-0">
+        {sub_heading && <p className="italic text-[24px] leading-7 tracking-[-0.48px] text-(--color-white)">{sub_heading}</p>}
+
+        {heading && (
+          <h2
+            className="cs-highlight text-[40px] lg:text-[80px] leading-tight lg:leading-[78px] tracking-[-3.2px] font-extrabold text-white normal-case"
+            dangerouslySetInnerHTML={{ __html: toHtml(heading) }}
+          />
+        )}
+
+        {(sub_heading || heading) && <div className="h-1 w-full bg-(--color-yellow)" />}
+
+        {short_description && (
+          <p className="text-[20px] leading-6 tracking-[-0.4px] text-(--color-white)" dangerouslySetInnerHTML={{ __html: toHtml(short_description) }} />
+        )}
+      </div>
+
+      {hasAcfForm || cf7Id ? (
+        <div className={`w-full lg:w-[493px] shrink-0 rounded-lg bg-(--color-white) border-6 border-white/50 shadow-[0px_2px_4.5px_0px_rgba(0,0,0,0.1)] py-7 ${hasAcfForm ? "px-[18px]" : ""}`}>
+          {hasAcfForm ? (
+            <QuickContactForm data={data} lang={lang} />
+          ) : (
+            <ContactForm formId={cf7Id} lang={lang} submitLabel={cta_text || "Get a call"} />
+          )}
+        </div>
+      ) : (
+        cta_text && cta_url && <CtaButton href={langHref(cta_url, lang)}>{cta_text}</CtaButton>
+      )}
+    </section>
+  );
+}

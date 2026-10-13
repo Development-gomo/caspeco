@@ -2,16 +2,22 @@
 
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
-import { SUPPORTED_LANGS } from "@/config";
+import { SUPPORTED_LANGS, ROUTE_TYPES } from "@/config";
 
-// Map WordPress post types to Next.js URL segments
+// Map WordPress post types to Next.js URL segments (string = same in every language)
 const POST_TYPE_PREFIX = {
   page:        "",            // /en/about-us
   pages:       "",
   solutions:   "service",     // /en/service/seo
-  casestudies: "case-study",  // /en/case-study/project-x
-  post:        "post",        // /en/post/my-article
+};
+
+// Types with a localized base (/sv/artiklar/x, /en/articles/x …) — see ROUTE_TYPES in src/config
+const POST_TYPE_ROUTE = {
+  casestudies: "casestudy",
+  post:        "post",
   posts:       "post",
+  products:    "product",
+  partner:     "partner",
 };
 
 export async function POST(req) {
@@ -34,7 +40,7 @@ export async function POST(req) {
     return NextResponse.json({ error: "Missing slug" }, { status: 400 });
   }
 
-  const prefix = POST_TYPE_PREFIX[postType] ?? postType;
+  const routeType = POST_TYPE_ROUTE[postType];
   const revalidated = [];
 
   for (const lang of SUPPORTED_LANGS) {
@@ -45,6 +51,7 @@ export async function POST(req) {
       continue;
     }
 
+    const prefix = routeType ? ROUTE_TYPES[routeType].base[lang] : POST_TYPE_PREFIX[postType] ?? postType;
     const path = prefix
       ? `/${lang}/${prefix}/${slug}`
       : `/${lang}/${slug}`;

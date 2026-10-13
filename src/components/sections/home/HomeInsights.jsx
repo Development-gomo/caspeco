@@ -7,7 +7,7 @@ import Image from "next/image";
 import { Inter } from "next/font/google";
 import CtaButton from "@/components/ui/CtaButton";
 import ArrowLink from "@/components/ui/ArrowLink";
-import { DEFAULT_LANG, langHref } from "@/config";
+import { DEFAULT_LANG, langHref, entryHref } from "@/config";
 import { readingMinutes, rows, sectionBackground, toHtml } from "@/lib/content";
 
 // Figma uses Inter for the small card meta (category + read time)
@@ -16,7 +16,7 @@ const inter = Inter({ subsets: ["latin"], weight: ["400", "700"], display: "swap
 function InsightCard({ post, readMore, readSuffix, lang }) {
   const image = post?._embedded?.["wp:featuredmedia"]?.[0];
   const category = (post?._embedded?.["wp:term"]?.[0] || []).find((t) => t.taxonomy === "category");
-  const href = langHref(`/post/${post.slug}`, lang);
+  const href = entryHref("post", post.slug, lang);
   const title = post?.title?.rendered || "";
 
   return (

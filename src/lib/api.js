@@ -65,6 +65,47 @@ export async function getPartnerBySlug(slug, lang = DEFAULT_LANG) {
   return getSingleEntry("partner", slug, lang);
 }
 
+// Child page by its full path (["articles", "blackbox-sce-2-0"]): the last segment is
+// the page slug, and its parent chain must match the earlier segments.
+export async function getPageByPath(segments, lang = DEFAULT_LANG) {
+  if (!Array.isArray(segments) || segments.length === 0) return null;
+  const candidates = await fetchWP(
+    `/wp/v2/pages?slug=${encodeURIComponent(segments.at(-1))}&lang=${lang}`
+  );
+  if (!Array.isArray(candidates)) return null;
+
+  for (const page of candidates) {
+    let parentId = page.parent;
+    let ok = true;
+    for (let i = segments.length - 2; i >= 0; i--) {
+      const parent = parentId ? await fetchWP(`/wp/v2/pages/${parentId}?lang=${lang}&_fields=id,slug,parent`) : null;
+      if (!parent || parent.slug !== segments[i]) {
+        ok = false;
+        break;
+      }
+      parentId = parent.parent;
+    }
+    // the chain must end at a top-level page, so /a/b/c can't match a page at /x/a/b/c
+    if (ok && !parentId) return page;
+  }
+  return null;
+}
+
+// Partner category (taxonomy "partner_category") and the partners in it
+export async function getPartnerCategoryBySlug(slug, lang = DEFAULT_LANG) {
+  if (!slug) return null;
+  const terms = await fetchWP(`/wp/v2/partner_category?slug=${encodeURIComponent(slug)}&lang=${lang}`);
+  return Array.isArray(terms) && terms.length ? terms[0] : null;
+}
+
+export async function getPartnersByCategory(termId, lang = DEFAULT_LANG) {
+  if (!termId) return [];
+  const partners = await fetchWP(
+    `/wp/v2/partner?partner_category=${termId}&lang=${lang}&per_page=100&orderby=title&order=asc&_embed=wp:featuredmedia`
+  );
+  return Array.isArray(partners) ? partners : [];
+}
+
 export async function getPostBySlug(slug, lang = DEFAULT_LANG) {
   const post = await getSingleEntry("posts", slug, lang);
 

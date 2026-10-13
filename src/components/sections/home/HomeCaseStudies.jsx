@@ -13,7 +13,7 @@ import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 
-import { DEFAULT_LANG, langHref } from "@/config";
+import { DEFAULT_LANG, entryHref } from "@/config";
 import CtaButton from "@/components/ui/CtaButton";
 
 const AUTOPLAY_DELAY = 5000;
@@ -108,7 +108,7 @@ export default function HomeCaseStudies({ data, lang = DEFAULT_LANG, prefetchedC
                         dangerouslySetInnerHTML={{ __html: title }}
                       />
                       <CtaButton
-                        href={langHref(`/case-study/${item.slug}`, lang)}
+                        href={entryHref("casestudy", item.slug, lang)}
                         className="mt-8 mb-15"
                       >
                         {read_more_text}

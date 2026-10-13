@@ -18,7 +18,7 @@ import ArrowLink from "@/components/ui/ArrowLink";
 import VideoModal from "@/components/ui/VideoModal";
 import SelectChevron from "../../../../public/icons/home/select-chevron.svg";
 import YoutubeIcon from "../../../../public/icons/home/youtube.png";
-import { DEFAULT_LANG, langHref } from "@/config";
+import { DEFAULT_LANG, entryHref } from "@/config";
 import { sectionBackground, toHtml } from "@/lib/content";
 import { twinOptions } from "@/lib/caseStudies";
 
@@ -126,7 +126,7 @@ function CaseCard({ match, lang, clipText, readMoreText }) {
           </div>
         )}
         {readMoreText && match.slug && (
-          <ArrowLink tone="light" href={langHref(`/case-study/${match.slug}`, lang)}>
+          <ArrowLink tone="light" href={entryHref("casestudy", match.slug, lang)}>
             {readMoreText}
           </ArrowLink>
         )}

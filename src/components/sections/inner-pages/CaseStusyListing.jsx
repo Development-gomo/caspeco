@@ -8,7 +8,7 @@ import Image from "next/image";
 import ArrowSvg from "../../../../public/right-arrow.svg";
 import CheckSvg from "../../../../public/check.svg";
 
-import { DEFAULT_LANG, langHref } from "@/config";
+import { DEFAULT_LANG, entryHref } from "@/config";
 import CtaButton from "@/components/ui/CtaButton";
 
 export default function CaseStudyListing({
@@ -156,7 +156,7 @@ export default function CaseStudyListing({
                       </>
                     )}
                     <CtaButton
-                      href={langHref(`/case-study/${item.slug}`, lang)}
+                      href={entryHref("casestudy", item.slug, lang)}
                       className="mt-8"
                     >
                       {read_more_text}
