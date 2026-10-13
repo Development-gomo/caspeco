@@ -37,13 +37,14 @@ function Hotspot({ spot, open, onToggle, onHover, lang }) {
         onClick={onToggle}
         aria-expanded={open}
         aria-label={spot.title || undefined}
-        className="relative block size-7 md:size-[38px] cursor-pointer rounded-full bg-[rgba(255,255,255,0.66)] opacity-80 transition hover:opacity-100 hover:scale-110"
+        className={`group relative block size-7 md:size-[38px] cursor-pointer rounded-full bg-[rgba(255,255,255,0.66)] transition hover:opacity-100 hover:scale-110 ${open ? "opacity-100" : "opacity-80"}`}
       >
+        {/* plus → petrol "×" on hover and while the tooltip is open */}
         <span
-          className={`absolute inset-0 m-auto h-[62.8%] w-[11.6%] rounded-full bg-(--color-grey-dark) transition-transform duration-300 ${open ? "rotate-45" : ""}`}
+          className={`absolute inset-0 m-auto h-[62.8%] w-[11.6%] rounded-full transition duration-300 group-hover:bg-(--color-petrol) ${open ? "rotate-45 bg-(--color-petrol)" : "bg-(--color-grey-dark)"}`}
         />
         <span
-          className={`absolute inset-0 m-auto h-[11.6%] w-[62.8%] rounded-full bg-(--color-grey-dark) transition-transform duration-300 ${open ? "rotate-45" : ""}`}
+          className={`absolute inset-0 m-auto h-[11.6%] w-[62.8%] rounded-full transition duration-300 group-hover:bg-(--color-petrol) ${open ? "rotate-45 bg-(--color-petrol)" : "bg-(--color-grey-dark)"}`}
         />
       </button>
 

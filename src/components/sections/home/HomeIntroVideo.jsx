@@ -47,18 +47,25 @@ export default function HomeIntroVideo({ data, lang = DEFAULT_LANG }) {
       })}
     >
       <div className="cs-container flex flex-col lg:flex-row lg:items-center lg:justify-between gap-12">
-        <div className="flex flex-col items-start lg:max-w-[691px]">
+        <div className="flex flex-col items-start lg:max-w-[700px]">
           {heading && (
             <h2 className="cs-h2 text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
           )}
 
           {words.length > 0 && (
-            // Two lines of room on mobile so long phrases ("top performing drink") can wrap
-            <div className="cs-h2 relative h-[88px] md:h-[64px] xl:h-[99px] w-full overflow-hidden text-(--color-yellow)" aria-live="polite">
+            // Every phrase is rendered invisibly in the same grid cell, so the box takes the
+            // size of the longest one (width and wrapped height) at every breakpoint; the
+            // animated phrase sits on top. Only the vertical axis is clipped for the roll.
+            <div className="cs-h2 relative grid w-full md:min-h-16 xl:min-h-[99px] overflow-y-clip pb-[0.12em] text-(--color-yellow)" aria-live="polite">
+              {words.map((word, i) => (
+                <span key={i} aria-hidden className="invisible [grid-area:1/1]">
+                  {word}
+                </span>
+              ))}
               <AnimatePresence mode="popLayout" initial={false}>
                 <motion.span
                   key={index}
-                  className="absolute inset-x-0 top-0 md:whitespace-nowrap"
+                  className="absolute inset-x-0 top-0"
                   initial={{ y: "100%", opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: "-100%", opacity: 0 }}
@@ -78,7 +85,7 @@ export default function HomeIntroVideo({ data, lang = DEFAULT_LANG }) {
 
           {short_text && (
             <p
-              className="cs-p2 mt-8 xl:mt-[47px] max-w-[474px] text-(--color-grey-dark)"
+              className="cs-p2 mt-8 xl:mt-11.5 max-w-[474px] text-(--color-grey-dark)"
               dangerouslySetInnerHTML={{ __html: toHtml(short_text) }}
             />
           )}

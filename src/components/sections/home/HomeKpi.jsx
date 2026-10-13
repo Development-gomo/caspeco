@@ -1,6 +1,6 @@
 // src/components/sections/home/HomeKpi.jsx
 // ACF layout: home_kpi_section — "Best-performing customers last month" flip cards.
-// Front: label + stat. Back: checklist (back_items). The yellow arrow (or the card) flips it.
+// Front: label + stat. Back: checklist (back_items). Clicking the card slides it left to the back.
 
 "use client";
 
@@ -26,23 +26,23 @@ function KpiCard({ card, hint }) {
   const backItems = rows(card.back_items).map((r) => r.text).filter(Boolean);
   const canFlip = backItems.length > 0;
 
-  const face =
-    "absolute inset-0 rounded-[8px] bg-(--color-dark-petrol) text-(--color-light-grey) [backface-visibility:hidden] drop-shadow-[0px_4px_6px_rgba(0,0,0,0.16)]";
+  // Front and back sit side by side in a strip; "flipping" slides the strip left
+  const face = "relative block h-full w-1/2 shrink-0";
 
   return (
     <button
       type="button"
       onClick={() => canFlip && setFlipped((f) => !f)}
       aria-pressed={canFlip ? flipped : undefined}
-      className={`relative h-[228px] w-full text-left [perspective:1200px] ${canFlip ? "cursor-pointer" : "cursor-default"}`}
+      className={`relative h-[228px] w-full overflow-hidden rounded-[8px] bg-(--color-dark-petrol) text-left text-(--color-light-grey) shadow-[0px_4px_6px_0px_rgba(0,0,0,0.16)] ${canFlip ? "cursor-pointer" : "cursor-default"}`}
     >
       <motion.span
-        className="absolute inset-0 block [transform-style:preserve-3d]"
-        animate={{ rotateY: flipped ? 180 : 0 }}
+        className="absolute inset-y-0 left-0 flex w-[200%]"
+        animate={{ x: flipped ? "-50%" : "0%" }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
         {/* FRONT */}
-        <span className={face}>
+        <span className={face} aria-hidden={flipped || undefined}>
           <span className="absolute left-6 top-6 max-w-[150px] text-[20px] leading-6 tracking-[-0.4px]">{card.label}</span>
           <span className="absolute left-6 top-[84px] font-bold text-[64px] leading-[64px] tracking-[-1.28px] sm:text-[80px] sm:tracking-[-1.6px]">
             {card.value}
@@ -54,12 +54,11 @@ function KpiCard({ card, hint }) {
               {hint}
             </span>
           )}
-          {canFlip && <Dashes flipped={false} />}
         </span>
 
         {/* BACK */}
         {canFlip && (
-          <span className={`${face} [transform:rotateY(180deg)]`}>
+          <span className={face} aria-hidden={!flipped || undefined}>
             <span className="absolute left-[22px] right-[64px] top-[46px] flex flex-col gap-[10px]">
               {backItems.map((text, i) => (
                 <span key={i} className="flex items-start gap-2 text-[16px] leading-5 tracking-[0.1px] text-(--color-white)">
@@ -69,10 +68,12 @@ function KpiCard({ card, hint }) {
               ))}
             </span>
             <Image src={KpiArrow} alt="" width={36} height={36} className="absolute right-4 top-24" />
-            <Dashes flipped />
           </span>
         )}
       </motion.span>
+
+      {/* slide indicator stays put while the panels move */}
+      {canFlip && <Dashes flipped={flipped} />}
     </button>
   );
 }

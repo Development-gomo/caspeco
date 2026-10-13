@@ -12,28 +12,75 @@ import CheckIcon from "../../../../public/icons/home/check.svg";
 import { DEFAULT_LANG, langHref } from "@/config";
 import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
-// Collage slots from the Figma frame (612×408), as % so the collage scales down.
-const SLOTS = [
-  { left: 78, top: 68, w: 258, h: 187 },
-  { left: 342, top: 47, w: 204, h: 208 },
-  { left: 119, top: 261, w: 140, h: 122 },
-  { left: 269, top: 261, w: 245, h: 152 },
-];
+// Collage = the 4 image frames of the Figma component "Company size display" (612×413).
+// Its two variants are two layouts of the same frames; switching tabs Smart-Animates
+// between them (150 ms, ease-out): frames move/resize, frames the layout hides fade out.
+// Tabs with 3–4 images use the "four" layout (Default), 1–2 images the "two" (Variant2).
+const FRAMES = ["2597", "2599", "2598", "2596"];
+const LAYOUTS = {
+  four: {
+    order: ["2597", "2599", "2598", "2596"], // which frame gets images[0], images[1], …
+    frames: {
+      2597: { left: 78, top: 68, w: 258, h: 187, z: 3 },
+      2599: { left: 342, top: 47, w: 204, h: 208, z: 4 },
+      2598: { left: 119, top: 261, w: 140, h: 122, z: 2 },
+      2596: { left: 269, top: 261, w: 245, h: 152, z: 1 },
+    },
+  },
+  two: {
+    order: ["2596", "2598"],
+    frames: {
+      2596: { left: 80, top: 55, w: 318, h: 333, z: 1 },
+      2598: { left: 370, top: 111, w: 242, h: 230, z: 2 },
+      2597: { left: 96, top: 174, w: 272, h: 272, z: 0 }, // hidden in this layout
+      2599: { left: 297, top: 0, w: 142, h: 142, z: 0 }, // hidden in this layout
+    },
+  },
+};
+const TRANSITION = { duration: 0.15, ease: "easeOut" }; // Figma: Smart Animate, 150 ms, ease-out
 const pct = (v, total) => `${(v / total) * 100}%`;
 
 function Collage({ images }) {
+  const layout = LAYOUTS[images.length > 2 ? "four" : "two"];
+  const assigned = Object.fromEntries(layout.order.map((frame, i) => [frame, images[i]]));
+
+  // A frame that fades out keeps showing its last image instead of going blank
+  // (state updated during render — React's pattern for values derived from previous props)
+  const [lastImage, setLastImage] = React.useState(assigned);
+  if (FRAMES.some((f) => assigned[f] && assigned[f] !== lastImage[f])) {
+    setLastImage((prev) => ({ ...prev, ...Object.fromEntries(FRAMES.filter((f) => assigned[f]).map((f) => [f, assigned[f]])) }));
+  }
+
   return (
     <div className="relative w-full max-w-[612px] aspect-[612/413] shrink-0">
-      {images.slice(0, SLOTS.length).map((img, i) => {
-        const s = SLOTS[i];
+      {FRAMES.map((f) => {
+        const s = layout.frames[f];
+        const img = assigned[f] || lastImage[f];
+        const src = img && mediaUrl(img);
         return (
-          <div
-            key={img.id || i}
+          <motion.div
+            key={f}
             className="absolute overflow-hidden rounded-[8px] bg-[#d9d9d9] shadow-[0px_8px_40px_8px_rgba(0,0,0,0.16)]"
-            style={{ left: pct(s.left, 612), top: pct(s.top, 413), width: pct(s.w, 612), height: pct(s.h, 413) }}
+            style={{ zIndex: s.z }}
+            initial={false}
+            animate={{
+              left: pct(s.left, 612),
+              top: pct(s.top, 413),
+              width: pct(s.w, 612),
+              height: pct(s.h, 413),
+              opacity: assigned[f] ? 1 : 0,
+            }}
+            transition={TRANSITION}
+            aria-hidden={!assigned[f] || undefined}
           >
-            <Image src={mediaUrl(img)} alt={img.alt || ""} fill sizes="(min-width: 1024px) 260px, 45vw" className="object-cover" />
-          </div>
+            <AnimatePresence initial={false}>
+              {src && (
+                <motion.div key={src} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={TRANSITION}>
+                  <Image src={src} alt={assigned[f] ? img.alt || "" : ""} fill sizes="(min-width: 1024px) 320px, 50vw" className="object-cover" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         );
       })}
     </div>
@@ -49,6 +96,8 @@ export default function HomeHelpTabs({ data, lang = DEFAULT_LANG }) {
   const checklist = rows(tab?.checklist).map((r) => r.item || r.text).filter(Boolean);
   const ctaText = tab?.cta_text;
   const ctaUrl = tab?.cta_url || data?.cta_url;
+  // Keep the collage slot for every tab once any tab has images, so the layout doesn't jump
+  const hasCollage = tabs.some((t) => rows(t.images).length > 0);
 
   return (
     <section
@@ -87,19 +136,19 @@ export default function HomeHelpTabs({ data, lang = DEFAULT_LANG }) {
               </div>
             </div>
 
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={active}
-                role="tabpanel"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -12 }}
-                transition={{ duration: 0.35 }}
-                className="flex w-full flex-col items-center gap-10 lg:flex-row lg:justify-center lg:gap-[120px]"
-              >
-                {rows(tab.images).length > 0 && <Collage images={rows(tab.images)} />}
+            <div role="tabpanel" className="flex w-full flex-col items-center gap-10 lg:flex-row lg:justify-center lg:gap-[120px]">
+              {/* stays mounted so its frames can animate from one tab's layout to the next */}
+              {hasCollage && <Collage images={rows(tab.images)} />}
 
-                <div className="flex w-full max-w-[536px] flex-col items-start gap-10 lg:px-6">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={active}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={TRANSITION}
+                  className="flex w-full max-w-[536px] flex-col items-start gap-10 lg:px-6"
+                >
                   <div className="flex flex-col gap-5">
                     {tab.title && <h3 className="cs-h4 text-(--color-black)">{tab.title}</h3>}
                     {tab.text && (
@@ -121,9 +170,9 @@ export default function HomeHelpTabs({ data, lang = DEFAULT_LANG }) {
                       {ctaText}
                     </CtaButton>
                   )}
-                </div>
-              </motion.div>
-            </AnimatePresence>
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
         )}
       </div>
