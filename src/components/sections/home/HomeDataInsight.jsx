@@ -31,16 +31,16 @@ function Chart({ title, rows: chartRows }) {
       }}
     >
       {title && <p className="font-medium text-[20px] lg:text-[24px] leading-6 tracking-[-0.48px] text-(--color-light-grey)">{title}</p>}
-      <div className="mt-6 lg:mt-[27px] flex flex-col gap-[30px]">
+      <div className="mt-6 lg:mt-[26px] flex flex-col gap-[30px]">
         {chartRows.map((row, i) => (
           <div key={i} className="flex flex-col gap-3">
             <div className="flex items-baseline justify-between gap-4 text-[18px] lg:text-[20px] leading-6 tracking-[-0.4px]">
               <span className="text-(--color-grey-medium)">{row.label}</span>
               <span className="font-extrabold text-(--color-light-grey) whitespace-nowrap">{row.value_label}</span>
             </div>
-            <div className="h-[25px] w-full overflow-hidden rounded-[4px] bg-[rgba(0,0,0,0.22)]">
+            <div className="h-[25px] w-full overflow-hidden rounded-sm bg-[rgba(0,0,0,0.22)]">
               <motion.div
-                className="h-full rounded-[4px]"
+                className="h-full rounded-sm"
                 style={{ background: BAR_COLORS[i % BAR_COLORS.length] }}
                 initial={{ width: 0 }}
                 whileInView={{ width: `${barPercent(row)}%` }}
@@ -59,7 +59,7 @@ export default function HomeDataInsight({ data }) {
   const usps = rows(data?.usps).filter((u) => u.title);
   const chartRows = rows(data?.chart_rows).filter((r) => r.label);
   const [open, setOpen] = React.useState(false);
-  const { heading, card_heading, short_text, read_more_text, read_more_content, chart_title } = data || {};
+  const { heading, card_heading, sub_heading, read_more_text, read_more_content, chart_title } = data || {};
   if (!heading && !card_heading) return null;
 
   return (
@@ -73,21 +73,21 @@ export default function HomeDataInsight({ data }) {
         )}
 
         <div
-          className="flex w-full flex-col gap-10 overflow-hidden rounded-[16px] p-6 md:p-10 lg:p-[72px] xl:min-h-[608px] xl:flex-row xl:items-start xl:justify-between xl:gap-2"
+          className="flex w-full flex-col gap-10 overflow-hidden rounded-2xl p-6 md:p-10 lg:p-[72px] xl:min-h-[608px] xl:flex-row xl:items-start xl:justify-between xl:gap-2"
           style={{ backgroundImage: "linear-gradient(180deg, #000 0%, rgba(0,0,0,0) 100%), linear-gradient(90deg, #0b2533 0%, #0b2533 100%)" }}
         >
           <div className="flex min-w-0 flex-col items-start text-(--color-light-grey) xl:max-w-[507px] xl:flex-1">
             <div className="flex flex-col gap-5">
               {card_heading && <h3 className="cs-h3">{card_heading}</h3>}
-              {short_text && (
-                <p className="font-bold text-[18px] lg:text-[20px] leading-6 tracking-[-0.4px] lg:max-w-[446px]" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />
+              {sub_heading && (
+                <p className="font-bold text-[18px] lg:text-[20px] leading-6 tracking-[-0.4px] lg:max-w-[446px]" dangerouslySetInnerHTML={{ __html: toHtml(sub_heading) }} />
               )}
             </div>
 
             {usps.length > 0 && (
               <ul className="mt-4 flex flex-col">
                 {usps.map((usp, i) => (
-                  <li key={i} className="flex items-center gap-[10px] py-[18px] -mb-4 last:mb-0">
+                  <li key={i} className="flex items-center gap-2.5 py-[18px] -mb-4 last:mb-0">
                     <span className="flex size-9 shrink-0 items-center justify-center rounded-[26px] bg-(--color-yellow)">
                       {mediaUrl(usp.icon) && <Image src={mediaUrl(usp.icon)} alt="" width={18} height={18} />}
                     </span>

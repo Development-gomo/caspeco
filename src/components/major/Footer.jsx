@@ -141,23 +141,26 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
               )}
             </div>
 
-            {/* STAT CARD */}
+            {/* STAT CARD — Figma "USP framed": on hover (Smart Animate 150 ms ease-out) the
+                gradient gives way to a 30% #fdfdfd fill and the number grows 64px → 71px */}
             {statCard.stat_number && (
-              <div
-                className="shrink-0 size-[240px] rounded-lg pt-[22px] pb-[32px] px-5 flex flex-col justify-between bg-(--color-grey-dark) shadow-[0px_4px_12px_0px_rgba(0,0,0,0.16)] transition-transform duration-300 ease-out hover:scale-[1.03] hover:shadow-[0px_8px_20px_0px_rgba(0,0,0,0.3)]"
-                style={{
-                  backgroundImage:
-                    "radial-gradient(circle at 0% 0%, rgba(255,255,255,0.5) 0%, rgba(218,220,221,0.2) 50%, transparent 80%)",
-                }}
-              >
-                <p className="flex items-start gap-1 leading-[64px] tracking-[-1.28px]">
-                  <span className="text-[64px] font-bold text-(--color-yellow)">
-                    {statCard.stat_number}
-                  </span>
-                  <span className="text-[64px] font-light text-(--color-yellow)">%</span>
+              <div className="group relative shrink-0 size-[240px] overflow-hidden rounded-lg pt-[22px] pb-[32px] px-5 flex flex-col justify-between bg-(--color-grey-dark) shadow-[0px_4px_12px_0px_rgba(0,0,0,0.16)]">
+                <span
+                  aria-hidden
+                  className="absolute inset-0 transition-opacity duration-150 ease-out group-hover:opacity-0"
+                  style={{
+                    backgroundImage:
+                      "radial-gradient(circle at 0% 0%, rgba(255,255,255,0.5) 0%, rgba(218,220,221,0.2) 50%, transparent 80%)",
+                  }}
+                />
+                <span aria-hidden className="absolute inset-0 bg-[rgba(253,253,253,0.3)] opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100" />
+
+                <p className="relative flex items-start gap-1 text-[64px] leading-[64px] tracking-[-1.28px] text-(--color-yellow) transition-[font-size,line-height] duration-150 ease-out group-hover:text-[71px] group-hover:leading-[71px]">
+                  <span className="font-bold">{statCard.stat_number}</span>
+                  <span className="font-light">%</span>
                 </p>
                 {statCard.short_text && (
-                  <p className="text-[20px] leading-[24px] tracking-[-0.4px] text-(--color-white)">{statCard.short_text}</p>
+                  <p className="relative text-[20px] leading-[24px] tracking-[-0.4px] text-(--color-white)">{statCard.short_text}</p>
                 )}
               </div>
             )}
