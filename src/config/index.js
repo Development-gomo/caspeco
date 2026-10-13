@@ -31,6 +31,7 @@ export const ROUTE_TYPES = {
   },
   casestudy: { rest: "casestudies", base: allLangs("case") },
   product: { rest: "products", base: { ...allLangs("produkt"), en: "product" } },
+  industry: { rest: "industries", base: { ...allLangs("bransch"), en: "industry", no: "bransje" } },
   partner: { rest: "partner", base: allLangs("partner") },
   partnerCategory: { rest: "partner_category", taxonomy: true, base: allLangs("partner-category") },
 };

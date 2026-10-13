@@ -21,6 +21,8 @@ const CONTENT_TYPES = [
   { endpoint: "/wp/v2/pages",            path: (s) => `/${s}`,          priority: 0.8, changeFrequency: "monthly", skip: new Set(["frontpage"]) },
   { endpoint: "/wp/v2/solutions",        path: (s) => `/service/${s}`,  priority: 0.8, changeFrequency: "monthly" },
   { endpoint: "/wp/v2/products",         path: based("product"),        priority: 0.8, changeFrequency: "monthly" },
+  { endpoint: "/wp/v2/industries",       path: based("industry"),       priority: 0.7, changeFrequency: "monthly" },
+  { endpoint: "/wp/v2/partner",          path: based("partner"),        priority: 0.5, changeFrequency: "monthly" },
   { endpoint: "/wp/v2/casestudies",      path: based("casestudy"),      priority: 0.7, changeFrequency: "monthly" },
   { endpoint: "/wp/v2/posts",            path: based("post"),           priority: 0.6, changeFrequency: "weekly"  },
   { endpoint: "/wp/v2/partner_category", path: based("partnerCategory"), priority: 0.5, changeFrequency: "monthly", term: true },

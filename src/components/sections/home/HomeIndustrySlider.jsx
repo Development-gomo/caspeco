@@ -13,7 +13,7 @@ import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import DefaultIcon from "../../../../public/icons/home/industry-icon.svg";
-import { DEFAULT_LANG, langHref } from "@/config";
+import { DEFAULT_LANG, entryHref } from "@/config";
 import { mediaUrl, sectionBackground, toHtml } from "@/lib/content";
 
 // CPT entry → card data
@@ -24,12 +24,12 @@ function toCard(post) {
     title: post?.title?.rendered || "",
     image: media?.source_url ? { url: media.source_url, alt: media.alt_text || "" } : null,
     icon: post?.acf?.icon || null,
-    link_url: post?.slug ? `/industries/${post.slug}` : "",
+    slug: post?.slug || "",
   };
 }
 
 function IndustryCard({ card, lang }) {
-  const href = card.link_url ? langHref(card.link_url, lang) : "";
+  const href = card.slug ? entryHref("industry", card.slug, lang) : "";
   const Wrapper = href ? Link : "div";
 
   return (
