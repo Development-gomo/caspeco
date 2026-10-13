@@ -50,7 +50,10 @@ export default function QuickContact({ data, lang = DEFAULT_LANG, id }) {
           )}
         </div>
       ) : (
-        cta_text && cta_url && <CtaButton href={langHref(cta_url, lang)}>{cta_text}</CtaButton>
+        // No form connected yet: keep the form column so the text stays left-aligned as in Figma
+        <div className={`w-full lg:w-[493px] shrink-0 ${cta_text && cta_url ? "" : "hidden lg:block"}`}>
+          {cta_text && cta_url && <CtaButton href={langHref(cta_url, lang)}>{cta_text}</CtaButton>}
+        </div>
       )}
     </section>
   );

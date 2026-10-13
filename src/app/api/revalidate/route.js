@@ -17,6 +17,7 @@ const POST_TYPE_ROUTE = {
   post:        "post",
   posts:       "post",
   products:    "product",
+  industries:  "industry",
   partner:     "partner",
 };
 

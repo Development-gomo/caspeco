@@ -12,6 +12,7 @@ import {
   getPostBySlug,
   getCaseStudyBySlug,
   getProductBySlug,
+  getIndustryBySlug,
   getPartnerBySlug,
   getPartnerCategoryBySlug,
   getPartnersByCategory,
@@ -62,6 +63,10 @@ const resolveRoute = cache(async (lang, segments) => {
     const product = await getProductBySlug(slug, lang);
     if (product) return { type, entry: product, slug };
   }
+  if (type === "industry") {
+    const industry = await getIndustryBySlug(slug, lang);
+    if (industry) return { type, entry: industry, slug };
+  }
   if (type === "partner") {
     const partner = await getPartnerBySlug(slug, lang);
     if (partner) return { type, entry: partner, slug };
@@ -100,6 +105,8 @@ export default async function LocalizedEntryPage({ params }) {
       return <CaseStudyTemplate caseStudy={route.entry} {...common} />;
     case "product":
       return <ProductTemplate product={route.entry} {...common} />;
+    case "industry":
+      return <EntryTemplate entry={route.entry} entryType="industries" routeType="industry" {...common} />;
     case "partner":
       return <EntryTemplate entry={route.entry} entryType="partner" routeType="partner" {...common} />;
     case "partnerCategory":
