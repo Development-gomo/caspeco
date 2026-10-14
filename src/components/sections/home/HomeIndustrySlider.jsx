@@ -37,23 +37,17 @@ function IndustryCard({ card, lang }) {
       {...(href ? { href } : {})}
       className="group relative block h-[394px] w-full overflow-hidden rounded-[8px] bg-white shadow-[0px_2px_9px_0px_rgba(0,0,0,0.1)]"
     >
+      {/* Figma "Sector card" hover (Smart Animate 100 ms ease-out): the #151411 overlay goes
+          30% → 100% (card turns dark), the glow 30% → 20%, icon + label grow ~1.11× */}
       {mediaUrl(card.image) && (
-        <Image
-          src={mediaUrl(card.image)}
-          alt={card.image?.alt || ""}
-          fill
-          sizes="276px"
-          className="object-cover transition-transform duration-700 group-hover:scale-105"
-        />
+        <Image src={mediaUrl(card.image)} alt={card.image?.alt || ""} fill sizes="276px" className="object-cover" />
       )}
+      <span className="absolute inset-0 bg-[#151411] opacity-30 transition-opacity duration-100 ease-out group-hover:opacity-100 group-focus-visible:opacity-100" />
       <span
-        className="absolute inset-0"
-        style={{
-          backgroundImage:
-            "linear-gradient(145deg, rgba(253,253,253,0.3) 0%, rgba(253,253,253,0) 99.5%), linear-gradient(90deg, rgba(21,20,17,0.3) 0%, rgba(21,20,17,0.3) 100%)",
-        }}
+        className="absolute inset-0 transition-opacity duration-100 ease-out group-hover:opacity-[0.667] group-focus-visible:opacity-[0.667]"
+        style={{ backgroundImage: "linear-gradient(145deg, rgba(253,253,253,0.3) 0%, rgba(253,253,253,0) 99.5%)" }}
       />
-      <span className="absolute inset-x-6 top-[139px] flex flex-col items-center gap-[7px] text-center">
+      <span className="absolute inset-x-6 top-[139px] flex origin-center flex-col items-center gap-[7px] text-center transition-transform duration-100 ease-out group-hover:scale-[1.11] group-focus-visible:scale-[1.11]">
         <Image src={mediaUrl(card.icon) || DefaultIcon} alt="" width={64} height={64} className="size-16" />
         {card.title && (
           <span

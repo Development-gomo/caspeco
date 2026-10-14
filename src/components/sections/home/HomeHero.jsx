@@ -33,7 +33,7 @@ export default function HomeHero({ data }) {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full min-h-screen overflow-hidden hero lg:h-245"
+      className="relative w-full min-h-screen overflow-hidden hero lg:h-240"
     >
       {/* BG IMAGE/VIDEO */}
       <motion.div className="absolute hero-bg inset-0 -z-10" style={{ y: bgY }}>
@@ -59,7 +59,7 @@ export default function HomeHero({ data }) {
       {/* <div className="absolute inset-0 bg-linear-to-b from-black/40 via-black/65 to-transparent -z-10"></div> */}
 
       {/* HERO CONTENT — USP row pinned near the top, heading block pinned to the bottom */}
-      <div className="relative z-10 min-h-screen flex flex-col justify-between px-6 pt-24 pb-12 lg:px-[120px] lg:pt-[148px] lg:pb-36 gap-20">
+      <div className="relative z-10 min-h-screen flex flex-col justify-between px-6 pt-24 pb-24 lg:px-[120px] lg:pt-[148px] lg:pb-36 gap-20 lg:gap-55">
         {labels.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}

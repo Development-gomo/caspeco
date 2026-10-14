@@ -766,6 +766,7 @@ span.subheading-label.text-\[var\(--color-accent\)\],
   letter-spacing: -1.6px;
   text-transform: none;
 }
+.cs-highlight span,
 .cs-h2 span {color: var(--color-yellow);}
 
 @media (min-width: 768px) {

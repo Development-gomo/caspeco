@@ -13,7 +13,8 @@ const VARIANTS = {
   "outline-dark":
     "border-2 border-(--color-grey-dark) text-(--color-grey-dark) hover:bg-(--color-grey-dark) hover:text-(--color-light-grey) px-[36px] py-[14px]",
   "outline-light":
-    "border-2 border-(--color-white) text-(--color-white) hover:bg-(--color-white) hover:text-(--color-black) px-[36px] py-[14px]",
+    // client request: hover fills yellow (was white)
+    "border-2 border-(--color-white) text-(--color-white) hover:border-(--color-yellow) hover:bg-(--color-yellow) hover:text-(--color-grey-dark) px-[36px] py-[14px]",
 };
 
 export default function CtaButton({

@@ -104,7 +104,7 @@ export default function HomeHelpTabs({ data, lang = DEFAULT_LANG }) {
       className="pt-18 pb-12 lg:pt-36 lg:pb-[72px]"
       style={sectionBackground(data, { background: "var(--color-light-grey)" })}
     >
-      <div className="cs-container flex flex-col items-center gap-8 lg:gap-[49px]">
+      <div className="cs-container flex flex-col items-center gap-8 lg:gap-[46px]">
         {data.heading && (
           <h2
             className="cs-h2 cs-highlight cs-rich text-center text-black"
