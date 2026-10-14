@@ -6,8 +6,29 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import DownSvg from "../../../public/down-arrow.svg";
-import { getMenu, getThemeOptions, getEntryTranslations } from "@/lib/api";
+import { getThemeOptions, getEntryTranslations } from "@/lib/api";
 import { DEFAULT_LANG, SUPPORTED_LANGS, langHref, langHome, entryHref } from "@/config";
+
+// Log-in links point at external portals: absolute URLs open as-is, relative ones get the
+// language prefix, and an empty/"#" URL renders plain text instead of a dead link.
+function LoginLink({ url, lang, className: baseClassName, onClick, children }) {
+  // pointer even when rendered as text: "Log In" also opens the dropdown on hover
+  const className = `cursor-pointer ${baseClassName}`;
+  const href = (url || "").trim();
+  if (!href || href === "#") return <span className={className}>{children}</span>;
+  if (/^https?:\/\//.test(href)) {
+    return (
+      <a href={href} className={className} onClick={onClick}>
+        {children}
+      </a>
+    );
+  }
+  return (
+    <Link href={langHref(href, lang)} className={className} onClick={onClick}>
+      {children}
+    </Link>
+  );
+}
 
 export default function Header({
   lang = DEFAULT_LANG,
@@ -17,74 +38,54 @@ export default function Header({
   // ROUTE_TYPES key ("post", "casestudy", …): the switcher then uses each language's own URL base
   routeType = null,
   entryId = null,
-  prefetchedMenu = null,
   prefetchedOptions = null,
   logoUrl = "",
 }) {
-  const [menu, setMenu] = useState(prefetchedMenu);
   const [options, setOptions] = useState(prefetchedOptions);
   const altLangs = SUPPORTED_LANGS.filter((l) => l !== lang);
   const [altLangUrls, setAltLangUrls] = useState(
     Object.fromEntries(altLangs.map((l) => [l, langHome(l)]))
   );
-  const isLoading = !menu;
+  const isLoading = !options;
   const [scrolled, setScrolled] = useState(false);
 
-  // Nav items come from the ACF "mega_menu" repeater when it has real
-  // entries (menu_title set) — each entry's columns/links/card drive the
-  // dropdown. Falls back to the plain WP menu (no dropdown) otherwise.
-  const megaMenuItems = (options?.mega_menu || []).filter((entry) => entry.menu_title);
-  const navItems = megaMenuItems.length > 0
-    ? megaMenuItems.map((entry, i) => {
-        const columns = (entry.columns || []).filter(
-          (col) => col.links?.length > 0 || col.card?.title
-        );
-        const card = columns.map((col) => col.card).find((c) => c?.title);
-        const children = columns.flatMap((col, ci) =>
-          (col.links || []).map((link, li) => ({
-            id: `mega-${i}-${ci}-${li}`,
-            title: link.label,
-            url: link.url?.url || "#",
-          }))
-        );
-        return {
-          id: `mega-${i}`,
-          title: entry.menu_title,
-          url: entry.menu_title_link?.url || "#",
-          columns,
-          card,
-          sideImage: entry.side_image?.url || null,
-          children,
-        };
-      })
-    : (menu?.main || []).map((item) => ({
-        id: item.id,
-        title: item.title,
-        url: item.url,
-        columns: null,
-        card: null,
-        sideImage: null,
-        children: item.children || [],
-      }));
+  // Nav items come from the Theme Options "mega_menu" repeater (entries with
+  // menu_title set) — each entry's columns/links/card drive the dropdown.
+  const navItems = (options?.mega_menu || [])
+    .filter((entry) => entry.menu_title)
+    .map((entry, i) => {
+      const columns = (entry.columns || []).filter(
+        (col) => col.links?.length > 0 || col.card?.title
+      );
+      const card = columns.map((col) => col.card).find((c) => c?.title);
+      const children = columns.flatMap((col, ci) =>
+        (col.links || []).map((link, li) => ({
+          id: `mega-${i}-${ci}-${li}`,
+          title: link.label,
+          url: link.url?.url || "#",
+        }))
+      );
+      return {
+        id: `mega-${i}`,
+        title: entry.menu_title,
+        url: entry.menu_title_link?.url || "#",
+        columns,
+        card,
+        sideImage: entry.side_image?.url || null,
+        children,
+      };
+    });
 
-  // Only fetch client-side if no prefetched data was provided
+  // Theme Options "Log In Submenu" rows with text
+  const loginItems = (Array.isArray(options?.login_submenu) ? options.login_submenu : []).filter((row) => row?.link_text?.trim());
+
+  // Only fetch client-side if the page didn't pass Theme Options
   useEffect(() => {
-    if (prefetchedMenu) return;
-    async function loadData() {
-      try {
-        const [menuData, themeOptions] = await Promise.all([
-          getMenu(lang),
-          getThemeOptions(lang),
-        ]);
-        setMenu(menuData);
-        setOptions(themeOptions || {});
-      } catch {
-        setMenu([]);
-        setOptions({});
-      }
-    }
-    loadData();
-  }, [lang, prefetchedMenu]);
+    if (prefetchedOptions) return;
+    getThemeOptions(lang)
+      .then((themeOptions) => setOptions(themeOptions || {}))
+      .catch(() => setOptions({}));
+  }, [lang, prefetchedOptions]);
 
   // Header starts transparent; the dark blurred overlay fades in once the
   // page has scrolled.
@@ -95,8 +96,11 @@ export default function Header({
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
-  const headerClasses = `fixed top-0 w-full z-50 text-(--color-white) transition-[background-color,backdrop-filter] duration-300 ${
-    scrolled ? "backdrop-blur-[8px] bg-(--color-black)/40" : "bg-transparent"
+  // The blurred bar is a background layer, not the header itself: an element with
+  // backdrop-filter stops descendants (the hover dropdowns) from blurring what is behind them.
+  const headerClasses = "fixed top-0 w-full z-50 text-white";
+  const headerBarClasses = `absolute inset-0 -z-10 transition-[background-color,backdrop-filter] duration-300 ${
+    scrolled ? "backdrop-blur-[8px] bg-black/40" : "bg-transparent"
   }`;
 
   // Mobile menu state
@@ -184,12 +188,13 @@ export default function Header({
 
   return (
     <header className={headerClasses}>
-      <div className="w-full px-6 lg:px-[120px] py-4 lg:py-0 lg:h-[84px] flex items-center justify-between relative">
+      <span aria-hidden className={headerBarClasses} />
+      <div className="cs-container py-4 lg:py-0 lg:h-[84px] flex items-center justify-between relative">
         {/* LOGO + DESKTOP LINKS */}
-        <div className="flex items-center gap-8 lg:gap-16">
+        <div className="flex items-center gap-8 xl:gap-16">
           <Link
             href={langHome(lang)}
-            className="flex relative h-8 w-[100px] lg:h-[26px] lg:w-[170px]"
+            className="flex relative h-8 w-[100px] lg:h-[22px] lg:w-[140px] xl:h-[26px] xl:w-[170px]"
           >
             {(() => {
               // Header is always the dark translucent bar, so always use the light logo variant
@@ -212,7 +217,7 @@ export default function Header({
 
           {/* DESKTOP MENU */}
           <nav className="hidden lg:flex items-center">
-            <ul className="flex items-center gap-12 relative">
+            <ul className="flex items-center gap-6 xl:gap-12 relative">
               {isLoading ? (
                 // SKELETON MENU (no jump)
                 <>
@@ -231,7 +236,7 @@ export default function Header({
                       href={langHref(item.url, lang)}
                       prefetch={true}
                       onClick={(e) => handleNavClick(e, item.url)}
-                      className="text-(--color-white)/90 hover:text-(--color-white) relative z-9 text-[18px] font-bold transition leading-[18px] flex items-center gap-2"
+                      className="text-white/90 hover:text-white relative z-9 text-[16px] xl:text-[18px] font-bold transition leading-[18px] flex items-center gap-2 whitespace-nowrap"
                     >
                       {item.title}
 
@@ -263,11 +268,11 @@ export default function Header({
                         <div className="
                             opacity-0 translate-x-4
                             group-hover:opacity-100 group-hover:translate-x-0
-                            transition-all duration-300 ease-out bg-(--color-white) text-(--color-black) rounded-sm shadow-lg overflow-hidden
+                            transition-all duration-300 ease-out bg-white text-black rounded-sm shadow-lg overflow-hidden
                             flex
                           "
                         >
-                          <div className="flex flex-1 divide-x divide-(--color-black)/10">
+                          <div className="flex flex-1 divide-x divide--black/10">
                             {item.columns.map((col, ci) => (
                               <ul key={ci} className="min-w-[180px] py-2">
                                 {(col.links || []).map((link, li) => (
@@ -277,7 +282,7 @@ export default function Header({
                                       prefetch={true}
                                       onClick={(e) => handleNavClick(e, link.url?.url)}
                                       target={link.url?.target || undefined}
-                                      className="block px-4 py-3 text-(--color-black) text-sm hover:text-(--color-black)/70 transition"
+                                      className="block px-4 py-3 text-black text-sm hover:text-black/70 transition"
                                     >
                                       {link.label}
                                     </Link>
@@ -288,7 +293,7 @@ export default function Header({
                           </div>
 
                           {item.card && (
-                            <div className="w-[220px] shrink-0 bg-(--color-black)/5 p-5 flex flex-col gap-2">
+                            <div className="w-[220px] shrink-0 bg-black/5 p-5 flex flex-col gap-2">
                               {item.sideImage && (
                                 <div className="relative w-full h-[100px] mb-2">
                                   <Image src={item.sideImage} alt="" fill className="object-cover rounded-sm" />
@@ -296,7 +301,7 @@ export default function Header({
                               )}
                               <p className="font-bold text-sm">{item.card.title}</p>
                               {item.card.description && (
-                                <p className="text-xs text-(--color-black)/70">{item.card.description}</p>
+                                <p className="text-xs text-black/70">{item.card.description}</p>
                               )}
                               {item.card.button_link?.url && (
                                 <Link
@@ -326,7 +331,7 @@ export default function Header({
                         <ul className="
                             opacity-0 translate-x-4
                             group-hover:opacity-100 group-hover:translate-x-0
-                            transition-all duration-300 ease-out bg-(--color-white) text-(--color-black) rounded-sm shadow-lg overflow-hidden
+                            transition-all duration-300 ease-out bg-white text-black rounded-sm shadow-lg overflow-hidden
                           "
                         >
                           {item.children.map((sub) => (
@@ -336,8 +341,8 @@ export default function Header({
                                 prefetch={true}
                                 onClick={(e) => handleNavClick(e, sub.url)}
                                 className="
-                                    block px-4 py-3 text-(--color-black) text-sm
-                                    hover:text-(--color-black)/70 transition
+                                    block px-4 py-3 text-black text-sm
+                                    hover:text-black/70 transition
                                   "
                               >
                                 {sub.title}
@@ -355,13 +360,13 @@ export default function Header({
         </div>
 
         {/* RIGHT SIDE — lang switcher, log in, CTA */}
-        <div className="hidden lg:flex items-center gap-6">
+        <div className="hidden lg:flex items-center gap-3 xl:gap-6">
           {/* Language Switcher */}
           <div ref={langRef} className="relative">
             <button
               type="button"
               onClick={() => setLangOpen((v) => !v)}
-              className="flex items-center gap-2 cursor-pointer px-4 py-4 rounded-sm text-sm leading-3.5 text-(--color-white) transition"
+              className="flex items-center gap-2 cursor-pointer px-2 xl:px-4 py-4 rounded-sm text-sm leading-3.5 text-white transition"
             >
               <span>{lang.toUpperCase()}</span>
 
@@ -383,7 +388,7 @@ export default function Header({
                     key={altLang}
                     href={altLangUrls[altLang] || langHome(altLang)}
                     onClick={() => setLangOpen(false)}
-                    className="block px-4 py-3 text-sm text-(--color-black) bg-(--color-white) hover:text-(--color-black)/70 transition whitespace-nowrap"
+                    className="block px-4 py-3 text-sm text-black bg-white hover:text-black/70 transition whitespace-nowrap"
                   >
                     {altLang.toUpperCase()}
                   </Link>
@@ -392,14 +397,35 @@ export default function Header({
             )}
           </div>
 
-          {/* LOG IN LINK */}
-          {options?.login_text && options?.login_url && (
-            <Link
-              href={options.login_url}
-              className="px-2 text-[18px] font-bold text-(--color-yellow) hover:text-(--color-yellow)/80 transition"
-            >
-              {options.login_text}
-            </Link>
+          {/* LOG IN — Theme Options log_in_text / log_in_url, hover dropdown from login_submenu (no arrow) */}
+          {options?.log_in_text && (
+            <div className="relative group">
+              <LoginLink
+                url={options.log_in_url}
+                lang={lang}
+                className="block py-4 px-1 xl:px-2 whitespace-nowrap text-[16px] xl:text-[18px] font-bold text-(--color-yellow) hover:text-(--color-yellow)/80 transition"
+              >
+                {options.log_in_text}
+              </LoginLink>
+
+              {loginItems.length > 0 && (
+                <div className="absolute right-0 top-full z-2 pt-1 pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto">
+                  <ul className="min-w-40 opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:translate-y-0 transition-all duration-200 ease-out bg-black/40 backdrop-blur-sm rounded-sm shadow-lg overflow-hidden">
+                    {loginItems.map((item, i) => (
+                      <li key={i}>
+                        <LoginLink
+                          url={item.link_url}
+                          lang={lang}
+                          className="block px-4 py-3 text-sm text-white hover:text-white/70 transition whitespace-nowrap"
+                        >
+                          {item.link_text}
+                        </LoginLink>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           )}
 
           {/* CTA BUTTON */}
@@ -411,7 +437,7 @@ export default function Header({
               href={langHref(options.button_url, lang)}
               onClick={(e) => handleNavClick(e, options.button_url)}
               className="inline-flex items-center justify-center select-none
-                    rounded-full px-8 py-3 text-(--color-black)
+                    rounded-full px-6 xl:px-8 py-3 text-black
                     text-[14px] font-extrabold whitespace-nowrap
                     transition-colors duration-300
                     bg-(--color-yellow) hover:bg-(--color-yellow)/90"
@@ -423,14 +449,14 @@ export default function Header({
 
         {/* MOBILE MENU BUTTON */}
         <button
-          className="lg:hidden text-3xl text-(--color-white)"
+          className="lg:hidden text-3xl text-white"
           onClick={() => setMobileOpen(true)}
         >
           ☰
         </button>
         {/* MOBILE SLIDE-IN MENU */}
         {mobileOpen && (
-          <div className="fixed h-[100vh] inset-0 z-[60] bg-black/60 backdrop-blur-sm lg:hidden" onClick={() => { setMobileOpen(false); setOpenSubmenu(null); }}>
+          <div className="fixed h-screen inset-0 z-60 bg-black/60 backdrop-blur-sm lg:hidden" onClick={() => { setMobileOpen(false); setOpenSubmenu(null); }}>
             <div className="absolute right-0 top-0 h-full w-72 bg-(--color-brand) shadow-xl flex flex-col" onClick={(e) => e.stopPropagation()}>
               {/* HEADER */}
               <div className="p-6 flex items-center justify-between">
@@ -566,18 +592,35 @@ export default function Header({
                   ))}
                 </div>
 
-                {/* Log in */}
-                {options?.login_text && options?.login_url && (
-                  <Link
-                    href={options.login_url}
-                    className="text-[16px] font-bold text-(--color-yellow) hover:text-(--color-yellow)/80 transition"
-                    onClick={() => {
-                      setMobileOpen(false);
-                      setOpenSubmenu(null);
-                    }}
-                  >
-                    {options.login_text}
-                  </Link>
+                {/* Log in + its submenu links */}
+                {options?.log_in_text && (
+                  <div className="flex flex-col gap-2">
+                    <LoginLink
+                      url={options.log_in_url}
+                      lang={lang}
+                      className="text-[16px] font-bold text-(--color-yellow) hover:text-(--color-yellow)/80 transition"
+                      onClick={() => {
+                        setMobileOpen(false);
+                        setOpenSubmenu(null);
+                      }}
+                    >
+                      {options.log_in_text}
+                    </LoginLink>
+                    {loginItems.map((item, i) => (
+                      <LoginLink
+                        key={i}
+                        url={item.link_url}
+                        lang={lang}
+                        className="pl-3 text-white/80 text-sm hover:text-white transition"
+                        onClick={() => {
+                          setMobileOpen(false);
+                          setOpenSubmenu(null);
+                        }}
+                      >
+                        {item.link_text}
+                      </LoginLink>
+                    ))}
+                  </div>
                 )}
 
                 {/* CTA */}
@@ -585,7 +628,7 @@ export default function Header({
                   <Link
                     href={langHref(options.button_url, lang)}
                     className="inline-flex items-center justify-center select-none
-                      rounded-full bg-(--color-yellow) px-8 py-3 text-(--color-black)
+                      rounded-full bg-(--color-yellow) px-8 py-3 text-black
                       text-[14px] font-extrabold transition-colors duration-300
                       hover:bg-(--color-yellow)/90 w-fit"
                     onClick={(e) => handleNavClick(e, options.button_url, true)}

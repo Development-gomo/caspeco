@@ -1,6 +1,6 @@
 // src/app/[lang]/[slug]/page.jsx
 
-import { getPageBySlug, fetchWP, getMenu, getThemeOptions } from "@/lib/api";
+import { getPageBySlug, fetchWP, getThemeOptions } from "@/lib/api";
 import { resolveParams } from "@/lib/params";
 import PageBuilder from "@/components/major/PageBuilder";
 import Header from "@/components/major/Header";
@@ -29,9 +29,8 @@ export default async function SinglePage({ params }) {
 
   if (!slug) notFound();
 
-  const [data, menu, themeOptions] = await Promise.all([
+  const [data, themeOptions] = await Promise.all([
     getPageBySlug(slug, lang),
-    getMenu(lang),
     getThemeOptions(lang),
   ]);
 
@@ -46,7 +45,6 @@ export default async function SinglePage({ params }) {
         currentSlug={slug}
         entryType="pages"
         entryId={data?.id}
-        prefetchedMenu={menu}
         prefetchedOptions={themeOptions || {}}
         logoUrl={themeOptions?.logo_light?.url || ""}
       />

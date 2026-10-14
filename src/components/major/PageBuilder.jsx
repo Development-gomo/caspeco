@@ -15,9 +15,7 @@ const AskAI = dynamic(() => import("../sections/home/HomeAIAsk"));
 const HomePartners = dynamic(() => import("../sections/home/HomePartners"));
 const InnerHero = dynamic(() => import("../sections/inner-pages/InnerHero"));
 const Overview = dynamic(() => import("../sections/inner-pages/Overview"));
-const CollaborationSection = dynamic(() => import("../sections/inner-pages/CollaborationSection"));
 const TeamSection = dynamic(() => import("../sections/inner-pages/Teams"));
-const CoreValueSection = dynamic(() => import("../sections/inner-pages/CoreValue"));
 const LargeContent = dynamic(() => import("../sections/inner-pages/LargeContent"));
 const Connectform = dynamic(() => import("../sections/inner-pages/Cform"));
 const CaseStudyListing = dynamic(() => import("../sections/inner-pages/CaseStusyListing"));
@@ -45,14 +43,14 @@ async function prefetchSectionData(sections, lang) {
   const pickedPostIds = [];
 
   for (const block of sections) {
-    if (block.acf_fc_layout === "services_section") needs.services = true;
-    if (block.acf_fc_layout === "casestudies_section") needs.cases = true;
-    if (block.acf_fc_layout === "case_study_listing") needs.cases = true;
-    if (block.acf_fc_layout === "news_section") needs.posts = true;
-    if (block.acf_fc_layout === "team_section") needs.team = true;
-    if (block.acf_fc_layout === "industry_slider_section") needs.industries = true;
-    if (block.acf_fc_layout === "home_casestudy_section") needs.twin = true;
-    if (block.acf_fc_layout === "insights_section") {
+    if (block._layout === "services_section") needs.services = true;
+    if (block._layout === "casestudies_section") needs.cases = true;
+    if (block._layout === "case_study_listing") needs.cases = true;
+    if (block._layout === "news_section") needs.posts = true;
+    if (block._layout === "team_section") needs.team = true;
+    if (block._layout === "industry_slider_section") needs.industries = true;
+    if (block._layout === "home_casestudy_section") needs.twin = true;
+    if (block._layout === "insights_section") {
       const ids = Array.isArray(block.posts) ? block.posts.map((p) => (typeof p === "object" ? p.ID || p.id : p)) : [];
       if (ids.length) pickedPostIds.push(...ids);
       else needs.posts = true;
@@ -83,7 +81,7 @@ export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
   return (
     <>
       {sections.map((block, i) => {
-        switch (block.acf_fc_layout) {
+        switch (block._layout) {
           case "home_hero":
             return <Hero key={i} data={block} lang={lang} />;
 
@@ -117,14 +115,8 @@ export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
           case "overview_section":
             return <Overview key={i} data={block} lang={lang} />;
 
-          case "caspecooration_section":
-            return <CollaborationSection key={i} data={block} lang={lang} />;
-
           case "team_section":
             return <TeamSection key={i} data={block} lang={lang} prefetchedTeam={prefetched.team} />;
-
-          case "core_value_section":
-            return <CoreValueSection key={i} data={block} lang={lang} />;
 
           case "large_content_section":
             return <LargeContent key={i} data={block} lang={lang} />;
@@ -169,7 +161,7 @@ export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
             return <HomeInsights key={i} data={block} lang={lang} prefetchedPosts={prefetched.pickedPosts || prefetched.posts} />;
 
           case "faq_section":
-            return <HomeFaq key={i} data={block} lang={lang} />;
+            return <HomeFaq key={i} data={block} lang={lang} prevLayout={sections[i - 1]?._layout} />;
 
           default:
             return null;

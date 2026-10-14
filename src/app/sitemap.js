@@ -60,7 +60,7 @@ export default async function sitemap() {
         if (type.term && !item.count) continue;
         // Exclude pages explicitly set to noindex in Yoast Advanced Settings.
         // Checks raw per-page meta (not aggregated robots which includes global WP noindex).
-        if (item.meta?.["_yoast_wpseo_meta-robots-noindex"] === "1") continue;
+        if (item.meta?.noindex === "1") continue; // Yoast noindex meta, renamed in lib/wpMask.js
         entries.push({
           url: url(lang, type.path(item.slug, lang)),
           lastModified: new Date(item.modified || item.date || Date.now()),

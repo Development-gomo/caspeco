@@ -2,7 +2,9 @@
 
 // Fallback to "sv" so a missing env var on the host can't produce "/undefined" routes
 export const DEFAULT_LANG = process.env.NEXT_PUBLIC_DEFAULT_LANG || "sv";
-export const WP_BASE = process.env.NEXT_PUBLIC_WP_BASE;
+// WP REST root. In the browser it is the same-origin proxy (src/app/api/content), so the
+// CMS host never appears client-side; Next compiles `typeof window` away per bundle.
+export const WP_BASE = typeof window === "undefined" ? process.env.NEXT_PUBLIC_WP_BASE : "/api/content";
 
 // ─── Add new languages here — everything else updates automatically ───────────
 // Codes must match the WPML language codes in WordPress.
@@ -47,6 +49,36 @@ export function entryHref(type, slug, lang = DEFAULT_LANG) {
 export function typeFromBase(base, lang = DEFAULT_LANG) {
   return Object.keys(ROUTE_TYPES).find((type) => ROUTE_TYPES[type].base[lang] === base) || null;
 }
+
+// <body> class per content type (see pageTypeFromPath)
+export const BODY_CLASS = {
+  post: "article",
+  casestudy: "casestudy",
+  product: "product",
+  industry: "industry",
+  partner: "partner",
+  partnerCategory: "partner-category",
+};
+
+/**
+ * Page type for a URL path, used as the <body> class:
+ * "/" → "home", "/en/product/pos" → "product", "/artiklar/x" → "article",
+ * "/kontakt" → "page", "/service/x" → "service"; child pages → "page".
+ */
+export function pageTypeFromPath(pathname) {
+  const segments = (pathname || "").split("/").filter(Boolean);
+  const lang = SUPPORTED_LANGS.includes(segments[0]) ? segments.shift() : DEFAULT_LANG;
+  if (segments.length === 0) return "home";
+  if (segments.length === 2 && segments[0] === "service") return "service";
+  if (segments.length === 2) {
+    const type = typeFromBase(segments[0], lang);
+    if (type) return BODY_CLASS[type] || type;
+  }
+  return "page";
+}
+
+/** Every class pageTypeFromPath can return (to swap the body class on client navigation) */
+export const PAGE_TYPES = ["home", "page", "service", ...Object.values(BODY_CLASS)];
 
 /** Prefix a local path with the current language (skip prefix for default lang) */
 export function langHref(url, lang) {

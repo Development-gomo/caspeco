@@ -9,6 +9,7 @@ import React from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import SliderArrows from "@/components/ui/SliderArrows";
+import Reveal from "@/components/ui/Reveal";
 import { mediaUrl, rows, toHtml } from "@/lib/content";
 
 const pad = (n) => String(n).padStart(2, "0");
@@ -22,16 +23,16 @@ export default function ProductTestimonials({ data }) {
   const bg = mediaUrl(slide.bg_image) || mediaUrl(data?.bg_image);
 
   return (
-    <section className="relative isolate overflow-hidden bg-(--color-black)">
+    <section className="relative isolate overflow-hidden bg-black" style={data?.bg_color ? { background: data.bg_color } : undefined}>
       <AnimatePresence initial={false}>
         {bg && (
           <motion.div
             key={bg}
             className="absolute inset-0 -z-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.6 }}
+            // cross-fade + slow settle from a slight zoom on each slide
+            initial={{ opacity: 0, scale: 1.06 }}
+            animate={{ opacity: 1, scale: 1, transition: { opacity: { duration: 0.6 }, scale: { duration: 6, ease: "easeOut" } } }}
+            exit={{ opacity: 0, transition: { duration: 0.6 } }}
           >
             <Image src={bg} alt="" fill sizes="100vw" className="object-cover object-top" />
           </motion.div>
@@ -40,7 +41,7 @@ export default function ProductTestimonials({ data }) {
       <div className="absolute inset-0 -z-10 bg-linear-to-r from-black to-transparent" aria-hidden />
 
       <div className="cs-container py-16 lg:py-[72px]">
-        <div className="flex max-w-[750px] flex-col items-start gap-12 lg:gap-16">
+        <Reveal className="flex max-w-[750px] flex-col items-start gap-12 lg:gap-16">
           <AnimatePresence mode="wait">
             <motion.figure
               key={index}
@@ -84,7 +85,7 @@ export default function ProductTestimonials({ data }) {
               </div>
             </div>
           )}
-        </div>
+        </Reveal>
       </div>
     </section>
   );

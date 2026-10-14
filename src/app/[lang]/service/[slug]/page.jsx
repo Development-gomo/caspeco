@@ -4,7 +4,7 @@ import Header from "@/components/major/Header";
 import ServicePageBuilder from "@/components/major/ServiceBuilder";
 import Footer from "@/components/major/Footer";
 import { resolveParams } from "@/lib/params";
-import { getServiceBySlug, getAllServices, getMenu, getThemeOptions } from "@/lib/api";
+import { getServiceBySlug, getAllServices, getThemeOptions } from "@/lib/api";
 import { buildMetadataFromYoast } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
@@ -29,9 +29,8 @@ export default async function ServiceSinglePage({ params }) {
 
   if (!slug) notFound();
 
-  const [service, menu, themeOptions] = await Promise.all([
+  const [service, themeOptions] = await Promise.all([
     getServiceBySlug(slug, lang),
-    getMenu(lang),
     getThemeOptions(lang),
   ]);
 
@@ -45,7 +44,6 @@ export default async function ServiceSinglePage({ params }) {
         entryType="solutions"
         pathPrefix="service"
         entryId={service?.id}
-        prefetchedMenu={menu}
         prefetchedOptions={themeOptions || {}}
         logoUrl={themeOptions?.logo_light?.url || ""}
       />

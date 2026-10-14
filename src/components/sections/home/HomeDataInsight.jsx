@@ -80,7 +80,7 @@ export default function HomeDataInsight({ data }) {
             <div className="flex flex-col gap-5">
               {card_heading && <h3 className="cs-h3">{card_heading}</h3>}
               {sub_heading && (
-                <p className="font-bold text-[18px] lg:text-[20px] leading-6 tracking-[-0.4px] lg:max-w-[446px]" dangerouslySetInnerHTML={{ __html: toHtml(sub_heading) }} />
+                <div className="cs-rich font-bold text-[18px] lg:text-[20px] leading-6 tracking-[-0.4px] lg:max-w-[446px]" dangerouslySetInnerHTML={{ __html: toHtml(sub_heading) }} />
               )}
             </div>
 

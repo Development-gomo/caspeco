@@ -16,13 +16,13 @@ const ChallengesAndSolutionSection = dynamic(() => import("../sections/case-stud
 export default async function CaseStudyBuilder({ sections, lang = DEFAULT_LANG }) {
   if (!sections) return null;
 
-  const needsCases = sections.some((b) => b.acf_fc_layout === "casestudies_section");
+  const needsCases = sections.some((b) => b._layout === "casestudies_section");
   const prefetchedCases = needsCases ? await getCaseStudies(lang) : null;
 
   return (
     <>
       {sections.map((block, i) => {
-        switch (block.acf_fc_layout) {
+        switch (block._layout) {
           case "hero_section":
             return <CaseHero key={i} data={block} lang={lang} />;
           case "casestudies_section":

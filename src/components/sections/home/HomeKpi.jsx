@@ -44,7 +44,7 @@ function KpiCard({ card, hint }) {
         {/* FRONT */}
         <span className={face} aria-hidden={flipped || undefined}>
           <span className="absolute left-6 top-6 max-w-[150px] text-[20px] leading-6 tracking-[-0.4px]">{card.label}</span>
-          <span className="absolute left-6 top-[84px] font-bold text-[64px] leading-[64px] tracking-[-1.28px] sm:text-[80px] sm:tracking-[-1.6px]">
+          <span className="absolute left-6 top-[84px] font-bold text-[64px] leading-16 tracking-[-1.28px] sm:text-[80px] sm:tracking-[-1.6px]">
             {card.value}
           </span>
           {canFlip && <Image src={KpiArrow} alt="" width={36} height={36} className="absolute right-4 top-24" />}
@@ -61,7 +61,7 @@ function KpiCard({ card, hint }) {
           <span className={face} aria-hidden={!flipped || undefined}>
             <span className="absolute left-[22px] right-[64px] top-[46px] flex flex-col gap-[10px]">
               {backItems.map((text, i) => (
-                <span key={i} className="flex items-start gap-2 text-[16px] leading-5 tracking-[0.1px] text-(--color-white)">
+                <span key={i} className="flex items-start gap-2 text-[16px] leading-5 tracking-[0.1px] text-white">
                   <Image src={CheckYellow} alt="" width={14} height={16} className="mt-0.5 shrink-0" />
                   {text}
                 </span>
@@ -87,7 +87,7 @@ export default function HomeKpi({ data }) {
       <div className="cs-container flex flex-col items-center gap-10 lg:gap-16">
         {data.heading && (
           <h2
-            className="cs-h2 cs-highlight text-center text-(--color-black) max-w-[925px]"
+            className="cs-h2 cs-highlight text-center text-black max-w-[925px]"
             dangerouslySetInnerHTML={{ __html: highlightHtml(data.heading, "lastLine") }}
           />
         )}

@@ -1,13 +1,13 @@
 // src/components/sections/product/CheckList.jsx
 // Figma "USP lista": grey check + Tenon X-Bold 20/24 line, 8px apart.
-// `items` is an ACF repeater of { item }.
+// `items` is an ACF repeater of { item } (the feature slider's sub field is named "items").
 
 import Image from "next/image";
 import CheckIcon from "../../../../public/icons/home/check.svg";
 import { rows } from "@/lib/content";
 
 export default function CheckList({ items, className = "" }) {
-  const list = rows(items).map((r) => r.item || r.text).filter(Boolean);
+  const list = rows(items).map((r) => r.item || r.items || r.text).filter(Boolean);
   if (!list.length) return null;
   return (
     <ul className={`flex flex-col gap-2 ${className}`}>

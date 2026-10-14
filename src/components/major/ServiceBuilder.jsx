@@ -18,8 +18,8 @@ async function prefetchServiceData(sections, lang) {
   if (!sections) return {};
   const needs = { services: false, cases: false };
   for (const block of sections) {
-    if (block.acf_fc_layout === "services_section") needs.services = true;
-    if (block.acf_fc_layout === "casestudies_section") needs.cases = true;
+    if (block._layout === "services_section") needs.services = true;
+    if (block._layout === "casestudies_section") needs.cases = true;
   }
   const [services, cases] = await Promise.all([
     needs.services ? getAllServices(lang) : null,
@@ -36,7 +36,7 @@ export default async function ServicePageBuilder({ sections, lang = DEFAULT_LANG
   return (
     <>
       {sections.map((block, i) => {
-        switch (block.acf_fc_layout) {
+        switch (block._layout) {
           case "hero_section":
             return <ServiceHero key={i} data={block} lang={lang} />;
           case "overview_section":

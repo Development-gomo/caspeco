@@ -4,7 +4,7 @@
 import Header from "@/components/major/Header";
 import Footer from "@/components/major/Footer";
 
-export default function Shell({ lang, slug, entryType, routeType = null, entryId = null, menu, themeOptions, children, mainClassName, hideQuickContact = false }) {
+export default function Shell({ lang, slug, entryType, routeType = null, entryId = null, themeOptions, children, mainClassName, hideQuickContact = false }) {
   return (
     <>
       <Header
@@ -13,7 +13,6 @@ export default function Shell({ lang, slug, entryType, routeType = null, entryId
         entryType={entryType}
         routeType={routeType}
         entryId={entryId}
-        prefetchedMenu={menu}
         prefetchedOptions={themeOptions || {}}
         logoUrl={themeOptions?.logo_light?.url || ""}
       />

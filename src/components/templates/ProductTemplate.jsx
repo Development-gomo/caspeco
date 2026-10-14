@@ -1,20 +1,21 @@
 // src/components/templates/ProductTemplate.jsx
-// Single product (Products CPT): renders the ACF "product_builder" field.
+// Single product (Products CPT): renders the ACF flexible field "page_builder_products"
+// (field group "Page Builder Products"; "product_builder" from the generator script also works).
 // Products without it fall back to the generic EntryTemplate.
 
 import ProductBuilder from "@/components/major/ProductBuilder";
 import EntryTemplate from "./EntryTemplate";
 import Shell from "./Shell";
 
-export default function ProductTemplate({ product, lang, slug, menu, themeOptions }) {
-  const sections = product?.acf?.product_builder;
+export default function ProductTemplate({ product, lang, slug, themeOptions }) {
+  const sections = product?.acf?.page_builder_products || product?.acf?.product_builder;
 
   if (!Array.isArray(sections) || sections.length === 0) {
-    return <EntryTemplate entry={product} entryType="products" routeType="product" lang={lang} slug={slug} menu={menu} themeOptions={themeOptions} />;
+    return <EntryTemplate entry={product} entryType="products" routeType="product" lang={lang} slug={slug} themeOptions={themeOptions} />;
   }
 
   // A page-level quick contact section replaces the global one from Theme Options
-  const hasQuickContact = sections.some((b) => b.acf_fc_layout === "quick_contact_section");
+  const hasQuickContact = sections.some((b) => b._layout === "quick_contact_section");
 
   return (
     <Shell
@@ -23,7 +24,6 @@ export default function ProductTemplate({ product, lang, slug, menu, themeOption
       entryType="products"
       routeType="product"
       entryId={product?.id}
-      menu={menu}
       themeOptions={themeOptions}
       hideQuickContact={hasQuickContact}
     >

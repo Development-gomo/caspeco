@@ -17,7 +17,6 @@ import {
   getPartnerCategoryBySlug,
   getPartnersByCategory,
   getPageByPath,
-  getMenu,
   getThemeOptions,
   fetchWP,
   getCaseStudies,
@@ -95,8 +94,8 @@ export default async function LocalizedEntryPage({ params }) {
   const { lang, route } = await routeFromParams(params);
   if (!route) notFound();
 
-  const [menu, themeOptions] = await Promise.all([getMenu(lang), getThemeOptions(lang)]);
-  const common = { lang, slug: route.slug, menu, themeOptions };
+  const themeOptions = await getThemeOptions(lang);
+  const common = { lang, slug: route.slug, themeOptions };
 
   switch (route.type) {
     case "post":

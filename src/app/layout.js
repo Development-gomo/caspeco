@@ -21,6 +21,8 @@ const tenon = localFont({
 });
 
 export const metadata = {
+  // Yoast URLs arrive site-relative (WP host masked), so resolve them against our domain
+  ...(process.env.SITE_URL ? { metadataBase: new URL(process.env.SITE_URL) } : {}),
   robots: { index: true, follow: true },
 };
 
@@ -29,6 +31,9 @@ export default async function RootLayout({ children }) {
   // for both EN and DA without nesting a second <html> in [lang]/layout.js.
   const h = await headers();
   const lang = h.get("x-lang") || DEFAULT_LANG;
+  // Page type from the URL (src/config pageTypeFromPath): home, page, product, industry,
+  // casestudy, article, partner, partner-category, service
+  const pageType = h.get("x-page-type") || "page";
 
   return (
     <html lang={lang} className={tenon.variable} suppressHydrationWarning>
@@ -46,21 +51,19 @@ export default async function RootLayout({ children }) {
         {/* ── Google Tag Manager ── add GTM-XXXXXX and uncomment when live 
         <Script
           id="gtm"
-          src="https://www.googletagmanager.com/gtm.js?id=GTM-MNT94DBK"
+          src="https://www.googletagmanager.com/gtm.js?id=GTM-"
           strategy="afterInteractive"
         />*/}
-      
 
         {/* ── Other tracking scripts go here ── */}
       </head>
-      <body suppressHydrationWarning>
+      <body className={pageType} suppressHydrationWarning>
         {/* ── GTM noscript fallback ── uncomment when live */}
-        <noscript>
+        {/* <noscript>
           <iframe
-            src="https://www.googletagmanager.com/ns.html?id=GTM-MNT94DBK" height="0" width="0" style={{ display: "none", visibility: "hidden" }}
+            src="https://www.googletagmanager.com/ns.html?id=GTM-" height="0" width="0" style={{ display: "none", visibility: "hidden" }}
           />
-        </noscript>
-        
+        </noscript> */}
 
         <LangSyncer />
         <ScrollProgress />

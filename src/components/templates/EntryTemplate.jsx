@@ -7,7 +7,7 @@ import Image from "next/image";
 import PageBuilder from "@/components/major/PageBuilder";
 import Shell from "./Shell";
 
-export default function EntryTemplate({ entry, lang, slug, entryType, routeType = null, menu, themeOptions, linkTranslations = true }) {
+export default function EntryTemplate({ entry, lang, slug, entryType, routeType = null, themeOptions, linkTranslations = true }) {
   const sections = entry?.acf?.page_builder;
   const hasBuilder = Array.isArray(sections) && sections.length > 0;
   const image = entry?._embedded?.["wp:featuredmedia"]?.[0];
@@ -20,7 +20,6 @@ export default function EntryTemplate({ entry, lang, slug, entryType, routeType 
       routeType={routeType}
       // without a localized route the switcher falls back to each language's homepage
       entryId={linkTranslations ? entry?.id : null}
-      menu={menu}
       themeOptions={themeOptions}
     >
       {hasBuilder ? (

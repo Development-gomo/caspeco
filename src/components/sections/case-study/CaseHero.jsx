@@ -36,11 +36,11 @@ export default function CaseHero({ data }) {
         <div className="md:flex items-end justify-between gap-20">
           <div className="max-w-[1046px]">
           {sub_heading && (
-            <motion.p
+            <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="uppercase subheading-label text-[var(--color-accent)] md:mb-6"
+              className="cs-rich uppercase subheading-label text-[var(--color-accent)] md:mb-6"
               dangerouslySetInnerHTML={{ __html: sub_heading }}
             />
           )}

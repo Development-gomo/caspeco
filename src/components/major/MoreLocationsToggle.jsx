@@ -13,7 +13,7 @@ export default function MoreLocationsToggle({ label, html }) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 text-[16px] font-medium text-(--color-white) underline underline-offset-2 hover:text-(--color-grey-medium) transition"
+        className="flex items-center gap-2 text-[16px] font-medium text-white underline underline-offset-2 hover:text-(--color-grey-medium) transition"
       >
         {label}
         <span className={`transition-transform duration-300 ${open ? "rotate-180" : ""}`}>
@@ -27,7 +27,7 @@ export default function MoreLocationsToggle({ label, html }) {
         }`}
       >
         <div
-          className="overflow-hidden text-[16px] text-(--color-grey-medium) [&_a]:underline [&_a]:underline-offset-2 [&_a]:text-(--color-white) [&_a:hover]:text-(--color-grey-medium) [&_p]:m-0"
+          className="overflow-hidden text-[16px] text-(--color-grey-medium) [&_a]:underline [&_a]:underline-offset-2 [&_a]:text-white [&_a:hover]:text-(--color-grey-medium) [&_p]:m-0"
           dangerouslySetInnerHTML={{ __html: html }}
         />
       </div>

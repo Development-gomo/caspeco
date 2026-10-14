@@ -106,7 +106,7 @@ function CaseCard({ match, lang, clipText, readMoreText }) {
           <VideoModal open={clipOpen} url={match.clipUrl} title={match.title} onClose={closeClip} />
         </div>
         {match.quote && (
-          <p className="italic font-medium text-[20px] sm:text-[24px] leading-[1.3] text-white" dangerouslySetInnerHTML={{ __html: toHtml(match.quote) }} />
+          <div className="cs-rich italic font-medium text-[20px] sm:text-[24px] leading-[1.3] text-white" dangerouslySetInnerHTML={{ __html: toHtml(match.quote) }} />
         )}
       </div>
 
@@ -169,13 +169,13 @@ export default function HomeBusinessTwin({ data, lang = DEFAULT_LANG, cases: all
         <div className="flex flex-col items-start gap-10 lg:gap-[60px] lg:max-w-[631px] lg:pr-6">
           <div className="flex flex-col gap-5 text-(--color-light-grey)">
             <h2 className="cs-h2 cs-highlight" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
-            {short_text && <p className="cs-p2 lg:max-w-[603px]" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
+            {short_text && <div className="cs-p2 cs-rich lg:max-w-[603px]" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
           </div>
 
           {(hasForm || cta_text || note_text) && (
             <form
               onSubmit={onSubmit}
-              className="flex w-full max-w-[554px] flex-col gap-10 rounded-[8px] bg-(--color-white) px-5 pt-8 pb-6 sm:px-8 sm:pt-10 sm:pb-8 shadow-[0px_2px_9px_0px_rgba(0,0,0,0.1)]"
+              className="flex w-full max-w-[554px] flex-col gap-10 rounded-[8px] bg-white px-5 pt-8 pb-6 sm:px-8 sm:pt-10 sm:pb-8 shadow-[0px_2px_9px_0px_rgba(0,0,0,0.1)]"
             >
               <div className="flex flex-col gap-6">
                 {hasForm && (
@@ -195,7 +195,7 @@ export default function HomeBusinessTwin({ data, lang = DEFAULT_LANG, cases: all
                 )}
               </div>
               {note_text && (
-                <p className="text-[14px] leading-4 tracking-[-0.28px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(note_text) }} />
+                <div className="cs-rich text-[14px] leading-4 tracking-[-0.28px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(note_text) }} />
               )}
             </form>
           )}

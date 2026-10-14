@@ -78,14 +78,14 @@ export default function HomeIntroVideo({ data, lang = DEFAULT_LANG }) {
           )}
 
           {sub_heading && (
-            <p className="font-bold text-[18px] leading-[22px] xl:text-[23px] xl:leading-[23px] tracking-[-0.46px] text-(--color-black) xl:-mt-[5px]">
+            <p className="font-bold text-[18px] leading-[22px] xl:text-[23px] xl:leading-[23px] tracking-[-0.46px] text-black xl:-mt-[5px]">
               {sub_heading}
             </p>
           )}
 
           {short_text && (
-            <p
-              className="cs-p2 mt-8 xl:mt-11.5 max-w-[474px] text-(--color-grey-dark)"
+            <div
+              className="cs-p2 cs-rich mt-8 xl:mt-11.5 max-w-[474px] text-(--color-grey-dark)"
               dangerouslySetInnerHTML={{ __html: toHtml(short_text) }}
             />
           )}

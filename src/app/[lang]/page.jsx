@@ -3,7 +3,7 @@
 import Header from "@/components/major/Header";
 import PageBuilder from "@/components/major/PageBuilder";
 import Footer from "@/components/major/Footer";
-import { getPageBySlug, getMenu, getThemeOptions } from "@/lib/api";
+import { getPageBySlug, getThemeOptions } from "@/lib/api";
 import { buildMetadataFromYoast } from "@/lib/seo";
 import { resolveParams } from "@/lib/params";
 import { notFound } from "next/navigation";
@@ -20,9 +20,8 @@ export default async function LangHomePage({ params }) {
   const lang = resolvedParams.lang || DEFAULT_LANG;
 
   // Fetch page + header/footer data in parallel (single round-trip)
-  const [page, menu, themeOptions] = await Promise.all([
+  const [page, themeOptions] = await Promise.all([
     getPageBySlug("frontpage", lang),
-    getMenu(lang),
     getThemeOptions(lang),
   ]);
 
@@ -34,7 +33,6 @@ export default async function LangHomePage({ params }) {
         lang={lang}
         entryType="pages"
         entryId={page?.id}
-        prefetchedMenu={menu}
         prefetchedOptions={themeOptions || {}}
         logoUrl={themeOptions?.logo_light?.url || ""}
       />

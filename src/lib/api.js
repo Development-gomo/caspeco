@@ -1,13 +1,15 @@
 import { DEFAULT_LANG } from "@/config";
 import { WP_BASE } from "@/config";
 import { cache } from "react";
+import { maskWp } from "@/lib/wpMask";
 
 // Deduped fetch: React.cache ensures identical calls within the same
 // server render are only executed once (works across page + generateMetadata).
+// Responses are masked so no CMS URL reaches the browser (see lib/wpMask.js).
 const _fetchWP = cache(async function _fetchWP(url, revalidate) {
   try {
     const res = await fetch(url, { next: { revalidate } });
-    return await res.json();
+    return maskWp(await res.json());
   } catch {
     return null;
   }
@@ -20,11 +22,11 @@ export function fetchWP(endpoint, { revalidate = 60 } = {}) {
 }
 
 // Pages
-async function getSingleEntry(endpoint, slug, lang = DEFAULT_LANG) {
+async function getSingleEntry(endpoint, slug, lang = DEFAULT_LANG, query = "") {
   if (!slug) return null;
 
   try {
-    const url = `/wp/v2/${endpoint}?slug=${encodeURIComponent(slug)}&lang=${lang}`;
+    const url = `/wp/v2/${endpoint}?slug=${encodeURIComponent(slug)}&lang=${lang}${query}`;
     const entries = await fetchWP(url);
 
     if (!Array.isArray(entries) || entries.length === 0) {
@@ -53,8 +55,10 @@ export async function getCaseStudyBySlug(slug, lang = DEFAULT_LANG) {
   return getSingleEntry("casestudies", slug, lang);
 }
 
+// acf_format=standard: the "Page Builder Products" group otherwise returns images as
+// bare media IDs (ACF REST "light" format); standard gives full image objects with url
 export async function getProductBySlug(slug, lang = DEFAULT_LANG) {
-  return getSingleEntry("products", slug, lang);
+  return getSingleEntry("products", slug, lang, "&acf_format=standard");
 }
 
 export async function getIndustryBySlug(slug, lang = DEFAULT_LANG) {
@@ -136,12 +140,6 @@ export async function getMediaById(id) {
   } catch (err) {
     return null;
   }
-}
-
-// Menus
-export async function getMenu(lang = DEFAULT_LANG) {
-  const menu = await fetchWP(`/myroutes/v1/menus?lang=${lang}`, { revalidate: 300 });
-  return menu;
 }
 
 // Footer widgets
@@ -433,9 +431,10 @@ export function extractTeamTypes(member) {
     }
   });
 
-  // Fallback: class_list
-  if (types.length === 0 && Array.isArray(member?.class_list)) {
-    member.class_list.forEach((cls) => {
+  // Fallback: post classes (WP class_list, renamed to "classes" in lib/wpMask.js)
+  const classes = member?.classes || member?.class_list;
+  if (types.length === 0 && Array.isArray(classes)) {
+    classes.forEach((cls) => {
       if (cls.startsWith("teamtype-")) {
         const slug = cls.replace("teamtype-", "");
         types.push({

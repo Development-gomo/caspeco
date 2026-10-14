@@ -2,6 +2,8 @@
 import { SUPPORTED_LANGS, DEFAULT_LANG } from "./src/config/index.js";
 
 const wpHostname = new URL(process.env.NEXT_PUBLIC_WP_BASE).hostname;
+// WP site URL without /wp-json — media is served from it under /assets (see src/lib/wpMask.js)
+const wpSite = process.env.NEXT_PUBLIC_WP_BASE.replace(/\/wp-json\/?$/, "").replace(/\/$/, "");
 const nonDefaultLangs = SUPPORTED_LANGS.filter((l) => l !== DEFAULT_LANG);
 
 const nextConfig = {
@@ -48,6 +50,11 @@ const nextConfig = {
 
   async rewrites() {
     return [
+      // CMS media/files under our own domain: /assets/uploads/… → WP wp-content (proxied, host hidden)
+      { source: "/assets/:path*", destination: `${wpSite}/wp-content/:path*` },
+      { source: "/static/:path*", destination: `${wpSite}/wp-includes/:path*` },
+      // API routes (incl. dynamic /api/content/…) must not fall into the default-language rewrite
+      { source: "/api/:path*", destination: "/api/:path*" },
       // Pass-throughs for each non-default language (prevents catch-all rewrite below from grabbing them)
       ...nonDefaultLangs.flatMap((lang) => [
         { source: `/${lang}`, destination: `/${lang}` },

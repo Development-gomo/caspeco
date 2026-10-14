@@ -12,7 +12,11 @@ import ToggleIcon from "../../../../public/icons/home/faq-closed.svg";
 import { DEFAULT_LANG, langHref } from "@/config";
 import { rows, sectionBackground, toHtml } from "@/lib/content";
 
-export default function HomeFaq({ data, lang = DEFAULT_LANG }) {
+// Sections whose bottom padding already gives the FAQ its top spacing (same light
+// background, as on the homepage); after anything else the FAQ adds its own.
+const FLUSH_AFTER = new Set(["insights_section"]);
+
+export default function HomeFaq({ data, lang = DEFAULT_LANG, prevLayout }) {
   const faqs = rows(data?.faqs)
     .map((f) => ({ question: f.question, answer: f.answer || f.answers }))
     .filter((f) => f.question);
@@ -33,11 +37,11 @@ export default function HomeFaq({ data, lang = DEFAULT_LANG }) {
     : null;
 
   return (
-    <section className="pb-18 lg:pb-36" style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
+    <section className={`pb-18 lg:pb-36 ${FLUSH_AFTER.has(prevLayout) ? "" : "pt-18 lg:pt-36"}`} style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       <div className="cs-container grid grid-cols-1 gap-10 lg:grid-cols-[549px_minmax(0,1fr)] lg:gap-[50px]">
         <div className="flex flex-col items-start gap-5">
           {heading && <h2 className="cs-h2 cs-highlight text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
-          {short_text && <p className="cs-p1 max-w-[493px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
+          {short_text && <div className="cs-p1 cs-rich max-w-[493px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
           {cta_text && cta_url && <CtaButton href={langHref(cta_url.trim(), lang)}>{cta_text}</CtaButton>}
         </div>
 

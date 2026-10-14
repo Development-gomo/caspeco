@@ -34,11 +34,11 @@ export default function InnerHero({ data }) {
       <div className="relative min-h-[100vh] web-width px-6 py-24 lg:py-20 h-full flex flex-col items-start  justify-end">
         <div className="max-w-[1046px]">
           {sub_heading && (
-            <motion.p
+            <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="uppercase subheading-label text-[var(--color-accent)] md:mb-6"
+              className="cs-rich uppercase subheading-label text-[var(--color-accent)] md:mb-6"
               dangerouslySetInnerHTML={{ __html: sub_heading }}
             />
           )}

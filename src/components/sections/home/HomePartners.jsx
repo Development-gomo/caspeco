@@ -9,7 +9,8 @@ export default function HomePartners({ data }) {
   if (!data) return null;
 
   const { sub_heading, heading } = data;
-  const partners_logo = data?.partners_logo || [];
+  // skip entries without a URL (e.g. bare media IDs) — an empty src breaks next/image
+  const partners_logo = (Array.isArray(data?.partners_logo) ? data.partners_logo : []).filter((logo) => logo?.url);
   const bgImage = data?.bg_image?.url || "";
 
   if (partners_logo.length === 0) return null;

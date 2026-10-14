@@ -26,8 +26,8 @@ function mapOgImages(images = []) {
 
 export function buildMetadataFromYoast(entry, options = {}) {
   const {
-    fallbackTitle = "caspeco Agency",
-    fallbackDescription = "Headless WordPress + Next.js + WPML",
+    fallbackTitle = "Caspeco",
+    fallbackDescription = undefined, // no description tag rather than a placeholder
     lang = DEFAULT_LANG,
   } = options;
 
@@ -38,7 +38,7 @@ export function buildMetadataFromYoast(entry, options = {}) {
     };
   }
 
-  const yoast = entry.yoast_head_json;
+  const yoast = entry.seo || entry.yoast_head_json; // renamed in lib/wpMask.js
   const renderedTitle = stripHtml(entry?.title?.rendered);
   const renderedExcerpt = stripHtml(entry?.excerpt?.rendered);
 

@@ -1,9 +1,9 @@
 // src/proxy.js
-// 1. Sets x-lang header so root layout can set <html lang> correctly.
+// 1. Sets x-lang / x-page-type headers so the root layout can set <html lang> and the <body> class.
 // 2. Fetches redirects from /api/wp-redirects and applies them.
 
 import { NextResponse } from "next/server";
-import { SUPPORTED_LANGS, DEFAULT_LANG } from "@/config";
+import { SUPPORTED_LANGS, DEFAULT_LANG, pageTypeFromPath } from "@/config";
 
 // ─── In-memory redirect cache ────────────────────────────────────────────────
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
@@ -98,15 +98,19 @@ export async function proxy(request){
     return NextResponse.redirect(dest, { status: hit.code });
   }
 
-  // 2. Pass through — set x-lang and x-pathname headers for layouts / not-found pages
+  // 2. Pass through — x-lang, x-pathname and x-page-type for layouts / not-found pages.
+  // Set on the forwarded request (what headers() reads in the layout) and on the response.
   const firstSegment = pathname.split("/")[1] || "";
   const lang = SUPPORTED_LANGS.includes(firstSegment) ? firstSegment : DEFAULT_LANG;
-  const response = NextResponse.next();
-  response.headers.set("x-lang", lang);
-  response.headers.set("x-pathname", pathname);
+  const extra = { "x-lang": lang, "x-pathname": pathname, "x-page-type": pageTypeFromPath(pathname) };
+
+  const requestHeaders = new Headers(request.headers);
+  Object.entries(extra).forEach(([k, v]) => requestHeaders.set(k, v));
+  const response = NextResponse.next({ request: { headers: requestHeaders } });
+  Object.entries(extra).forEach(([k, v]) => response.headers.set(k, v));
   return response;
 }
 
 export const config = {
-  matcher: ["/((?!_next|api|favicon\\.ico).*)"],
+  matcher: ["/((?!_next|api|assets|static|favicon\\.ico).*)"],
 };

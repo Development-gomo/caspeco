@@ -59,8 +59,8 @@ function Hotspot({ spot, open, onToggle, onHover, lang }) {
           >
             {spot.title && <p className="font-bold text-[20px] leading-[1.1] tracking-[-0.4px]">{spot.title}</p>}
             {text && (
-              <p
-                className="mt-1 text-[14px] leading-4 tracking-[-0.28px]"
+              <div
+                className="cs-rich mt-1 text-[14px] leading-4 tracking-[-0.28px]"
                 dangerouslySetInnerHTML={{ __html: toHtml(text) }}
               />
             )}

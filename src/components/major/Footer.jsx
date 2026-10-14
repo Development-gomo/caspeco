@@ -106,7 +106,7 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
           FOOTER
          ===================================================== */}
       <footer className="bg-black text-white relative z-10">
-        <div className="mx-auto w-full web-width pt-16 pb-16 lg:pt-[72px] lg:pb-36 flex flex-col gap-12">
+        <div className="cs-container mx-auto w-full web-width pt-16 pb-16 lg:pt-[72px] lg:pb-36 flex flex-col gap-12">
           {/* ============ MAIN ROW: contact / stat card / nav columns ============ */}
           <div className="flex flex-col lg:flex-row lg:items-start gap-12 lg:gap-24">
             {/* LOGO + CONTACT INFO */}
@@ -120,7 +120,7 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
                   className="h-[27px] w-auto object-contain"
                 />
               ) : (
-                <p className="text-[24px] leading-none font-extrabold text-(--color-white) uppercase">
+                <p className="text-[24px] leading-none font-extrabold text-white uppercase">
                   caspeco<span className="text-(--color-yellow)">.</span>
                 </p>
               )}
@@ -144,7 +144,7 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
             {/* STAT CARD — Figma "USP framed": on hover (Smart Animate 150 ms ease-out) the
                 gradient gives way to a 30% #fdfdfd fill and the number grows 64px → 71px */}
             {statCard.stat_number && (
-              <div className="group relative shrink-0 size-[240px] overflow-hidden rounded-lg pt-[22px] pb-[32px] px-5 flex flex-col justify-between bg-(--color-grey-dark) shadow-[0px_4px_12px_0px_rgba(0,0,0,0.16)]">
+              <div className="group relative shrink-0 size-60 overflow-hidden rounded-lg pt-[22px] pb-8  px-5 flex flex-col justify-between bg-(--color-grey-dark) shadow-[0px_4px_12px_0px_rgba(0,0,0,0.16)]">
                 <span
                   aria-hidden
                   className="absolute inset-0 transition-opacity duration-150 ease-out group-hover:opacity-0"
@@ -155,12 +155,12 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
                 />
                 <span aria-hidden className="absolute inset-0 bg-[rgba(253,253,253,0.3)] opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100" />
 
-                <p className="relative flex items-start gap-1 text-[64px] leading-[64px] tracking-[-1.28px] text-(--color-yellow) transition-[font-size,line-height] duration-150 ease-out group-hover:text-[71px] group-hover:leading-[71px]">
+                <p className="relative flex items-start gap-1 text-[64px] leading-16 tracking-[-1.28px] text-(--color-yellow) transition-[font-size,line-height] duration-150 ease-out group-hover:text-[71px] group-hover:leading-[71px]">
                   <span className="font-bold">{statCard.stat_number}</span>
                   <span className="font-light">%</span>
                 </p>
                 {statCard.short_text && (
-                  <p className="relative text-[20px] leading-[24px] tracking-[-0.4px] text-(--color-white)">{statCard.short_text}</p>
+                  <p className="relative text-[20px] leading-6 tracking-[-0.4px] text-white">{statCard.short_text}</p>
                 )}
               </div>
             )}
@@ -179,7 +179,7 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
                     <ul className="space-y-3 text-[18px] font-light tracking-[-0.36px] text-(--color-grey-medium)">
                       {col.links.map((item, i) => (
                         <li key={i}>
-                          <Link href={langHref(item.link, lang)} className="hover:text-(--color-white) transition-colors">
+                          <Link href={langHref(item.link, lang)} className="hover:text-white transition-colors">
                             {item.title}
                           </Link>
                         </li>
@@ -192,7 +192,7 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
           </div>
 
           {/* ============ BOTTOM ROW: social / legal links / copyright ============ */}
-          <div className="border-t border-(--color-white)/10 pt-6 flex flex-col-reverse lg:flex-row items-center justify-between gap-6">
+          <div className="border-t border-white/10 pt-6 flex flex-col-reverse lg:flex-row items-center justify-between gap-6">
             {socialLinks.length > 0 && (
               <div className="flex items-center gap-4">
                 {socialLinks.map(([network, url]) => (
@@ -201,7 +201,7 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
                     href={url}
                     target="_blank"
                     aria-label={network}
-                    className="text-(--color-white) hover:text-(--color-yellow) transition-colors"
+                    className="text-white hover:text-(--color-yellow) transition-colors"
                   >
                     {SOCIAL_ICONS[network]}
                   </Link>
@@ -210,12 +210,12 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
             )}
 
             {legalLinks.length > 0 && (
-              <div className="flex flex-wrap items-center justify-center gap-16 text-[18px] tracking-[-0.36px] text-(--color-grey-medium-dark)">
+              <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-16 text-[18px] tracking-[-0.36px] text-(--color-grey-medium-dark)">
                 {legalLinks.map((item, i) => (
                   <Link
                     key={i}
                     href={langHref(item.link, lang)}
-                    className="underline hover:text-(--color-white) transition-colors"
+                    className="underline hover:text-white transition-colors"
                   >
                     {item.title}
                   </Link>
@@ -224,8 +224,8 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
             )}
 
             {copyrightText && (
-              <p
-                className="text-[18px] tracking-[-0.36px] text-(--color-grey-medium-dark) [&_a:hover]:text-(--color-white)"
+              <div
+                className="cs-rich text-[18px] tracking-[-0.36px] text-(--color-grey-medium-dark) [&_a:hover]:text-white"
                 dangerouslySetInnerHTML={{ __html: copyrightText }}
               />
             )}

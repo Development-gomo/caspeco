@@ -10,6 +10,7 @@ import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import CtaButton from "@/components/ui/CtaButton";
 import ArrowLink from "@/components/ui/ArrowLink";
+import Reveal from "@/components/ui/Reveal";
 import Chevron from "../../../../public/icons/product/chevron.svg";
 import { DEFAULT_LANG, langHref } from "@/config";
 import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
@@ -80,18 +81,20 @@ export default function ProductUspAccordion({ data, lang = DEFAULT_LANG }) {
   return (
     <section className="py-18 lg:py-36" style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       <div className="cs-container flex flex-col gap-12 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
-        <div className="flex flex-col items-start gap-10 lg:max-w-[507px]">
+        <Reveal className="flex flex-col items-start gap-10 lg:max-w-[507px]">
           <div className="flex flex-col gap-4">
-            {heading && <h2 className="cs-h3 cs-highlight font-extrabold text-(--color-black)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+            {heading && <h2 className="cs-h3 cs-highlight font-extrabold text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
             {short_text && <div className="cs-p2 cs-rich text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
           </div>
           {cta_text && cta_url && <CtaButton href={langHref(cta_url.trim(), lang)}>{cta_text}</CtaButton>}
-        </div>
+        </Reveal>
 
         {items.length > 0 && (
           <div className="flex w-full flex-col gap-2 lg:max-w-[671px]">
             {items.map((item, i) => (
-              <AccordionItem key={i} item={item} lang={lang} isOpen={open === i} onToggle={() => setOpen(open === i ? null : i)} />
+              <Reveal key={i} x={32} y={0} delay={0.15 + i * 0.1}>
+                <AccordionItem item={item} lang={lang} isOpen={open === i} onToggle={() => setOpen(open === i ? null : i)} />
+              </Reveal>
             ))}
           </div>
         )}

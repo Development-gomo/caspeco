@@ -51,7 +51,7 @@ async function fetchRelatedMedia(relatedPosts) {
   );
 }
 
-export default async function PostTemplate({ post, lang, slug, menu, themeOptions }) {
+export default async function PostTemplate({ post, lang, slug, themeOptions }) {
   // Fetch related media + featured image in parallel
   const [relatedPosts, featuredMedia] = await Promise.all([
     post.relatedPosts ? fetchRelatedMedia(post.relatedPosts) : null,
@@ -65,7 +65,7 @@ export default async function PostTemplate({ post, lang, slug, menu, themeOption
     null;
 
   return (
-    <Shell lang={lang} slug={slug} entryType="post" routeType="post" entryId={post?.id} menu={menu} themeOptions={themeOptions}>
+    <Shell lang={lang} slug={slug} entryType="post" routeType="post" entryId={post?.id} themeOptions={themeOptions}>
       <div className="h-28 w-full bg-black"></div>
       <div className="py-15 md:py-30 web-width px-6">
         <article className="max-w-4xl mx-auto space-y-6">

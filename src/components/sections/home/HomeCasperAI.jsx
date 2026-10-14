@@ -45,7 +45,7 @@ function ChatCard({ question, answer, placeholder, href }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.4 }}
-          className="w-fit max-w-[336px] rounded-[4px] bg-[rgba(0,0,0,0.39)] px-4 py-[13px] text-[15px] sm:text-[16px] leading-5 tracking-[-0.64px] text-(--color-white)"
+          className="w-fit max-w-[336px] rounded-[4px] bg-[rgba(0,0,0,0.39)] px-4 py-[13px] text-[15px] sm:text-[16px] leading-5 tracking-[-0.64px] text-white"
         >
           {question}
         </motion.p>
@@ -63,8 +63,8 @@ function ChatCard({ question, answer, placeholder, href }) {
             <Image src={AvatarSmall} alt="" width={21} height={21} />
             <RobotGlyph size={10} />
           </span>
-          <p
-            className="rounded-[4px] bg-[#29363d] px-[11px] pt-[13px] pb-4 text-[15px] sm:text-[16px] leading-5 tracking-[-0.64px] text-(--color-white)"
+          <div
+            className="cs-rich rounded-[4px] bg-[#29363d] px-[11px] pt-[13px] pb-4 text-[15px] sm:text-[16px] leading-5 tracking-[-0.64px] text-white"
             dangerouslySetInnerHTML={{ __html: toHtml(answer) }}
           />
         </motion.div>
@@ -105,11 +105,11 @@ export default function HomeCasperAI({ data, lang = DEFAULT_LANG }) {
 
       <div className="cs-container relative flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex flex-col items-start text-(--color-light-grey) lg:max-w-[507px]">
-          {sub_heading && <p className="italic text-[18px] lg:text-[20px] leading-[26px] tracking-[-0.8px] text-(--color-white)">{sub_heading}</p>}
+          {sub_heading && <p className="italic text-[18px] lg:text-[20px] leading-[26px] tracking-[-0.8px] text-white">{sub_heading}</p>}
           <h2 className="cs-h3 cs-highlight mt-0" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
           {short_text && (
-            <p
-              className="mt-5 font-bold text-[18px] lg:text-[20px] leading-6 tracking-[-0.4px] lg:max-w-[446px]"
+            <div
+              className="cs-rich mt-5 font-bold text-[18px] lg:text-[20px] leading-6 tracking-[-0.4px] lg:max-w-[446px]"
               dangerouslySetInnerHTML={{ __html: toHtml(short_text) }}
             />
           )}

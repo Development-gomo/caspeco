@@ -136,7 +136,7 @@ export default function HomeHelpTabs({ data, lang = DEFAULT_LANG }) {
               </div>
             </div>
 
-            <div role="tabpanel" className="flex w-full flex-col items-center gap-10 lg:flex-row lg:justify-center lg:gap-[120px]">
+            <div role="tabpanel" className="flex w-full flex-col items-center gap-10 lg:flex-row lg:justify-center xl:gap-[120px]">
               {/* stays mounted so its frames can animate from one tab's layout to the next */}
               {hasCollage && <Collage images={rows(tab.images)} />}
 
@@ -147,10 +147,10 @@ export default function HomeHelpTabs({ data, lang = DEFAULT_LANG }) {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={TRANSITION}
-                  className="flex w-full max-w-[536px] flex-col items-start gap-10 lg:px-6"
+                  className="flex w-full max-w-[536px] flex-col items-start gap-10 xl:px-6"
                 >
                   <div className="flex flex-col gap-5">
-                    {tab.title && <h3 className="cs-h4 text-(--color-black)">{tab.title}</h3>}
+                    {tab.title && <h3 className="cs-h4 text-black">{tab.title}</h3>}
                     {tab.text && (
                       <div className="cs-p2 cs-rich text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(tab.text) }} />
                     )}

@@ -33,7 +33,7 @@ export default function HomeHero({ data }) {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full min-h-screen overflow-hidden hero lg:h-240"
+      className="relative w-full min-h-screen overflow-hidden hero xl:min-h-240"
     >
       {/* BG IMAGE/VIDEO */}
       <motion.div className="absolute hero-bg inset-0 -z-10" style={{ y: bgY }}>
@@ -59,13 +59,13 @@ export default function HomeHero({ data }) {
       {/* <div className="absolute inset-0 bg-linear-to-b from-black/40 via-black/65 to-transparent -z-10"></div> */}
 
       {/* HERO CONTENT — USP row pinned near the top, heading block pinned to the bottom */}
-      <div className="relative z-10 min-h-screen flex flex-col justify-between px-6 pt-24 pb-24 lg:px-[120px] lg:pt-[148px] lg:pb-36 gap-20 lg:gap-55">
+      <div className="cs-container relative z-10 min-h-screen flex flex-col justify-around lg:justify-between pt-24 pb-24 lg:pt-[148px] lg:pb-36 sm:gap-10 md:gap-20 lg:gap-24 xl:gap-55">
         {labels.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="flex flex-wrap items-center gap-4 lg:gap-8 text-white font-extrabold text-base lg:text-[20px] leading-[22px]"
+            className="flex flex-wrap items-center gap-4 lg:gap-8 text-white font-extrabold text-base lg:text-[20px] leading-[22px] mb-6"
           >
             {labels.map((row, i) =>
               row.link ? (
@@ -88,7 +88,8 @@ export default function HomeHero({ data }) {
               transition={{ duration: 0.8 }}
               className="w-full normal-case text-[40px] leading-11 tracking-[-1.6px]
                 md:text-[64px] md:leading-16 md:tracking-[-2.4px]
-                lg:text-[88px] lg:leading-[84px] lg:tracking-[-3.2px]"
+                lg:text-[72px] lg:leading-[72px] lg:tracking-[-2.8px]
+                xl:text-[88px] xl:leading-[84px] xl:tracking-[-3.2px]"
               dangerouslySetInnerHTML={{ __html: heading }}
             />
 
@@ -97,7 +98,7 @@ export default function HomeHero({ data }) {
                 initial={{ opacity: 0, y: 25 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.2 }}
-                className="max-w-[650px] font-medium text-base leading-[22px] lg:text-[24px] lg:leading-7 lg:tracking-[-0.48px]"
+                className="lg:max-w-[650px] font-medium text-base leading-[22px] lg:text-[24px] lg:leading-7 lg:tracking-[-0.48px]"
                 dangerouslySetInnerHTML={{ __html: shortHeading }}
               />
             )}

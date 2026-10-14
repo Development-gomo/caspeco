@@ -41,7 +41,7 @@ function InsightCard({ post, readMore, readSuffix, lang }) {
 
       <div className="flex flex-1 flex-col items-start gap-4 p-6">
         <h3
-          className="font-bold text-[22px] lg:text-[26px] leading-7 tracking-[-0.52px] normal-case text-(--color-black)"
+          className="font-bold text-[22px] lg:text-[26px] leading-7 tracking-[-0.52px] normal-case text-black"
           dangerouslySetInnerHTML={{ __html: title }}
         />
         {readSuffix && (
@@ -72,7 +72,7 @@ export default function HomeInsights({ data, lang = DEFAULT_LANG, prefetchedPost
       <div className="cs-container flex flex-col gap-10 lg:gap-16">
         <div className="flex flex-col items-start gap-6">
           {heading && <h2 className="cs-h2 cs-highlight max-w-[985px] text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
-          {short_text && <p className="cs-p1 max-w-[680px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
+          {short_text && <div className="cs-p1 cs-rich max-w-[680px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
           {cta_text && cta_url && (
             <CtaButton variant="outline-dark" href={langHref(cta_url.trim(), lang)} className="mt-4">
               {cta_text}

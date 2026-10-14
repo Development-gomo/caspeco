@@ -81,7 +81,7 @@ export default function HomeIntegrations({ data, lang = DEFAULT_LANG }) {
           />
         )}
         {short_text && (
-          <p className="cs-p2 mt-4 max-w-[686px]" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />
+          <div className="cs-p2 cs-rich mt-4 max-w-[686px]" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />
         )}
         {cta_text && cta_url && (
           <CtaButton variant="outline-light" href={langHref(cta_url.trim(), lang)} className="mt-10">

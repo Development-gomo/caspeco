@@ -33,11 +33,11 @@ export default function ServiceHero({ data }) {
       <div className="relative min-h-[100vh] web-width px-6 py-16 lg:py-25 h-full flex flex-col items-start justify-end">
           <div className="">
           {sub_heading && (
-            <motion.p
+            <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="uppercase subheading-label text-[var(--color-accent)] md:mb-6" 
+              className="cs-rich uppercase subheading-label text-[var(--color-accent)] md:mb-6" 
               style={{ letterSpacing: '1.32px' }}
               dangerouslySetInnerHTML={{ __html: sub_heading }}
             />

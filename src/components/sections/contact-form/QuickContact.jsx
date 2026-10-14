@@ -25,7 +25,7 @@ export default function QuickContact({ data, lang = DEFAULT_LANG, id }) {
       style={{ backgroundColor: background_colour || "#0b2533" }}
     >
       <div className="flex flex-col gap-4 items-start w-full lg:w-[476px] shrink-0">
-        {sub_heading && <p className="italic text-[24px] leading-7 tracking-[-0.48px] text-(--color-white)">{sub_heading}</p>}
+        {sub_heading && <p className="italic text-[24px] leading-7 tracking-[-0.48px] text-white">{sub_heading}</p>}
 
         {heading && (
           <h2
@@ -37,12 +37,12 @@ export default function QuickContact({ data, lang = DEFAULT_LANG, id }) {
         {(sub_heading || heading) && <div className="h-1 w-full bg-(--color-yellow)" />}
 
         {short_description && (
-          <p className="text-[20px] leading-6 tracking-[-0.4px] text-(--color-white)" dangerouslySetInnerHTML={{ __html: toHtml(short_description) }} />
+          <div className="cs-rich text-[20px] leading-6 tracking-[-0.4px] text-white" dangerouslySetInnerHTML={{ __html: toHtml(short_description) }} />
         )}
       </div>
 
       {hasAcfForm || cf7Id ? (
-        <div className={`w-full lg:w-[493px] shrink-0 rounded-lg bg-(--color-white) border-6 border-white/50 shadow-[0px_2px_4.5px_0px_rgba(0,0,0,0.1)] py-7 ${hasAcfForm ? "px-[18px]" : ""}`}>
+        <div className={`w-full lg:w-[493px] shrink-0 rounded-lg bg-white border-6 border-white/50 shadow-[0px_2px_4.5px_0px_rgba(0,0,0,0.1)] py-7 ${hasAcfForm ? "px-[18px]" : ""}`}>
           {hasAcfForm ? (
             <QuickContactForm data={data} lang={lang} />
           ) : (

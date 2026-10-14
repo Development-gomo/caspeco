@@ -9,12 +9,12 @@ import Link from "next/link";
 
 const VARIANTS = {
   yellow: "bg-(--color-yellow) hover:bg-(--color-yellow)/90 text-(--color-grey-dark) px-[38px] py-4",
-  dark: "bg-(--color-grey-dark) hover:bg-(--color-black) text-(--color-light-grey) px-[38px] py-4",
+  dark: "bg-(--color-grey-dark) hover:bg-black text-(--color-light-grey) px-[38px] py-4",
   "outline-dark":
     "border-2 border-(--color-grey-dark) text-(--color-grey-dark) hover:bg-(--color-grey-dark) hover:text-(--color-light-grey) px-[36px] py-[14px]",
   "outline-light":
     // client request: hover fills yellow (was white)
-    "border-2 border-(--color-white) text-(--color-white) hover:border-(--color-yellow) hover:bg-(--color-yellow) hover:text-(--color-grey-dark) px-[36px] py-[14px]",
+    "border-2 border-(--color-white) text-white hover:border-(--color-yellow) hover:bg-(--color-yellow) hover:text-(--color-grey-dark) px-[36px] py-[14px]",
 };
 
 export default function CtaButton({
