@@ -268,11 +268,11 @@ export default function Header({
                         <div className="
                             opacity-0 translate-x-4
                             group-hover:opacity-100 group-hover:translate-x-0
-                            transition-all duration-300 ease-out bg-white text-black rounded-sm shadow-lg overflow-hidden
+                            transition-all duration-300 ease-out bg-black/40 backdrop-blur-[8px] text-white rounded-sm shadow-lg overflow-hidden
                             flex
                           "
                         >
-                          <div className="flex flex-1 divide-x divide--black/10">
+                          <div className="flex flex-1 divide-x divide-white/10">
                             {item.columns.map((col, ci) => (
                               <ul key={ci} className="min-w-[180px] py-2">
                                 {(col.links || []).map((link, li) => (
@@ -282,7 +282,7 @@ export default function Header({
                                       prefetch={true}
                                       onClick={(e) => handleNavClick(e, link.url?.url)}
                                       target={link.url?.target || undefined}
-                                      className="block px-4 py-3 text-black text-sm hover:text-black/70 transition"
+                                      className="block px-4 py-3 text-white text-sm hover:text-white/70 transition"
                                     >
                                       {link.label}
                                     </Link>
@@ -293,7 +293,7 @@ export default function Header({
                           </div>
 
                           {item.card && (
-                            <div className="w-[220px] shrink-0 bg-black/5 p-5 flex flex-col gap-2">
+                            <div className="w-[220px] shrink-0 bg-white/5 p-5 flex flex-col gap-2">
                               {item.sideImage && (
                                 <div className="relative w-full h-[100px] mb-2">
                                   <Image src={item.sideImage} alt="" fill className="object-cover rounded-sm" />
@@ -301,13 +301,13 @@ export default function Header({
                               )}
                               <p className="font-bold text-sm">{item.card.title}</p>
                               {item.card.description && (
-                                <p className="text-xs text-black/70">{item.card.description}</p>
+                                <p className="text-xs text-white/70">{item.card.description}</p>
                               )}
                               {item.card.button_link?.url && (
                                 <Link
                                   href={langHref(item.card.button_link.url, lang)}
                                   target={item.card.button_link.target || undefined}
-                                  className="mt-2 text-sm font-bold text-(--color-petrol) hover:underline"
+                                  className="mt-2 text-sm font-bold text-(--color-yellow) hover:underline"
                                 >
                                   {item.card.button_link.title || "Learn more"}
                                 </Link>
@@ -331,7 +331,7 @@ export default function Header({
                         <ul className="
                             opacity-0 translate-x-4
                             group-hover:opacity-100 group-hover:translate-x-0
-                            transition-all duration-300 ease-out bg-white text-black rounded-sm shadow-lg overflow-hidden
+                            transition-all duration-300 ease-out bg-black/40 backdrop-blur-[8px] text-white rounded-sm shadow-lg overflow-hidden
                           "
                         >
                           {item.children.map((sub) => (
@@ -341,8 +341,8 @@ export default function Header({
                                 prefetch={true}
                                 onClick={(e) => handleNavClick(e, sub.url)}
                                 className="
-                                    block px-4 py-3 text-black text-sm
-                                    hover:text-black/70 transition
+                                    block px-4 py-3 text-white text-sm
+                                    hover:text-white/70 transition
                                   "
                               >
                                 {sub.title}
