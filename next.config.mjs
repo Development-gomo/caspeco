@@ -10,6 +10,10 @@ const nextConfig = {
   reactStrictMode: true,
 
   images: {
+    // Serve CMS images as-is (via /assets) instead of through Vercel Image Optimization —
+    // the account's optimization quota returns 402 once exceeded and every image breaks.
+    // WP already generates resized sizes; set to false again on a plan with quota.
+    unoptimized: true,
     remotePatterns: [
       { protocol: "https", hostname: wpHostname, pathname: "/**" },
       { protocol: "https", hostname: `www.${wpHostname}`, pathname: "/**" },
