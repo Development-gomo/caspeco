@@ -9,7 +9,7 @@ import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
 import PageBuilder from "./PageBuilder";
 import Reveal from "@/components/ui/Reveal";
-import { getTwinCaseStudies, getMediaByIds } from "@/lib/api";
+import { getTwinCaseStudies, getMediaByIds, getLogoGalleries } from "@/lib/api";
 import { mapTwinCases, twinMediaIds } from "@/lib/caseStudies";
 
 const ProductHero = dynamic(() => import("../sections/product/ProductHero"));
@@ -32,10 +32,13 @@ const CARDS_GRADIENT = "linear-gradient(180deg, rgba(218,220,221,0.8) 0.94%, rgb
 
 async function prefetchSectionData(sections, lang) {
   const needsTwin = sections.some((b) => b._layout === "business_twin_section");
-  if (!needsTwin) return {};
-  const twinPosts = await getTwinCaseStudies(lang);
+  const needsLogos = sections.some((b) => b._layout === "logos_section" || b._layout === "home_partners_section");
+  const [twinPosts, logos] = await Promise.all([
+    needsTwin ? getTwinCaseStudies(lang) : null,
+    needsLogos ? getLogoGalleries(lang) : null,
+  ]);
   const twinCases = twinPosts ? mapTwinCases(twinPosts, await getMediaByIds(twinMediaIds(twinPosts))) : null;
-  return { twinCases };
+  return { twinCases, logos };
 }
 
 export default async function ProductBuilder({ sections, lang = DEFAULT_LANG }) {
@@ -54,7 +57,7 @@ export default async function ProductBuilder({ sections, lang = DEFAULT_LANG }) 
 
           case "logos_section":
           case "home_partners_section":
-            return <HomePartners key={i} data={block} lang={lang} />;
+            return <HomePartners key={i} data={block} lang={lang} logos={prefetched.logos?.partners} />;
 
           case "product_cards_section":
             return (

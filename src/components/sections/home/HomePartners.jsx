@@ -1,16 +1,19 @@
 // src/components/sections/home/HomePartners.jsx
+// Logos come from Theme Settings → Partners Logo (`logos`, shared by all languages);
+// the section's own partners_logo gallery is only a fallback for older pages.
 
 "use client";
 
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-export default function HomePartners({ data }) {
+export default function HomePartners({ data, logos: themeLogos }) {
   if (!data) return null;
 
   const { sub_heading, heading } = data;
   // skip entries without a URL (e.g. bare media IDs) — an empty src breaks next/image
-  const partners_logo = (Array.isArray(data?.partners_logo) ? data.partners_logo : []).filter((logo) => logo?.url);
+  const source = themeLogos?.length ? themeLogos : data?.partners_logo;
+  const partners_logo = (Array.isArray(source) ? source : []).filter((logo) => logo?.url);
   const bgImage = data?.bg_image?.url || "";
 
   if (partners_logo.length === 0) return null;

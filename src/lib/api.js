@@ -148,17 +148,38 @@ export async function getFooterWidgets(lang = DEFAULT_LANG) {
   return footer;
 }
 
-// Theme options (logo, colours, socials)
+// Theme options (logo, header menu, footer, logo galleries). A language whose options
+// pages aren't translated in WPML returns [] (e.g. nl) — fall back to the default
+// language so the header/footer never render empty.
+const hasOptions = (o) => o && !Array.isArray(o) && typeof o === "object" && Object.keys(o).length > 0;
+
 export async function getThemeOptions(lang = DEFAULT_LANG) {
   try {
     const options = await fetchWP(`/headless/v1/theme-options?lang=${lang}`, { revalidate: 300 });
-    if (!options) {
-      return { header: {}, footer: {} };
+    if (hasOptions(options)) return options;
+    if (lang !== DEFAULT_LANG) {
+      const fallback = await fetchWP(`/headless/v1/theme-options?lang=${DEFAULT_LANG}`, { revalidate: 300 });
+      if (hasOptions(fallback)) return fallback;
     }
-    return options;
+    return { header: {}, footer: {} };
   } catch {
     return { header: {}, footer: {} };
   }
+}
+
+// Partner / integration logo galleries (Theme Settings → Partners Logo / Integrations Logo).
+// Managed once for all languages; a language without its own gallery falls back to the default.
+export async function getLogoGalleries(lang = DEFAULT_LANG) {
+  const pick = (options, key) => (Array.isArray(options?.[key]) ? options[key].filter((logo) => logo?.url) : []);
+  const options = await getThemeOptions(lang);
+  let partners = pick(options, "partners_logo");
+  let integrations = pick(options, "integrations_logo");
+  if ((!partners.length || !integrations.length) && lang !== DEFAULT_LANG) {
+    const fallback = await getThemeOptions(DEFAULT_LANG);
+    if (!partners.length) partners = pick(fallback, "partners_logo");
+    if (!integrations.length) integrations = pick(fallback, "integrations_logo");
+  }
+  return { partners, integrations };
 }
 
 async function getEntryById(endpoint, id, lang = DEFAULT_LANG) {

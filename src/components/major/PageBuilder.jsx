@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
-import { getAllServices, getCaseStudies, getAllPosts, getAllTeam, getPostsByIds, getAllIndustries, getTwinCaseStudies, getMediaByIds } from "@/lib/api";
+import { getAllServices, getCaseStudies, getAllPosts, getAllTeam, getPostsByIds, getAllIndustries, getTwinCaseStudies, getMediaByIds, getLogoGalleries } from "@/lib/api";
 import { mapTwinCases, twinMediaIds } from "@/lib/caseStudies";
 
 const Hero = dynamic(() => import("../sections/home/HomeHero"));
@@ -39,7 +39,7 @@ const HomeFaq = dynamic(() => import("../sections/home/HomeFaq"));
 async function prefetchSectionData(sections, lang) {
   if (!sections) return {};
 
-  const needs = { services: false, cases: false, posts: false, team: false, industries: false, twin: false };
+  const needs = { services: false, cases: false, posts: false, team: false, industries: false, twin: false, logos: false };
   const pickedPostIds = [];
 
   for (const block of sections) {
@@ -50,6 +50,7 @@ async function prefetchSectionData(sections, lang) {
     if (block._layout === "team_section") needs.team = true;
     if (block._layout === "industry_slider_section") needs.industries = true;
     if (block._layout === "home_casestudy_section") needs.twin = true;
+    if (block._layout === "home_partners_section" || block._layout === "integrations_section") needs.logos = true;
     if (block._layout === "insights_section") {
       const ids = Array.isArray(block.posts) ? block.posts.map((p) => (typeof p === "object" ? p.ID || p.id : p)) : [];
       if (ids.length) pickedPostIds.push(...ids);
@@ -57,7 +58,7 @@ async function prefetchSectionData(sections, lang) {
     }
   }
 
-  const [services, cases, posts, team, pickedPosts, industries, twinPosts] = await Promise.all([
+  const [services, cases, posts, team, pickedPosts, industries, twinPosts, logos] = await Promise.all([
     needs.services ? getAllServices(lang) : null,
     needs.cases ? getCaseStudies(lang) : null,
     needs.posts ? getAllPosts(lang) : null,
@@ -65,12 +66,13 @@ async function prefetchSectionData(sections, lang) {
     pickedPostIds.length ? getPostsByIds(pickedPostIds, lang) : null,
     needs.industries ? getAllIndustries(lang) : null,
     needs.twin ? getTwinCaseStudies(lang) : null,
+    needs.logos ? getLogoGalleries(lang) : null,
   ]);
 
   // Business Twin: resolve logo/clip media IDs, then reduce to small objects for the client
   const twinCases = twinPosts ? mapTwinCases(twinPosts, await getMediaByIds(twinMediaIds(twinPosts))) : null;
 
-  return { services, cases, posts, team, pickedPosts, industries, twinCases };
+  return { services, cases, posts, team, pickedPosts, industries, twinCases, logos };
 }
 
 export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
@@ -107,7 +109,7 @@ export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
             return <AskAI key={i} data={block} lang={lang} />;  
 
           case "home_partners_section":
-            return <HomePartners key={i} data={block} lang={lang} />;
+            return <HomePartners key={i} data={block} lang={lang} logos={prefetched.logos?.partners} />;
 
           case "hero_section":
             return <InnerHero key={i} data={block} lang={lang} />;
@@ -155,7 +157,7 @@ export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
             return <HomeIndustrySlider key={i} data={block} lang={lang} prefetchedIndustries={prefetched.industries} />;
 
           case "integrations_section":
-            return <HomeIntegrations key={i} data={block} lang={lang} />;
+            return <HomeIntegrations key={i} data={block} lang={lang} logos={prefetched.logos?.integrations} />;
 
           case "insights_section":
             return <HomeInsights key={i} data={block} lang={lang} prefetchedPosts={prefetched.pickedPosts || prefetched.posts} />;

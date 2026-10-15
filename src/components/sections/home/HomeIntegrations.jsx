@@ -1,7 +1,8 @@
 // src/components/sections/home/HomeIntegrations.jsx
 // ACF layout: integrations_section — "100+ integrations" with a three-row logo wall.
 // All rows scroll: rows 1 and 3 left → right, the middle row right → left.
-// Logos from the gallery are reused in order if there are fewer than the wall needs.
+// Logos come from Theme Settings → Integrations Logo (`logos`, shared by all languages),
+// falling back to the section's own gallery; reused in order if fewer than the wall needs.
 
 import Image from "next/image";
 import CtaButton from "@/components/ui/CtaButton";
@@ -57,8 +58,8 @@ function MarqueeRow({ logos, variant, reverse = false }) {
   );
 }
 
-export default function HomeIntegrations({ data, lang = DEFAULT_LANG }) {
-  const logos = rows(data?.logos).filter((l) => mediaUrl(l));
+export default function HomeIntegrations({ data, logos: themeLogos, lang = DEFAULT_LANG }) {
+  const logos = (themeLogos?.length ? themeLogos : rows(data?.logos)).filter((l) => mediaUrl(l));
   const { heading, short_text, cta_text, cta_url } = data || {};
   if (!heading && logos.length === 0) return null;
 
