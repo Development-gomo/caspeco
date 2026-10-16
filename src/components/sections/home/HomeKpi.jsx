@@ -11,6 +11,7 @@ import KpiArrow from "../../../../public/icons/home/kpi-arrow.svg";
 import CircleInfo from "../../../../public/icons/home/circle-info.svg";
 import CheckYellow from "../../../../public/icons/home/check-yellow.svg";
 import { highlightHtml, rows, sectionBackground } from "@/lib/content";
+import CountUp from "@/components/ui/CountUp";
 
 function Dashes({ flipped }) {
   return (
@@ -45,7 +46,7 @@ function KpiCard({ card, hint }) {
         <span className={face} aria-hidden={flipped || undefined}>
           <span className="absolute left-6 top-6 max-w-[150px] text-[20px] leading-6 tracking-[-0.4px]">{card.label}</span>
           <span className="absolute left-6 top-[84px] font-bold text-[64px] leading-16 tracking-[-1.28px] sm:text-[80px] sm:tracking-[-1.6px]">
-            {card.value}
+            <CountUp value={card.value} />
           </span>
           {canFlip && <Image src={KpiArrow} alt="" width={36} height={36} className="absolute right-4 top-24" />}
           {hint && (

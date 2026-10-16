@@ -26,12 +26,13 @@ function Arrow({ direction, disabled, onClick, label }) {
   );
 }
 
-export default function SliderArrows({ index, count, onChange, className = "" }) {
+// loop: arrows never disable; onChange may receive -1 or `count` (the caller wraps / slides)
+export default function SliderArrows({ index, count, onChange, loop = false, className = "" }) {
   if (count < 2) return null;
   return (
     <div className={`flex items-center gap-8 ${className}`}>
-      <Arrow direction="prev" label="Previous" disabled={index === 0} onClick={() => onChange(index - 1)} />
-      <Arrow direction="next" label="Next" disabled={index === count - 1} onClick={() => onChange(index + 1)} />
+      <Arrow direction="prev" label="Previous" disabled={!loop && index === 0} onClick={() => onChange(index - 1)} />
+      <Arrow direction="next" label="Next" disabled={!loop && index === count - 1} onClick={() => onChange(index + 1)} />
     </div>
   );
 }

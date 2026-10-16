@@ -11,6 +11,7 @@ import QuickContact from "@/components/sections/contact-form/QuickContact";
 import PhoneIcon from "../../../public/icons/footer-phone.svg";
 import MailIcon from "../../../public/icons/footer-mail.svg";
 import PinIcon from "../../../public/icons/footer-pin.svg";
+import CountUp from "@/components/ui/CountUp";
 
 // Contact detail icons — exported straight from Figma (already yellow-filled)
 const CONTACT_ICONS = {
@@ -156,7 +157,7 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
                 <span aria-hidden className="absolute inset-0 bg-[rgba(253,253,253,0.3)] opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100" />
 
                 <p className="relative flex items-start gap-1 text-[64px] leading-16 tracking-[-1.28px] text-(--color-yellow) transition-[font-size,line-height] duration-150 ease-out group-hover:text-[71px] group-hover:leading-[71px]">
-                  <span className="font-bold">{statCard.stat_number}</span>
+                  <CountUp value={String(statCard.stat_number)} className="font-bold" />
                   <span className="font-light">%</span>
                 </p>
                 {statCard.short_text && (

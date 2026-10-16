@@ -61,8 +61,9 @@ export async function getProductBySlug(slug, lang = DEFAULT_LANG) {
   return getSingleEntry("products", slug, lang, "&acf_format=standard");
 }
 
+// acf_format=standard for the "Page Builder Industries" group (image objects, not IDs)
 export async function getIndustryBySlug(slug, lang = DEFAULT_LANG) {
-  return getSingleEntry("industries", slug, lang);
+  return getSingleEntry("industries", slug, lang, "&acf_format=standard");
 }
 
 export async function getPartnerBySlug(slug, lang = DEFAULT_LANG) {

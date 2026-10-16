@@ -21,6 +21,7 @@ import YoutubeIcon from "../../../../public/icons/home/youtube.png";
 import { DEFAULT_LANG, entryHref } from "@/config";
 import { sectionBackground, toHtml } from "@/lib/content";
 import { twinOptions } from "@/lib/caseStudies";
+import CountUp from "@/components/ui/CountUp";
 
 // Image stack slots from Figma (560×472 group): back card (2nd latest), front card (latest)
 const STACK = [
@@ -119,7 +120,7 @@ function CaseCard({ match, lang, clipText, readMoreText }) {
                 className="flex flex-col gap-6 sm:gap-10 rounded-[8px] p-4 sm:p-6 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.16)]"
                 style={{ backgroundImage: "radial-gradient(ellipse 100% 100% at 0% 0%, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.2) 49%, rgba(218,220,221,0.2) 100%)" }}
               >
-                <span className="font-bold text-[40px] sm:text-[64px] leading-none tracking-[-1.28px] text-(--color-yellow) whitespace-nowrap">{s.value}</span>
+                <span className="font-bold text-[40px] sm:text-[64px] leading-none tracking-[-1.28px] text-(--color-yellow) whitespace-nowrap"><CountUp value={s.value} /></span>
                 <span className="text-[16px] sm:text-[20px] leading-6 tracking-[-0.4px] text-(--color-light-grey)">{s.label}</span>
               </div>
             ))}

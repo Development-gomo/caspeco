@@ -62,6 +62,8 @@ export function mapTwinCases(posts, media = []) {
       venues: clean(acf.select_venues),
       logo: resolveMedia(acf.logo, mediaById),
       quote: clean(acf.testimonial),
+      personName: clean(acf.person_name),
+      designation: clean(acf.designation),
       stats: [
         { value: clean(acf.data_1), label: clean(acf.text_line_1) },
         { value: clean(acf.data_2), label: clean(acf.text_line_2) },

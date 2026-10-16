@@ -102,8 +102,13 @@ export default async function ProductBuilder({ sections, lang = DEFAULT_LANG }) 
             return <QuickContact key={i} data={block} lang={lang} />;
 
           default:
-            // Homepage / inner-page layouts (fetches are deduped across blocks by fetchWP)
-            return <PageBuilder key={i} sections={[block]} lang={lang} />;
+            // Homepage / inner-page layouts (fetches are deduped across blocks by fetchWP),
+            // revealed on scroll like the sections above
+            return (
+              <Reveal key={i} y={40}>
+                <PageBuilder sections={[block]} lang={lang} />
+              </Reveal>
+            );
         }
       })}
     </>

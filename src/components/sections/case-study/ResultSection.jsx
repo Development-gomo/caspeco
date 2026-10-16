@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import CountUp from "@/components/ui/CountUp";
 
 export default function ResultSection({ data }) {
   if (!data) return null;
@@ -41,9 +42,7 @@ export default function ResultSection({ data }) {
                   >
                     {/* NUMBER */}
                     <div className="relative ">
-                      <span className="text-[80px] leading-[70px] font-medium">
-                        {item.number}
-                      </span>
+                      <CountUp value={String(item.number ?? "")} className="text-[80px] leading-[70px] font-medium" />
 
                       {item.suffix && (
                         <span className="suffix-text text-[40px] leading-[40px] font-medium text-[var(--color-accent)] ml-1 absolute top-[-5px]">
