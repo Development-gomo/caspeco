@@ -79,10 +79,13 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
 
   // Contact info — ACF "Theme option — Footer" > address > office_i (telephone/email/address WYSIWYG fields)
   const officeI = footerOptions?.address?.office_i || {};
+  const phone = stripHtml(officeI.telephone);
+  const email = stripHtml(officeI.email);
   const contactRows = [
-    ["phone", stripHtml(officeI.telephone)],
-    ["mail", stripHtml(officeI.email)],
-    ["pin", stripHtml(officeI.address)],
+    // tel: keeps only digits and a leading + ("031-123 45 67" → tel:0311234567)
+    ["phone", phone, phone ? `tel:${phone.replace(/(?!^\+)[^\d]/g, "")}` : ""],
+    ["mail", email, email ? `mailto:${email}` : ""],
+    ["pin", stripHtml(officeI.address), ""],
   ].filter(([, value]) => value);
 
   // Additional locations — ACF "Theme option — Footer" > address > more_location (freeform WYSIWYG)
@@ -128,12 +131,19 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
 
               {contactRows.length > 0 && (
                 <div className="flex flex-col gap-3 text-[18px] tracking-[-0.36px] text-(--color-grey-medium)">
-                  {contactRows.map(([icon, value]) => (
-                    <div key={icon} className="flex items-center gap-2">
-                      <span className="shrink-0">{CONTACT_ICONS[icon]}</span>
-                      <span>{value}</span>
-                    </div>
-                  ))}
+                  {contactRows.map(([icon, value, href]) =>
+                    href ? (
+                      <a key={icon} href={href} className="group flex items-center gap-2 transition-colors hover:text-(--color-white)">
+                        <span className="shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5">{CONTACT_ICONS[icon]}</span>
+                        <span className="cs-link-draw">{value}</span>
+                      </a>
+                    ) : (
+                      <div key={icon} className="flex items-center gap-2">
+                        <span className="shrink-0">{CONTACT_ICONS[icon]}</span>
+                        <span>{value}</span>
+                      </div>
+                    ),
+                  )}
                 </div>
               )}
 
@@ -180,7 +190,7 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
                     <ul className="space-y-3 text-[18px] font-light tracking-[-0.36px] text-(--color-grey-medium)">
                       {col.links.map((item, i) => (
                         <li key={i}>
-                          <Link href={langHref(item.link, lang)} className="hover:text-white transition-colors">
+                          <Link href={langHref(item.link, lang)} className="cs-link-draw hover:text-white">
                             {item.title}
                           </Link>
                         </li>
@@ -202,7 +212,7 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
                     href={url}
                     target="_blank"
                     aria-label={network}
-                    className="text-white hover:text-(--color-yellow) transition-colors"
+                    className="text-white transition-[color,translate] duration-300 hover:-translate-y-0.5 hover:text-(--color-yellow) focus-visible:text-(--color-yellow)"
                   >
                     {SOCIAL_ICONS[network]}
                   </Link>
@@ -216,7 +226,7 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
                   <Link
                     key={i}
                     href={langHref(item.link, lang)}
-                    className="underline hover:text-white transition-colors"
+                    className="cs-link-redraw hover:text-white"
                   >
                     {item.title}
                   </Link>
@@ -226,7 +236,7 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
 
             {copyrightText && (
               <div
-                className="cs-rich text-[18px] tracking-[-0.36px] text-(--color-grey-medium-dark) [&_a:hover]:text-white"
+                className="cs-rich text-[18px] tracking-[-0.36px] text-(--color-grey-medium-dark) cs-links-draw [&_a:hover]:text-white"
                 dangerouslySetInnerHTML={{ __html: copyrightText }}
               />
             )}

@@ -848,3 +848,60 @@ span.subheading-label.text-\[var\(--color-accent\)\],
 @media (prefers-reduced-motion: reduce) {
   .cs-marquee { animation: none !important; }
 }
+
+/* ─── Animated link underlines (footer) ───────────────────────────────────────
+   .cs-link-draw   — no underline at rest; on hover/focus a 1px line draws in from the
+                     left and slides out to the right when the pointer leaves.
+   .cs-link-redraw — underlined at rest; on hover the line retracts to the right and
+                     redraws from the left.
+   Put the class on the text itself; hovering a parent link (a / button) triggers it too,
+   so an icon + text link only underlines the text. .cs-links-draw on a wrapper applies
+   .cs-link-draw to every link inside it (CMS rich text). */
+.cs-link-draw,
+.cs-links-draw a,
+.cs-link-redraw {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 100% 100%;
+  padding-bottom: 2px;
+  text-decoration: none;
+}
+.cs-link-draw,
+.cs-links-draw a {
+  background-size: 0% 1px;
+  transition: background-size 0.35s cubic-bezier(0.22, 1, 0.36, 1), color 0.3s ease;
+}
+.cs-link-draw:hover,
+.cs-link-draw:focus-visible,
+.cs-links-draw a:hover,
+.cs-links-draw a:focus-visible,
+:is(a, button):hover > .cs-link-draw,
+:is(a, button):focus-visible > .cs-link-draw {
+  background-size: 100% 1px;
+  background-position: 0 100%;
+}
+.cs-link-redraw {
+  background-size: 100% 1px;
+  background-position: 0 100%;
+  transition: color 0.3s ease;
+}
+.cs-link-redraw:hover,
+.cs-link-redraw:focus-visible,
+:is(a, button):hover > .cs-link-redraw,
+:is(a, button):focus-visible > .cs-link-redraw {
+  animation: cs-underline-redraw 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+}
+@keyframes cs-underline-redraw {
+  0% { background-size: 100% 1px; background-position: 100% 100%; }
+  50% { background-size: 0% 1px; background-position: 100% 100%; }
+  50.01% { background-size: 0% 1px; background-position: 0 100%; }
+  100% { background-size: 100% 1px; background-position: 0 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cs-link-draw,
+  .cs-links-draw a { transition: color 0.3s ease; }
+  .cs-link-redraw:hover,
+  .cs-link-redraw:focus-visible,
+  :is(a, button):hover > .cs-link-redraw,
+  :is(a, button):focus-visible > .cs-link-redraw { animation: none; }
+}

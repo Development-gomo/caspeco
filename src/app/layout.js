@@ -4,6 +4,7 @@ import { DEFAULT_LANG } from "@/config";
 import { headers } from "next/headers";
 import LangSyncer from "@/components/LangSyncer";
 import ScrollProgress from "@/components/ScrollProgress";
+import ScrollToTop from "@/components/ScrollToTop";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 //import Script from "next/script"; // uncomment when adding tracking scripts
@@ -68,6 +69,7 @@ export default async function RootLayout({ children }) {
         <LangSyncer />
         <ScrollProgress />
         {children}
+        <ScrollToTop />
         <SpeedInsights />
         <Analytics />
       </body>

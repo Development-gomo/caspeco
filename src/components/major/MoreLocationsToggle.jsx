@@ -13,9 +13,9 @@ export default function MoreLocationsToggle({ label, html }) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 text-[16px] font-medium text-white underline underline-offset-2 hover:text-(--color-grey-medium) transition"
+        className="flex cursor-pointer items-center gap-2 text-[16px] font-medium text-white transition-colors hover:text-(--color-grey-medium)"
       >
-        {label}
+        <span className="cs-link-redraw">{label}</span>
         <span className={`transition-transform duration-300 ${open ? "rotate-180" : ""}`}>
           <Image src={DownSvg} alt="" width={10} height={10} />
         </span>
