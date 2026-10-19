@@ -27,7 +27,7 @@ export default function ProductDemo({ data, lang = DEFAULT_LANG }) {
 
   return (
     <section className="overflow-hidden py-18 lg:py-36" style={sectionBackground(data, { backgroundImage: GRADIENT })}>
-      <div className="cs-container relative flex flex-col gap-12 lg:flex-row lg:items-center xl:min-h-[532px]">
+      <div className="cs-container relative flex flex-col gap-12 lg:flex-row lg:items-center lg:justify-between xl:min-h-[532px]">
         <Reveal className="flex flex-col items-start gap-4 lg:max-w-[488px] lg:shrink-0">
           <div className="flex flex-col gap-5">
             <h2 className="cs-h3 cs-highlight font-extrabold text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
@@ -56,42 +56,47 @@ export default function ProductDemo({ data, lang = DEFAULT_LANG }) {
         </Reveal>
 
         {mediaUrl(image) && (
-          // Figma: 696×532 group starting at x=865 of the 1512 frame (745px into the content box)
-          <Reveal
-            x={60}
-            y={0}
-            duration={0.9}
-            delay={0.15}
-            {...(hover && {
-              role: "button",
-              tabIndex: 0,
-              "aria-pressed": active,
-              // mouse: hover in/out; touch & pen: tap toggles; keyboard: Enter / Space
-              onPointerEnter: (e) => e.pointerType === "mouse" && setActive(true),
-              onPointerLeave: (e) => e.pointerType === "mouse" && setActive(false),
-              onPointerUp: (e) => e.pointerType !== "mouse" && setActive((v) => !v),
-              onKeyDown: (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), setActive((v) => !v)),
-            })}
-            className={`relative aspect-[696/532] w-full max-w-[696px] self-center drop-shadow-[0px_2.3px_5.2px_rgba(0,0,0,0.1)] outline-none lg:flex-1 xl:absolute xl:top-1/2 xl:left-[769px] xl:w-[696px] xl:-translate-y-1/2 ${hover ? "cursor-pointer" : ""}`}
-          >
-            <Image
-              src={mediaUrl(image)}
-              alt={image?.alt || ""}
-              fill
-              sizes="(min-width: 1024px) 696px, 100vw"
-              className={`object-contain object-left transition-opacity duration-500 ease-out ${active ? "opacity-0" : ""}`}
-            />
-            {hover && (
-              // notification state settles in from slightly above (Figma Smart Animate)
+          // Shown in full at its own aspect ratio. On desktop the column reaches past the
+          // container to the viewport's right edge (container padding 24px + side gutter),
+          // so the device group sits flush against it like the Figma bleed.
+          <div className="flex w-full justify-center lg:flex-1 lg:justify-end lg:mr-[calc(-24px-max(0px,(100vw-1320px)/2))]">
+            <Reveal
+              x={60}
+              y={0}
+              duration={0.9}
+              delay={0.15}
+              {...(hover && {
+                role: "button",
+                tabIndex: 0,
+                "aria-pressed": active,
+                // mouse: hover in/out; touch & pen: tap toggles; keyboard: Enter / Space
+                onPointerEnter: (e) => e.pointerType === "mouse" && setActive(true),
+                onPointerLeave: (e) => e.pointerType === "mouse" && setActive(false),
+                onPointerUp: (e) => e.pointerType !== "mouse" && setActive((v) => !v),
+                onKeyDown: (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), setActive((v) => !v)),
+              })}
+              className={`relative w-full max-w-[696px] drop-shadow-[0px_2.3px_5.2px_rgba(0,0,0,0.1)] outline-none lg:max-w-[760px] ${hover ? "cursor-pointer" : ""}`}
+            >
               <Image
-                src={hover}
-                alt=""
-                fill
-                sizes="(min-width: 1024px) 696px, 100vw"
-                className={`object-contain object-left transition-[opacity,translate] duration-500 ease-out ${active ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"}`}
+                src={mediaUrl(image)}
+                alt={image?.alt || ""}
+                width={image?.width || 1392}
+                height={image?.height || 1064}
+                sizes="(min-width: 1024px) 760px, 100vw"
+                className={`h-auto w-full transition-opacity duration-500 ease-out ${active ? "opacity-0" : ""}`}
               />
-            )}
-          </Reveal>
+              {hover && (
+                // notification state settles in from slightly above (Figma Smart Animate)
+                <Image
+                  src={hover}
+                  alt=""
+                  fill
+                  sizes="(min-width: 1024px) 760px, 100vw"
+                  className={`object-contain object-right transition-[opacity,translate] duration-500 ease-out ${active ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"}`}
+                />
+              )}
+            </Reveal>
+          </div>
         )}
       </div>
     </section>
