@@ -2,11 +2,14 @@
 // ACF layout: home_hero (Page Builder Products) / product_hero — full-height
 // image/video with a bottom-aligned H1 (Tenon X-Bold 112/104), intro text, a CTA
 // and an optional secondary text link. The header overlays it.
+// label (repeater of { label, link }, max 3) — the "One platform / One partner / One login"
+// row pinned under the header, as on the homepage hero. Links of "#" render as plain text.
 
 import Image from "next/image";
 import CtaButton from "@/components/ui/CtaButton";
 import ArrowLink from "@/components/ui/ArrowLink";
 import Reveal from "@/components/ui/Reveal";
+import HeroLabels from "@/components/ui/HeroLabels";
 import { DEFAULT_LANG, langHref } from "@/config";
 import { mediaUrl, toHtml } from "@/lib/content";
 
@@ -29,7 +32,12 @@ export default function ProductHero({ data, lang = DEFAULT_LANG }) {
         )}
       </Reveal>
 
-      <div className="cs-container pt-36 pb-16 lg:pt-[148px] lg:pb-36">
+      <div className="cs-container flex min-h-[640px] flex-col justify-between gap-16 pt-28 pb-16 lg:min-h-[982px] lg:pt-[148px] lg:pb-36">
+        {/* keeps the heading block at the bottom even without labels */}
+        <div>
+          <HeroLabels labels={data?.label} lang={lang} />
+        </div>
+
         <div className="flex max-w-[850px] flex-col items-start gap-8 lg:gap-12">
           <div className="flex flex-col gap-6 lg:gap-8 text-(--color-light-grey)">
             <Reveal

@@ -5,8 +5,10 @@ import React from "react";
 import DownArrow from "../../../../public/hero-down-arrow.png";
 import Overlay from "../../../../public/overlay.png";
 import { motion } from "framer-motion";
+import HeroLabels from "@/components/ui/HeroLabels";
+import { DEFAULT_LANG } from "@/config";
 
-export default function CaseHero({ data }) {
+export default function CaseHero({ data, lang = DEFAULT_LANG }) {
   const bgImage = data?.bg_image?.url || "";
   const heading = data?.heading || "";
   const sub_heading = data?.sub_heading || "";
@@ -30,6 +32,13 @@ export default function CaseHero({ data }) {
       {/* Gradient Overlay */}
       {/* <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/60 to-black/80 -z-10"></div>
       <div className="absolute inset-0 -z-10"><Image src={Overlay} alt="Overlay" fill className="object-cover" /></div> */}
+
+      {/* LABELS — "One platform / One partner / One login" (ACF label repeater) */}
+      <div className="absolute inset-x-0 top-28 lg:top-[148px]">
+        <div className="web-width px-6">
+          <HeroLabels labels={data?.label} lang={lang} />
+        </div>
+      </div>
 
       {/* HERO TEXT */}
       <div className="relative min-h-screen web-width px-6 py-16 lg:py-25 h-full flex flex-col items-start justify-end">
