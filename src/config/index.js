@@ -20,6 +20,43 @@ export const LOCALE_MAP = {
   nl: "nl_NL",
 };
 
+// ─── Language switcher — copied from WPML > Languages on live caspeco.com ─────
+// Key order = WPML language order (the switcher lists the other languages in this order).
+// names[x] = how this language is written when the site is viewed in language x
+// (the "Translation (…)" columns in WPML); flag = file in /public/flags.
+export const LANGUAGES = {
+  en: {
+    flag: "/flags/en.svg",
+    names: { sv: "Engelska", en: "English", no: "Engelsk", fr: "Anglais", frbg: "English", nl: "Engels" },
+  },
+  no: {
+    flag: "/flags/no.svg",
+    names: { sv: "Norskt Bokmål", en: "Norwegian Bokmål", no: "Norsk bokmål", fr: "Norvégien Bokmål", frbg: "Norwegian Bokmål", nl: "Noors Bokmål" },
+  },
+  sv: {
+    flag: "/flags/sv.svg",
+    names: { sv: "Svenska", en: "Swedish", no: "Swedish", fr: "Suédois", frbg: "Swedish", nl: "Zweeds" },
+  },
+  fr: {
+    flag: "/flags/fr.svg",
+    names: { sv: "Franska", en: "French", no: "Fransk", fr: "Français", frbg: "Français", nl: "Frans" },
+  },
+  nl: {
+    flag: "/flags/be.svg",
+    names: { sv: "Nederländska", en: "Belgium Dutch", no: "Nederlandsk", fr: "Néerlandais", frbg: "België – NL", nl: "Nederlands" },
+  },
+  frbg: {
+    flag: "/flags/be.svg",
+    names: { sv: "Belgien franska", en: "Belgium French", no: "Belgia fransk", fr: "Belgique Français", frbg: "Belgique – FR", nl: "België Frans" },
+  },
+};
+
+/** Name of language `code` as written in language `inLang` (falls back to its own name, then the code) */
+export function langName(code, inLang = code) {
+  const names = LANGUAGES[code]?.names || {};
+  return names[inLang] || names[code] || code.toUpperCase();
+}
+
 // ─── URL bases per content type — copied from the live caspeco.com structure ──
 // Keep in sync with the WordPress permalink / WPML slug-translation settings so
 // URLs stay identical after the switch (no redirects, no 404s).
@@ -91,9 +128,11 @@ export function langHome(lang) {
   return lang === DEFAULT_LANG ? "/" : `/${lang}`;
 }
 
-/** Get the other language(s) for the language switcher */
+/** Get the other language(s) for the language switcher, in WPML order (LANGUAGES key order) */
 export function altLangs(lang) {
-  return SUPPORTED_LANGS.filter((l) => l !== lang);
+  const order = Object.keys(LANGUAGES);
+  const rank = (l) => (order.includes(l) ? order.indexOf(l) : order.length);
+  return SUPPORTED_LANGS.filter((l) => l !== lang).sort((a, b) => rank(a) - rank(b));
 }
 
 /** Detect language from a pathname */

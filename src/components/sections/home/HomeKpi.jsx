@@ -1,6 +1,7 @@
 // src/components/sections/home/HomeKpi.jsx
 // ACF layout: home_kpi_section — "Best-performing customers last month" flip cards.
 // Front: label + stat. Back: checklist (back_items). Clicking the card slides it left to the back.
+// Optional (ICP pages): short_text under the heading; bottom_text + cta_text / cta_url under the cards.
 
 "use client";
 
@@ -10,7 +11,9 @@ import { motion } from "framer-motion";
 import KpiArrow from "../../../../public/icons/home/kpi-arrow.svg";
 import CircleInfo from "../../../../public/icons/home/circle-info.svg";
 import CheckYellow from "../../../../public/icons/home/check-yellow.svg";
-import { highlightHtml, rows, sectionBackground } from "@/lib/content";
+import { highlightHtml, rows, sectionBackground, toHtml } from "@/lib/content";
+import CtaButton from "@/components/ui/CtaButton";
+import { DEFAULT_LANG, langHref } from "@/config";
 import CountUp from "@/components/ui/CountUp";
 
 function Dashes({ flipped }) {
@@ -79,18 +82,22 @@ function KpiCard({ card, hint }) {
   );
 }
 
-export default function HomeKpi({ data }) {
+export default function HomeKpi({ data, lang = DEFAULT_LANG }) {
   const cards = rows(data?.cards).filter((c) => c.label || c.value);
   if (!data?.heading && cards.length === 0) return null;
 
   return (
     <section className="pb-18 lg:pb-36" style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       <div className="cs-container flex flex-col items-center gap-10 lg:gap-16">
-        {data.heading && (
-          <h2
-            className="cs-h2 cs-highlight text-center text-black max-w-[925px]"
-            dangerouslySetInnerHTML={{ __html: highlightHtml(data.heading, "lastLine") }}
-          />
+        {(data.heading || data.short_text) && (
+          <div className="flex flex-col items-center gap-4 text-center">
+            {data.heading && (
+              <h2 className="cs-h2 cs-highlight text-black max-w-[1179px]" dangerouslySetInnerHTML={{ __html: highlightHtml(data.heading, "lastLine") }} />
+            )}
+            {data.short_text && (
+              <div className="cs-rich max-w-[925px] text-[18px] lg:text-[24px] font-medium leading-7 tracking-[-0.48px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(data.short_text) }} />
+            )}
+          </div>
         )}
 
         {cards.length > 0 && (
@@ -98,6 +105,19 @@ export default function HomeKpi({ data }) {
             {cards.map((card, i) => (
               <KpiCard key={i} card={card} hint={data.flip_hint_text} />
             ))}
+          </div>
+        )}
+
+        {(data.bottom_text || (data.cta_text && data.cta_url)) && (
+          <div className="flex max-w-[616px] flex-col items-center gap-6 text-center">
+            {data.bottom_text && (
+              <div className="cs-rich text-[18px] lg:text-[20px] font-medium leading-[26px] tracking-[-0.4px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(data.bottom_text) }} />
+            )}
+            {data.cta_text && data.cta_url && (
+              <CtaButton href={langHref(data.cta_url.trim(), lang)} wrap className="max-w-full">
+                {data.cta_text}
+              </CtaButton>
+            )}
           </div>
         )}
       </div>

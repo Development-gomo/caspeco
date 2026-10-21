@@ -7,7 +7,14 @@ import Link from "next/link";
 import Image from "next/image";
 import DownSvg from "../../../public/down-arrow.svg";
 import { getThemeOptions, getEntryTranslations } from "@/lib/api";
-import { DEFAULT_LANG, SUPPORTED_LANGS, langHref, langHome, entryHref } from "@/config";
+import { DEFAULT_LANG, SUPPORTED_LANGS, LANGUAGES, LOCALE_MAP, langHref, langHome, entryHref, langName, altLangs as otherLangs } from "@/config";
+
+// WPML-style flag for a language code (files in /public/flags)
+function LangFlag({ code, className = "" }) {
+  const src = LANGUAGES[code]?.flag;
+  if (!src) return null;
+  return <Image src={src} alt="" width={24} height={16} unoptimized className={`w-6 h-4 shrink-0 object-cover ${className}`} />;
+}
 
 // Log-in links point at external portals: absolute URLs open as-is, relative ones get the
 // language prefix, and an empty/"#" URL renders plain text instead of a dead link.
@@ -42,7 +49,7 @@ export default function Header({
   logoUrl = "",
 }) {
   const [options, setOptions] = useState(prefetchedOptions);
-  const altLangs = SUPPORTED_LANGS.filter((l) => l !== lang);
+  const altLangs = otherLangs(lang);
   const [altLangUrls, setAltLangUrls] = useState(
     Object.fromEntries(altLangs.map((l) => [l, langHome(l)]))
   );
@@ -361,40 +368,46 @@ export default function Header({
 
         {/* RIGHT SIDE — lang switcher, log in, CTA */}
         <div className="hidden lg:flex items-center gap-3 xl:gap-6">
-          {/* Language Switcher */}
-          <div ref={langRef} className="relative">
+          {/* Language Switcher — current flag only; hover (or tap/focus) lists the other
+              languages with flag + name in the current language, like live caspeco.com */}
+          <div ref={langRef} className="relative group">
             <button
               type="button"
               onClick={() => setLangOpen((v) => !v)}
-              className="flex items-center gap-2 cursor-pointer px-2 xl:px-4 py-4 rounded-sm text-sm leading-3.5 text-white transition"
+              aria-haspopup="true"
+              aria-expanded={langOpen}
+              aria-label={langName(lang)}
+              title={langName(lang)}
+              className="flex items-center cursor-pointer px-2 xl:px-3 py-4"
             >
-              <span>{lang.toUpperCase()}</span>
-
-              <span
-                className={`transition-transform duration-300 ${
-                  langOpen ? "rotate-180" : ""
-                }`}
-              >
-                <Image src={DownSvg} alt="arrow" width={10} height={10} />
-              </span>
+              <LangFlag code={lang} />
             </button>
 
-            {langOpen && (
-              <div
-                className="absolute right-0 mt-2 min-w-full rounded-sm border border-[#FFFFFF33] shadow-lg overflow-hidden z-50"
+            <div
+              className={`absolute -left-3 top-full z-50 pt-1 group-hover:pointer-events-auto group-focus-within:pointer-events-auto ${
+                langOpen ? "pointer-events-auto" : "pointer-events-none"
+              }`}
+            >
+              <ul
+                className={`min-w-max py-2 rounded-2xl bg-white/85 backdrop-blur-[8px] shadow-lg transition-all duration-200 ease-out group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:translate-y-0 ${
+                  langOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1"
+                }`}
               >
                 {altLangs.map((altLang) => (
-                  <Link
-                    key={altLang}
-                    href={altLangUrls[altLang] || langHome(altLang)}
-                    onClick={() => setLangOpen(false)}
-                    className="block px-4 py-3 text-sm text-black bg-white hover:text-black/70 transition whitespace-nowrap"
-                  >
-                    {altLang.toUpperCase()}
-                  </Link>
+                  <li key={altLang}>
+                    <Link
+                      href={altLangUrls[altLang] || langHome(altLang)}
+                      hrefLang={LOCALE_MAP[altLang]?.replace("_", "-")}
+                      onClick={() => setLangOpen(false)}
+                      className="flex items-center gap-2 px-4 py-1.5 text-[16px] font-semibold text-black hover:text-black/60 transition whitespace-nowrap"
+                    >
+                      <LangFlag code={altLang} />
+                      {langName(altLang, lang)}
+                    </Link>
+                  </li>
                 ))}
-              </div>
-            )}
+              </ul>
+            </div>
           </div>
 
           {/* LOG IN — Theme Options log_in_text / log_in_url, hover dropdown from login_submenu (no arrow) */}
@@ -576,18 +589,24 @@ export default function Header({
               {/* FOOTER (STATIC) */}
               <div className="p-6 border-t border-white/10 flex flex-col gap-4">
                 {/* Language Switcher */}
-                <div className="flex flex-wrap gap-4 mb-2">
+                <div className="flex flex-col gap-3 mb-2">
+                  <span className="flex items-center gap-2 text-white font-semibold">
+                    <LangFlag code={lang} />
+                    {langName(lang)}
+                  </span>
                   {altLangs.map((altLang) => (
                     <Link
                       key={altLang}
                       href={altLangUrls[altLang] || langHome(altLang)}
-                      className="text-white/80 hover:text-white transition"
+                      hrefLang={LOCALE_MAP[altLang]?.replace("_", "-")}
+                      className="flex items-center gap-2 text-white/80 hover:text-white transition"
                       onClick={() => {
                         setMobileOpen(false);
                         setOpenSubmenu(null);
                       }}
                     >
-                      {altLang.toUpperCase()}
+                      <LangFlag code={altLang} />
+                      {langName(altLang, lang)}
                     </Link>
                   ))}
                 </div>

@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
-import { getAllServices, getCaseStudies, getAllPosts, getAllTeam, getPostsByIds, getAllIndustries, getTwinCaseStudies, getMediaByIds, getLogoGalleries } from "@/lib/api";
+import { getAllServices, getCaseStudies, getAllPosts, getAllTeam, getPostsByIds, getAllIndustries, getTwinCaseStudies, getMediaByIds, getLogoGalleries, getPostsPage } from "@/lib/api";
 import { mapTwinCases, twinMediaIds } from "@/lib/caseStudies";
 
 const Hero = dynamic(() => import("../sections/home/HomeHero"));
@@ -10,7 +10,6 @@ const AboutUs = dynamic(() => import("../sections/home/HomeAbout"));
 const ServicesSlider = dynamic(() => import("../sections/home/HomeServices"));
 const HomeCounter = dynamic(() => import("../sections/home/HomeCounter"));
 const HomeCaseStudies = dynamic(() => import("../sections/home/HomeCaseStudies"));
-const HomeNews = dynamic(() => import("../sections/home/HomeNews"));
 const AskAI = dynamic(() => import("../sections/home/HomeAIAsk"));
 const HomePartners = dynamic(() => import("../sections/home/HomePartners"));
 const InnerHero = dynamic(() => import("../sections/inner-pages/InnerHero"));
@@ -19,6 +18,7 @@ const TeamSection = dynamic(() => import("../sections/inner-pages/Teams"));
 const LargeContent = dynamic(() => import("../sections/inner-pages/LargeContent"));
 const Connectform = dynamic(() => import("../sections/inner-pages/Cform"));
 const CaseStudyListing = dynamic(() => import("../sections/inner-pages/CaseStusyListing"));
+const NewsListing = dynamic(() => import("../sections/inner-pages/NewsListing"));
 const HomeColumnSection = dynamic(() => import("../sections/home/HomeColumnSection"));
 
 // 2026 homepage sections (Figma "Home_Page_Updated_29th_September")
@@ -35,11 +35,31 @@ const HomeIntegrations = dynamic(() => import("../sections/home/HomeIntegrations
 const HomeInsights = dynamic(() => import("../sections/home/HomeInsights"));
 const HomeFaq = dynamic(() => import("../sections/home/HomeFaq"));
 
+// Product / industry sections, also available on normal pages (ICP pages reuse them)
+const ProductUspAccordion = dynamic(() => import("../sections/product/ProductUspAccordion"));
+const ProductSalesChannels = dynamic(() => import("../sections/product/ProductSalesChannels"));
+const ProductResults = dynamic(() => import("../sections/product/ProductResults"));
+const ProductTestimonials = dynamic(() => import("../sections/product/ProductTestimonials"));
+const ProductFeatureSlider = dynamic(() => import("../sections/product/ProductFeatureSlider"));
+const ProductDemo = dynamic(() => import("../sections/product/ProductDemo"));
+const IndustryChallenges = dynamic(() => import("../sections/industry/IndustryChallenges"));
+const IndustryResults = dynamic(() => import("../sections/industry/IndustryResults"));
+const IndustryTestimonials = dynamic(() => import("../sections/industry/IndustryTestimonials"));
+const QuickContact = dynamic(() => import("../sections/contact-form/QuickContact"));
+
+// ICP pages (Figma "Opening_soon", "Levelling_up", "Adding_Locations", "Operating_at_scale")
+const IcpIntro = dynamic(() => import("../sections/icp/IcpIntro"));
+const SystemCheck = dynamic(() => import("../sections/icp/SystemCheck"));
+const SwitchSteps = dynamic(() => import("../sections/icp/SwitchSteps"));
+const PeopleCards = dynamic(() => import("../sections/icp/PeopleCards"));
+const StageCards = dynamic(() => import("../sections/icp/StageCards"));
+const ContactRep = dynamic(() => import("../sections/icp/ContactRep"));
+
 // Detect which data the page needs and fetch it all in parallel (server-side)
 async function prefetchSectionData(sections, lang) {
   if (!sections) return {};
 
-  const needs = { services: false, cases: false, posts: false, team: false, industries: false, twin: false, logos: false };
+  const needs = { services: false, cases: false, posts: false, team: false, industries: false, twin: false, logos: false, newsPage: false };
   const pickedPostIds = [];
 
   for (const block of sections) {
@@ -47,9 +67,12 @@ async function prefetchSectionData(sections, lang) {
     if (block._layout === "casestudies_section") needs.cases = true;
     if (block._layout === "case_study_listing") needs.cases = true;
     if (block._layout === "news_section") needs.posts = true;
+    if (block._layout === "news_listing") needs.newsPage = true;
     if (block._layout === "team_section") needs.team = true;
     if (block._layout === "industry_slider_section") needs.industries = true;
     if (block._layout === "home_casestudy_section") needs.twin = true;
+    // testimonial carousel without its own cards → latest case studies
+    if (block._layout === "industry_testimonials_section" && !(Array.isArray(block.cards) && block.cards.length)) needs.twin = true;
     if (block._layout === "home_partners_section" || block._layout === "integrations_section") needs.logos = true;
     if (block._layout === "insights_section") {
       const ids = Array.isArray(block.posts) ? block.posts.map((p) => (typeof p === "object" ? p.ID || p.id : p)) : [];
@@ -58,7 +81,7 @@ async function prefetchSectionData(sections, lang) {
     }
   }
 
-  const [services, cases, posts, team, pickedPosts, industries, twinPosts, logos] = await Promise.all([
+  const [services, cases, posts, team, pickedPosts, industries, twinPosts, logos, newsPage] = await Promise.all([
     needs.services ? getAllServices(lang) : null,
     needs.cases ? getCaseStudies(lang) : null,
     needs.posts ? getAllPosts(lang) : null,
@@ -67,12 +90,13 @@ async function prefetchSectionData(sections, lang) {
     needs.industries ? getAllIndustries(lang) : null,
     needs.twin ? getTwinCaseStudies(lang) : null,
     needs.logos ? getLogoGalleries(lang) : null,
+    needs.newsPage ? getPostsPage(lang, 1) : null, // NewsListing: first 9 + totals
   ]);
 
   // Business Twin: resolve logo/clip media IDs, then reduce to small objects for the client
   const twinCases = twinPosts ? mapTwinCases(twinPosts, await getMediaByIds(twinMediaIds(twinPosts))) : null;
 
-  return { services, cases, posts, team, pickedPosts, industries, twinCases, logos };
+  return { services, cases, posts, team, pickedPosts, industries, twinCases, logos, newsPage };
 }
 
 export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
@@ -101,10 +125,6 @@ export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
           
           case "case_study_listing":
             return <CaseStudyListing key={i} data={block} lang={lang} prefetchedCases={prefetched.cases} />;
-
-          case "news_section":
-            return <HomeNews key={i} data={block} lang={lang} prefetchedPosts={prefetched.posts} />;
-
           case "home_ask_ai_section":
             return <AskAI key={i} data={block} lang={lang} />;  
 
@@ -161,6 +181,59 @@ export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
 
           case "insights_section":
             return <HomeInsights key={i} data={block} lang={lang} prefetchedPosts={prefetched.pickedPosts || prefetched.posts} />;
+
+          case "news_listing":
+            return <NewsListing key={i} data={block} lang={lang} initial={prefetched.newsPage} />;
+
+          // ─── Product / industry sections ───
+          case "usp_accordion_section":
+            return <ProductUspAccordion key={i} data={block} lang={lang} />;
+
+          case "sales_channels_section":
+            return <ProductSalesChannels key={i} data={block} lang={lang} />;
+
+          case "results_section":
+            return <ProductResults key={i} data={block} lang={lang} />;
+
+          case "testimonial_slider_section":
+            return <ProductTestimonials key={i} data={block} lang={lang} />;
+
+          case "feature_slider_section":
+            return <ProductFeatureSlider key={i} data={block} lang={lang} />;
+
+          case "product_demo_section":
+            return <ProductDemo key={i} data={block} lang={lang} />;
+
+          case "industry_challenges_section":
+            return <IndustryChallenges key={i} data={block} lang={lang} />;
+
+          case "industry_results_section":
+            return <IndustryResults key={i} data={block} lang={lang} />;
+
+          case "industry_testimonials_section":
+            return <IndustryTestimonials key={i} data={block} lang={lang} cases={prefetched.twinCases || []} />;
+
+          case "quick_contact_section":
+            return <QuickContact key={i} data={block} lang={lang} />;
+
+          // ─── ICP pages ───
+          case "icp_intro_section":
+            return <IcpIntro key={i} data={block} lang={lang} />;
+
+          case "system_check_section":
+            return <SystemCheck key={i} data={block} lang={lang} />;
+
+          case "switch_steps_section":
+            return <SwitchSteps key={i} data={block} lang={lang} />;
+
+          case "people_section":
+            return <PeopleCards key={i} data={block} lang={lang} />;
+
+          case "stage_cards_section":
+            return <StageCards key={i} data={block} lang={lang} />;
+
+          case "contact_rep_section":
+            return <ContactRep key={i} data={block} lang={lang} />;
 
           case "faq_section":
             return <HomeFaq key={i} data={block} lang={lang} prevLayout={sections[i - 1]?._layout} />;

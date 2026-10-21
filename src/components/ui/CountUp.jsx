@@ -9,6 +9,16 @@ import { animate, useInView, useReducedMotion } from "framer-motion";
 
 const NUMBER = /^(\D*?)(\d+(?:[.,]\d+)?)(.*)$/s;
 
+// Format v like the original number string: same decimals, decimal separator and
+// zero-padding ("01" counts 00 → 01, "23,6" keeps the comma)
+function format(v, original) {
+  const [int, dec] = original.split(/[.,]/);
+  const sep = original.includes(",") ? "," : ".";
+  const [i, d] = v.toFixed(dec?.length || 0).split(".");
+  const padded = int.length > 1 && int.startsWith("0") ? i.padStart(int.length, "0") : i;
+  return d ? `${padded}${sep}${d}` : padded;
+}
+
 export default function CountUp({ value, duration = 1.4, className }) {
   const ref = React.useRef(null);
   const inView = useInView(ref, { once: true, amount: 0.6 });
@@ -19,20 +29,17 @@ export default function CountUp({ value, duration = 1.4, className }) {
   // Server HTML keeps the real value (SEO / no-JS); once hydrated, park it at 0 while
   // it's still off-screen so the count-up starts from there.
   React.useEffect(() => {
-    if (match && !reduce && !inView) setDisplay(`${match[1]}0${match[3]}`);
+    if (match && !reduce && !inView) setDisplay(`${match[1]}${format(0, match[2])}${match[3]}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   React.useEffect(() => {
     if (!match || reduce || !inView) return;
     const [, prefix, num, suffix] = match;
-    const sep = num.includes(",") ? "," : ".";
-    const decimals = num.split(/[.,]/)[1]?.length || 0;
-    const target = parseFloat(num.replace(",", "."));
-    const controls = animate(0, target, {
+    const controls = animate(0, parseFloat(num.replace(",", ".")), {
       duration,
       ease: [0.22, 1, 0.36, 1],
-      onUpdate: (v) => setDisplay(`${prefix}${v.toFixed(decimals).replace(".", sep)}${suffix}`),
+      onUpdate: (v) => setDisplay(`${prefix}${format(v, num)}${suffix}`),
     });
     return () => controls.stop();
     // eslint-disable-next-line react-hooks/exhaustive-deps

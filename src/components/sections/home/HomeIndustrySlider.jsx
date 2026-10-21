@@ -13,7 +13,9 @@ import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import DefaultIcon from "../../../../public/icons/home/industry-icon.svg";
-import { DEFAULT_LANG, entryHref } from "@/config";
+import ArrowLink from "@/components/ui/ArrowLink";
+import SliderArrows from "@/components/ui/SliderArrows";
+import { DEFAULT_LANG, entryHref, langHref } from "@/config";
 import { mediaUrl, sectionBackground, toHtml } from "@/lib/content";
 
 // CPT entry → card data
@@ -60,12 +62,32 @@ function IndustryCard({ card, lang }) {
   );
 }
 
-export default function HomeIndustrySlider({ data, lang = DEFAULT_LANG, prefetchedIndustries }) {
+function Dots({ pages, active, onSelect }) {
+  return (
+    <div className="flex items-center gap-[9px]">
+      {Array.from({ length: pages }).map((_, i) => (
+        <button
+          key={i}
+          type="button"
+          aria-label={`${i + 1} / ${pages}`}
+          aria-current={active === i}
+          onClick={() => onSelect(i)}
+          className={`cursor-pointer rounded-full transition-all duration-300 ${
+            active === i ? "size-[12.6px] bg-(--color-yellow)" : "size-[7px] bg-white hover:bg-(--color-yellow)/60"
+          }`}
+        />
+      ))}
+    </div>
+  );
+}
+
+// controls="arrows" (industry page): arrows + optional cta_text/cta_url link, dots on the right
+export default function HomeIndustrySlider({ data, lang = DEFAULT_LANG, prefetchedIndustries, controls }) {
   const cards = (Array.isArray(prefetchedIndustries) ? prefetchedIndustries : []).map(toCard).filter((c) => c.title);
   const swiperRef = React.useRef(null);
   const [pages, setPages] = React.useState(1);
   const [active, setActive] = React.useState(0);
-  const { heading, short_text, tagline } = data || {};
+  const { heading, short_text, tagline, cta_text, cta_url } = data || {};
   if (!heading && cards.length === 0) return null;
 
   const syncPages = (swiper) => {
@@ -108,21 +130,17 @@ export default function HomeIndustrySlider({ data, lang = DEFAULT_LANG, prefetch
               ))}
             </Swiper>
 
-            {pages > 1 && (
-              <div className="flex items-center gap-[9px]">
-                {Array.from({ length: pages }).map((_, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    aria-label={`${i + 1} / ${pages}`}
-                    aria-current={active === i}
-                    onClick={() => swiperRef.current?.slideTo(i)}
-                    className={`cursor-pointer rounded-full transition-all duration-300 ${
-                      active === i ? "size-[12.6px] bg-(--color-yellow)" : "size-[7px] bg-white hover:bg-(--color-yellow)/60"
-                    }`}
-                  />
-                ))}
+            {controls === "arrows" ? (
+              // Industry page (Figma "Frame 8934350"): arrows + text link left, dots right
+              <div className="flex w-full flex-wrap items-center justify-between gap-6">
+                <div className="flex flex-wrap items-center gap-8 lg:gap-12">
+                  <SliderArrows index={active} count={pages} onChange={(i) => swiperRef.current?.slideTo(i)} />
+                  {cta_text && cta_url && <ArrowLink href={langHref(cta_url.trim(), lang)}>{cta_text}</ArrowLink>}
+                </div>
+                {pages > 1 && <Dots pages={pages} active={active} onSelect={(i) => swiperRef.current?.slideTo(i)} />}
               </div>
+            ) : (
+              pages > 1 && <Dots pages={pages} active={active} onSelect={(i) => swiperRef.current?.slideTo(i)} />
             )}
           </div>
         )}

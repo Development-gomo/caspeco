@@ -75,7 +75,7 @@ function AccordionItem({ item, isOpen, onToggle, lang }) {
 export default function ProductUspAccordion({ data, lang = DEFAULT_LANG }) {
   const items = rows(data?.items).filter((i) => i.title);
   const [open, setOpen] = React.useState(0);
-  const { heading, short_text, cta_text, cta_url } = data || {};
+  const { heading, short_text, sub_text, cta_text, cta_url } = data || {};
   if (!heading && items.length === 0) return null;
 
   return (
@@ -85,6 +85,8 @@ export default function ProductUspAccordion({ data, lang = DEFAULT_LANG }) {
           <div className="flex flex-col gap-4">
             {heading && <h2 className="cs-h3 cs-highlight font-extrabold text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
             {short_text && <div className="cs-p2 cs-rich text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
+            {/* optional second paragraph (ICP pages: bold lead + body text) */}
+            {sub_text && <div className="cs-p2 cs-rich mt-2 text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(sub_text) }} />}
           </div>
           {cta_text && cta_url && <CtaButton href={langHref(cta_url.trim(), lang)}>{cta_text}</CtaButton>}
         </Reveal>

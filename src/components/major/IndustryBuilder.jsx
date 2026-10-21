@@ -46,7 +46,7 @@ export default async function IndustryBuilder({ sections, lang = DEFAULT_LANG, c
           case "industry_slider_section":
             return (
               <Reveal key={i} y={40}>
-                <HomeIndustrySlider data={block} lang={lang} prefetchedIndustries={otherIndustries} />
+                <HomeIndustrySlider data={block} lang={lang} prefetchedIndustries={otherIndustries} controls="arrows" />
               </Reveal>
             );
 

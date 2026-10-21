@@ -2,6 +2,7 @@ import { DEFAULT_LANG } from "@/config";
 import { WP_BASE } from "@/config";
 import { cache } from "react";
 import { maskWp } from "@/lib/wpMask";
+import { POSTS_PER_PAGE, postsPageQuery } from "@/lib/postsQuery";
 
 // Deduped fetch: React.cache ensures identical calls within the same
 // server render are only executed once (works across page + generateMetadata).
@@ -115,14 +116,21 @@ export async function getPostBySlug(slug, lang = DEFAULT_LANG) {
   const post = await getSingleEntry("posts", slug, lang);
 
   if (post) {
-    const categoryIds = Array.isArray(post.categories) && post.categories.length > 0
-      ? post.categories.join(",")
-      : null;
-    const categoriesParam = categoryIds ? `&categories=${categoryIds}` : "";
-    const relatedPosts = await fetchWP(
-      `/wp/v2/posts?exclude=${post.id}&per_page=5&lang=${lang}${categoriesParam}`
-    );
-    post.relatedPosts = relatedPosts || [];
+    // Up to 3 related posts for PostCard: same category first, topped up with the latest.
+    // Same fields/embeds as the news listing (image, category, content for read time).
+    const RELATED = 3;
+    const cardFields = "&_embed=wp:featuredmedia,wp:term&_fields=id,slug,date,title,content,_links,_embedded";
+    const categoryIds = Array.isArray(post.categories) && post.categories.length > 0 ? post.categories.join(",") : null;
+    const sameCategory = categoryIds
+      ? await fetchWP(`/wp/v2/posts?exclude=${post.id}&per_page=${RELATED}&lang=${lang}&categories=${categoryIds}${cardFields}`)
+      : [];
+    let related = Array.isArray(sameCategory) ? sameCategory : [];
+    if (related.length < RELATED) {
+      const exclude = [post.id, ...related.map((p) => p.id)].join(",");
+      const latest = await fetchWP(`/wp/v2/posts?exclude=${exclude}&per_page=${RELATED - related.length}&lang=${lang}${cardFields}`);
+      if (Array.isArray(latest)) related = [...related, ...latest];
+    }
+    post.relatedPosts = related;
   }
 
   return post;
@@ -235,6 +243,29 @@ export async function getMediaByIds(ids) {
 }
 
 // Specific posts in the given order (e.g. an ACF relationship field)
+// Category names for a post's category IDs (article hero pills)
+export async function getCategoriesByIds(ids, lang = DEFAULT_LANG) {
+  if (!Array.isArray(ids) || ids.length === 0) return [];
+  const cats = await fetchWP(`/wp/v2/categories?include=${ids.join(",")}&lang=${lang}&_fields=id,name,slug`, { revalidate: 3600 });
+  return Array.isArray(cats) ? cats : [];
+}
+
+// One page of posts plus WP's totals (X-WP-Total / X-WP-TotalPages) for "Load more"
+export async function getPostsPage(lang = DEFAULT_LANG, page = 1, perPage = POSTS_PER_PAGE) {
+  try {
+    const res = await fetch(`${WP_BASE}${postsPageQuery(lang, page, perPage)}`, { next: { revalidate: 60 } });
+    if (!res.ok) return { posts: [], total: 0, totalPages: 0 };
+    const posts = maskWp(await res.json());
+    return {
+      posts: Array.isArray(posts) ? posts : [],
+      total: Number(res.headers.get("x-wp-total")) || 0,
+      totalPages: Number(res.headers.get("x-wp-totalpages")) || 0,
+    };
+  } catch {
+    return { posts: [], total: 0, totalPages: 0 };
+  }
+}
+
 export async function getPostsByIds(ids, lang) {
   if (!Array.isArray(ids) || ids.length === 0) return [];
   const posts = await fetchWP(`/wp/v2/posts?include=${ids.join(",")}&orderby=include&per_page=${ids.length}&_embed&lang=${lang}`);

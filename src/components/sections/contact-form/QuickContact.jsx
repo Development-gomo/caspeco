@@ -4,12 +4,14 @@
 //  - the Footer (ACF Theme option — Get in Touch): CF7 form from form_shortcode
 //  - the product_builder layout quick_contact_section: form built from ACF
 //    form_fields and sent to form_provider (CF7 / HubSpot …, see lib/forms.js)
+// Optional bg_image (ICP pages) sits behind a dark overlay instead of the flat colour.
 
+import Image from "next/image";
 import ContactForm from "./ContactForm";
 import QuickContactForm from "./QuickContactForm";
 import CtaButton from "@/components/ui/CtaButton";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { toHtml, rows } from "@/lib/content";
+import { mediaUrl, toHtml, rows } from "@/lib/content";
 import { cf7FormId } from "@/lib/forms";
 
 export default function QuickContact({ data, lang = DEFAULT_LANG, id }) {
@@ -17,13 +19,20 @@ export default function QuickContact({ data, lang = DEFAULT_LANG, id }) {
   const hasAcfForm = rows(data?.form_fields).some((f) => f.name);
   const cf7Id = !hasAcfForm && cf7FormId(form_shortcode);
   if (!heading && !hasAcfForm && !cf7Id) return null;
+  const bgImage = mediaUrl(data?.bg_image);
 
   return (
     <section
       id={id}
-      className="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-[184px] px-6 lg:px-[120px] py-12 lg:py-[72px]"
+      className="relative isolate overflow-hidden flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-[184px] px-6 lg:px-[120px] py-12 lg:py-[72px]"
       style={{ backgroundColor: background_colour || "#0b2533" }}
     >
+      {bgImage && (
+        <>
+          <Image src={bgImage} alt="" fill sizes="100vw" className="-z-10 object-cover" />
+          <span className="absolute inset-0 -z-10 bg-black/55" aria-hidden />
+        </>
+      )}
       <div className="flex flex-col gap-4 items-start w-full lg:w-[476px] shrink-0">
         {sub_heading && <p className="italic text-[24px] leading-7 tracking-[-0.48px] text-white">{sub_heading}</p>}
 

@@ -38,7 +38,13 @@ async function proxy(req, { params }) {
   const type = res.headers.get("content-type") || "";
   if (type.includes("json")) {
     const data = await res.json().catch(() => null);
-    return NextResponse.json(maskWp(data), { status: res.status });
+    // Paging totals for collection requests (NewsListing "Load more")
+    const headers = {};
+    for (const h of ["x-wp-total", "x-wp-totalpages"]) {
+      const v = res.headers.get(h);
+      if (v) headers[h] = v;
+    }
+    return NextResponse.json(maskWp(data), { status: res.status, headers });
   }
   // Non-JSON: pass the body through without WP's headers (Link, X-Powered-By …)
   return new NextResponse(await res.arrayBuffer(), { status: res.status, headers: { "content-type": type || "application/octet-stream" } });

@@ -823,6 +823,67 @@ span.subheading-label.text-\[var\(--color-accent\)\],
   .cs-p2 { font-size: 20px; line-height: 24px; letter-spacing: -0.4px; }
 }
 
+/* Article body (single post WYSIWYG content) — reading typography from the live
+   caspeco.com article page: 18px / 1.65, 16px paragraph spacing, coral list markers */
+.cs-article {
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--color-black);
+  overflow-wrap: anywhere;
+}
+@media (min-width: 1024px) {
+  .cs-article { font-size: 18px; }
+}
+.cs-article > :first-child { margin-top: 0; }
+.cs-article > :last-child { margin-bottom: 0; }
+.cs-article p { margin: 16px 0; }
+.cs-article strong,
+.cs-article b { font-weight: 700; }
+.cs-article h2,
+.cs-article h3,
+.cs-article h4,
+.cs-article h5 {
+  margin: 40px 0 12px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: var(--color-black);
+}
+.cs-article h2 { font-size: 26px; }
+.cs-article h3 { font-size: 22px; }
+.cs-article h4,
+.cs-article h5 { font-size: 19px; }
+.cs-article ul,
+.cs-article ol { margin: 0 0 24px; padding-left: 20px; }
+.cs-article ul { list-style: disc; }
+.cs-article ol { list-style: decimal; }
+.cs-article li { padding: 3px 0; padding-left: 4px; }
+.cs-article li::marker { color: #ff8d6a; }
+.cs-article li > ul,
+.cs-article li > ol { margin: 6px 0 0; }
+.cs-article a {
+  color: var(--color-petrol);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.cs-article a:hover { text-decoration-thickness: 2px; }
+.cs-article img,
+.cs-article video,
+.cs-article iframe { max-width: 100%; height: auto; border-radius: 8px; }
+.cs-article figure { margin: 32px 0; }
+.cs-article figcaption { margin-top: 8px; font-size: 14px; color: var(--color-grey-dark); }
+.cs-article blockquote {
+  margin: 32px 0;
+  padding-left: 20px;
+  border-left: 3px solid var(--color-yellow);
+  font-style: italic;
+}
+.cs-article hr { margin: 40px 0; border: 0; border-top: 1px solid var(--color-grey-medium); }
+.cs-article table { width: 100%; margin: 24px 0; border-collapse: collapse; font-size: 16px; }
+.cs-article th,
+.cs-article td { padding: 8px 12px; border: 1px solid var(--color-grey-medium); text-align: left; }
+
 /* CMS rich text: bold/strong = yellow highlight (works in any language's word order) */
 .cs-rich p { margin: 0; }
 .cs-rich p + p { margin-top: 8px; }
@@ -854,7 +915,7 @@ span.subheading-label.text-\[var\(--color-accent\)\],
                      left and slides out to the right when the pointer leaves.
    .cs-link-redraw — underlined at rest; on hover the line retracts to the right and
                      redraws from the left.
-   Put the class on the text itself; hovering a parent link (a / button) triggers it too,
+   Put the class on the text itself; hovering any enclosing link (a / button) triggers it too,
    so an icon + text link only underlines the text. .cs-links-draw on a wrapper applies
    .cs-link-draw to every link inside it (CMS rich text). */
 .cs-link-draw,
@@ -875,8 +936,8 @@ span.subheading-label.text-\[var\(--color-accent\)\],
 .cs-link-draw:focus-visible,
 .cs-links-draw a:hover,
 .cs-links-draw a:focus-visible,
-:is(a, button):hover > .cs-link-draw,
-:is(a, button):focus-visible > .cs-link-draw {
+:is(a, button):hover .cs-link-draw,
+:is(a, button):focus-visible .cs-link-draw {
   background-size: 100% 1px;
   background-position: 0 100%;
 }
@@ -887,8 +948,8 @@ span.subheading-label.text-\[var\(--color-accent\)\],
 }
 .cs-link-redraw:hover,
 .cs-link-redraw:focus-visible,
-:is(a, button):hover > .cs-link-redraw,
-:is(a, button):focus-visible > .cs-link-redraw {
+:is(a, button):hover .cs-link-redraw,
+:is(a, button):focus-visible .cs-link-redraw {
   animation: cs-underline-redraw 0.6s cubic-bezier(0.65, 0, 0.35, 1);
 }
 @keyframes cs-underline-redraw {
@@ -902,6 +963,6 @@ span.subheading-label.text-\[var\(--color-accent\)\],
   .cs-links-draw a { transition: color 0.3s ease; }
   .cs-link-redraw:hover,
   .cs-link-redraw:focus-visible,
-  :is(a, button):hover > .cs-link-redraw,
-  :is(a, button):focus-visible > .cs-link-redraw { animation: none; }
+  :is(a, button):hover .cs-link-redraw,
+  :is(a, button):focus-visible .cs-link-redraw { animation: none; }
 }
