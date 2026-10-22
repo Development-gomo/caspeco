@@ -89,7 +89,8 @@ export default function HomeHero({ data }) {
               className="w-full normal-case text-[40px] leading-11 tracking-[-1.6px]
                 md:text-[64px] md:leading-16 md:tracking-[-2.4px]
                 lg:text-[72px] lg:leading-[72px] lg:tracking-[-2.8px]
-                xl:text-[88px] xl:leading-[84px] xl:tracking-[-3.2px]"
+                xl:text-[96px] xl:leading-[92px] xl:tracking-[-3.84px]
+                min-[90rem]:text-[112px] min-[90rem]:leading-[104px] min-[90rem]:tracking-[-4.48px]"
               dangerouslySetInnerHTML={{ __html: heading }}
             />
 

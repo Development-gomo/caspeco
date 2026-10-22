@@ -105,7 +105,7 @@ export default function HomeCasperAI({ data, lang = DEFAULT_LANG }) {
 
       <div className="cs-container relative flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex flex-col items-start text-(--color-light-grey) lg:max-w-[507px]">
-          {sub_heading && <p className="italic text-[18px] lg:text-[20px] leading-[26px] tracking-[-0.8px] text-white">{sub_heading}</p>}
+          {sub_heading && <p className="italic text-[18px] lg:text-[20px] leading-[26px] tracking-[-0.8px] text-[#fbfaf9]">{sub_heading}</p>}
           <h2 className="cs-h3 cs-highlight mt-0" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
           {short_text && (
             <div

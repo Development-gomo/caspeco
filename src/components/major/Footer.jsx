@@ -130,7 +130,7 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
               )}
 
               {contactRows.length > 0 && (
-                <div className="flex flex-col gap-3 text-[18px] tracking-[-0.36px] text-(--color-grey-medium)">
+                <div className="flex flex-col gap-3 text-[18px] font-medium leading-[1.1] tracking-[-0.36px] text-(--color-grey-medium)">
                   {contactRows.map(([icon, value, href]) =>
                     href ? (
                       <a key={icon} href={href} className="group flex items-center gap-2 transition-colors hover:text-(--color-white)">
@@ -183,7 +183,7 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
                 {navColumns.map((col, ci) => (
                   <div key={ci} className="min-w-[150px]">
                     {col.title && (
-                      <p className="mb-5 text-[24px] font-bold tracking-[-0.48px] text-white">
+                      <p className="mb-5 text-[24px] font-bold leading-[1.1] tracking-[-0.48px] text-white">
                         {col.title}
                       </p>
                     )}
@@ -221,7 +221,7 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
             )}
 
             {legalLinks.length > 0 && (
-              <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-16 text-[18px] tracking-[-0.36px] text-(--color-grey-medium-dark)">
+              <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-16 text-[18px] font-medium leading-[1.1] tracking-[-0.36px] text-(--color-grey-medium-dark)">
                 {legalLinks.map((item, i) => (
                   <Link
                     key={i}
@@ -236,7 +236,7 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
 
             {copyrightText && (
               <div
-                className="cs-rich text-[18px] tracking-[-0.36px] text-(--color-grey-medium-dark) cs-links-draw [&_a:hover]:text-white"
+                className="cs-rich text-[18px] font-medium leading-[1.1] tracking-[-0.36px] text-(--color-grey-medium-dark) cs-links-draw [&_a:hover]:text-white"
                 dangerouslySetInnerHTML={{ __html: copyrightText }}
               />
             )}

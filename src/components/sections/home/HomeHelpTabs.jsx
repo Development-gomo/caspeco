@@ -107,7 +107,7 @@ export default function HomeHelpTabs({ data, lang = DEFAULT_LANG }) {
       <div className="cs-container flex flex-col items-center gap-8 lg:gap-[46px]">
         {data.heading && (
           <h2
-            className="cs-h2 cs-highlight cs-rich text-center text-black"
+            className="cs-h2 cs-highlight cs-rich text-center text-(--color-heading)"
             dangerouslySetInnerHTML={{ __html: toHtml(data.heading) }}
           />
         )}

@@ -49,7 +49,7 @@ export default function HomeIntroVideo({ data, lang = DEFAULT_LANG }) {
       <div className="cs-container flex flex-col lg:flex-row lg:items-center lg:justify-between gap-12">
         <div className="flex flex-col items-start lg:max-w-[700px]">
           {heading && (
-            <h2 className="cs-h2 text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
+            <h2 className="cs-h2 text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
           )}
 
           {words.length > 0 && (

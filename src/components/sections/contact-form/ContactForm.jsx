@@ -10,7 +10,7 @@ import {
 
 // Field styling matches the Figma "phone-contact-form" card:
 // bold dark-grey label, rounded-xl input with a light border, grey placeholder.
-export const LABEL_CLASSES = "text-[16px] font-bold tracking-[-0.32px] text-(--color-grey-dark)";
+export const LABEL_CLASSES = "text-[16px] font-bold leading-5 tracking-[-0.32px] text-(--color-grey-dark)";
 export const INPUT_CLASSES =
   "w-full rounded-[12px] border p-4 text-[16px] text-(--color-grey-dark) outline-none " +
   "placeholder:text-(--color-grey-medium-dark) bg-white";
@@ -288,7 +288,7 @@ export default function ContactForm({ formId = 982, lang = DEFAULT_LANG, submitL
         className="w-full cursor-pointer select-none
                     rounded-[100px] bg-(--color-yellow) px-6 py-[14px]
                     text-[18px] font-bold text-(--color-grey-dark)
-                    transition-colors duration-300 hover:bg-(--color-yellow)/90
+                    transition-colors duration-400 ease-out hover:bg-(--color-gold) hover:text-white
                     disabled:opacity-50 disabled:cursor-not-allowed
                   "
       >

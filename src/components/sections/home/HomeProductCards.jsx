@@ -55,9 +55,9 @@ export default function HomeProductCards({ data, lang = DEFAULT_LANG }) {
     <section className="pt-18 pb-12 lg:pt-36 lg:pb-[72px]" style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       <div className="cs-container flex flex-col gap-10 lg:gap-16">
         <div className="flex flex-col gap-4">
-          {heading && <h2 className="cs-h2 cs-highlight text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+          {heading && <h2 className="cs-h2 cs-highlight text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
           {short_text && <div className="cs-p1 cs-rich max-w-[636px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
-          {tagline && <p className="text-[14px] lg:text-[16px] font-medium leading-5 tracking-[-0.32px] text-black">{tagline}</p>}
+          {tagline && <p className="text-[14px] lg:text-[16px] font-medium leading-5 tracking-[-0.32px] text-(--color-heading)">{tagline}</p>}
         </div>
 
         {cards.length > 0 && (

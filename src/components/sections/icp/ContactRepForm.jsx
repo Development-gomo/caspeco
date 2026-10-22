@@ -161,7 +161,7 @@ export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
         <button
           type="submit"
           disabled={state.submitting}
-          className="cursor-pointer select-none rounded-full bg-(--color-yellow) px-[38px] py-4 text-[18px] font-bold leading-[22px] text-(--color-grey-dark) transition-colors duration-300 hover:bg-(--color-yellow)/90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="cursor-pointer select-none rounded-full bg-(--color-yellow) px-[38px] py-4 text-[18px] font-bold leading-[22px] text-(--color-grey-dark) transition-colors duration-600 ease-out hover:bg-(--color-gold) hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
           {state.submitting ? t("sending_text", "Sending…") : t("cta_text", "Send")}
         </button>

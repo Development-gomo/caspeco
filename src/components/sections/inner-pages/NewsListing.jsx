@@ -55,7 +55,7 @@ export default function NewsListing({ data, lang = DEFAULT_LANG, initial }) {
       <div className="cs-container flex flex-col gap-10 lg:gap-16">
         {(heading || short_text) && (
           <div className="flex flex-col items-start gap-6">
-            {heading && <h2 className="cs-h2 cs-highlight max-w-[985px] text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+            {heading && <h2 className="cs-h2 cs-highlight max-w-[985px] text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
             {short_text && <div className="cs-p1 cs-rich max-w-[680px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
           </div>
         )}

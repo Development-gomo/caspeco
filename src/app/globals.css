@@ -13,7 +13,12 @@
   /** Primary colors */
   --color-yellow: #FFC120;
   --color-black: #151411;
-  --color-white: #FBFAF9;
+  /* Figma "white" for text on dark sections; was #FBFAF9 (Figma uses that only in a few spots) */
+  --color-white: #FDFDFD;
+  /* Button hover fill (Figma "Primary/Hover": yellow → gold, label turns white) */
+  --color-gold: #C59A28;
+  /* Section headings (H2), taglines and FAQ questions are pure black in Figma; body text uses --color-black */
+  --color-heading: #000000;
 
   /** Accent colors */
   --color-petrol: #1F8690;
@@ -59,15 +64,19 @@ body {
   color: var(--color-navy);
 }
 
-/* Global heading tags default */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: var(--font-primary);
-  font-weight: 900;
+/* Global heading tags default — in the base layer so Tailwind utilities (font-bold …) can
+   override it. Unlayered, it beat every utility and forced 900 on all headings, while the
+   Figma headings are X-Bold (800) or Bold (700); there is no 900 font file either. */
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-primary);
+    font-weight: 800;
+  }
 }
 
 /* Global container */

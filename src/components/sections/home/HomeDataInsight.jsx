@@ -69,7 +69,7 @@ export default function HomeDataInsight({ data }) {
     >
       <div className="cs-container flex flex-col items-center gap-10 lg:gap-16">
         {heading && (
-          <h2 className="cs-h2 cs-highlight cs-rich text-center text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
+          <h2 className="cs-h2 cs-highlight cs-rich text-center text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
         )}
 
         <div

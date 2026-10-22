@@ -243,7 +243,7 @@ export default function Header({
                       href={langHref(item.url, lang)}
                       prefetch={true}
                       onClick={(e) => handleNavClick(e, item.url)}
-                      className="text-white/90 hover:text-white relative z-9 text-[16px] xl:text-[18px] font-bold transition leading-[18px] flex items-center gap-2 whitespace-nowrap"
+                      className="text-(--color-light-grey) hover:text-white relative z-9 text-[16px] xl:text-[18px] font-bold transition leading-[18px] flex items-center gap-2 whitespace-nowrap"
                     >
                       {item.title}
 
@@ -450,10 +450,10 @@ export default function Header({
               href={langHref(options.button_url, lang)}
               onClick={(e) => handleNavClick(e, options.button_url)}
               className="inline-flex items-center justify-center select-none
-                    rounded-full px-6 xl:px-8 py-3 text-black
+                    rounded-full px-6 xl:px-8 py-3 text-(--color-grey-dark) hover:text-white
                     text-[14px] font-extrabold whitespace-nowrap
-                    transition-colors duration-300
-                    bg-(--color-yellow) hover:bg-(--color-yellow)/90"
+                    transition-colors
+                    bg-(--color-yellow) duration-100 ease-out"
             >
               {options.button_text}
             </Link>
@@ -647,9 +647,9 @@ export default function Header({
                   <Link
                     href={langHref(options.button_url, lang)}
                     className="inline-flex items-center justify-center select-none
-                      rounded-full bg-(--color-yellow) px-8 py-3 text-black
-                      text-[14px] font-extrabold transition-colors duration-300
-                      hover:bg-(--color-yellow)/90 w-fit"
+                      rounded-full bg-(--color-yellow) px-8 py-3 text-(--color-grey-dark)
+                      text-[14px] font-extrabold transition-colors duration-100 ease-out
+                      hover:text-white w-fit"
                     onClick={(e) => handleNavClick(e, options.button_url, true)}
                   >
                     {options.button_text}

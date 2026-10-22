@@ -38,7 +38,7 @@ export default function QuickContact({ data, lang = DEFAULT_LANG, id }) {
 
         {heading && (
           <h2
-            className="cs-highlight text-[40px] lg:text-[80px] leading-tight lg:leading-[78px] tracking-[-3.2px] font-extrabold text-white normal-case"
+            className="cs-highlight text-[40px] lg:text-[80px] leading-tight lg:leading-[78px] tracking-[-3.2px] font-extrabold text-[#fff] normal-case"
             dangerouslySetInnerHTML={{ __html: toHtml(heading) }}
           />
         )}
