@@ -24,7 +24,7 @@ export default function StorySection({ data }) {
         {/* Subheading with dot */}
         {sub_heading && (
           <div className="flex items-center gap-2 mb-4">
-            <span className="h-2 w-2 rounded-full bg-(--color-accent)"></span>
+            <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
             <span className="subheading-label uppercase">{sub_heading}</span>
           </div>
         )}
@@ -44,7 +44,7 @@ export default function StorySection({ data }) {
           <div className="md:w-[65%]">
             {content_heading && (
               <div
-                className="content-heading mb-6 max-w-[560px]"
+                className="cs-h4 mb-6 max-w-[560px]"
                 dangerouslySetInnerHTML={{ __html: content_heading }}
               />
             )}

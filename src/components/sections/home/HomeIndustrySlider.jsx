@@ -3,7 +3,7 @@
 // Cards come from the "industries" CPT (current language, fetched in PageBuilder):
 // title, featured image and permalink. An optional ACF `icon` image on the CPT
 // overrides the default fork-and-knife icon from the Figma design.
-// Cards run off the right edge (Figma "Card presentation more than 4"); dots page through.
+// Cards run off the right edge (Figma "Card presentation more than 4"); arrows and dots page through.
 
 "use client";
 
@@ -81,8 +81,8 @@ function Dots({ pages, active, onSelect }) {
   );
 }
 
-// controls="arrows" (industry page): arrows + optional cta_text/cta_url link, dots on the right
-export default function HomeIndustrySlider({ data, lang = DEFAULT_LANG, prefetchedIndustries, controls }) {
+// Controls under the cards: arrows + optional cta_text/cta_url link, dots on the right
+export default function HomeIndustrySlider({ data, lang = DEFAULT_LANG, prefetchedIndustries }) {
   const cards = (Array.isArray(prefetchedIndustries) ? prefetchedIndustries : []).map(toCard).filter((c) => c.title);
   const swiperRef = React.useRef(null);
   const [pages, setPages] = React.useState(1);
@@ -130,18 +130,14 @@ export default function HomeIndustrySlider({ data, lang = DEFAULT_LANG, prefetch
               ))}
             </Swiper>
 
-            {controls === "arrows" ? (
-              // Industry page (Figma "Frame 8934350"): arrows + text link left, dots right
-              <div className="flex w-full flex-wrap items-center justify-between gap-6">
-                <div className="flex flex-wrap items-center gap-8 lg:gap-12">
-                  <SliderArrows index={active} count={pages} onChange={(i) => swiperRef.current?.slideTo(i)} />
-                  {cta_text && cta_url && <ArrowLink href={langHref(cta_url.trim(), lang)}>{cta_text}</ArrowLink>}
-                </div>
-                {pages > 1 && <Dots pages={pages} active={active} onSelect={(i) => swiperRef.current?.slideTo(i)} />}
+            {/* Figma "Frame 8934350" (industry module): arrows + text link left, dots right */}
+            <div className="flex w-full flex-wrap items-center justify-between gap-6">
+              <div className="flex flex-wrap items-center gap-8 lg:gap-12">
+                <SliderArrows index={active} count={pages} onChange={(i) => swiperRef.current?.slideTo(i)} />
+                {cta_text && cta_url && <ArrowLink href={langHref(cta_url.trim(), lang)}>{cta_text}</ArrowLink>}
               </div>
-            ) : (
-              pages > 1 && <Dots pages={pages} active={active} onSelect={(i) => swiperRef.current?.slideTo(i)} />
-            )}
+              {pages > 1 && <Dots pages={pages} active={active} onSelect={(i) => swiperRef.current?.slideTo(i)} />}
+            </div>
           </div>
         )}
       </div>

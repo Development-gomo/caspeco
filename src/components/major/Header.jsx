@@ -470,7 +470,7 @@ export default function Header({
         {/* MOBILE SLIDE-IN MENU */}
         {mobileOpen && (
           <div className="fixed h-screen inset-0 z-60 bg-black/60 backdrop-blur-sm lg:hidden" onClick={() => { setMobileOpen(false); setOpenSubmenu(null); }}>
-            <div className="absolute right-0 top-0 h-full w-72 bg-(--color-brand) shadow-xl flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="absolute right-0 top-0 h-full w-72 bg-(--color-black) shadow-xl flex flex-col" onClick={(e) => e.stopPropagation()}>
               {/* HEADER */}
               <div className="p-6 flex items-center justify-between">
                 <span className="text-white font-semibold">Menu</span>

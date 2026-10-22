@@ -46,7 +46,7 @@ export default function TestimonialBanner({ data }) {
           {/* TESTIMONIAL */}
           <div className="max-w-[700px]">
             {testimonial && (
-              <blockquote className="text-white content-heading mb-8">
+              <blockquote className="text-white cs-h4 mb-8">
                 “{testimonial}”
               </blockquote>
             )}
@@ -58,7 +58,7 @@ export default function TestimonialBanner({ data }) {
             {person_organization && (
             <div className="flex items-start gap-2">
               {/* ACCENT DOT */}
-              <span className="mt-2 h-2 w-2 rounded-full bg-(--color-accent)"></span>
+              <span className="mt-2 h-2 w-2 rounded-full bg-(--color-yellow)"></span>
               
                 <p className="text-white text-sm">{person_organization}</p>
             </div>

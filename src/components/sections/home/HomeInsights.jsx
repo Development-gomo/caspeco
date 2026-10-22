@@ -24,7 +24,7 @@ export default function HomeInsights({ data, lang = DEFAULT_LANG, prefetchedPost
           {heading && <h2 className="cs-h2 cs-highlight max-w-[985px] text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
           {short_text && <div className="cs-p1 cs-rich max-w-[680px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
           {cta_text && cta_url && (
-            <CtaButton variant="outline-dark" href={langHref(cta_url.trim(), lang)} className="mt-4">
+            <CtaButton variant="outline-dark-grey" href={langHref(cta_url.trim(), lang)} className="mt-4">
               {cta_text}
             </CtaButton>
           )}

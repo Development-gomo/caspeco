@@ -11,6 +11,8 @@
 //   testimonial       quote
 //   text_line_1 / data_1, text_line_2 / data_2   the two stats
 //   video_url         File (ID) or URL  → "See clip"
+//   banner_image      Image (ID), optional wide photo (≥ 2400px) for full-width backgrounds
+//                     (testimonial slider); the featured image is a 426×700 card crop
 
 const decode = (s) =>
   String(s || "")
@@ -28,7 +30,7 @@ const mediaId = (v) => (typeof v === "number" ? v : /^\d+$/.test(clean(v)) ? Num
 export function twinMediaIds(posts) {
   const ids = new Set();
   for (const p of Array.isArray(posts) ? posts : []) {
-    [p?.acf?.logo, p?.acf?.video_url].forEach((v) => {
+    [p?.acf?.logo, p?.acf?.video_url, p?.acf?.banner_image].forEach((v) => {
       const id = mediaId(v);
       if (id) ids.add(id);
     });
@@ -58,6 +60,7 @@ export function mapTwinCases(posts, media = []) {
       slug: post.slug,
       title: clean(acf.title_label) || decode(post?.title?.rendered),
       image: featured?.source_url ? { url: featured.source_url, alt: featured.alt_text || "" } : null,
+      bannerImage: resolveMedia(acf.banner_image, mediaById),
       industry: clean(acf.select_industry),
       venues: clean(acf.select_venues),
       logo: resolveMedia(acf.logo, mediaById),

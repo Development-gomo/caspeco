@@ -17,7 +17,7 @@ import CtaButton from "@/components/ui/CtaButton";
 import ArrowLink from "@/components/ui/ArrowLink";
 import VideoModal from "@/components/ui/VideoModal";
 import SelectChevron from "../../../../public/icons/home/select-chevron.svg";
-import YoutubeIcon from "../../../../public/icons/home/youtube.png";
+import YoutubeIcon from "../../../../public/icons/home/youtube.svg"; // transparent (the old PNG had a white background)
 import { DEFAULT_LANG, entryHref } from "@/config";
 import { sectionBackground, toHtml } from "@/lib/content";
 import { twinOptions } from "@/lib/caseStudies";
@@ -77,7 +77,8 @@ function CaseCard({ match, lang, clipText, readMoreText }) {
   const [clipOpen, setClipOpen] = React.useState(false);
   const closeClip = React.useCallback(() => setClipOpen(false), []);
   return (
-    <div className="relative flex w-full max-w-[560px] min-h-[540px] flex-col justify-between gap-10 overflow-hidden rounded-[16px] bg-white/10 p-6 sm:p-8 shadow-[0px_-68px_100px_-28px_rgba(255,243,208,0.2),2px_4px_12px_8px_rgba(0,0,0,0.1)]">
+    // Figma result state: card stretches to the left column's height (self-stretch / h-full)
+    <div className="relative flex w-full max-w-[560px] min-h-[540px] lg:h-full flex-col justify-between gap-10 overflow-hidden rounded-[16px] bg-white/10 p-6 sm:p-8 shadow-[0px_-68px_100px_-28px_rgba(255,243,208,0.2),2px_4px_12px_8px_rgba(0,0,0,0.1)]">
       {match.image?.url && (
         <div className="absolute -inset-14" aria-hidden>
           <Image src={match.image.url} alt="" fill sizes="560px" className="object-cover blur-[8px]" />
@@ -88,8 +89,8 @@ function CaseCard({ match, lang, clipText, readMoreText }) {
       <div className="relative flex flex-col gap-8">
         <div className="flex items-center justify-between gap-4">
           {match.logo?.url ? (
-            <div className="relative h-10 w-[90px]">
-              <Image src={match.logo.url} alt={match.logo.alt || match.title} fill sizes="90px" className="object-contain object-left" />
+            <div className="relative h-14 w-[140px] sm:h-16 sm:w-[180px]">
+              <Image src={match.logo.url} alt={match.logo.alt || match.title} fill sizes="180px" className="object-contain object-left" />
             </div>
           ) : (
             <span className="font-bold text-[20px] leading-6 text-(--color-light-grey)">{match.title}</span>
@@ -100,7 +101,7 @@ function CaseCard({ match, lang, clipText, readMoreText }) {
               onClick={() => setClipOpen(true)}
               className="flex cursor-pointer flex-col items-center gap-1 text-[16px] font-medium leading-5 tracking-[-0.32px] text-(--color-light-grey) underline"
             >
-              <Image src={YoutubeIcon} alt="" width={50} height={34} className="rounded-[6px]" />
+              <Image src={YoutubeIcon} alt="" width={50} height={35} />
               {clipText}
             </button>
           )}
@@ -176,7 +177,7 @@ export default function HomeBusinessTwin({ data, lang = DEFAULT_LANG, cases: all
           {(hasForm || cta_text || note_text) && (
             <form
               onSubmit={onSubmit}
-              className="flex w-full max-w-[554px] flex-col gap-10 rounded-[8px] bg-white px-5 pt-8 pb-6 sm:px-8 sm:pt-10 sm:pb-8 shadow-[0px_2px_9px_0px_rgba(0,0,0,0.1)]"
+              className="flex w-full max-w-[554px] flex-col gap-10 rounded-[8px] bg-[#fbfaf9] px-5 pt-8 pb-6 sm:px-8 sm:pt-10 sm:pb-8 shadow-[0px_2px_9px_0px_rgba(0,0,0,0.1)]"
             >
               <div className="flex flex-col gap-6">
                 {hasForm && (
@@ -202,12 +203,12 @@ export default function HomeBusinessTwin({ data, lang = DEFAULT_LANG, cases: all
           )}
         </div>
 
-        <div className="flex w-full justify-center lg:w-[560px] lg:shrink-0">
+        <div className={`flex w-full justify-center lg:w-[560px] lg:shrink-0 ${result ? "lg:self-stretch" : ""}`}>
           <AnimatePresence mode="wait">
             {result ? (
               <motion.div
                 key="result"
-                className="w-full"
+                className="w-full lg:h-full"
                 initial={{ opacity: 0, scale: 0.96 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0 }}

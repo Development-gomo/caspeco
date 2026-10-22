@@ -46,7 +46,7 @@ export default function ProductFeatureSlider({ data, lang = DEFAULT_LANG }) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -24 }}
             transition={{ duration: 0.35 }}
-            className="relative flex w-full flex-col gap-12 lg:w-auto lg:flex-row lg:items-center lg:justify-between lg:self-stretch lg:mr-[calc((100%-100vw)/2)] xl:min-h-[400px]"
+            className="relative flex w-full flex-col gap-12 lg:flex-row lg:items-center xl:min-h-[400px]"
           >
             <div className="flex flex-col items-start gap-10 lg:max-w-[488px] lg:shrink-0">
               <div className="flex flex-col gap-5">
@@ -58,12 +58,12 @@ export default function ProductFeatureSlider({ data, lang = DEFAULT_LANG }) {
             </div>
 
             {mediaUrl(image) && (
-              // Shown in full at its own aspect ratio; on desktop the row runs to the viewport's
-              // right edge (negative margin above), so the device sits flush against it.
+              // Figma "coursing1": a 523×400 box 955px from the content edge (x 1075 at 1512),
+              // 11px above the text column, bleeding past the viewport (section clips it).
               // Outer: scroll-linked slide in/out. Inner: slides in on every slide change.
-              <motion.div style={{ x: imageX, opacity: imageOpacity }} className="flex w-full justify-center lg:flex-1 lg:justify-end">
+              <motion.div style={{ x: imageX, opacity: imageOpacity }} className="flex w-full justify-center lg:absolute lg:left-[955px] lg:top-[-11px] lg:w-[523px]">
                 <motion.div
-                  className="w-full max-w-[640px] lg:max-w-[720px]"
+                  className="relative aspect-[523/400] w-full max-w-[640px] lg:w-[523px] lg:max-w-none"
                   initial={{ opacity: 0, x: 60 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
@@ -71,10 +71,9 @@ export default function ProductFeatureSlider({ data, lang = DEFAULT_LANG }) {
                   <Image
                     src={mediaUrl(image)}
                     alt={image?.alt || ""}
-                    width={image?.width || 1044}
-                    height={image?.height || 800}
-                    sizes="(min-width: 1024px) 720px, 100vw"
-                    className="h-auto w-full"
+                    fill
+                    sizes="(min-width: 1024px) 523px, 100vw"
+                    className="object-contain object-left"
                   />
                 </motion.div>
               </motion.div>

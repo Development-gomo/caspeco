@@ -37,7 +37,7 @@ export default function ProductSalesChannels({ data, lang = DEFAULT_LANG }) {
 
   return (
     <section className="py-18 lg:py-36" style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
-      <div className="cs-container flex flex-col items-center gap-10 lg:gap-16">
+      <div className="cs-container flex flex-col items-center gap-10 lg:gap-14">
         {(data.heading || data.sub_heading) && (
           <Reveal className="flex max-w-[905px] flex-col items-center gap-5 text-center">
             {data.heading && <h2 className="cs-h3 cs-highlight cs-rich font-extrabold text-black" dangerouslySetInnerHTML={{ __html: toHtml(data.heading) }} />}
@@ -46,7 +46,7 @@ export default function ProductSalesChannels({ data, lang = DEFAULT_LANG }) {
         )}
 
         {tabs.length > 0 && (
-          <Reveal delay={0.15} className="flex w-full flex-col items-center gap-8">
+          <Reveal delay={0.15} className="flex w-full flex-col items-center gap-6">
             <div className="max-w-full overflow-x-auto px-1 py-2 [scrollbar-width:none]">
               <div role="tablist" className="flex w-max items-center gap-1 rounded-[56px] bg-white p-[5px] shadow-[0px_2px_4.5px_rgba(0,0,0,0.1)]">
                 {tabs.map((t, i) => (

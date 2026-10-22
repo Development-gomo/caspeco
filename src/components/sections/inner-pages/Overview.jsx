@@ -25,7 +25,7 @@ export default function Overview({ data }) {
       >
         {/* SUB HEADING WITH DOT */}
         <div className="flex items-center gap-2 mb-2 md:mb-4">
-          <span className="h-2 w-2 rounded-full bg-(--color-accent)"></span>
+          <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
           <span className="subheading-label uppercase">{sub_heading}</span>
         </div>
         <div
@@ -42,7 +42,7 @@ export default function Overview({ data }) {
           <div className="lg:w-[55%]">
             {/* Content heading */}
             {content_heading && (
-              <h3 className="content-heading  max-w-[490px] mb-6">
+              <h3 className="cs-h4  max-w-[490px] mb-6">
                 {content_heading}
               </h3>
             )}
@@ -65,12 +65,12 @@ export default function Overview({ data }) {
       {highlighted_sub_heading && highlighted_heading && (
       <section className="pb-12 md:pb-30 web-width px-6">
         <div className="flex items-center gap-2 mb-2 md:mb-4">
-          <span className="subheading-label uppercase text-[var(--color-accent)]">
+          <span className="subheading-label uppercase text-[var(--color-yellow)]">
             {highlighted_sub_heading}
           </span>
         </div>
         <div
-          className="highlighted-heading text-[var(--color-brand)]"
+          className="highlighted-heading text-[var(--color-black)]"
           dangerouslySetInnerHTML={{ __html: highlighted_heading }}
         />
       </section>

@@ -24,7 +24,7 @@ export default function ServiceOverview({ data }) {
       >
         {/* SUB HEADING WITH DOT */}
         <div className="flex items-center gap-2 mb-2 md:mb-4">
-          <span className="h-2 w-2 rounded-full bg-(--color-accent)"></span>
+          <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
           <span className="subheading-label uppercase">{sub_heading}</span>
         </div>
         <div
@@ -41,7 +41,7 @@ export default function ServiceOverview({ data }) {
           <div  className="lg:w-[55%]">
             {/* Content heading */}
             {content_heading && (
-              <h3 className="content-heading  max-w-[480px] mb-6">{content_heading}</h3>
+              <h3 className="cs-h4  max-w-[480px] mb-6">{content_heading}</h3>
             )}
 
             {/* Paragraph */}

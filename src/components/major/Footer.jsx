@@ -112,9 +112,9 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
       <footer className="bg-black text-white relative z-10">
         <div className="cs-container mx-auto w-full web-width pt-16 pb-16 lg:pt-[72px] lg:pb-36 flex flex-col gap-12">
           {/* ============ MAIN ROW: contact / stat card / nav columns ============ */}
-          <div className="flex flex-col lg:flex-row lg:items-start gap-12 lg:gap-24">
+          <div className="flex flex-col lg:flex-row lg:items-start gap-12 lg:gap-[59px]">
             {/* LOGO + CONTACT INFO */}
-            <div className="lg:w-[180px] shrink-0 flex flex-col gap-6 items-start">
+            <div className="lg:w-[200px] shrink-0 flex flex-col gap-6 lg:gap-10 items-start">
               {footerOptions?.footer_logo?.url ? (
                 <Image
                   src={footerOptions.footer_logo.url}
@@ -179,15 +179,15 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
             {/* NAV COLUMNS: Services / Company / Insights — splits the
                 available space evenly among however many columns exist */}
             {navColumns.length > 0 && (
-              <div className="flex flex-1 flex-wrap gap-12 lg:gap-20">
+              <div className="flex flex-wrap gap-12 lg:gap-24">
                 {navColumns.map((col, ci) => (
-                  <div key={ci} className="min-w-[150px]">
+                  <div key={ci} className="min-w-[150px] lg:w-[174px]">
                     {col.title && (
                       <p className="mb-5 text-[24px] font-bold leading-[1.1] tracking-[-0.48px] text-white">
                         {col.title}
                       </p>
                     )}
-                    <ul className="space-y-3 text-[18px] font-light tracking-[-0.36px] text-(--color-grey-medium)">
+                    <ul className="space-y-3 text-[18px] font-light leading-[1.1] tracking-[-0.36px] text-(--color-grey-medium)">
                       {col.links.map((item, i) => (
                         <li key={i}>
                           <Link href={langHref(item.link, lang)} className="cs-link-draw hover:text-white">

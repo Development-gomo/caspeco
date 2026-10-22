@@ -96,7 +96,7 @@ export default function HomeCasperAI({ data, lang = DEFAULT_LANG }) {
   const href = cta_url ? langHref(cta_url, lang) : "";
 
   return (
-    <section className="relative overflow-hidden bg-white py-16 lg:py-[83px]" style={data?.bg_color ? { background: data.bg_color } : undefined}>
+    <section className="relative overflow-hidden bg-white py-16 lg:pt-[83px] lg:pb-[88px]" style={data?.bg_color ? { background: data.bg_color } : undefined}>
       {bgImage && (
         <div className="absolute -inset-6" aria-hidden>
           <Image src={bgImage} alt="" fill sizes="100vw" className="object-cover blur-[12.4px]" />
@@ -114,7 +114,7 @@ export default function HomeCasperAI({ data, lang = DEFAULT_LANG }) {
             />
           )}
           {cta_text && href && (
-            <CtaButton variant="outline-light" href={href} className="mt-10 lg:mt-[44px]">
+            <CtaButton variant="outline-light-yellow" href={href} className="mt-10">
               {cta_text}
             </CtaButton>
           )}

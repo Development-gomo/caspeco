@@ -31,7 +31,7 @@ export default function KeyProblemSection({ data }) {
         {/* SUB HEADING */}
         {sub_heading && (
           <div className="flex items-center gap-2 mb-4">
-            <span className="h-2 w-2 rounded-full bg-(--color-accent)" />
+            <span className="h-2 w-2 rounded-full bg-(--color-yellow)" />
             <span className="subheading-label text-white">
               {sub_heading}
             </span>
@@ -48,7 +48,7 @@ export default function KeyProblemSection({ data }) {
           {key_problem.map((item, index) => ( 
             <div
               key={index}
-              className="bg-(--color-brand) rounded-sm p-6 md:p-8">
+              className="bg-(--color-black) rounded-sm p-6 md:p-8">
               {/* ICON */}
               {item.icon?.url && (
                 <Image

@@ -1,6 +1,6 @@
 // src/components/sections/home/HomeKpi.jsx
 // ACF layout: home_kpi_section — "Best-performing customers last month" flip cards.
-// Front: label + stat. Back: checklist (back_items). Clicking the card slides it left to the back.
+// Front: label + stat + optional note (cards → note, small footnote). Back: checklist (back_items). Clicking the card slides it left to the back.
 // Optional (ICP pages): short_text under the heading; bottom_text + cta_text / cta_url under the cards.
 
 "use client";
@@ -21,6 +21,16 @@ function Dashes({ flipped }) {
     <span className="absolute right-4 bottom-[12px] flex gap-[5.5px]" aria-hidden>
       <span className={`h-[2px] w-[24.75px] rounded-[1.4px] ${flipped ? "bg-(--color-light-grey)" : "bg-(--color-yellow)"}`} />
       <span className={`h-[2px] w-[24.75px] rounded-[1.4px] ${flipped ? "bg-(--color-yellow)" : "bg-(--color-light-grey)"}`} />
+    </span>
+  );
+}
+
+// Figma: Tenon Light Italic 12/20, 0.1px, rgba(251,250,249,0.8); 16px icon 3px below the text top, text 4px after it
+function InfoLine({ children, className = "" }) {
+  return (
+    <span className="flex items-start gap-1 text-[12px] leading-5 tracking-[0.1px] italic font-light text-[rgba(251,250,249,0.8)]">
+      <Image src={CircleInfo} alt="" width={16} height={16} className="mt-[3px] shrink-0" />
+      <span className={className}>{children}</span>
     </span>
   );
 }
@@ -49,13 +59,24 @@ function KpiCard({ card, hint }) {
         <span className={face} aria-hidden={flipped || undefined}>
           <span className="absolute left-6 top-6 max-w-[150px] text-[20px] leading-6 tracking-[-0.4px]">{card.label}</span>
           <span className="absolute left-6 top-[84px] font-bold text-[64px] leading-16 tracking-[-1.28px] sm:text-[80px] sm:tracking-[-1.6px]">
-            <CountUp value={card.value} />
+            {/* Figma: digits Tenon Bold, a trailing "%" Tenon Regular */}
+            {String(card.value ?? "").trim().endsWith("%") ? (
+              <>
+                <CountUp value={String(card.value).trim().slice(0, -1)} />
+                <span className="font-normal">%</span>
+              </>
+            ) : (
+              <CountUp value={card.value} />
+            )}
           </span>
           {canFlip && <Image src={KpiArrow} alt="" width={36} height={36} className="absolute right-4 top-24" />}
-          {hint && (
-            <span className="absolute left-[22px] bottom-[9px] flex items-center gap-1 text-[12px] leading-5 tracking-[0.1px] italic font-light text-[rgba(251,250,249,0.8)]">
-              <Image src={CircleInfo} alt="" width={16} height={16} />
-              {hint}
+          {/* Bottom-left info block (Figma "Circle-Info" + label: icon x22, text x42, last line ends
+              5px above the card edge). Optional note (e.g. "*per month per venue") stacks above the hint;
+              right edge stops before the slide dashes. */}
+          {(card.note || hint) && (
+            <span className="absolute left-[22px] right-[72px] bottom-[5px] flex flex-col">
+              {card.note && <InfoLine className="line-clamp-2">{card.note}</InfoLine>}
+              {hint && <InfoLine>{hint}</InfoLine>}
             </span>
           )}
         </span>
@@ -87,7 +108,7 @@ export default function HomeKpi({ data, lang = DEFAULT_LANG }) {
   if (!data?.heading && cards.length === 0) return null;
 
   return (
-    <section className="pb-18 lg:pb-36" style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
+    <section className="lg:pt-[2px] pb-18 lg:pb-36" style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       <div className="cs-container flex flex-col items-center gap-10 lg:gap-16">
         {(data.heading || data.short_text) && (
           <div className="flex flex-col items-center gap-4 text-center">

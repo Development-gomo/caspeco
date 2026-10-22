@@ -7,7 +7,7 @@ import ArrowSvg from "../../../../public/right-arrow.svg";
 import { DEFAULT_LANG, langHref } from "@/config";
 import CtaButton from "@/components/ui/CtaButton";
 
-const STEP_COLORS = ["--color-navy", "--color-teracotta", "--color-mint"];
+const STEP_COLORS = ["--color-black", "--color-petrol", "--color-yellow"];
 
 export default function HomeColumnSection({ data, lang = DEFAULT_LANG }) {
   const { sub_heading, heading, short_text, cta_text, cta_url } = data || {};
@@ -36,7 +36,7 @@ export default function HomeColumnSection({ data, lang = DEFAULT_LANG }) {
           <div className="lg:w-[45%] lg:shrink-0 mb-12 lg:mb-0">
             {sub_heading && (
               <motion.p
-                className="subheading-label text-(--color-teracotta)! mb-2 md:mb-4"
+                className="subheading-label text-(--color-petrol)! mb-2 md:mb-4"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
@@ -96,7 +96,7 @@ export default function HomeColumnSection({ data, lang = DEFAULT_LANG }) {
                   <motion.div
                     key={idx}
                     className={`step-row flex items-center gap-6 py-6 px-4 -mx-4 first:pt-0 rounded-lg transition-colors duration-500 ${
-                      isActive ? "bg-(--color-warm-stone)" : "bg-transparent"
+                      isActive ? "bg-(--color-light-grey)" : "bg-transparent"
                     }`}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}

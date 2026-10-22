@@ -37,7 +37,7 @@ export default function HomeFaq({ data, lang = DEFAULT_LANG, prevLayout }) {
     : null;
 
   return (
-    <section className={`pb-18 lg:pb-36 ${FLUSH_AFTER.has(prevLayout) ? "" : "pt-18 lg:pt-36"}`} style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
+    <section className={`pb-18 lg:pb-36 ${FLUSH_AFTER.has(prevLayout ?? data?._prev) ? "" : "pt-18 lg:pt-36"}`} style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       <div className="cs-container grid grid-cols-1 gap-10 lg:grid-cols-[549px_minmax(0,1fr)] lg:gap-[50px]">
         <div className="flex flex-col items-start gap-5">
           {heading && <h2 className="cs-h2 cs-highlight text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
@@ -61,7 +61,7 @@ export default function HomeFaq({ data, lang = DEFAULT_LANG, prevLayout }) {
                       type="button"
                       onClick={() => setOpen(isOpen ? null : i)}
                       aria-expanded={isOpen}
-                      className="flex w-full cursor-pointer items-center justify-between gap-6 px-6 py-4 text-left"
+                      className={`flex w-full cursor-pointer items-center justify-between gap-6 px-6 text-left transition-[padding] duration-300 ${isOpen ? "pt-6 pb-2" : "py-4"}`}
                     >
                       <span className="font-medium text-[18px] lg:text-[20px] leading-6 tracking-[-0.4px] text-(--color-heading)">{faq.question}</span>
                       <Image
@@ -82,8 +82,9 @@ export default function HomeFaq({ data, lang = DEFAULT_LANG, prevLayout }) {
                         transition={{ duration: 0.3 }}
                         className="overflow-hidden"
                       >
+                        {/* No negative margin here: the overflow-hidden wrapper would clip the first line */}
                         <div
-                          className="cs-rich px-6 pb-6 -mt-1 max-w-[596px] font-light text-[16px] lg:text-[18px] leading-[22px] tracking-[-0.36px] text-(--color-heading)"
+                          className="cs-rich px-6 pb-[25px] max-w-[596px] font-light text-[16px] lg:text-[18px] leading-[22px] tracking-[-0.36px] text-(--color-heading)"
                           dangerouslySetInnerHTML={{ __html: toHtml(faq.answer) }}
                         />
                       </motion.div>

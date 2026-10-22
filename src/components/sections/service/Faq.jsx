@@ -13,12 +13,12 @@ export default function Faq({ data }) {
   };
 
   return (
-    <section className="bg-(--color-brand) text-white">
+    <section className="bg-(--color-black) text-white">
       <div className="web-width px-6 py-15 md:py-30">
         {/* SUB HEADING */}
         {sub_heading && (
           <div className="flex items-center gap-2 mb-4">
-            <span className="h-2 w-2 rounded-full bg-(--color-accent)" />
+            <span className="h-2 w-2 rounded-full bg-(--color-yellow)" />
             <span className="subheading-label">{sub_heading}</span>
           </div>
         )}
@@ -43,12 +43,12 @@ export default function Faq({ data }) {
                   className="w-full flex items-center gap-4 md:gap-20 text-left cursor-pointer"
                 >
                   {/* NUMBER */}
-                  <span className="text-[var(--color-accent)] text-sm md:text-base min-w-[30px] pt-1">
+                  <span className="text-[var(--color-yellow)] text-sm md:text-base min-w-[30px] pt-1">
                     ({String(index + 1).padStart(2, "0")})
                   </span>
 
                   {/* QUESTION */}
-                  <span className="flex-1 content-heading text-white">
+                  <span className="flex-1 cs-h4 text-white">
                     {faq.question}
                   </span>
 

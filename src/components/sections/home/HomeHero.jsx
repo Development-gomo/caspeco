@@ -5,8 +5,10 @@ import Link from "next/link";
 import React from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import CtaButton from "@/components/ui/CtaButton";
+import HeroLabels from "@/components/ui/HeroLabels";
+import { DEFAULT_LANG } from "@/config";
 
-export default function HomeHero({ data }) {
+export default function HomeHero({ data, lang = DEFAULT_LANG }) {
   const sectionRef = React.useRef(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -20,11 +22,6 @@ export default function HomeHero({ data }) {
   const heading = data?.heading || "";
   const shortHeading = data?.short_heading || "";
 
-  // "Label" is an ACF repeater (up to 3 rows) of { label, link } pairs —
-  // the "One support / One partner / One log in" tag row in the Figma design.
-  const labels = Array.isArray(data?.label)
-    ? data.label.filter((row) => row?.label)
-    : [];
   const primaryCtaText = data?.cta_text || "";
   const primaryCtaUrl = data?.cta_url || "";
   const secondaryCtaText = data?.secondary_cta_text || "";
@@ -59,25 +56,9 @@ export default function HomeHero({ data }) {
       {/* <div className="absolute inset-0 bg-linear-to-b from-black/40 via-black/65 to-transparent -z-10"></div> */}
 
       {/* HERO CONTENT — USP row pinned near the top, heading block pinned to the bottom */}
-      <div className="cs-container relative z-10 min-h-screen flex flex-col justify-around lg:justify-between pt-24 pb-24 lg:pt-[148px] lg:pb-36 sm:gap-10 md:gap-20 lg:gap-24 xl:gap-55">
-        {labels.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="flex flex-wrap items-center gap-4 lg:gap-8 text-white font-extrabold text-base lg:text-[20px] leading-[22px] mb-6"
-          >
-            {labels.map((row, i) =>
-              row.link ? (
-                <Link key={i} href={row.link} className="hover:underline">
-                  {row.label}
-                </Link>
-              ) : (
-                <span key={i}>{row.label}</span>
-              ),
-            )}
-          </motion.div>
-        )}
+      <div className="cs-container relative z-10 min-h-screen flex flex-col justify-around lg:justify-between pt-24 pb-24 lg:pt-[148px] lg:pb-36 sm:gap-10 md:gap-20 lg:gap-24 xl:gap-[218px]">
+        {/* "One platform / One partner / One login" — ACF label repeater, defaults when empty */}
+        <HeroLabels labels={data?.label} lang={lang} className="mb-6" />
 
         <div className="flex flex-col items-start gap-8 lg:gap-12 w-full">
           <div className="flex flex-col items-start gap-6 lg:gap-8 w-full text-white">
@@ -99,7 +80,7 @@ export default function HomeHero({ data }) {
                 initial={{ opacity: 0, y: 25 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.2 }}
-                className="lg:max-w-[650px] font-medium text-base leading-[22px] lg:text-[24px] lg:leading-7 lg:tracking-[-0.48px]"
+                className="lg:max-w-[850px] font-medium text-base leading-[22px] lg:text-[24px] lg:leading-7 lg:tracking-[-0.48px]"
                 dangerouslySetInnerHTML={{ __html: shortHeading }}
               />
             )}
@@ -118,7 +99,7 @@ export default function HomeHero({ data }) {
                   className="group inline-flex items-center gap-2 text-[16px] text-white select-none"
                 >
                   {secondaryCtaText}
-                  <span className="text-(--color-accent) transition-transform duration-300 ease-out group-hover:translate-x-1">
+                  <span className="text-(--color-yellow) transition-transform duration-300 ease-out group-hover:translate-x-1">
                     →
                   </span>
                 </Link>

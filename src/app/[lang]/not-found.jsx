@@ -22,9 +22,9 @@ export default async function LangScopedNotFound() {
       <Header lang={lang} />
       <div className="h-28 w-full bg-black"></div>
       <main className="min-h-[60vh] flex flex-col items-center justify-center gap-6 px-4 py-16 text-center">
-        <p className="text-sm uppercase tracking-[0.3em] text-gray-500">404</p>
+        <p className="text-sm uppercase tracking-[0.3em] text-(--color-grey-medium-dark)">404</p>
         <h1 className="text-4xl font-semibold">{currentMessages.title}</h1>
-        <p className="text-gray-600 max-w-xl">{currentMessages.description}</p>
+        <p className="text-(--color-grey-dark) max-w-xl">{currentMessages.description}</p>
         <CtaButton href={langHome(lang)}>{currentMessages.buttonText}</CtaButton>
       </main>
       <Footer lang={lang} />

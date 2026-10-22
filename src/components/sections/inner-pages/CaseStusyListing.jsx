@@ -51,7 +51,7 @@ export default function CaseStudyListing({
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <span className="h-2 w-2 rounded-full bg-(--color-accent)"></span>
+              <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
               <span className="subheading-label">{sub_heading}</span>
             </motion.div>
           )}
@@ -84,7 +84,7 @@ export default function CaseStudyListing({
               return (
                 <motion.div
                   key={item.id}
-                  className="group rounded-lg overflow-hidden bg-(--color-brand)"
+                  className="group rounded-lg overflow-hidden bg-(--color-black)"
                   initial={{ opacity: 0, y: 24 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: (idx % 6) * 0.1 }}
@@ -112,7 +112,7 @@ export default function CaseStudyListing({
                       </div>
                     )}
                   </div>
-                  <div className=" bg-(--color-brand) text-white z-20 p-6 lg:p-8 flex flex-col justify-center">
+                  <div className=" bg-(--color-black) text-white z-20 p-6 lg:p-8 flex flex-col justify-center">
                     <h3
                       className="text-[24px] leading-8 md:text-[24px] lg:leading-8 mb-4"
                       dangerouslySetInnerHTML={{ __html: title }}
@@ -171,7 +171,7 @@ export default function CaseStudyListing({
             <div className="flex justify-center mt-10">
               <button
                 onClick={() => setVisibleCount((prev) => prev + 6)}
-                className="gap-3 group relative inline-flex items-center rounded-sm bg-(--color-brand) px-8 py-4 text-white transition-all duration-300 hover:bg-(--color-brand) overflow-hidden select-none"
+                className="gap-3 group relative inline-flex items-center rounded-sm bg-(--color-black) px-8 py-4 text-white transition-all duration-300 hover:bg-(--color-black) overflow-hidden select-none"
               >
                 <span className="relative w-6 flex items-center justify-center">
                   <span className="absolute h-2 w-2 rounded-full bg-[#27E0C0] transition-all duration-300 ease-out group-hover:opacity-0 group-hover:-translate-x-1"></span>

@@ -35,8 +35,8 @@ export default function HomeIntroVideo({ data, lang = DEFAULT_LANG }) {
   // "Watch video" plays the inline video; without a video it falls back to the CTA URL.
   const button = cta_text
     ? videoSrc
-      ? <CtaButton variant="outline-dark" onClick={playVideo}>{cta_text}</CtaButton>
-      : cta_url && <CtaButton variant="outline-dark" href={langHref(cta_url, lang)}>{cta_text}</CtaButton>
+      ? <CtaButton variant="outline-dark-gold" onClick={playVideo}>{cta_text}</CtaButton>
+      : cta_url && <CtaButton variant="outline-dark-gold" href={langHref(cta_url, lang)}>{cta_text}</CtaButton>
     : null;
 
   return (
@@ -78,19 +78,19 @@ export default function HomeIntroVideo({ data, lang = DEFAULT_LANG }) {
           )}
 
           {sub_heading && (
-            <p className="font-bold text-[18px] leading-[22px] xl:text-[23px] xl:leading-[23px] tracking-[-0.46px] text-black xl:-mt-[5px]">
+            <p className="font-bold text-[18px] leading-[22px] xl:text-[23px] xl:leading-[23px] tracking-[-0.46px] text-black xl:-mt-[12px]">
               {sub_heading}
             </p>
           )}
 
           {short_text && (
             <div
-              className="cs-p2 cs-rich mt-8 xl:mt-11.5 max-w-[474px] text-(--color-grey-dark)"
+              className="cs-p2 cs-rich mt-8 xl:mt-12 max-w-[474px] text-(--color-grey-dark)"
               dangerouslySetInnerHTML={{ __html: toHtml(short_text) }}
             />
           )}
 
-          {button && <div className="mt-8 xl:mt-10">{button}</div>}
+          {button && <div className="mt-8 xl:mt-[45px]">{button}</div>}
         </div>
 
         {videoSrc && (

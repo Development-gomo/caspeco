@@ -10,11 +10,11 @@ export default function Loading() {
 
       {/* Content placeholder */}
       <div className="pt-[88px] web-width mx-auto px-6 py-20 space-y-6">
-        <div className="h-10 w-2/3 rounded-md bg-gray-200" />
-        <div className="h-5 w-full rounded-md bg-gray-100" />
-        <div className="h-5 w-5/6 rounded-md bg-gray-100" />
-        <div className="h-5 w-4/6 rounded-md bg-gray-100" />
-        <div className="mt-10 h-64 w-full rounded-xl bg-gray-100" />
+        <div className="h-10 w-2/3 rounded-md bg-(--color-grey-medium)" />
+        <div className="h-5 w-full rounded-md bg-(--color-light-grey)" />
+        <div className="h-5 w-5/6 rounded-md bg-(--color-light-grey)" />
+        <div className="h-5 w-4/6 rounded-md bg-(--color-light-grey)" />
+        <div className="mt-10 h-64 w-full rounded-xl bg-(--color-light-grey)" />
       </div>
     </div>
   );

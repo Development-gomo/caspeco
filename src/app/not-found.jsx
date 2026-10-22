@@ -17,11 +17,11 @@ export default async function GlobalNotFound() {
     <html lang={lang}>
       <body className="min-h-screen flex flex-col items-center justify-center gap-6 bg-white px-4 text-center">
         <div className="space-y-3">
-          <p className="text-sm uppercase tracking-[0.3em] text-gray-500">
+          <p className="text-sm uppercase tracking-[0.3em] text-(--color-grey-medium-dark)">
             404
           </p>
           <h1 className="text-4xl font-semibold">{currentMessages.title}</h1>
-          <p className="text-gray-600 max-w-lg">{currentMessages.description}</p>
+          <p className="text-(--color-grey-dark) max-w-lg">{currentMessages.description}</p>
         </div>
         <CtaButton href={langHome(lang)}>{currentMessages.buttonText}</CtaButton>
       </body>

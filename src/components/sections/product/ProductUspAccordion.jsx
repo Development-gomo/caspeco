@@ -24,7 +24,7 @@ function AccordionItem({ item, isOpen, onToggle, lang }) {
       }`}
     >
       <h3 className="normal-case">
-        <button type="button" onClick={onToggle} aria-expanded={isOpen} className="flex w-full cursor-pointer items-center gap-4 py-[21px] text-left">
+        <button type="button" onClick={onToggle} aria-expanded={isOpen} className={`flex w-full cursor-pointer items-center gap-4 pt-[21px] text-left ${isOpen ? "pb-[15px]" : "pb-[21px]"}`}>
           <span className="relative flex size-7 shrink-0 items-center justify-center">
             {icon && (
               <Image src={icon} alt="" width={28} height={28} className={`max-h-7 w-auto object-contain transition ${isOpen ? "brightness-0 invert" : ""}`} />
@@ -52,7 +52,8 @@ function AccordionItem({ item, isOpen, onToggle, lang }) {
             transition={{ duration: 0.3 }}
             className="overflow-hidden"
           >
-            <div className="flex flex-col items-start gap-[15px] pb-[21px] pl-11 -mt-1.5">
+            {/* No negative margin here: the overflow-hidden wrapper would clip the first line */}
+            <div className="flex flex-col items-start gap-[15px] pb-[21px] pl-11">
               {item.text && (
                 <div
                   className="cs-rich font-light text-[16px] lg:text-[18px] leading-[22px] tracking-[-0.36px] text-(--color-light-grey)"

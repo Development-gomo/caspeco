@@ -257,8 +257,8 @@ export default function ContactForm({ formId = 982, lang = DEFAULT_LANG, submitL
 
   if (state.loading)
     return (
-      <div className="flex items-center gap-3 py-10 text-sm text-gray-500">
-        <span className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-[var(--color-brand)]" />
+      <div className="flex items-center gap-3 py-10 text-sm text-(--color-grey-medium-dark)">
+        <span className="h-5 w-5 animate-spin rounded-full border-2 border-(--color-grey-medium) border-t-[var(--color-black)]" />
         Loading form…
       </div>
     );

@@ -1,10 +1,10 @@
 // src/components/sections/industry/IndustryTestimonials.jsx
-// ACF layout: industry_testimonials_section — Figma "Testimonial carousel" ("We've helped
-// others get there"). Full-bleed photo with a dark gradient, heading, a row of frosted
-// quote cards (465px) that runs off the right edge, then arrows, "01 / 06" counter,
-// dash indicators, a text link and an outline button.
-// Cards: the layout's own `cards` repeater if filled, otherwise every published case study
-// (passed in as `cases`), showing only its logo, testimonial, person_name and designation.
+// "Card Slider" testimonial layout (slider_type = card, see TestimonialSlider) — Figma
+// "Testimonial carousel" ("We've helped others get there"). Full-bleed photo with a dark
+// gradient, heading, a row of frosted quote cards (465px) that runs off the right edge,
+// then arrows, "01 / 06" counter, dash indicators, a text link and an outline button.
+// Cards: the latest case studies (passed in as `cases`), showing their logo, testimonial,
+// person_name and designation.
 // Motion: heading and card row reveal on scroll, cards slide in an endless loop (Swiper,
 // drag/swipe or arrows), the background photo settles from a slight zoom, cards lift on hover.
 
@@ -19,7 +19,7 @@ import CtaButton from "@/components/ui/CtaButton";
 import Reveal from "@/components/ui/Reveal";
 import SliderArrows from "@/components/ui/SliderArrows";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { mediaUrl, rows, toHtml } from "@/lib/content";
+import { mediaUrl, toHtml } from "@/lib/content";
 
 const pad = (n) => String(n).padStart(2, "0");
 
@@ -42,7 +42,7 @@ function QuoteCard({ card, lang, accent }) {
     // Frosted glass (Figma): light diagonal gradient + 20px backdrop blur + hairline border.
     // No ancestor may use opacity < 1, filter or clip-path, or the blur sees nothing behind it.
     <figure
-      className="flex h-full min-h-[286px] flex-col gap-10 rounded-[8px] border border-white/20 p-6 text-(--color-light-grey) shadow-[0px_4px_24px_rgba(0,0,0,0.25)] backdrop-blur-[20px] transition-[translate,border-color] duration-300 hover:-translate-y-1 hover:border-white/35"
+      className="flex h-full min-h-[294px] flex-col gap-6 rounded-[8px] border border-white/20 p-6 text-(--color-light-grey) shadow-[0px_4px_24px_rgba(0,0,0,0.25)] backdrop-blur-[20px] transition-[translate,border-color] duration-300 hover:-translate-y-1 hover:border-white/35"
       style={{ backgroundImage: "linear-gradient(135deg, rgba(253,253,253,0.22) 0%, rgba(253,253,253,0.08) 55%, rgba(253,253,253,0.04) 100%)" }}
     >
       {logo ? (
@@ -52,7 +52,7 @@ function QuoteCard({ card, lang, accent }) {
       )}
       {card.quote && (
         <blockquote
-          className="mt-auto font-bold text-[26px] leading-8 tracking-[-0.52px] lg:text-[36px] lg:leading-10 lg:tracking-[-0.72px]"
+          className="mt-auto font-bold text-[26px] leading-8 tracking-[-0.52px] lg:text-[32px] lg:leading-8 lg:tracking-[-0.64px]"
           dangerouslySetInnerHTML={{ __html: toHtml(curly(card.quote)) }}
         />
       )}
@@ -60,9 +60,9 @@ function QuoteCard({ card, lang, accent }) {
         {(card.name || card.company) && (
           <span className="flex items-center gap-3">
             <span className="h-12 w-[3px] shrink-0 rounded-[10px] lg:h-14" style={{ background: accent || ACCENTS[0] }} aria-hidden />
-            <span className="flex flex-col">
-              {card.name && <span className="font-bold text-[22px] lg:text-[28px] leading-8 tracking-[-0.56px]">{card.name}</span>}
-              {card.company && <span className="font-medium text-[18px] lg:text-[20px] leading-6 tracking-[0.15px]">{card.company}</span>}
+            <span className="flex flex-col gap-1">
+              {card.name && <span className="font-bold text-[22px] lg:text-[24px] leading-7 tracking-[-0.48px]">{card.name}</span>}
+              {card.company && <span className="font-medium text-[16px] lg:text-[18px] leading-6 tracking-[0.15px]">{card.company}</span>}
             </span>
           </span>
         )}
@@ -85,10 +85,7 @@ const caseToCard = (c) => ({
 });
 
 export default function IndustryTestimonials({ data, lang = DEFAULT_LANG, cases = [] }) {
-  const ownCards = rows(data?.cards).filter((c) => c.quote);
-  const cards = ownCards.length
-    ? ownCards
-    : cases.filter((c) => c.quote || c.personName || mediaUrl(c.logo)).slice(0, MAX_CASES).map(caseToCard); // newest first
+  const cards = (Array.isArray(cases) ? cases : []).filter((c) => c.quote || c.personName || mediaUrl(c.logo)).slice(0, MAX_CASES).map(caseToCard); // newest first
   const swiperRef = React.useRef(null);
   const [index, setIndex] = React.useState(0);
   // Endless loop: Swiper needs more slides than fit on screen, so short lists are rendered
@@ -163,7 +160,7 @@ export default function IndustryTestimonials({ data, lang = DEFAULT_LANG, cases 
             )}
           </div>
           {cta_text && cta_url && (
-            <CtaButton variant="outline-light" href={langHref(cta_url.trim(), lang)}>
+            <CtaButton variant="outline-light-yellow" href={langHref(cta_url.trim(), lang)}>
               {cta_text}
             </CtaButton>
           )}

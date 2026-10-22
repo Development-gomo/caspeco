@@ -12,7 +12,7 @@ import CheckIcon from "../../../../public/icons/home/check.svg";
 import { DEFAULT_LANG, langHref } from "@/config";
 import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
-// Collage = the 4 image frames of the Figma component "Company size display" (612×413).
+// Collage = the 4 image frames of the Figma component "Company size display" (612×408; one frame overhangs 5px at the bottom, as in Figma).
 // Its two variants are two layouts of the same frames; switching tabs Smart-Animates
 // between them (150 ms, ease-out): frames move/resize, frames the layout hides fade out.
 // Tabs with 3–4 images use the "four" layout (Default), 1–2 images the "two" (Variant2).
@@ -38,6 +38,9 @@ const LAYOUTS = {
   },
 };
 const TRANSITION = { duration: 0.15, ease: "easeOut" }; // Figma: Smart Animate, 150 ms, ease-out
+// Tab text: slower than the collage so it reads as a fade, not a blink
+const TEXT_OUT = { duration: 0.2, ease: "easeIn" };
+const TEXT_IN = { duration: 0.4, delay: 0.15, ease: [0.22, 1, 0.36, 1] };
 const pct = (v, total) => `${(v / total) * 100}%`;
 
 function Collage({ images }) {
@@ -52,7 +55,7 @@ function Collage({ images }) {
   }
 
   return (
-    <div className="relative w-full max-w-[612px] aspect-[612/413] shrink-0">
+    <div className="relative w-full max-w-[612px] aspect-[612/408] shrink-0">
       {FRAMES.map((f) => {
         const s = layout.frames[f];
         const img = assigned[f] || lastImage[f];
@@ -65,9 +68,9 @@ function Collage({ images }) {
             initial={false}
             animate={{
               left: pct(s.left, 612),
-              top: pct(s.top, 413),
+              top: pct(s.top, 408),
               width: pct(s.w, 612),
-              height: pct(s.h, 413),
+              height: pct(s.h, 408),
               opacity: assigned[f] ? 1 : 0,
             }}
             transition={TRANSITION}
@@ -101,10 +104,11 @@ export default function HomeHelpTabs({ data, lang = DEFAULT_LANG }) {
 
   return (
     <section
-      className="pt-18 pb-12 lg:pt-36 lg:pb-[72px]"
+      // after another light section (industry challenges) the 144px gap is shared: 72 + 72
+      className={`pb-12 lg:pb-[72px] ${data?._prev === "industry_challenges_section" ? "pt-12 lg:pt-[72px]" : "pt-18 lg:pt-36"}`}
       style={sectionBackground(data, { background: "var(--color-light-grey)" })}
     >
-      <div className="cs-container flex flex-col items-center gap-8 lg:gap-[46px]">
+      <div className="cs-container flex flex-col items-center gap-8 lg:gap-[41px]">
         {data.heading && (
           <h2
             className="cs-h2 cs-highlight cs-rich text-center text-(--color-heading)"
@@ -113,7 +117,7 @@ export default function HomeHelpTabs({ data, lang = DEFAULT_LANG }) {
         )}
 
         {tabs.length > 0 && (
-          <div className="flex w-full flex-col items-center gap-8">
+          <div className="flex w-full flex-col items-center gap-6">
             {/* Pill tabs — scroll horizontally on small screens */}
             <div className="max-w-full overflow-x-auto px-1 py-2 [scrollbar-width:none]">
               <div role="tablist" className="flex w-max items-center gap-1 rounded-[56px] bg-white p-[5px] shadow-[0px_2px_4.5px_rgba(0,0,0,0.1)]">
@@ -136,18 +140,20 @@ export default function HomeHelpTabs({ data, lang = DEFAULT_LANG }) {
               </div>
             </div>
 
-            <div role="tabpanel" className="flex w-full flex-col items-center gap-10 lg:flex-row lg:justify-center xl:gap-[120px]">
+            <div role="tabpanel" className="flex w-full flex-col items-center gap-10 lg:flex-row lg:items-start lg:justify-center xl:gap-[120px]">
               {/* stays mounted so its frames can animate from one tab's layout to the next */}
               {hasCollage && <Collage images={rows(tab.images)} />}
 
-              <AnimatePresence mode="wait" initial={false}>
+              {/* Old and new text share one grid cell, so the panel keeps its height while they
+                  cross-fade (no empty frame / layout jump): old fades out fast, new fades in after it */}
+              <div className="grid w-full max-w-[536px] lg:mt-[25px]">
+              <AnimatePresence initial={false}>
                 <motion.div
                   key={active}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={TRANSITION}
-                  className="flex w-full max-w-[536px] flex-col items-start gap-10 xl:px-6"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0, transition: TEXT_IN }}
+                  exit={{ opacity: 0, transition: TEXT_OUT }}
+                  className="flex flex-col items-start gap-10 xl:px-6 [grid-area:1/1]"
                 >
                   <div className="flex flex-col gap-5">
                     {tab.title && <h3 className="cs-h4 text-black">{tab.title}</h3>}
@@ -172,6 +178,7 @@ export default function HomeHelpTabs({ data, lang = DEFAULT_LANG }) {
                   )}
                 </motion.div>
               </AnimatePresence>
+              </div>
             </div>
           </div>
         )}

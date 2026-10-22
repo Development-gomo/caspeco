@@ -42,7 +42,7 @@ export default function TeamSection({ data, lang, prefetchedTeam }) {
       <div className="max-w-3xl mb-6">
         {sub_heading && (
           <div className="flex items-center gap-2 mb-2 md:mb-4">
-            <span className="h-2 w-2 rounded-full bg-(--color-accent)"></span>
+            <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
             <span className="subheading-label uppercase">{sub_heading}</span>
           </div>
         )}
@@ -68,7 +68,7 @@ export default function TeamSection({ data, lang, prefetchedTeam }) {
           <select
             value={activeFilter}
             onChange={(e) => setActiveFilter(e.target.value)}
-            className="team-filter min-w-[307px] rounded-sm bg-(--color-brand) border border-gray-300 px-6 py-2 text-white h-[48px] capitalize"
+            className="team-filter min-w-[307px] rounded-sm bg-(--color-black) border border-(--color-grey-medium) px-6 py-2 text-white h-[48px] capitalize"
           >
             {filters.map((f) => (
               <option key={f.slug} value={f.slug}>
@@ -94,7 +94,7 @@ export default function TeamSection({ data, lang, prefetchedTeam }) {
           return (
             <div
               key={member.id}
-              className="relative overflow-hidden rounded-md bg-gray-100"
+              className="relative overflow-hidden rounded-md bg-(--color-light-grey)"
             >
               {/* Image */}
               <div className="relative aspect-[3/4]">

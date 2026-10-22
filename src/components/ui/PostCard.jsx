@@ -3,12 +3,15 @@
 // title, read time and "Read more" (the whole card is clickable).
 // Used by HomeInsights (3 cards) and NewsListing (paged grid).
 // Needs the post with _embedded wp:featuredmedia + wp:term, and content for the read time.
+// readMore / readSuffix come from the section's ACF fields; when empty they fall back to
+// the per-language labels in lib/postStrings.js.
 
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import ArrowLink from "@/components/ui/ArrowLink";
 import { DEFAULT_LANG, entryHref } from "@/config";
 import { readingMinutes } from "@/lib/content";
+import { postStrings } from "@/lib/postStrings";
 
 // Figma uses Inter for the small card meta (category + read time)
 const inter = Inter({ subsets: ["latin"], weight: ["400", "700"], display: "swap" });
@@ -18,6 +21,9 @@ export default function PostCard({ post, readMore, readSuffix, lang = DEFAULT_LA
   const category = (post?._embedded?.["wp:term"]?.[0] || []).find((t) => t.taxonomy === "category");
   const href = entryHref("post", post.slug, lang);
   const title = post?.title?.rendered || "";
+  const strings = postStrings(lang);
+  const readMoreText = readMore || strings.readMore;
+  const readSuffixText = readSuffix || strings.readSuffix;
 
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-[16px] border border-(--color-grey-medium) bg-(--color-light-grey) shadow-[0px_4px_12px_0px_rgba(0,0,0,0.16)] transition duration-300 hover:-translate-y-1">
@@ -44,16 +50,12 @@ export default function PostCard({ post, readMore, readSuffix, lang = DEFAULT_LA
           className="font-bold text-[22px] lg:text-[26px] leading-7 tracking-[-0.52px] normal-case text-black"
           dangerouslySetInnerHTML={{ __html: title }}
         />
-        {readSuffix && (
-          <p className={`${inter.className} text-[12px] text-(--color-grey-medium-dark)`}>
-            {readingMinutes(post?.content?.rendered)} {readSuffix}
-          </p>
-        )}
-        {readMore && (
-          <ArrowLink href={href} className="mt-auto after:absolute after:inset-0">
-            {readMore}
-          </ArrowLink>
-        )}
+        <p className={`${inter.className} text-[12px] text-(--color-grey-medium-dark)`}>
+          {readingMinutes(post?.content?.rendered)} {readSuffixText}
+        </p>
+        <ArrowLink href={href} className="mt-auto after:absolute after:inset-0">
+          {readMoreText}
+        </ArrowLink>
       </div>
     </article>
   );

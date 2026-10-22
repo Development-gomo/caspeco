@@ -16,16 +16,16 @@ export default function GlobalError({ error, reset }) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-white px-4 text-center">
       <div className="space-y-3">
-        <p className="text-sm uppercase tracking-[0.3em] text-gray-500">Error</p>
+        <p className="text-sm uppercase tracking-[0.3em] text-(--color-grey-medium-dark)">Error</p>
         <h1 className="text-4xl font-semibold">Something went wrong</h1>
-        <p className="text-gray-600 max-w-lg">
+        <p className="text-(--color-grey-dark) max-w-lg">
           An unexpected error occurred. Please try again or return to the homepage.
         </p>
       </div>
       <div className="flex gap-4">
         <button
           onClick={reset}
-          className="inline-flex items-center rounded-sm border border-gray-300 px-6 py-4 text-[16px] transition-all duration-300 hover:bg-gray-50"
+          className="inline-flex items-center rounded-sm border border-(--color-grey-medium) px-6 py-4 text-[16px] transition-all duration-300 hover:bg-(--color-light-grey)"
         >
           Try again
         </button>

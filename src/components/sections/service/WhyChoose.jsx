@@ -36,7 +36,7 @@ export default function WhyChoose({ data }) {
           <div>
             {sub_heading && (
               <div className="flex items-center gap-2 mb-2 md:mb-4">
-                <span className="h-2 w-2 rounded-full bg-(--color-accent)"></span>
+                <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
                 <span className="subheading-label text-white ">
                   {sub_heading}
                 </span>
@@ -66,7 +66,7 @@ export default function WhyChoose({ data }) {
           {/* RIGHT GRID */}
           <div className="grid md:grid-cols-2 gap-4 mt-8 lg:mt-0">
             {key_solutions.map((item, index) => (
-              <div key={index} className="lg:max-w-[312px] p-6 lg:px-8 lg:py-8 rounded-sm bg-(--color-brand)">
+              <div key={index} className="lg:max-w-[312px] p-6 lg:px-8 lg:py-8 rounded-sm bg-(--color-black)">
                 {item.solution_icons?.url && (
                   <Image
                     src={item.solution_icons.url} alt={item.heading || "icon"} width={32} height={32} className="mb-8"/>

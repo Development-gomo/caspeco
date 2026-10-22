@@ -17,7 +17,7 @@ export default function Contactform({ data }) {
       >
         {sub_heading && (
           <div className="flex items-center gap-2 mb-2 md:mb-4">
-            <span className="h-2 w-2 rounded-full bg-(--color-accent)"></span>
+            <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
             <span className="subheading-label uppercase">{sub_heading}</span>
           </div>
         )}

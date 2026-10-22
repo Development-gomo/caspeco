@@ -39,7 +39,7 @@ export default function PartnerCategoryTemplate({ term, partners, lang, slug, th
             })}
           </ul>
         ) : (
-          <p className="text-gray-500">No partners in this category yet.</p>
+          <p className="text-(--color-grey-medium-dark)">No partners in this category yet.</p>
         )}
       </section>
     </Shell>

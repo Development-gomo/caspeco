@@ -14,7 +14,7 @@ export default function ResultSection({ data }) {
         {/* SUB HEADING */}
         {sub_heading && (
           <div className="flex items-center gap-2 mb-4">
-            <span className="h-2 w-2 rounded-full bg-(--color-accent)"></span>
+            <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
             <span className="subheading-label text-[#8C8FA3] uppercase">
               {sub_heading}
             </span>
@@ -45,7 +45,7 @@ export default function ResultSection({ data }) {
                       <CountUp value={String(item.number ?? "")} className="text-[80px] leading-[70px] font-medium" />
 
                       {item.suffix && (
-                        <span className="suffix-text text-[40px] leading-[40px] font-medium text-[var(--color-accent)] ml-1 absolute top-[-5px]">
+                        <span className="suffix-text text-[40px] leading-[40px] font-medium text-[var(--color-yellow)] ml-1 absolute top-[-5px]">
                           {item.suffix}
                         </span>
                       )}

@@ -16,12 +16,12 @@ export default function OurServicesSection({ data }) {
   };
 
   return (
-    <section className="bg-(--color-brand) text-white">
+    <section className="bg-(--color-black) text-white">
       <div className="web-width px-6 py-15 md:py-30">
         {/* SUB HEADING */}
         {sub_heading && (
           <div className="flex items-center gap-2 mb-4">
-            <span className="h-2 w-2 rounded-full bg-(--color-accent)" />
+            <span className="h-2 w-2 rounded-full bg-(--color-yellow)" />
             <span className="subheading-label">{sub_heading}</span>
           </div>
         )}
@@ -69,13 +69,13 @@ export default function OurServicesSection({ data }) {
                     >
                       <span className="flex items-center gap-4">
                         {/* SERVICE NAME */}
-                        <span className="h-2 w-2 rounded-full bg-(--color-accent)" />
-                        <span className="text-white content-heading">
+                        <span className="h-2 w-2 rounded-full bg-(--color-yellow)" />
+                        <span className="text-white cs-h4">
                           {service.heading}
                         </span>
                       </span>
                       {/* ICON (expand/collapse) */}
-                      <span className="bg-(--color-accent) h-12 w-12 flex items-center justify-center rounded-full ml-auto">
+                      <span className="bg-(--color-yellow) h-12 w-12 flex items-center justify-center rounded-full ml-auto">
                         <Image
                           src={Arrowdown}
                           alt="toggle icon"

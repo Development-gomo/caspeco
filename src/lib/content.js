@@ -76,3 +76,15 @@ export function readingMinutes(html) {
   const words = (html || "").replace(/<[^>]+>/g, " ").trim().split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / 200));
 }
+
+/**
+ * Tags every flexible-content block with its neighbours' layouts (_prev / _next), once,
+ * at the top-level builder. The tags travel with the block through nested builders
+ * (Industry → Product → Page), so a section can apply the Figma spacing rule:
+ * two consecutive light sections share one 144px gap (e.g. 72 + 72) instead of 144 + 144.
+ */
+export function withNeighbours(sections) {
+  if (!Array.isArray(sections)) return sections;
+  if (sections.some((b) => b && "_prev" in b)) return sections; // already tagged upstream
+  return sections.map((b, i) => (b ? { ...b, _prev: sections[i - 1]?._layout || null, _next: sections[i + 1]?._layout || null } : b));
+}

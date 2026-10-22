@@ -68,7 +68,7 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
       )}
 
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-linear-to-b from-(--color-navy)/85 via-(--color-navy)/75 to-(--color-navy)/65 -z-10"></div>
+      <div className="absolute inset-0 bg-linear-to-b from-(--color-black)/85 via-(--color-black)/75 to-(--color-black)/65 -z-10"></div>
 
 
       <div className="web-width px-6 grid lg:grid-cols-2 gap-2 items-center">
@@ -85,7 +85,7 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <span className="h-2 w-2 rounded-full bg-(--color-accent)"></span>
+              <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
               <span className="subheading-label text-white">{sub_heading}</span>
             </motion.div>
           )}
@@ -119,7 +119,7 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
             <motion.div
               key={i}
               className="lg:max-w-[312px] p-4
-                lg:px-8 lg:py-10 rounded-sm bg-(--color-brand)
+                lg:px-8 lg:py-10 rounded-sm bg-(--color-black)
                 shadow-lg
               "
               initial={{ opacity: 0, y: 24 }}
@@ -128,7 +128,7 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
               viewport={{ once: true }}
             >
               <p className="font-semibold text-[50px] leading-[68px] lg:text-[64px] lg:leading-[70px]">
-                <AnimatedNumber value={item.number} />{item.suffix}<span className="text-(--color-accent)">{item.suffix_highlighted}</span>
+                <AnimatedNumber value={item.number} />{item.suffix}<span className="text-(--color-yellow)">{item.suffix_highlighted}</span>
               </p>
               <p className="text-white/80">
                 {item.short_text}

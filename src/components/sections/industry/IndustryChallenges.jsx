@@ -40,7 +40,7 @@ function ChallengeCard({ item, index }) {
         {icon && <Image src={icon} alt="" width={18} height={18} className="size-[18px] object-contain brightness-0" />}
       </span>
       <div className="flex flex-col gap-2">
-        {item.value && <p className="font-bold text-[22px] lg:text-[24px] leading-7 tracking-[-0.48px]">{item.value}</p>}
+        {item.value && <p className="font-bold text-[22px] lg:text-[26px] leading-7 tracking-[-0.52px]">{item.value}</p>}
         {item.text && (
           <div className="cs-rich font-light text-[16px] lg:text-[18px] leading-[22px] tracking-[-0.36px]" dangerouslySetInnerHTML={{ __html: toHtml(item.text) }} />
         )}
@@ -57,7 +57,7 @@ export default function IndustryChallenges({ data, lang = DEFAULT_LANG }) {
   const fallback = { background: data?.enable_gradient ? GRADIENT : "var(--color-light-grey)" };
 
   return (
-    <section className="py-18 lg:py-36" style={sectionBackground(data, fallback)}>
+    <section className={`pt-18 lg:pt-36 ${data?._next === "home_tab_section" ? "pb-12 lg:pb-[72px]" : "pb-18 lg:pb-36"}`} style={sectionBackground(data, fallback)}>
       <div className="cs-container flex flex-col gap-10 lg:gap-16">
         {heading && (
           <Reveal as="h2" className="cs-h2 cs-highlight cs-rich max-w-[900px] text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
@@ -68,12 +68,12 @@ export default function IndustryChallenges({ data, lang = DEFAULT_LANG }) {
             <Reveal className="flex min-h-[400px] flex-col items-start justify-end gap-10 rounded-[8px] bg-(--color-dark-petrol) p-8 text-(--color-light-grey) shadow-[0px_4px_6px_rgba(0,0,0,0.16)] lg:min-h-[480px] lg:p-10">
               <div className="flex flex-col gap-5">
                 {feature_value && (
-                  <p className="font-extrabold text-[72px] leading-[0.95] tracking-[-2.88px] text-(--color-yellow) lg:text-[104px] lg:tracking-[-4.16px]">
+                  <p className="font-bold text-[72px] leading-none tracking-[-5.76px] text-(--color-yellow) lg:text-[100px] lg:tracking-[-8px]">
                     <CountUp value={feature_value} />
                   </p>
                 )}
                 {feature_text && (
-                  <div className="cs-rich font-bold text-[22px] lg:text-[28px] leading-[1.1] tracking-[-0.56px]" dangerouslySetInnerHTML={{ __html: toHtml(feature_text) }} />
+                  <div className="cs-rich font-bold text-[22px] lg:text-[32px] leading-[1.1] lg:leading-8 tracking-[-0.64px]" dangerouslySetInnerHTML={{ __html: toHtml(feature_text) }} />
                 )}
               </div>
 

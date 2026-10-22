@@ -20,7 +20,7 @@ export default function AboutUs({ data }) {
   const sectionImageUrl = data?.section_image?.url || "";
 
   return (
-    <section id="about-section" className="about-section relative overflow-hidden bg-(--color-warm-stone)">
+    <section id="about-section" className="about-section relative overflow-hidden bg-(--color-light-grey)">
       <div className="relative flex flex-col lg:flex-row lg:min-h-[620px]">
         {/* RIGHT — IMAGE */}
         {sectionImageUrl && (
@@ -49,7 +49,7 @@ export default function AboutUs({ data }) {
         )}
 
         {/* LEFT — DIAGONAL TEXT PANEL */}
-        <div className="about-diagonal-panel relative z-10 w-full lg:w-[52%] bg-(--color-warm-stone) px-6 lg:pr-16 lg:pl-31 py-12 lg:py-0 order-2 lg:order-1 flex flex-col justify-center">
+        <div className="about-diagonal-panel relative z-10 w-full lg:w-[52%] bg-(--color-light-grey) px-6 lg:pr-16 lg:pl-31 py-12 lg:py-0 order-2 lg:order-1 flex flex-col justify-center">
           {/* SUB HEADING */}
             {sub_heading && (
             <motion.div
@@ -59,7 +59,7 @@ export default function AboutUs({ data }) {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <span className="h-2 w-2 rounded-full bg-(--color-accent)"></span>
+              <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
               <span className="subheading-label">{sub_heading}</span>
             </motion.div>
           )}
@@ -67,7 +67,7 @@ export default function AboutUs({ data }) {
           {/* HEADING */}
           {heading && (
             <motion.div
-              className="about-panel-heading text-(--color-navy) max-w-[420px] mb-4"
+              className="about-panel-heading text-(--color-black) max-w-[420px] mb-4"
               dangerouslySetInnerHTML={{ __html: heading }}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}

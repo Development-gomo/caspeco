@@ -13,6 +13,7 @@ import CtaButton from "@/components/ui/CtaButton";
 import { DEFAULT_LANG, langHref } from "@/config";
 import { mediaUrl, toHtml, rows } from "@/lib/content";
 import { cf7FormId } from "@/lib/forms";
+import RuleLine from "../../../../public/icons/quick-contact-rule.svg";
 
 export default function QuickContact({ data, lang = DEFAULT_LANG, id }) {
   const { background_colour, sub_heading, heading, short_description, cta_text, cta_url, form_shortcode } = data || {};
@@ -43,7 +44,11 @@ export default function QuickContact({ data, lang = DEFAULT_LANG, id }) {
           />
         )}
 
-        {(sub_heading || heading) && <div className="h-1 w-full bg-(--color-yellow)" />}
+        {/* Figma "Vector 875": hand-drawn curved stroke (4px, round caps). The SVG has 2px of
+            padding around the stroke, so the negative margins keep it in a 4px slot at full width. */}
+        {(sub_heading || heading) && (
+          <Image src={RuleLine} alt="" aria-hidden className="-mx-0.5 -my-0.5 h-2 w-[calc(100%+4px)] max-w-none" />
+        )}
 
         {short_description && (
           <div className="cs-rich text-[20px] leading-6 tracking-[-0.4px] text-white" dangerouslySetInnerHTML={{ __html: toHtml(short_description) }} />
@@ -60,7 +65,7 @@ export default function QuickContact({ data, lang = DEFAULT_LANG, id }) {
         </div>
       ) : (
         // No form connected yet: keep the form column so the text stays left-aligned as in Figma
-        <div className={`w-full lg:w-[493px] shrink-0 ${cta_text && cta_url ? "" : "hidden lg:block"}`}>
+        <div className={`w-full lg:w-[493px] lg:h-[383px] shrink-0 lg:flex lg:items-center ${cta_text && cta_url ? "" : "hidden lg:flex"}`}>
           {cta_text && cta_url && <CtaButton href={langHref(cta_url, lang)}>{cta_text}</CtaButton>}
         </div>
       )}

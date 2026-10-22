@@ -49,14 +49,14 @@ export default function IndustryResults({ data }) {
                   {card.outcome && <p className="text-[18px] lg:text-[20px] leading-5 tracking-[-0.4px]">{card.outcome}</p>}
                   <div className="flex flex-col gap-2">
                     {card.result && (
-                      <p className="font-extrabold text-[48px] leading-[56px] tracking-[-1.44px] lg:text-[56px]">
+                      <p className="font-extrabold text-[48px] leading-[56px] tracking-[-1.92px] lg:text-[54px] lg:tracking-[-2.16px]">
                         <CountUp value={card.result} />
                       </p>
                     )}
                     {card.text && (
-                      <div className="cs-rich text-[16px] lg:text-[18px] font-light leading-[22px] tracking-[-0.36px]" dangerouslySetInnerHTML={{ __html: toHtml(card.text) }} />
+                      <div className="cs-rich text-[16px] lg:text-[18px] font-light leading-[22px] tracking-normal" dangerouslySetInnerHTML={{ __html: toHtml(card.text) }} />
                     )}
-                    {card.source && <p className="mt-4 text-[14px] leading-6 text-(--color-yellow)">{card.source}</p>}
+                    {card.source && <p className="mt-4 text-[14px] leading-6 tracking-[0.15px] text-(--color-yellow)">{card.source}</p>}
                   </div>
                 </Reveal>
               );

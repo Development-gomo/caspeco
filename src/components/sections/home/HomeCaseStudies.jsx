@@ -31,7 +31,7 @@ export default function HomeCaseStudies({ data, lang = DEFAULT_LANG, prefetchedC
   return (
     <>
       <div id="next"></div>
-      <section id="case-section" className="py-15 md:py-30 relative overflow-hidden bg-(--color-warm-stone)">
+      <section id="case-section" className="py-15 md:py-30 relative overflow-hidden bg-(--color-light-grey)">
         {bgImage ? (
           <div className="absolute inset-0 -z-2" style={{ backgroundImage: `url(${bgImage})`, backgroundPosition: '65% 0%', backgroundRepeat: 'no-repeat', backgroundSize: 'auto' }} suppressHydrationWarning />
         ) : null}
@@ -46,7 +46,7 @@ export default function HomeCaseStudies({ data, lang = DEFAULT_LANG, prefetchedC
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <span className="h-2 w-2 rounded-full bg-(--color-accent)"></span>
+              <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
               <span className="subheading-label">{sub_heading}</span>
             </motion.div>
           )}
@@ -101,8 +101,8 @@ export default function HomeCaseStudies({ data, lang = DEFAULT_LANG, prefetchedC
 
               return (
                 <SwiperSlide key={item.id}>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 rounded-lg overflow-hidden bg-(--color-brand)">
-                    <div className=" bg-(--color-brand) md:w-[600px] text-white z-20 p-6 lg:p-12 flex flex-col justify-center">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 rounded-lg overflow-hidden bg-(--color-black)">
+                    <div className=" bg-(--color-black) md:w-[600px] text-white z-20 p-6 lg:p-12 flex flex-col justify-center">
                       <h3
                         className="text-[24px] leading-8 md:text-[32px] lg:leading-10"
                         dangerouslySetInnerHTML={{ __html: title }}
@@ -187,7 +187,7 @@ export default function HomeCaseStudies({ data, lang = DEFAULT_LANG, prefetchedC
               >
                 <span
                   key={i === activeIndex ? `${i}-active` : i}
-                  className="case-progress-fill block h-full bg-(--color-brand)"
+                  className="case-progress-fill block h-full bg-(--color-black)"
                   style={{
                     width: i < activeIndex ? "100%" : i === activeIndex ? undefined : "0%",
                     animation:
@@ -202,13 +202,13 @@ export default function HomeCaseStudies({ data, lang = DEFAULT_LANG, prefetchedC
 
           {/* NAV BUTTONS */}
           <div className="flex justify-center gap-4 mt-6 lg:mt-8">
-            <button className="cursor-pointer case-prev-btn w-12 h-12 rounded-md border border-gray-300 group flex items-center justify-center hover:bg-(--color-grey) transition-colors duration-300">
+            <button className="cursor-pointer case-prev-btn w-12 h-12 rounded-md border border-(--color-grey-medium) group flex items-center justify-center hover:bg-(--color-grey) transition-colors duration-300">
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12.532 12.403" className="transition-colors duration-300">
                 <path d="M248.292,12.738h10.661a.338.338,0,1,1,0,.675H248.292l5.162,5.161a.338.338,0,1,1-.478.478L247,13.075,252.976,7.1a.338.338,0,1,1,.478.478Z" transform="translate(-246.859 -6.874)" className="fill-(--color-grey) stroke-(--color-grey) group-hover:fill-white group-hover:stroke-white" strokeWidth="0.2" fillRule="evenodd"/>
               </svg>
             </button>
 
-            <button className="cursor-pointer case-next-btn w-12 h-12 rounded-md border border-gray-300 group flex items-center justify-center hover:bg-(--color-grey) transition-colors duration-300">
+            <button className="cursor-pointer case-next-btn w-12 h-12 rounded-md border border-(--color-grey-medium) group flex items-center justify-center hover:bg-(--color-grey) transition-colors duration-300">
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12.532 12.403" className="transition-colors duration-300">
                 <path d="M258,12.738H247.338a.338.338,0,1,0,0,.675H258l-5.162,5.161a.338.338,0,0,0,.478.478l5.976-5.977L253.314,7.1a.338.338,0,0,0-.478.478Z" transform="translate(-246.9 -6.874)" className="fill-(--color-grey) stroke-(--color-grey) group-hover:fill-white group-hover:stroke-white" strokeWidth="0.2" fillRule="evenodd"/>
               </svg>

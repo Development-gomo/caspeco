@@ -33,7 +33,7 @@ export default function AskAI({ data }) {
         transition={{ duration: 0.6 }}
         viewport={{ once: true }}
       >
-        <span className="h-2 w-2 rounded-full bg-(--color-accent)"></span>
+        <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
         <span className="subheading-label">{sub_heading}</span>
       </motion.div>
 
@@ -67,7 +67,7 @@ export default function AskAI({ data }) {
               href={item.ai_link}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative flex flex-col justify-between bg-(--color-warm-stone) rounded-lg pt-6 pb-8 pl-8 pr-6 min-h-[210px] w-full md:w-[300px] overflow-hidden cursor-pointer"
+              className="group relative flex flex-col justify-between bg-(--color-light-grey) rounded-lg pt-6 pb-8 pl-8 pr-6 min-h-[210px] w-full md:w-[300px] overflow-hidden cursor-pointer"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 * index }}
@@ -75,7 +75,7 @@ export default function AskAI({ data }) {
             >
               {/* Arrow button top-right */}
               <div className="flex justify-end">
-                <span className="ai-arrow-badge flex items-center justify-center w-13 h-13 rounded-full bg-(--color-brand) text-white transition-transform duration-300 ease-out group-hover:scale-110">
+                <span className="ai-arrow-badge flex items-center justify-center w-13 h-13 rounded-full bg-(--color-black) text-white transition-transform duration-300 ease-out group-hover:scale-110">
                   <Image
                     src={ArrowSvg}
                     alt="arrow"

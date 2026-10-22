@@ -15,7 +15,7 @@ export default function OurApproach({ data }) {
         {/* TOP HEADING */}
         {sub_heading && (
           <div className="flex items-center gap-2 mb-4">
-            <span className="h-2 w-2 rounded-full bg-(--color-accent)" />
+            <span className="h-2 w-2 rounded-full bg-(--color-yellow)" />
             <span className="subheading-label uppercase">{sub_heading}</span>
           </div>
         )}
@@ -46,7 +46,7 @@ export default function OurApproach({ data }) {
                     className={`w-16 h-16 rounded-full flex items-center justify-center text-[20px] transition cursor-pointer relative transation-all duration-300 font-serif
                       ${
                         isActive
-                          ? "bg-(--color-accent) active md:mr-[175px]"
+                          ? "bg-(--color-yellow) active md:mr-[175px]"
                           : "bg-[#91929F1A] transation-all duration-300"
                       }
                     `}
@@ -72,7 +72,7 @@ export default function OurApproach({ data }) {
                 )}
 
                 {activeItem.short_text && (
-                  <p className="text-gray-600 max-w-[480px] leading-relaxed mb-6">
+                  <p className="text-(--color-grey-dark) max-w-[480px] leading-relaxed mb-6">
                     {activeItem.short_text}
                   </p>
                 )}
@@ -80,9 +80,9 @@ export default function OurApproach({ data }) {
                 {/* {activeItem.cta_text && activeItem.cta_url && (
                   <Link
                     href={activeItem.cta_url}
-                    className="inline-flex items-center gap-2 rounded-md bg-(--color-brand) px-6 py-3 text-white transition hover:opacity-90"
+                    className="inline-flex items-center gap-2 rounded-md bg-(--color-black) px-6 py-3 text-white transition hover:opacity-90"
                   >
-                    <span className="h-2 w-2 rounded-full bg-(--color-accent)" />
+                    <span className="h-2 w-2 rounded-full bg-(--color-yellow)" />
                     {activeItem.cta_text}
                   </Link>
                 )} */}

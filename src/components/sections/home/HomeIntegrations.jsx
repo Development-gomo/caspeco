@@ -35,8 +35,9 @@ function Tile({ logo, variant }) {
 const take = (list, start, count) => Array.from({ length: count }, (_, i) => list[(start + i) % list.length]);
 
 // Durations give all rows the same pixel speed: the track moves half its width per loop
-// (outer half = 12 × 177px, middle half = 14 × 203px at desktop → 30s vs 40s).
-const ROW_DURATION = { top: "30s", middle: "40s", bottom: "30s" };
+// (outer half = 12 × 177px, middle half = 14 × 203px at desktop → 3:4 ratio, ~35px/s).
+// To change the speed, scale all three values together to keep that ratio.
+const ROW_DURATION = { top: "60s", middle: "80s", bottom: "60s" };
 
 // Seamless marquee: 4 copies so each half of the track is wider than the viewport.
 // Spacing is padding (not gap) so the -50% loop point lines up exactly.
@@ -85,7 +86,7 @@ export default function HomeIntegrations({ data, logos: themeLogos, lang = DEFAU
           <div className="cs-p2 cs-rich mt-4 max-w-[686px]" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />
         )}
         {cta_text && cta_url && (
-          <CtaButton variant="outline-light" href={langHref(cta_url.trim(), lang)} className="mt-10">
+          <CtaButton variant="outline-light-yellow" href={langHref(cta_url.trim(), lang)} className="mt-10">
             {cta_text}
           </CtaButton>
         )}

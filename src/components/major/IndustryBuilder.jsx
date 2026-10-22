@@ -4,6 +4,7 @@
 // other layout (hero, logos, product cards, FAQ, quick contact, help tabs, restaurant
 // map, insights …) is rendered by ProductBuilder, which falls back to PageBuilder.
 
+import { withNeighbours } from "@/lib/content";
 import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
 import ProductBuilder from "./ProductBuilder";
@@ -13,16 +14,17 @@ import { mapTwinCases, twinMediaIds } from "@/lib/caseStudies";
 
 const IndustryChallenges = dynamic(() => import("../sections/industry/IndustryChallenges"));
 const IndustryResults = dynamic(() => import("../sections/industry/IndustryResults"));
-const IndustryTestimonials = dynamic(() => import("../sections/industry/IndustryTestimonials"));
+const TestimonialSlider = dynamic(() => import("../sections/TestimonialSlider"));
 const HomeIndustrySlider = dynamic(() => import("../sections/home/HomeIndustrySlider"));
 
-export default async function IndustryBuilder({ sections, lang = DEFAULT_LANG, currentId }) {
+export default async function IndustryBuilder({ sections: rawSections, lang = DEFAULT_LANG, currentId }) {
+  const sections = withNeighbours(rawSections); // _prev/_next per block (Figma section-gap rule)
   if (!Array.isArray(sections) || sections.length === 0) return null;
 
   // "Explore other industry": every industry except the one being viewed
   const needsIndustries = sections.some((b) => b._layout === "industry_slider_section");
-  // Testimonial carousel without its own cards → case studies that have a testimonial
-  const needsCases = sections.some((b) => b._layout === "industry_testimonials_section" && !(Array.isArray(b.cards) && b.cards.length));
+  // Testimonial carousel → slides/cards come from the case studies
+  const needsCases = sections.some((b) => b._layout === "industry_testimonials_section");
   const [industries, casePosts] = await Promise.all([
     needsIndustries ? getAllIndustries(lang) : null,
     needsCases ? getTwinCaseStudies(lang) : null,
@@ -41,12 +43,12 @@ export default async function IndustryBuilder({ sections, lang = DEFAULT_LANG, c
             return <IndustryResults key={i} data={block} lang={lang} />;
 
           case "industry_testimonials_section":
-            return <IndustryTestimonials key={i} data={block} lang={lang} cases={cases} />;
+            return <TestimonialSlider key={i} data={block} lang={lang} cases={cases} defaultType="card" />;
 
           case "industry_slider_section":
             return (
               <Reveal key={i} y={40}>
-                <HomeIndustrySlider data={block} lang={lang} prefetchedIndustries={otherIndustries} controls="arrows" />
+                <HomeIndustrySlider data={block} lang={lang} prefetchedIndustries={otherIndustries} />
               </Reveal>
             );
 

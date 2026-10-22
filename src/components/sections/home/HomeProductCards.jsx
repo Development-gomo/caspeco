@@ -29,7 +29,7 @@ function ProductCard({ card, lang }) {
         </div>
       )}
 
-      <div className="mt-6 flex flex-1 flex-col gap-2">
+      <div className="mt-[21px] flex flex-1 flex-col gap-2">
         {card.title && <h3 className="font-bold text-[26px] leading-7 tracking-[-0.52px] normal-case text-black">{card.title}</h3>}
         {card.text && (
           <div className="cs-rich font-light text-[18px] leading-[22px] tracking-[-0.36px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(card.text) }} />
@@ -38,7 +38,7 @@ function ProductCard({ card, lang }) {
 
       {/* Stretched link: the ::after overlay makes the whole card clickable */}
       {card.cta_text && href && (
-        <ArrowLink href={href} className="mt-6 self-start after:absolute after:inset-0">
+        <ArrowLink href={href} className="mt-5 self-start after:absolute after:inset-0">
           {card.cta_text}
         </ArrowLink>
       )}
@@ -52,7 +52,7 @@ export default function HomeProductCards({ data, lang = DEFAULT_LANG }) {
   if (!heading && cards.length === 0) return null;
 
   return (
-    <section className="pt-18 pb-12 lg:pt-36 lg:pb-[72px]" style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
+    <section className={`pt-18 lg:pt-36 ${data?._next === "industry_results_section" ? "pb-18 lg:pb-36" : "pb-12 lg:pb-[72px]"}`} style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       <div className="cs-container flex flex-col gap-10 lg:gap-16">
         <div className="flex flex-col gap-4">
           {heading && <h2 className="cs-h2 cs-highlight text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}

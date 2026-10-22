@@ -26,7 +26,7 @@ export default function RelatedServices({ data, lang = DEFAULT_LANG, prefetchedS
         {/* SUB HEADING */}
         {sub_heading && (
           <div className="flex items-center gap-2 mb-2 md:mb-4">
-            <span className="h-2 w-2 rounded-full bg-(--color-accent)"></span>
+            <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
             <span className="subheading-label">{sub_heading}</span>
           </div>
         )}
@@ -110,7 +110,7 @@ export default function RelatedServices({ data, lang = DEFAULT_LANG, prefetchedS
                   {/* ARROW TOP RIGHT */}
                   <div className="absolute top-6 right-8 transition-all duration-300">
                     <div
-                      className="w-12 h-12 rounded-full bg-(--color-brand)
+                      className="w-12 h-12 rounded-full bg-(--color-black)
                     flex items-center justify-center
                     transition-all duration-300">
                       <Image src={ArrowSvg} width={15} height={15} alt="go" />
@@ -133,16 +133,16 @@ export default function RelatedServices({ data, lang = DEFAULT_LANG, prefetchedS
         {/* NAVIGATION BUTTONS */}
         <div className="flex justify-center gap-4 mt-8 lg:mt-10">
           {/* PREV */}
-          <button className="cursor-pointer prev-btn w-12 h-12 rounded-md border border-gray-300 group flex items-center justify-center hover:bg-(--color-bg) transition-colors duration-300">
+          <button className="cursor-pointer prev-btn w-12 h-12 rounded-md border border-(--color-grey-medium) group flex items-center justify-center hover:bg-(--color-bg) transition-colors duration-300">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12.532 12.403" className="transition-colors duration-300">
-              <path d="M248.292,12.738h10.661a.338.338,0,1,1,0,.675H248.292l5.162,5.161a.338.338,0,1,1-.478.478L247,13.075,252.976,7.1a.338.338,0,1,1,.478.478Z" transform="translate(-246.859 -6.874)" className="fill-[#9192A0] stroke-[#9192A0] group-hover:fill-white group-hover:stroke-white" strokeWidth="0.2" fillRule="evenodd"/>
+              <path d="M248.292,12.738h10.661a.338.338,0,1,1,0,.675H248.292l5.162,5.161a.338.338,0,1,1-.478.478L247,13.075,252.976,7.1a.338.338,0,1,1,.478.478Z" transform="translate(-246.859 -6.874)" className="fill-(--color-grey-medium-dark) stroke-(--color-grey-medium-dark) group-hover:fill-white group-hover:stroke-white" strokeWidth="0.2" fillRule="evenodd"/>
             </svg>
           </button>
 
           {/* NEXT */}
-          <button className="cursor-pointer next-btn w-12 h-12 rounded-md border border-gray-300 group flex items-center justify-center hover:bg-(--color-bg) transition-colors duration-300">
+          <button className="cursor-pointer next-btn w-12 h-12 rounded-md border border-(--color-grey-medium) group flex items-center justify-center hover:bg-(--color-bg) transition-colors duration-300">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12.532 12.403" className="transition-colors duration-300">
-              <path d="M258,12.738H247.338a.338.338,0,1,0,0,.675H258l-5.162,5.161a.338.338,0,0,0,.478.478l5.976-5.977L253.314,7.1a.338.338,0,0,0-.478.478Z" transform="translate(-246.9 -6.874)" className="fill-[#9192A0] stroke-[#9192A0] group-hover:fill-white group-hover:stroke-white" strokeWidth="0.2" fillRule="evenodd"/>
+              <path d="M258,12.738H247.338a.338.338,0,1,0,0,.675H258l-5.162,5.161a.338.338,0,0,0,.478.478l5.976-5.977L253.314,7.1a.338.338,0,0,0-.478.478Z" transform="translate(-246.9 -6.874)" className="fill-(--color-grey-medium-dark) stroke-(--color-grey-medium-dark) group-hover:fill-white group-hover:stroke-white" strokeWidth="0.2" fillRule="evenodd"/>
             </svg>
           </button>
         </div>

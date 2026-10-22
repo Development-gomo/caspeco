@@ -46,7 +46,7 @@ export default function ProductResults({ data }) {
       <div className="absolute inset-0 -z-10 bg-black/40" aria-hidden />
 
       <div className="cs-container flex justify-center">
-        <Reveal y={40} className="flex w-full max-w-[1074px] flex-col items-center gap-12 rounded-[8px] bg-[rgba(21,20,17,0.3)] px-6 py-12 shadow-[0px_4px_4px_rgba(0,0,0,0.25)] backdrop-blur-[20px] sm:px-10 lg:gap-16 lg:p-20">
+        <Reveal y={40} className="flex w-full max-w-[1040px] flex-col items-center gap-12 rounded-[8px] bg-[rgba(21,20,17,0.3)] px-6 py-12 shadow-[0px_4px_4px_rgba(0,0,0,0.25)] backdrop-blur-[20px] sm:px-10 lg:gap-16 lg:p-20">
           <div className="flex max-w-[754px] flex-col items-center gap-4 text-center text-(--color-light-grey)">
             {heading && <h2 className="cs-h3 cs-highlight font-extrabold" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
             {short_text && (

@@ -5,6 +5,7 @@
 // integrations, insights …) is rendered by PageBuilder. Reused sections get a
 // scroll reveal here so the homepage itself is unchanged.
 
+import { withNeighbours } from "@/lib/content";
 import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
 import PageBuilder from "./PageBuilder";
@@ -14,7 +15,7 @@ import { mapTwinCases, twinMediaIds } from "@/lib/caseStudies";
 
 const ProductHero = dynamic(() => import("../sections/product/ProductHero"));
 const ProductUspAccordion = dynamic(() => import("../sections/product/ProductUspAccordion"));
-const ProductTestimonials = dynamic(() => import("../sections/product/ProductTestimonials"));
+const TestimonialSlider = dynamic(() => import("../sections/TestimonialSlider"));
 const ProductFeatureSlider = dynamic(() => import("../sections/product/ProductFeatureSlider"));
 const ProductResults = dynamic(() => import("../sections/product/ProductResults"));
 const ProductDemo = dynamic(() => import("../sections/product/ProductDemo"));
@@ -31,7 +32,8 @@ const QuickContact = dynamic(() => import("../sections/contact-form/QuickContact
 const CARDS_GRADIENT = "linear-gradient(180deg, rgba(218,220,221,0.8) 0.94%, rgba(255,255,255,0.5) 100.94%)";
 
 async function prefetchSectionData(sections, lang) {
-  const needsTwin = sections.some((b) => b._layout === "business_twin_section");
+  // case studies feed the Business Twin and the testimonial slider
+  const needsTwin = sections.some((b) => b._layout === "business_twin_section" || b._layout === "testimonial_slider_section");
   const needsLogos = sections.some((b) => b._layout === "logos_section" || b._layout === "home_partners_section");
   const [twinPosts, logos] = await Promise.all([
     needsTwin ? getTwinCaseStudies(lang) : null,
@@ -41,7 +43,8 @@ async function prefetchSectionData(sections, lang) {
   return { twinCases, logos };
 }
 
-export default async function ProductBuilder({ sections, lang = DEFAULT_LANG }) {
+export default async function ProductBuilder({ sections: rawSections, lang = DEFAULT_LANG }) {
+  const sections = withNeighbours(rawSections); // _prev/_next per block (Figma section-gap rule)
   if (!Array.isArray(sections) || sections.length === 0) return null;
 
   const prefetched = await prefetchSectionData(sections, lang);
@@ -70,7 +73,7 @@ export default async function ProductBuilder({ sections, lang = DEFAULT_LANG }) 
             return <ProductUspAccordion key={i} data={block} lang={lang} />;
 
           case "testimonial_slider_section":
-            return <ProductTestimonials key={i} data={block} lang={lang} />;
+            return <TestimonialSlider key={i} data={block} lang={lang} cases={prefetched.twinCases || []} defaultType="fullwidth" />;
 
           case "feature_slider_section":
             return <ProductFeatureSlider key={i} data={block} lang={lang} />;

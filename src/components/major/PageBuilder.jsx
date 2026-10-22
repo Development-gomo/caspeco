@@ -1,5 +1,6 @@
 //src/components/major/PageBuilder.jsx
 
+import { withNeighbours } from "@/lib/content";
 import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
 import { getAllServices, getCaseStudies, getAllPosts, getAllTeam, getPostsByIds, getAllIndustries, getTwinCaseStudies, getMediaByIds, getLogoGalleries, getPostsPage } from "@/lib/api";
@@ -39,12 +40,11 @@ const HomeFaq = dynamic(() => import("../sections/home/HomeFaq"));
 const ProductUspAccordion = dynamic(() => import("../sections/product/ProductUspAccordion"));
 const ProductSalesChannels = dynamic(() => import("../sections/product/ProductSalesChannels"));
 const ProductResults = dynamic(() => import("../sections/product/ProductResults"));
-const ProductTestimonials = dynamic(() => import("../sections/product/ProductTestimonials"));
+const TestimonialSlider = dynamic(() => import("../sections/TestimonialSlider"));
 const ProductFeatureSlider = dynamic(() => import("../sections/product/ProductFeatureSlider"));
 const ProductDemo = dynamic(() => import("../sections/product/ProductDemo"));
 const IndustryChallenges = dynamic(() => import("../sections/industry/IndustryChallenges"));
 const IndustryResults = dynamic(() => import("../sections/industry/IndustryResults"));
-const IndustryTestimonials = dynamic(() => import("../sections/industry/IndustryTestimonials"));
 const QuickContact = dynamic(() => import("../sections/contact-form/QuickContact"));
 
 // ICP pages (Figma "Opening_soon", "Levelling_up", "Adding_Locations", "Operating_at_scale")
@@ -71,8 +71,9 @@ async function prefetchSectionData(sections, lang) {
     if (block._layout === "team_section") needs.team = true;
     if (block._layout === "industry_slider_section") needs.industries = true;
     if (block._layout === "home_casestudy_section") needs.twin = true;
-    // testimonial carousel without its own cards → latest case studies
-    if (block._layout === "industry_testimonials_section" && !(Array.isArray(block.cards) && block.cards.length)) needs.twin = true;
+    if (block._layout === "testimonial_slider_section") needs.twin = true; // slides = case studies
+    // testimonial carousel → latest case studies
+    if (block._layout === "industry_testimonials_section") needs.twin = true;
     if (block._layout === "home_partners_section" || block._layout === "integrations_section") needs.logos = true;
     if (block._layout === "insights_section") {
       const ids = Array.isArray(block.posts) ? block.posts.map((p) => (typeof p === "object" ? p.ID || p.id : p)) : [];
@@ -99,7 +100,8 @@ async function prefetchSectionData(sections, lang) {
   return { services, cases, posts, team, pickedPosts, industries, twinCases, logos, newsPage };
 }
 
-export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
+export default async function PageBuilder({ sections: rawSections, lang = DEFAULT_LANG }) {
+  const sections = withNeighbours(rawSections); // _prev/_next per block (Figma section-gap rule)
   if (!sections) return null;
 
   const prefetched = await prefetchSectionData(sections, lang);
@@ -196,7 +198,7 @@ export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
             return <ProductResults key={i} data={block} lang={lang} />;
 
           case "testimonial_slider_section":
-            return <ProductTestimonials key={i} data={block} lang={lang} />;
+            return <TestimonialSlider key={i} data={block} lang={lang} cases={prefetched.twinCases || []} defaultType="fullwidth" />;
 
           case "feature_slider_section":
             return <ProductFeatureSlider key={i} data={block} lang={lang} />;
@@ -211,7 +213,7 @@ export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
             return <IndustryResults key={i} data={block} lang={lang} />;
 
           case "industry_testimonials_section":
-            return <IndustryTestimonials key={i} data={block} lang={lang} cases={prefetched.twinCases || []} />;
+            return <TestimonialSlider key={i} data={block} lang={lang} cases={prefetched.twinCases || []} defaultType="card" />;
 
           case "quick_contact_section":
             return <QuickContact key={i} data={block} lang={lang} />;
@@ -236,7 +238,7 @@ export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
             return <ContactRep key={i} data={block} lang={lang} />;
 
           case "faq_section":
-            return <HomeFaq key={i} data={block} lang={lang} prevLayout={sections[i - 1]?._layout} />;
+            return <HomeFaq key={i} data={block} lang={lang} prevLayout={block._prev} />;
 
           default:
             return null;

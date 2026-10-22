@@ -56,10 +56,10 @@ export default function ProductDemo({ data, lang = DEFAULT_LANG }) {
         </Reveal>
 
         {mediaUrl(image) && (
-          // Shown in full at its own aspect ratio. On desktop the column reaches past the
-          // container to the viewport's right edge (container padding 24px + side gutter),
-          // so the device group sits flush against it like the Figma bleed.
-          <div className="flex w-full justify-center lg:flex-1 lg:justify-end lg:mr-[calc(-24px-max(0px,(100vw-1320px)/2))]">
+          // Figma "Online order device group": a 696×532 box 745px from the content edge
+          // (x 865 at 1512), top-aligned with the content and bleeding past the viewport
+          // (section clips it); the text column is centred against it (xl:min-h-[532px]).
+          <div className="flex w-full justify-center lg:absolute lg:left-[745px] lg:top-0 lg:w-[696px]">
             <Reveal
               x={60}
               y={0}
@@ -75,15 +75,14 @@ export default function ProductDemo({ data, lang = DEFAULT_LANG }) {
                 onPointerUp: (e) => e.pointerType !== "mouse" && setActive((v) => !v),
                 onKeyDown: (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), setActive((v) => !v)),
               })}
-              className={`relative w-full max-w-[696px] drop-shadow-[0px_2.3px_5.2px_rgba(0,0,0,0.1)] outline-none lg:max-w-[760px] ${hover ? "cursor-pointer" : ""}`}
+              className={`relative aspect-[696/532] w-full max-w-[696px] drop-shadow-[0px_2.3px_5.2px_rgba(0,0,0,0.1)] outline-none ${hover ? "cursor-pointer" : ""}`}
             >
               <Image
                 src={mediaUrl(image)}
                 alt={image?.alt || ""}
-                width={image?.width || 1392}
-                height={image?.height || 1064}
-                sizes="(min-width: 1024px) 760px, 100vw"
-                className={`h-auto w-full transition-opacity duration-500 ease-out ${active ? "opacity-0" : ""}`}
+                fill
+                sizes="(min-width: 1024px) 696px, 100vw"
+                className={`object-contain object-left transition-opacity duration-500 ease-out ${active ? "opacity-0" : ""}`}
               />
               {hover && (
                 // notification state settles in from slightly above (Figma Smart Animate)
@@ -91,8 +90,8 @@ export default function ProductDemo({ data, lang = DEFAULT_LANG }) {
                   src={hover}
                   alt=""
                   fill
-                  sizes="(min-width: 1024px) 760px, 100vw"
-                  className={`object-contain object-right transition-[opacity,translate] duration-500 ease-out ${active ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"}`}
+                  sizes="(min-width: 1024px) 696px, 100vw"
+                  className={`object-contain object-left transition-[opacity,translate] duration-500 ease-out ${active ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"}`}
                 />
               )}
             </Reveal>

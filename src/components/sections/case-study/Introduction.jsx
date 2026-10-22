@@ -29,7 +29,7 @@ export default function CaseIntroduction({ data }) {
       {/* SUB HEADING */}
       {sub_heading && (
         <div className="flex items-center gap-2 mb-2 md:mb-4">
-          <span className="h-2 w-2 rounded-full bg-(--color-accent)"></span>
+          <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
           <span className="subheading-label uppercase">{sub_heading}</span>
         </div>
       )}
@@ -47,7 +47,7 @@ export default function CaseIntroduction({ data }) {
         {/* LEFT META COLUMN */}
         <div className="md:w-[35%]"></div>
         <div className="md:w-[65%] flex flex-col lg:flex-row md:gap-25">
-          <div className="md:w-[24%] space-y-6 text-gray-500">
+          <div className="md:w-[24%] space-y-6 text-(--color-grey-medium-dark)">
             {/* Client */}
             {client_name && (
               <div>
@@ -105,7 +105,7 @@ export default function CaseIntroduction({ data }) {
           <div className="md:w-[76%] mt-10 lg:mt-0">
             {/* Content Heading */}
             {content_heading && (
-              <h3 className="content-heading mb-6">{content_heading}</h3>
+              <h3 className="cs-h4 mb-6">{content_heading}</h3>
             )}
 
             {/* Body */}

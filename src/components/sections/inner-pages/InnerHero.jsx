@@ -47,7 +47,7 @@ export default function InnerHero({ data, lang = DEFAULT_LANG }) {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="cs-rich uppercase subheading-label text-[var(--color-accent)] md:mb-6"
+              className="cs-rich uppercase subheading-label text-[var(--color-yellow)] md:mb-6"
               dangerouslySetInnerHTML={{ __html: sub_heading }}
             />
           )}
@@ -72,7 +72,7 @@ export default function InnerHero({ data, lang = DEFAULT_LANG }) {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="block md:inline-block w-16 h-16 text-center pt-[24px] pl-[24px] rounded-full bg-(--color-accent) translate-y-2 transition-all duration-300 shadow-md hover:translate-y-[14px] cursor-pointer md:ml-8 mt-4 md:mt-0">
+              className="block md:inline-block w-16 h-16 text-center pt-[24px] pl-[24px] rounded-full bg-(--color-yellow) translate-y-2 transition-all duration-300 shadow-md hover:translate-y-[14px] cursor-pointer md:ml-8 mt-4 md:mt-0">
               <Image src={DownArrow} alt="arrow" width={16} height={16} />
             </motion.a>
             </h1>
