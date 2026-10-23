@@ -6,17 +6,18 @@ import Image from "next/image";
 import Reveal from "@/components/ui/Reveal";
 import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
-const GRADIENT = "linear-gradient(180deg, #dadcdd 0%, #d6d8d9 100%)";
+const GRADIENT = "linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, #DADCDD 80.6%), #FFFFFF";
 
-export default function PeopleCards({ data }) {
+// joined: follows the Steps section inside the same Figma frame (100px gap, shared gradient)
+export default function PeopleCards({ data, joined = false }) {
   const people = rows(data?.people).filter((p) => p.name);
   const { heading } = data || {};
   if (!heading && people.length === 0) return null;
 
   return (
-    <section className="pt-12 pb-18 lg:pt-[72px] lg:pb-36" style={sectionBackground(data, { backgroundImage: GRADIENT })}>
+    <section className={`pb-18 lg:pb-36 ${joined ? "pt-14 lg:pt-[100px]" : "pt-18 lg:pt-36"}`} style={joined ? undefined : sectionBackground(data, { background: GRADIENT })}>
       <div className="cs-container flex flex-col gap-10 lg:gap-16">
-        {heading && <Reveal as="h2" className="cs-h3 cs-highlight cs-rich font-extrabold text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+        {heading && <Reveal as="h2" className="cs-h3 cs-highlight cs-rich font-extrabold! text-(--color-black)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
 
         {people.length > 0 && (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -26,7 +27,7 @@ export default function PeopleCards({ data }) {
                 <Reveal
                   key={i}
                   delay={0.1 + i * 0.08}
-                  className="group overflow-hidden rounded-[8px] bg-(--color-light-grey) shadow-[0px_2px_9px_rgba(0,0,0,0.1)] transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0px_8px_24px_rgba(0,0,0,0.12)]"
+                  className="group overflow-hidden rounded-[8px] bg-(--color-light-grey) transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0px_8px_24px_rgba(0,0,0,0.12)]"
                 >
                   <div className="relative aspect-[303/172] overflow-hidden bg-(--color-grey-medium)">
                     {photo && (
@@ -40,12 +41,12 @@ export default function PeopleCards({ data }) {
                     )}
                   </div>
                   <div className="flex flex-col gap-4 p-6">
-                    {person.tag && <p className="font-bold text-[14px] leading-4 tracking-[0.42px] text-(--color-petrol)">{person.tag}</p>}
-                    <div className="flex items-stretch gap-3">
-                      <span className="w-[3px] shrink-0 rounded-[10px] bg-(--color-yellow)" aria-hidden />
-                      <div className="flex flex-col">
+                    {person.tag && <p className="font-bold text-[14px] leading-4 tracking-[1px] text-(--color-petrol)">{person.tag}</p>}
+                    <div className="flex items-center gap-3">
+                      <span className="h-12 w-[3px] shrink-0 rounded-[10px] bg-(--color-yellow)" aria-hidden />
+                      <div className="flex flex-col gap-1">
                         <span className="font-bold text-[22px] lg:text-[24px] leading-7 tracking-[-0.48px] text-(--color-grey-dark)">{person.name}</span>
-                        {person.role && <span className="text-[16px] lg:text-[18px] leading-6 tracking-[0.15px] text-(--color-grey-dark)">{person.role}</span>}
+                        {person.role && <span className="font-medium text-[16px] lg:text-[18px] leading-6 tracking-[0.15px] text-(--color-grey-dark)">{person.role}</span>}
                       </div>
                     </div>
                   </div>

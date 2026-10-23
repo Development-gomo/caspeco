@@ -13,10 +13,15 @@
 
 import dynamic from "next/dynamic";
 import { DEFAULT_LANG, entryHref } from "@/config";
+import { withNeighbours } from "@/lib/content";
 import ProductBuilder from "./ProductBuilder";
 import { getAllIcps, getKontaktByIds, getMediaByIds, getTwinCaseStudies } from "@/lib/api";
 import { mapTwinCases, twinMediaIds } from "@/lib/caseStudies";
 import { parseHubspotEmbed } from "@/lib/hubspot";
+import { SWITCH_GRADIENT } from "@/components/sections/icp/SwitchSteps";
+
+// Figma ICP "Hero": image + linear black 70% → 30%, left → right
+const HERO_OVERLAY = "linear-gradient(90deg, rgba(0, 0, 0, 0.7) 2.8%, rgba(0, 0, 0, 0.3) 103%)";
 
 const IcpIntro = dynamic(() => import("../sections/icp/IcpIntro"));
 const SystemCheck = dynamic(() => import("../sections/icp/SystemCheck"));
@@ -25,6 +30,7 @@ const PeopleCards = dynamic(() => import("../sections/icp/PeopleCards"));
 const StageCards = dynamic(() => import("../sections/icp/StageCards"));
 const ContactRep = dynamic(() => import("../sections/icp/ContactRep"));
 const ProductSalesChannels = dynamic(() => import("../sections/product/ProductSalesChannels"));
+const ProductHero = dynamic(() => import("../sections/product/ProductHero"));
 const ProductTestimonials = dynamic(() => import("../sections/product/ProductTestimonials"));
 const IndustryTestimonials = dynamic(() => import("../sections/industry/IndustryTestimonials"));
 const ContactForm = dynamic(() => import("../sections/contact-form/ContactForm"));
@@ -80,8 +86,9 @@ async function prefetch(sections, lang) {
   return { cases, icps: icps || [], people, mediaById };
 }
 
-export default async function IcpBuilder({ sections, lang = DEFAULT_LANG, currentId }) {
-  if (!Array.isArray(sections) || sections.length === 0) return null;
+export default async function IcpBuilder({ sections: rawSections, lang = DEFAULT_LANG, currentId }) {
+  if (!Array.isArray(rawSections) || rawSections.length === 0) return null;
+  const sections = withNeighbours(rawSections); // _prev/_next per block (Figma section-gap rule)
   const { cases, icps, people, mediaById } = await prefetch(sections, lang);
 
   return (
@@ -90,7 +97,15 @@ export default async function IcpBuilder({ sections, lang = DEFAULT_LANG, curren
         // media-ID backgrounds (image field without "Array" return format) → image object
         const block = mediaById.has(Number(raw.bg_image)) ? { ...raw, bg_image: mediaById.get(Number(raw.bg_image)) } : raw;
 
+        // Figma: Steps and the People cards share one section (one gradient, 100px between them)
+        const prev = sections[i - 1]?._layout;
+        const next = sections[i + 1]?._layout;
+        if (block._layout === "switch_steps_section" && next === "team_section") return null; // rendered with the team block below
+
         switch (block._layout) {
+          case "home_hero":
+            return <ProductHero key={i} data={block} lang={lang} overlay={HERO_OVERLAY} />;
+
           case "icp_intro_section":
             return <IcpIntro key={i} data={block} lang={lang} />;
 
@@ -98,7 +113,7 @@ export default async function IcpBuilder({ sections, lang = DEFAULT_LANG, curren
             return <SystemCheck key={i} data={block} lang={lang} />;
 
           case "tab_section":
-            return <ProductSalesChannels key={i} data={block} lang={lang} defaultCtaVariant="outline" />;
+            return <ProductSalesChannels key={i} data={block} lang={lang} defaultCtaVariant="outline" variant="icp" />;
 
           case "testimonial_slider_section": {
             if (block.slider_type === "fullwidth") {
@@ -117,6 +132,14 @@ export default async function IcpBuilder({ sections, lang = DEFAULT_LANG, curren
           case "team_section": {
             const ids = (Array.isArray(block.select_team_member) ? block.select_team_member : [block.select_team_member]).map(postId);
             const list = ids.map((id) => people.get(id)).filter(Boolean);
+            if (prev === "switch_steps_section") {
+              return (
+                <div key={i} style={{ background: SWITCH_GRADIENT }}>
+                  <SwitchSteps data={sections[i - 1]} lang={lang} joined />
+                  <PeopleCards data={{ ...block, people: list }} lang={lang} joined />
+                </div>
+              );
+            }
             return <PeopleCards key={i} data={{ ...block, people: list }} lang={lang} />;
           }
 

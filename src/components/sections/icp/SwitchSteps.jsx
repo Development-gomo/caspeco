@@ -9,30 +9,34 @@ import Reveal from "@/components/ui/Reveal";
 import { DEFAULT_LANG, langHref } from "@/config";
 import { rows, sectionBackground, toHtml } from "@/lib/content";
 
-const GRADIENT = "linear-gradient(180deg, #fdfdfd 0%, #dadcdd 100%)";
+// Figma "We handle the switch" fill: #FFFFFF@50% 0% → #DADCDD 80.6% (top → bottom)
+export const SWITCH_GRADIENT = "linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, #DADCDD 80.6%), #FFFFFF";
 
-export default function SwitchSteps({ data, lang = DEFAULT_LANG }) {
+// joined: People cards follow inside the same Figma section — the wrapper paints the gradient
+// and this section drops its bottom padding (People adds the 100px gap).
+export default function SwitchSteps({ data, lang = DEFAULT_LANG, joined = false }) {
   const steps = rows(data?.steps).filter((s) => s.number || s.title);
   const { eyebrow, heading, heading_highlight, cta_text, cta_url } = data || {};
   const text = data?.text || data?.short_text; // short_text in "Page Builder ICP Page"
   if (!heading && steps.length === 0) return null;
 
   return (
-    <section className="py-18 lg:pt-36 lg:pb-[72px]" style={sectionBackground(data, { backgroundImage: GRADIENT })}>
-      <div className="cs-container flex flex-col gap-12 lg:gap-16">
+    <section className={`pt-18 lg:pt-36 ${joined ? "pb-0" : "pb-18 lg:pb-36"}`} style={joined ? undefined : sectionBackground(data, { background: SWITCH_GRADIENT })}>
+      <div className="cs-container flex flex-col gap-12 lg:gap-[54px]">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
           <Reveal className="flex max-w-[724px] flex-col gap-3.5">
-            {eyebrow && <p className="italic text-[18px] lg:text-[20px] leading-[26px] tracking-[-0.4px] text-(--color-dark-petrol)">{eyebrow}</p>}
+            {eyebrow && <p className="italic font-normal text-[18px] lg:text-[20px] leading-[26px] tracking-[-0.8px] text-(--color-dark-petrol)">{eyebrow}</p>}
             {(heading || heading_highlight) && (
-              <h2 className="cs-h2 cs-highlight cs-rich text-black">
-                {heading && <span className="block text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+              <h2 className="cs-h2 cs-rich text-(--color-heading)">
+                {heading && <span className="block" style={{ color: "var(--color-heading)" }} dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
                 {heading_highlight && <span className="block text-(--color-yellow)" dangerouslySetInnerHTML={{ __html: toHtml(heading_highlight) }} />}
               </h2>
             )}
           </Reveal>
 
           {(text || (cta_text && cta_url)) && (
-            <Reveal delay={0.15} className="flex max-w-[484px] flex-col items-start gap-5">
+            // Figma: right column starts level with the title (10px above the highlight's baseline box)
+            <Reveal delay={0.15} className="flex max-w-[484px] flex-col items-start gap-5 lg:mb-2.5">
               {text && <div className="cs-p2 cs-rich text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(text) }} />}
               {cta_text && cta_url && (
                 <CtaButton href={langHref(cta_url.trim(), lang)} wrap className="max-w-full">
@@ -49,16 +53,16 @@ export default function SwitchSteps({ data, lang = DEFAULT_LANG }) {
               <Reveal
                 key={i}
                 delay={0.1 + i * 0.1}
-                className="flex min-h-[230px] flex-col justify-between gap-10 rounded-[8px] bg-(--color-dark-petrol) p-6 text-(--color-light-grey) shadow-[0px_4px_6px_rgba(0,0,0,0.16)] transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0px_10px_24px_rgba(0,0,0,0.25)] lg:min-h-[270px]"
+                className="flex min-h-[230px] flex-col justify-between gap-10 rounded-[8px] bg-(--color-dark-petrol) p-6 text-(--color-white) shadow-[0px_14px_32px_rgba(16,39,51,0.13)] transition-[translate] duration-300 hover:-translate-y-1 lg:min-h-[270px]"
               >
-                {step.label && <p className="text-[16px] lg:text-[18px] leading-5 tracking-[-0.36px]">{step.label}</p>}
+                {step.label && <p className="text-[18px] lg:text-[20px] leading-5 tracking-[-0.4px]">{step.label}</p>}
                 <div className="flex flex-col gap-5">
                   {step.number && (
-                    <p className="font-extrabold text-[56px] leading-[64px] tracking-[-1.68px] lg:text-[64px]">
+                    <p className="font-bold text-[56px] leading-[64px] tracking-[-1.12px] lg:text-[80px] lg:tracking-[-1.6px]">
                       <CountUp value={step.number} duration={0.9} />
                     </p>
                   )}
-                  {step.title && <p className="font-bold text-[20px] lg:text-[24px] leading-[28px] tracking-[-0.48px]">{step.title}</p>}
+                  {step.title && <p className="font-bold text-[22px] lg:text-[26px] leading-[28px] tracking-[-0.52px]" dangerouslySetInnerHTML={{ __html: toHtml(step.title) }} />}
                 </div>
               </Reveal>
             ))}

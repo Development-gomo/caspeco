@@ -18,6 +18,7 @@ import ArrowLink from "@/components/ui/ArrowLink";
 import CtaButton from "@/components/ui/CtaButton";
 import Reveal from "@/components/ui/Reveal";
 import SliderArrows from "@/components/ui/SliderArrows";
+import { GLASS_CLASS, GLASS_STYLE } from "@/components/ui/glass";
 import { DEFAULT_LANG, langHref } from "@/config";
 import { mediaUrl, toHtml } from "@/lib/content";
 
@@ -26,8 +27,8 @@ const pad = (n) => String(n).padStart(2, "0");
 // Case-study cards: only the latest few (getTwinCaseStudies returns newest first)
 const MAX_CASES = 4;
 
-// Figma: the accent bar next to the name cycles yellow → coral → petrol
-const ACCENTS = ["var(--color-yellow)", "#E8735A", "var(--color-petrol)"];
+// Figma: the accent bar next to the name cycles #FFC120 → #FF8D6A → #1F8690 (3×48, radius 10)
+const ACCENTS = ["#FFC120", "#FF8D6A", "#1F8690"];
 
 // Plain-text quote in curly quotes (Figma: “The whole staff learned so quickly.”)
 const curly = (q) => {
@@ -39,27 +40,29 @@ const curly = (q) => {
 function QuoteCard({ card, lang, accent }) {
   const logo = mediaUrl(card.logo);
   return (
-    // Frosted glass (Figma): light diagonal gradient + 20px backdrop blur + hairline border.
-    // No ancestor may use opacity < 1, filter or clip-path, or the blur sees nothing behind it.
+    // Figma glass card (465 wide, radius 8, padding 24): logo, 54px gap, quote Bold 32/32 -2%,
+    // 24px gap, name Bold 24/28 -2% + designation Medium 18/24 0.15px next to a 3×48 accent bar.
+    // No ancestor may use opacity < 1, filter or clip-path, or the backdrop blur sees nothing.
     <figure
-      className="flex h-full min-h-[294px] flex-col gap-6 rounded-[8px] border border-white/20 p-6 text-(--color-light-grey) shadow-[0px_4px_24px_rgba(0,0,0,0.25)] backdrop-blur-[20px] transition-[translate,border-color] duration-300 hover:-translate-y-1 hover:border-white/35"
-      style={{ backgroundImage: "linear-gradient(135deg, rgba(253,253,253,0.22) 0%, rgba(253,253,253,0.08) 55%, rgba(253,253,253,0.04) 100%)" }}
+      className={`flex h-full min-h-[286px] flex-col gap-[54px] rounded-[8px] p-6 text-(--color-white) transition-[translate] duration-300 hover:-translate-y-1 ${GLASS_CLASS}`}
+      style={GLASS_STYLE}
     >
       {logo ? (
         <Image src={logo} alt={card.logo?.alt || card.company || ""} width={card.logo?.width || 155} height={card.logo?.height || 48} className="h-10 w-auto max-w-[155px] object-contain object-left lg:h-12" />
       ) : (
         <span className="h-10 lg:h-12" aria-hidden />
       )}
+      <div className="mt-auto flex flex-col gap-6">
       {card.quote && (
         <blockquote
-          className="mt-auto font-bold text-[26px] leading-8 tracking-[-0.52px] lg:text-[32px] lg:leading-8 lg:tracking-[-0.64px]"
+          className="font-bold text-[26px] leading-8 tracking-[-0.52px] lg:text-[32px] lg:leading-8 lg:tracking-[-0.64px]"
           dangerouslySetInnerHTML={{ __html: toHtml(curly(card.quote)) }}
         />
       )}
       <figcaption className={`flex items-end justify-between gap-4 ${card.quote ? "" : "mt-auto"}`}>
         {(card.name || card.company) && (
           <span className="flex items-center gap-3">
-            <span className="h-12 w-[3px] shrink-0 rounded-[10px] lg:h-14" style={{ background: accent || ACCENTS[0] }} aria-hidden />
+            <span className="h-12 w-[3px] shrink-0 rounded-[10px]" style={{ background: accent || ACCENTS[0] }} aria-hidden />
             <span className="flex flex-col gap-1">
               {card.name && <span className="font-bold text-[22px] lg:text-[24px] leading-7 tracking-[-0.48px]">{card.name}</span>}
               {card.company && <span className="font-medium text-[16px] lg:text-[18px] leading-6 tracking-[0.15px]">{card.company}</span>}
@@ -72,6 +75,7 @@ function QuoteCard({ card, lang, accent }) {
           </ArrowLink>
         )}
       </figcaption>
+      </div>
     </figure>
   );
 }
@@ -100,15 +104,17 @@ export default function IndustryTestimonials({ data, lang = DEFAULT_LANG, cases 
   return (
     <section className="relative isolate overflow-hidden bg-(--color-black) py-18 lg:py-36" style={data?.bg_color ? { background: data.bg_color } : undefined}>
       {bg && (
+        // Figma: photo with 24.8px layer blur (scaled so the soft edge stays outside the section)
         <Reveal y={0} scale={1.08} duration={1.6} className="absolute inset-0 -z-10">
-          <Image src={bg} alt="" fill sizes="100vw" className="object-cover" />
+          <Image src={bg} alt="" fill sizes="100vw" className="scale-110 object-cover blur-[24.8px]" />
         </Reveal>
       )}
-      <div className="absolute inset-0 -z-10 bg-linear-to-r from-black via-black/70 to-black/20" aria-hidden />
+      {/* Figma "gradient layer": black 50% → 0, left → right */}
+      <div className="absolute inset-0 -z-10" style={{ background: "linear-gradient(90deg, rgba(0, 0, 0, 0.5) -0.9%, rgba(0, 0, 0, 0) 110.8%)" }} aria-hidden />
 
       <div className="cs-container flex flex-col gap-10 lg:gap-16">
         {heading && (
-          <Reveal as="h2" className="cs-h3 cs-highlight cs-rich max-w-[660px] font-extrabold text-(--color-light-grey)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
+          <Reveal as="h2" className="cs-h3 cs-highlight cs-rich max-w-[660px] text-(--color-white)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
         )}
 
         {cards.length > 0 && (
@@ -142,7 +148,7 @@ export default function IndustryTestimonials({ data, lang = DEFAULT_LANG, cases 
               onChange={(i) => (i < index ? swiperRef.current?.slidePrev() : swiperRef.current?.slideNext())}
             />
             {cards.length > 1 && (
-              <div className="flex items-center gap-4 text-[14px] font-semibold leading-5 tracking-[0.1px] text-(--color-light-grey)">
+              <div className="flex items-center gap-[19px] text-[14px] font-semibold leading-5 tracking-[0.1px] text-(--color-white)">
                 <span aria-live="polite">
                   {pad(index + 1)} / {pad(cards.length)}
                 </span>
@@ -160,7 +166,7 @@ export default function IndustryTestimonials({ data, lang = DEFAULT_LANG, cases 
             )}
           </div>
           {cta_text && cta_url && (
-            <CtaButton variant="outline-light-yellow" href={langHref(cta_url.trim(), lang)}>
+            <CtaButton variant="outline-soft-yellow" href={langHref(cta_url.trim(), lang)}>
               {cta_text}
             </CtaButton>
           )}

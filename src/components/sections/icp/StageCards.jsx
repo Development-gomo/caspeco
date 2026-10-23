@@ -27,7 +27,7 @@ export default function StageCards({ data, lang = DEFAULT_LANG }) {
       <div className="cs-container flex flex-col gap-10 lg:gap-16">
         {(heading || short_text) && (
           <Reveal className="flex flex-col gap-6">
-            {heading && <h2 className="cs-h2 cs-highlight cs-rich max-w-[985px] text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+            {heading && <h2 className="cs-h2 cs-highlight cs-rich max-w-[985px] text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
             {short_text && <div className="cs-p1 cs-rich max-w-[680px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
           </Reveal>
         )}
@@ -43,7 +43,7 @@ export default function StageCards({ data, lang = DEFAULT_LANG }) {
                 <Reveal key={i} delay={0.1 + i * 0.1}>
                   <Wrapper
                     {...(href ? { href } : {})}
-                    className="group relative flex h-[380px] flex-col justify-end overflow-hidden rounded-[8px] bg-(--color-black) p-6 text-(--color-light-grey) shadow-[0px_4px_12px_rgba(0,0,0,0.16)] lg:h-[422px] lg:p-8"
+                    className="group relative flex h-[380px] flex-col justify-end overflow-hidden rounded-[16px] bg-(--color-black) p-6 text-(--color-white) shadow-[0px_4px_12px_rgba(0,0,0,0.16)] lg:h-[422px] lg:p-8"
                   >
                     {image && (
                       <Image
@@ -54,12 +54,13 @@ export default function StageCards({ data, lang = DEFAULT_LANG }) {
                         className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                       />
                     )}
-                    <span className="absolute inset-0 bg-linear-to-b from-black/0 via-black/35 to-black/90" aria-hidden />
-                    <div className="relative flex flex-col gap-3">
+                    {/* Figma: black 0% at 19.8% → 100% at the bottom */}
+                    <span className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0, 0, 0, 0) 19.8%, #000 100%)" }} aria-hidden />
+                    <div className="relative flex flex-col gap-4">
                       <h3 className="font-bold text-[26px] lg:text-[32px] leading-[1.1] tracking-[-0.64px] normal-case">{card.title}</h3>
                       {card.text && <div className="cs-rich text-[16px] lg:text-[18px] font-light leading-[22px] tracking-[-0.36px]" dangerouslySetInnerHTML={{ __html: toHtml(card.text) }} />}
                       {(card.link_text || card.href) && href && (
-                        <span className="mt-6 inline-flex items-center gap-2 self-start text-[16px] font-medium text-(--color-yellow)">
+                        <span className="mt-4 inline-flex items-center gap-2 self-start text-[16px] font-medium leading-5 tracking-[-0.32px] text-(--color-yellow)">
                           <span className="cs-link-redraw">{card.link_text || "Explore"}</span>
                           <Arrow />
                         </span>

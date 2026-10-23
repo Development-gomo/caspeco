@@ -15,6 +15,8 @@ import { rows, sectionBackground, toHtml } from "@/lib/content";
 // Sections whose bottom padding already gives the FAQ its top spacing (same light
 // background, as on the homepage); after anything else the FAQ adds its own.
 const FLUSH_AFTER = new Set(["insights_section"]);
+// Light sections that start with 72px of their own: the FAQ keeps 72 below (Figma 72 + 72 = 144)
+const HALF_BEFORE = new Set(["related_icp"]);
 
 export default function HomeFaq({ data, lang = DEFAULT_LANG, prevLayout }) {
   const faqs = rows(data?.faqs)
@@ -37,7 +39,7 @@ export default function HomeFaq({ data, lang = DEFAULT_LANG, prevLayout }) {
     : null;
 
   return (
-    <section className={`pb-18 lg:pb-36 ${FLUSH_AFTER.has(prevLayout ?? data?._prev) ? "" : "pt-18 lg:pt-36"}`} style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
+    <section className={`${HALF_BEFORE.has(data?._next) ? "pb-12 lg:pb-[72px]" : "pb-18 lg:pb-36"} ${FLUSH_AFTER.has(prevLayout ?? data?._prev) ? "" : "pt-18 lg:pt-36"}`} style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       <div className="cs-container grid grid-cols-1 gap-10 lg:grid-cols-[549px_minmax(0,1fr)] lg:gap-[50px]">
         <div className="flex flex-col items-start gap-5">
           {heading && <h2 className="cs-h2 cs-highlight text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}

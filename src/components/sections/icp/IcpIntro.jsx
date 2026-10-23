@@ -16,7 +16,8 @@ import { DEFAULT_LANG, langHref } from "@/config";
 import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
 const ROLL_MS = 3200;
-const GRADIENT = "linear-gradient(180deg, #e4e5e6 0%, #fdfdfd 100%)";
+// Figma fill: linear #DADCDD 80% → #FFFFFF 50% (over the white page)
+const GRADIENT = "linear-gradient(180deg, rgba(218, 220, 221, 0.80) 0%, rgba(255, 255, 255, 0.50) 100%), #FFF";
 
 export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
   const rolling = rows(data?.rolling_headings).map((r) => r.text).filter(Boolean);
@@ -36,12 +37,13 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
   if (!heading && rolling.length === 0) return null;
 
   const variant = data?.cta_variant === "outline" ? "outline-dark" : "yellow";
-  const headingClass = "cs-h2 cs-highlight cs-rich text-black";
+  const headingClass = "cs-h2 cs-highlight cs-rich text-(--color-heading)";
 
   return (
-    <section className="overflow-hidden py-18 lg:py-36" style={sectionBackground(data, { backgroundImage: GRADIENT })}>
+    <section className="overflow-hidden py-18 lg:py-36" style={sectionBackground(data, { background: GRADIENT })}>
       <div className="cs-container flex flex-col gap-12 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
-        <Reveal className="flex max-w-[600px] flex-col items-start gap-6 lg:gap-10">
+        {/* Opening soon: text 600 wide, centred on the image; Levelling up: rotating heading 850 wide, text 474 */}
+        <Reveal className={`flex flex-col items-start gap-6 lg:gap-10 ${rolling.length ? "max-w-[850px]" : "max-w-[600px]"}`}>
           <div className="flex flex-col gap-5">
             {rolling.length > 0 ? (
               // Rotating question: grid stack keeps the height of the longest line, no jumps
@@ -61,7 +63,13 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
             ) : (
               <h2 className={headingClass} dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
             )}
-            {text && <div className="cs-p2 cs-rich max-w-[474px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(text) }} />}
+            {text && (
+              // Figma: Regular 20/24 #3F3E3C; the emphasised phrase is Medium Italic #000
+              <div
+                className={`cs-p2 cs-rich text-(--color-grey-dark) [&_em]:font-medium [&_em]:leading-8 [&_em]:text-(--color-heading) [&_strong]:font-medium [&_strong]:leading-8 [&_strong]:text-(--color-heading) ${rolling.length ? "max-w-[474px]" : "max-w-[600px]"}`}
+                dangerouslySetInnerHTML={{ __html: toHtml(text) }}
+              />
+            )}
           </div>
 
           {cta_text &&
@@ -79,14 +87,15 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
         </Reveal>
 
         {mediaUrl(image) && (
-          <Reveal x={40} y={0} delay={0.15} className="w-full lg:max-w-[608px] lg:flex-1">
+          // Figma: 608×342 (Opening soon) / 369×369 (Levelling up), radius 8, no shadow
+          <Reveal x={40} y={0} delay={0.15} className={`w-full lg:flex-none ${rolling.length ? "lg:w-[369px]" : "lg:w-[608px]"}`}>
             <Image
               src={mediaUrl(image)}
               alt={image?.alt || ""}
               width={image?.width || 1216}
               height={image?.height || 684}
               sizes="(min-width: 1024px) 608px, 100vw"
-              className="ml-auto h-auto w-full rounded-[8px] shadow-[0px_4px_24px_rgba(0,0,0,0.12)]"
+              className="ml-auto h-auto w-full rounded-[8px]"
             />
           </Reveal>
         )}

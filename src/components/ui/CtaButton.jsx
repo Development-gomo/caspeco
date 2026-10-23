@@ -12,6 +12,7 @@
 //   outline-dark-gold → gold fill, dark stroke kept, white label (Home intro video "Watch Video")
 //   outline-light  → yellow fill + stroke (client request), white label (400 ms)
 //   outline-light-yellow → yellow fill, white stroke kept, white label (Integrations, Industry case slider, Casper AI)
+//   outline-soft-yellow → #F1F1F1 stroke + label (Figma "View all cases" on the testimonial carousel), yellow fill on hover
 // Hover colours differ per section on purpose — pick the variant the section's Figma uses.
 
 import Link from "next/link";
@@ -29,6 +30,8 @@ const VARIANTS = {
     "border-2 border-(--color-white) text-white hover:border-(--color-yellow) hover:bg-(--color-yellow) hover:text-white duration-400 px-[36px] py-[14px]",
   "outline-light-yellow":
     "border-2 border-(--color-white) text-white hover:bg-(--color-yellow) hover:text-white duration-400 px-[36px] py-[14px]",
+  "outline-soft-yellow":
+    "border-2 border-[#F1F1F1] text-[#F1F1F1] hover:bg-(--color-yellow) hover:text-white duration-400 px-[36px] py-[14px]",
 };
 
 export default function CtaButton({

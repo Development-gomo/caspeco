@@ -24,7 +24,11 @@ const side = (dir, reduce) => ({
 });
 
 // defaultCtaVariant: used when the layout has no cta_variant field (ICP pages → "outline")
-export default function ProductSalesChannels({ data, lang = DEFAULT_LANG, defaultCtaVariant = "yellow" }) {
+// variant "icp" — Figma "ICP_1_Time to build" (1272×590): image 500×363 (radius 8) 64px in from
+// the left and 105px below the tab bar, text column 488 wide ending 26px from the right,
+// 73px below the panel; heading + sub-heading #151411.
+export default function ProductSalesChannels({ data, lang = DEFAULT_LANG, defaultCtaVariant = "yellow", variant }) {
+  const icp = variant === "icp";
   const tabs = rows(data?.tabs).filter((t) => t.tab_label);
   const [active, setActive] = React.useState(0);
   const reduce = useReducedMotion();
@@ -41,13 +45,13 @@ export default function ProductSalesChannels({ data, lang = DEFAULT_LANG, defaul
       <div className="cs-container flex flex-col items-center gap-10 lg:gap-14">
         {(data.heading || data.sub_heading) && (
           <Reveal className="flex max-w-[905px] flex-col items-center gap-5 text-center">
-            {data.heading && <h2 className="cs-h3 cs-highlight cs-rich font-extrabold text-black" dangerouslySetInnerHTML={{ __html: toHtml(data.heading) }} />}
-            {data.sub_heading && <p className="font-bold text-[22px] lg:text-[32px] leading-8 tracking-[-0.64px] text-black">{data.sub_heading}</p>}
+            {data.heading && <h2 className={`cs-h3 cs-highlight cs-rich ${icp ? "font-extrabold! text-(--color-black)" : "font-extrabold text-black"}`} dangerouslySetInnerHTML={{ __html: toHtml(data.heading) }} />}
+            {data.sub_heading && <p className={`font-bold text-[22px] lg:text-[32px] leading-8 tracking-[-0.64px] ${icp ? "text-(--color-black)" : "text-black"}`}>{data.sub_heading}</p>}
           </Reveal>
         )}
 
         {tabs.length > 0 && (
-          <Reveal delay={0.15} className="flex w-full flex-col items-center gap-6">
+          <Reveal delay={0.15} className={`flex w-full flex-col items-center ${icp ? "gap-10 lg:gap-[97px]" : "gap-6"}`}>
             <div className="max-w-full overflow-x-auto px-1 py-2 [scrollbar-width:none]">
               <div role="tablist" className="flex w-max items-center gap-1 rounded-[56px] bg-white p-[5px] shadow-[0px_2px_4.5px_rgba(0,0,0,0.1)]">
                 {tabs.map((t, i) => (
@@ -83,17 +87,20 @@ export default function ProductSalesChannels({ data, lang = DEFAULT_LANG, defaul
                 animate="in"
                 exit="out"
                 transition={{ staggerChildren: 0.08 }}
-                className="flex w-full flex-col items-center gap-10 lg:flex-row lg:justify-between"
+                className={`flex w-full flex-col items-center gap-10 lg:flex-row lg:justify-between ${icp ? "lg:pb-[73px]" : ""}`}
               >
                 {image && (
-                  <motion.div variants={side(-1, reduce)} className="relative aspect-[629/509] w-full max-w-[629px] shrink-0">
-                    <Image src={image} alt={imageField?.alt || ""} fill sizes="(min-width: 1024px) 629px, 100vw" className="object-contain" />
+                  <motion.div
+                    variants={side(-1, reduce)}
+                    className={`relative w-full shrink-0 ${icp ? "aspect-[500/363] max-w-[500px] overflow-hidden rounded-[8px] lg:ml-16" : "aspect-[629/509] max-w-[629px]"}`}
+                  >
+                    <Image src={image} alt={imageField?.alt || ""} fill sizes={icp ? "(min-width: 1024px) 500px, 100vw" : "(min-width: 1024px) 629px, 100vw"} className={icp ? "object-cover" : "object-contain"} />
                   </motion.div>
                 )}
 
-                <motion.div variants={side(1, reduce)} className="flex w-full max-w-[538px] flex-col items-start gap-10 lg:px-6">
+                <motion.div variants={side(1, reduce)} className={`flex w-full flex-col items-start gap-10 ${icp ? "max-w-[488px] lg:mr-[26px]" : "max-w-[538px] lg:px-6"}`}>
                   <div className="flex flex-col gap-5">
-                    {tab.title && <h3 className="cs-h4 text-black">{tab.title}</h3>}
+                    {tab.title && <h3 className={`cs-h4 ${icp ? "text-(--color-black)" : "text-black"}`} dangerouslySetInnerHTML={{ __html: toHtml(tab.title) }} />}
                     {tab.text && <div className="cs-p2 cs-rich text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(tab.text) }} />}
                     <CheckList items={tab.checklist} />
                   </div>
