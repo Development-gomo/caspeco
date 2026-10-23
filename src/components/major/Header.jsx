@@ -243,7 +243,7 @@ export default function Header({
                       href={langHref(item.url, lang)}
                       prefetch={true}
                       onClick={(e) => handleNavClick(e, item.url)}
-                      className="text-(--color-light-grey) hover:text-white relative z-9 text-[16px] xl:text-[18px] font-bold transition leading-[18px] flex items-center gap-2 whitespace-nowrap"
+                      className="text-(--color-light-grey) hover:opacity-70 focus-visible:opacity-70 relative z-9 text-[16px] xl:text-[18px] font-bold transition-opacity duration-300 ease-out leading-[18px] flex items-center gap-2 whitespace-nowrap"
                     >
                       {item.title}
 
@@ -441,7 +441,7 @@ export default function Header({
             </div>
           )}
 
-          {/* CTA BUTTON */}
+          {/* CTA BUTTON — hover matches the hero CtaButton (yellow → gold #C59A28, white label, 600 ms ease-out) */}
           {!options?.button_text || !options?.button_url ? (
             // SKELETON PLACEHOLDER (prevents jump)
             <div className="w-[135px] h-[42px] rounded-full bg-white/20 animate-pulse"></div>
@@ -453,7 +453,7 @@ export default function Header({
                     rounded-full px-6 xl:px-8 py-3 text-(--color-grey-dark) hover:text-white
                     text-[14px] font-extrabold whitespace-nowrap
                     transition-colors
-                    bg-(--color-yellow) duration-100 ease-out"
+                    bg-(--color-yellow) hover:bg-(--color-gold) duration-600 ease-out"
             >
               {options.button_text}
             </Link>
@@ -648,8 +648,8 @@ export default function Header({
                     href={langHref(options.button_url, lang)}
                     className="inline-flex items-center justify-center select-none
                       rounded-full bg-(--color-yellow) px-8 py-3 text-(--color-grey-dark)
-                      text-[14px] font-extrabold transition-colors duration-100 ease-out
-                      hover:text-white w-fit"
+                      text-[14px] font-extrabold transition-colors duration-600 ease-out
+                      hover:bg-(--color-gold) hover:text-white w-fit"
                     onClick={(e) => handleNavClick(e, options.button_url, true)}
                   >
                     {options.button_text}
