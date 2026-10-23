@@ -2,6 +2,8 @@
 // ACF layout: contact_rep_section — Figma "Let's talk about the bigger picture": darkened
 // photo background; left: heading, text and the sales rep (photo with a glass name bar);
 // right: the contact form card (ContactRepForm).
+// ICP pages (contact_form_section): `rep` ({ name, role, photo }) comes from the selected
+// team member and `form` is the CF7 / HubSpot form rendered in the card instead.
 
 import Image from "next/image";
 import Reveal from "@/components/ui/Reveal";
@@ -9,11 +11,13 @@ import ContactRepForm from "./ContactRepForm";
 import { DEFAULT_LANG } from "@/config";
 import { mediaUrl, toHtml } from "@/lib/content";
 
-export default function ContactRep({ data, lang = DEFAULT_LANG }) {
-  const { heading, short_text, rep_name, rep_role } = data || {};
+export default function ContactRep({ data, lang = DEFAULT_LANG, rep, form }) {
+  const { heading, short_text } = data || {};
   if (!heading) return null;
   const bg = mediaUrl(data?.bg_image);
-  const photo = mediaUrl(data?.rep_photo);
+  const rep_name = rep?.name || data?.rep_name;
+  const rep_role = rep?.role || data?.rep_role;
+  const photo = rep?.photo || mediaUrl(data?.rep_photo);
 
   return (
     <section className="relative isolate overflow-hidden bg-(--color-black) py-18 lg:py-36" style={data?.bg_color ? { background: data.bg_color } : undefined}>
@@ -29,7 +33,7 @@ export default function ContactRep({ data, lang = DEFAULT_LANG }) {
 
           {photo && (
             <figure className="relative aspect-[400/391] w-full max-w-[400px] overflow-hidden rounded-[8px] border-[3px] border-white/70 shadow-[0px_4px_24px_rgba(0,0,0,0.3)]">
-              <Image src={photo} alt={data?.rep_photo?.alt || rep_name || ""} fill sizes="400px" className="object-cover" />
+              <Image src={photo} alt={rep_name || ""} fill sizes="400px" className="object-cover" />
               {(rep_name || rep_role) && (
                 // Glass name bar (Figma "Representative details")
                 <figcaption className="absolute inset-x-1.5 bottom-1.5 flex items-stretch gap-3 rounded-[4px] bg-(--color-grey-dark)/70 px-7 py-3.5 backdrop-blur-[10px]">
@@ -45,7 +49,7 @@ export default function ContactRep({ data, lang = DEFAULT_LANG }) {
         </Reveal>
 
         <Reveal x={40} y={0} delay={0.15} className="w-full rounded-[8px] bg-(--color-white) p-6 shadow-[0px_4px_24px_rgba(0,0,0,0.2)] sm:p-10 lg:max-w-[691px]">
-          <ContactRepForm data={data} lang={lang} />
+          {form || <ContactRepForm data={data} lang={lang} />}
         </Reveal>
       </div>
     </section>

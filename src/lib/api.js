@@ -67,6 +67,27 @@ export async function getIndustryBySlug(slug, lang = DEFAULT_LANG) {
   return getSingleEntry("industries", slug, lang, "&acf_format=standard");
 }
 
+// ICP pages (CPT "icp", field group "Page Builder ICP Page"); acf_format=standard → image objects
+export async function getIcpBySlug(slug, lang = DEFAULT_LANG) {
+  return getSingleEntry("icp", slug, lang, "&acf_format=standard");
+}
+
+// All ICP pages of a language (for the "related_icp" cards): title, excerpt, featured image
+export async function getAllIcps(lang = DEFAULT_LANG) {
+  const list = await fetchWP(`/wp/v2/icp?lang=${lang}&per_page=50&_embed=wp:featuredmedia&_fields=id,slug,title,excerpt,acf,_links,_embedded`);
+  return Array.isArray(list) ? list : [];
+}
+
+// Team members (CPT "kontakt") by ID, with their featured image — used by the ICP team
+// and contact sections (ACF post objects don't include the photo).
+// WPML filters by language, so the entry's lang is required (ids are language-specific)
+export async function getKontaktByIds(ids, lang = DEFAULT_LANG) {
+  const list = (ids || []).filter(Boolean);
+  if (!list.length) return [];
+  const res = await fetchWP(`/wp/v2/kontakt?include=${list.join(",")}&lang=${lang}&per_page=${list.length}&_embed=wp:featuredmedia&acf_format=standard`);
+  return Array.isArray(res) ? res : [];
+}
+
 export async function getPartnerBySlug(slug, lang = DEFAULT_LANG) {
   return getSingleEntry("partner", slug, lang);
 }

@@ -72,6 +72,8 @@ export const ROUTE_TYPES = {
   product: { rest: "products", base: { ...allLangs("produkt"), en: "product" } },
   industry: { rest: "industries", base: { ...allLangs("bransch"), en: "industry", no: "bransje" } },
   partner: { rest: "partner", base: allLangs("partner") },
+  // ICP pages (Opening soon, Levelling up …) — WP permalink /{lang}/icp/{slug}/
+  icp: { rest: "icp", base: allLangs("icp") },
   partnerCategory: { rest: "partner_category", taxonomy: true, base: allLangs("partner-category") },
 };
 
@@ -95,6 +97,7 @@ export const BODY_CLASS = {
   industry: "industry",
   partner: "partner",
   partnerCategory: "partner-category",
+  icp: "icp",
 };
 
 /**

@@ -23,7 +23,8 @@ const side = (dir, reduce) => ({
   in: { opacity: 1, x: 0, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] } },
 });
 
-export default function ProductSalesChannels({ data, lang = DEFAULT_LANG }) {
+// defaultCtaVariant: used when the layout has no cta_variant field (ICP pages → "outline")
+export default function ProductSalesChannels({ data, lang = DEFAULT_LANG, defaultCtaVariant = "yellow" }) {
   const tabs = rows(data?.tabs).filter((t) => t.tab_label);
   const [active, setActive] = React.useState(0);
   const reduce = useReducedMotion();
@@ -97,7 +98,7 @@ export default function ProductSalesChannels({ data, lang = DEFAULT_LANG }) {
                     <CheckList items={tab.checklist} />
                   </div>
                   {tab.cta_text && tab.cta_url && (
-                    <CtaButton variant={data.cta_variant === "outline" ? "outline-dark" : "yellow"} href={langHref(tab.cta_url.trim(), lang)} wrap className="max-w-full">
+                    <CtaButton variant={(data.cta_variant || defaultCtaVariant) === "outline" ? "outline-dark" : "yellow"} href={langHref(tab.cta_url.trim(), lang)} wrap className="max-w-full">
                       {tab.cta_text}
                     </CtaButton>
                   )}

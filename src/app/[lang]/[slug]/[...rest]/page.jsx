@@ -13,6 +13,7 @@ import {
   getCaseStudyBySlug,
   getProductBySlug,
   getIndustryBySlug,
+  getIcpBySlug,
   getPartnerBySlug,
   getPartnerCategoryBySlug,
   getPartnersByCategory,
@@ -29,6 +30,7 @@ import CaseStudyTemplate from "@/components/templates/CaseStudyTemplate";
 import EntryTemplate from "@/components/templates/EntryTemplate";
 import ProductTemplate from "@/components/templates/ProductTemplate";
 import IndustryTemplate from "@/components/templates/IndustryTemplate";
+import IcpTemplate from "@/components/templates/IcpTemplate";
 import PartnerCategoryTemplate from "@/components/templates/PartnerCategoryTemplate";
 
 export const revalidate = 300;
@@ -66,6 +68,10 @@ const resolveRoute = cache(async (lang, segments) => {
   if (type === "industry") {
     const industry = await getIndustryBySlug(slug, lang);
     if (industry) return { type, entry: industry, slug };
+  }
+  if (type === "icp") {
+    const icp = await getIcpBySlug(slug, lang);
+    if (icp) return { type, entry: icp, slug };
   }
   if (type === "partner") {
     const partner = await getPartnerBySlug(slug, lang);
@@ -107,6 +113,8 @@ export default async function LocalizedEntryPage({ params }) {
       return <ProductTemplate product={route.entry} {...common} />;
     case "industry":
       return <IndustryTemplate industry={route.entry} {...common} />;
+    case "icp":
+      return <IcpTemplate icp={route.entry} {...common} />;
     case "partner":
       return <EntryTemplate entry={route.entry} entryType="partner" routeType="partner" {...common} />;
     case "partnerCategory":

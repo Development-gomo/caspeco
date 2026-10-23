@@ -31,7 +31,8 @@ function Underline() {
 
 export default function SystemCheck({ data, lang = DEFAULT_LANG }) {
   const items = rows(data?.checklist).map((r) => r.item || r.text).filter(Boolean);
-  const { eyebrow, heading, text, cta_text, cta_url, card_title, card_subtitle } = data || {};
+  const { eyebrow, heading, cta_text, cta_url, card_title, card_subtitle } = data || {};
+  const text = data?.text || data?.short_text; // short_text in "Page Builder ICP Page"
   if (!heading && items.length === 0) return null;
   const bg = mediaUrl(data?.bg_image);
 

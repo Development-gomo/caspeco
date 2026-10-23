@@ -13,7 +13,8 @@ const GRADIENT = "linear-gradient(180deg, #fdfdfd 0%, #dadcdd 100%)";
 
 export default function SwitchSteps({ data, lang = DEFAULT_LANG }) {
   const steps = rows(data?.steps).filter((s) => s.number || s.title);
-  const { eyebrow, heading, heading_highlight, text, cta_text, cta_url } = data || {};
+  const { eyebrow, heading, heading_highlight, cta_text, cta_url } = data || {};
+  const text = data?.text || data?.short_text; // short_text in "Page Builder ICP Page"
   if (!heading && steps.length === 0) return null;
 
   return (

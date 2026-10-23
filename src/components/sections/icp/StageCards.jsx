@@ -36,7 +36,8 @@ export default function StageCards({ data, lang = DEFAULT_LANG }) {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:gap-8">
             {cards.map((card, i) => {
               const image = mediaUrl(card.image);
-              const href = card.link_url ? langHref(card.link_url.trim(), lang) : "";
+              // href: ready-made link (related_icp cards built from the ICP posts); link_url: ACF field
+              const href = card.href || (card.link_url ? langHref(card.link_url.trim(), lang) : "");
               const Wrapper = href ? Link : "div";
               return (
                 <Reveal key={i} delay={0.1 + i * 0.1}>
@@ -57,9 +58,9 @@ export default function StageCards({ data, lang = DEFAULT_LANG }) {
                     <div className="relative flex flex-col gap-3">
                       <h3 className="font-bold text-[26px] lg:text-[32px] leading-[1.1] tracking-[-0.64px] normal-case">{card.title}</h3>
                       {card.text && <div className="cs-rich text-[16px] lg:text-[18px] font-light leading-[22px] tracking-[-0.36px]" dangerouslySetInnerHTML={{ __html: toHtml(card.text) }} />}
-                      {card.link_text && href && (
+                      {(card.link_text || card.href) && href && (
                         <span className="mt-6 inline-flex items-center gap-2 self-start text-[16px] font-medium text-(--color-yellow)">
-                          <span className="cs-link-redraw">{card.link_text}</span>
+                          <span className="cs-link-redraw">{card.link_text || "Explore"}</span>
                           <Arrow />
                         </span>
                       )}

@@ -30,7 +30,8 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
     return () => clearInterval(id);
   }, [rolling.length, reduce]);
 
-  const { heading, text, cta_text, cta_url, image } = data || {};
+  const { heading, cta_text, cta_url, image } = data || {};
+  const text = data?.text || data?.short_text; // short_text in "Page Builder ICP Page"
   const video = mediaUrl(data?.video) || data?.video_url || "";
   if (!heading && rolling.length === 0) return null;
 

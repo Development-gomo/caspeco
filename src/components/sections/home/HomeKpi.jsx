@@ -106,17 +106,19 @@ function KpiCard({ card, hint }) {
 export default function HomeKpi({ data, lang = DEFAULT_LANG }) {
   const cards = rows(data?.cards).filter((c) => c.label || c.value);
   if (!data?.heading && cards.length === 0) return null;
+  // subtitle: short_text (Page Builder) or sub_heading (Page Builder ICP Page); card.note = per-card flip hint
+  const subtitle = data.short_text || data.sub_heading;
 
   return (
     <section className="lg:pt-[2px] pb-18 lg:pb-36" style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       <div className="cs-container flex flex-col items-center gap-10 lg:gap-16">
-        {(data.heading || data.short_text) && (
+        {(data.heading || subtitle) && (
           <div className="flex flex-col items-center gap-4 text-center">
             {data.heading && (
               <h2 className="cs-h2 cs-highlight text-black max-w-[1179px]" dangerouslySetInnerHTML={{ __html: highlightHtml(data.heading, "lastLine") }} />
             )}
-            {data.short_text && (
-              <div className="cs-rich max-w-[925px] text-[18px] lg:text-[24px] font-medium leading-7 tracking-[-0.48px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(data.short_text) }} />
+            {subtitle && (
+              <div className="cs-rich max-w-[925px] text-[18px] lg:text-[24px] font-medium leading-7 tracking-[-0.48px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(subtitle) }} />
             )}
           </div>
         )}
@@ -124,7 +126,7 @@ export default function HomeKpi({ data, lang = DEFAULT_LANG }) {
         {cards.length > 0 && (
           <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {cards.map((card, i) => (
-              <KpiCard key={i} card={card} hint={data.flip_hint_text} />
+              <KpiCard key={i} card={card} hint={card.note || data.flip_hint_text} />
             ))}
           </div>
         )}
