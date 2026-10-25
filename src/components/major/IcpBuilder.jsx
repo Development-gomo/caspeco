@@ -30,10 +30,14 @@ const PeopleCards = dynamic(() => import("../sections/icp/PeopleCards"));
 const StageCards = dynamic(() => import("../sections/icp/StageCards"));
 const ContactRep = dynamic(() => import("../sections/icp/ContactRep"));
 const ProductSalesChannels = dynamic(() => import("../sections/product/ProductSalesChannels"));
+const ProductUspAccordion = dynamic(() => import("../sections/product/ProductUspAccordion"));
+const ProductResults = dynamic(() => import("../sections/product/ProductResults"));
+const HomeDataInsight = dynamic(() => import("../sections/home/HomeDataInsight"));
 const ProductHero = dynamic(() => import("../sections/product/ProductHero"));
 const ProductTestimonials = dynamic(() => import("../sections/product/ProductTestimonials"));
 const IndustryTestimonials = dynamic(() => import("../sections/industry/IndustryTestimonials"));
 const ContactForm = dynamic(() => import("../sections/contact-form/ContactForm"));
+const QuickContact = dynamic(() => import("../sections/contact-form/QuickContact"));
 const HubspotEmbed = dynamic(() => import("../ui/HubspotEmbed"));
 
 const decode = (s) =>
@@ -46,17 +50,21 @@ const decode = (s) =>
     .trim();
 
 const postId = (p) => (p && typeof p === "object" ? p.ID || p.id : p);
+// team_member is a multi-select post object ("Select only one") → first entry
+const firstId = (v) => postId(Array.isArray(v) ? v[0] : v);
+// contact_form_section: "Contact Person Section" button group (enable / disable, default disable)
+const withContactPerson = (b) => b.contact_person === "enable";
 const featured = (post) => {
   const m = post?._embedded?.["wp:featuredmedia"]?.[0];
   return m?.source_url ? { url: m.source_url, alt: m.alt_text || "" } : null;
 };
 
-// kontakt post → { name, role, tag, photo } (role / location from its ACF when exposed to REST)
+// kontakt post → { name, role, tag, photo } (role = ACF "titel", location from its ACF when exposed to REST)
 function toPerson(post) {
   const acf = post?.acf && !Array.isArray(post.acf) ? post.acf : {};
   return {
     name: decode(post?.title?.rendered),
-    role: acf.role || acf.title || acf.position || acf.designation || "",
+    role: acf.titel || "",
     tag: acf.location || acf.office || acf.city || acf.tag || "",
     photo: featured(post),
   };
@@ -67,7 +75,7 @@ async function prefetch(sections, lang) {
   const mediaIds = [];
   for (const b of sections) {
     if (b._layout === "team_section") memberIds.push(...(Array.isArray(b.select_team_member) ? b.select_team_member : [b.select_team_member]).map(postId));
-    if (b._layout === "contact_form_section") memberIds.push(postId(b.team_member));
+    if (b._layout === "contact_form_section" && withContactPerson(b)) memberIds.push(firstId(b.team_member));
     if (typeof b.bg_image === "number" || /^\d+$/.test(String(b.bg_image || ""))) mediaIds.push(Number(b.bg_image));
   }
   const needsCases = sections.some((b) => b._layout === "testimonial_slider_section");
@@ -115,6 +123,22 @@ export default async function IcpBuilder({ sections: rawSections, lang = DEFAULT
           case "tab_section":
             return <ProductSalesChannels key={i} data={block} lang={lang} defaultCtaVariant="outline" variant="icp" />;
 
+          // "USP Accordion" (usp_accordion in Page Builder ICP Page): same fields as the products
+          // layout usp_accordion_section — heading, short_text, cta, items (icon / title / text /
+          // link_text / link_url)
+          case "usp_accordion":
+          case "usp_accordion_section":
+            return <ProductUspAccordion key={i} data={block} lang={lang} variant="icp" />;
+
+          // Figma "Comparison block" (Reduce / Improve): same design and fields as the products
+          // layout results_section (heading, short_text, columns, bottom_note, bg_image)
+          case "result_section":
+          case "results_section":
+            return <ProductResults key={i} data={block} lang={lang} variant="icp" />;
+
+          case "data_insight_section":
+            return <HomeDataInsight key={i} data={block} lang={lang} variant="icp" />;
+
           case "testimonial_slider_section": {
             if (block.slider_type === "fullwidth") {
               const slides = cases
@@ -158,8 +182,28 @@ export default async function IcpBuilder({ sections: rawSections, lang = DEFAULT
           }
 
           case "contact_form_section": {
-            const rep = people.get(postId(block.team_member));
-            const form = parseHubspotEmbed(block.shortcode) ? (
+            const hubspot = parseHubspotEmbed(block.shortcode);
+            // Two Figma designs share this layout: contact_person "enable" → "Let's talk bigger
+            // picture" with the selected team member (Figma 324:7454); otherwise the "Quick
+            // contact" block (eyebrow, heading, text and the form card).
+            if (!withContactPerson(block)) {
+              return (
+                <QuickContact
+                  key={i}
+                  lang={lang}
+                  data={{
+                    ...block,
+                    sub_heading: block.eyebrow,
+                    short_description: block.short_text,
+                    background_colour: block.bg_color,
+                    form_shortcode: hubspot ? "" : String(postId(block.select_form) || ""),
+                  }}
+                  form={hubspot ? <HubspotEmbed code={block.shortcode} /> : undefined}
+                />
+              );
+            }
+            const rep = people.get(firstId(block.team_member));
+            const form = hubspot ? (
               <HubspotEmbed code={block.shortcode} />
             ) : block.select_form ? (
               <ContactForm formId={postId(block.select_form)} lang={lang} submitLabel={block.cta_text || "Send"} />

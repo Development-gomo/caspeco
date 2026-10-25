@@ -103,14 +103,18 @@ function KpiCard({ card, hint }) {
   );
 }
 
+const AFTER_DARK = new Set(["testimonial_slider_section", "industry_testimonials_section", "system_check_section"]);
+
 export default function HomeKpi({ data, lang = DEFAULT_LANG }) {
   const cards = rows(data?.cards).filter((c) => c.label || c.value);
   if (!data?.heading && cards.length === 0) return null;
-  // subtitle: short_text (Page Builder) or sub_heading (Page Builder ICP Page); card.note = per-card flip hint
+  // subtitle: short_text (Page Builder) or sub_heading (Page Builder ICP Page); card.note renders inside KpiCard
   const subtitle = data.short_text || data.sub_heading;
 
   return (
-    <section className="lg:pt-[2px] pb-18 lg:pb-36" style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
+    // Homepage: the section above provides the top spacing (2px). After a dark section (ICP:
+    // testimonial carousel) the KPI block starts its own 144px in, as in Figma "KPI's".
+    <section className={`${AFTER_DARK.has(data?._prev) ? "pt-18 lg:pt-36" : "lg:pt-[2px]"} pb-18 lg:pb-36`} style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       <div className="cs-container flex flex-col items-center gap-10 lg:gap-16">
         {(data.heading || subtitle) && (
           <div className="flex flex-col items-center gap-4 text-center">
@@ -126,7 +130,7 @@ export default function HomeKpi({ data, lang = DEFAULT_LANG }) {
         {cards.length > 0 && (
           <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {cards.map((card, i) => (
-              <KpiCard key={i} card={card} hint={card.note || data.flip_hint_text} />
+              <KpiCard key={i} card={card} hint={data.flip_hint_text} />
             ))}
           </div>
         )}

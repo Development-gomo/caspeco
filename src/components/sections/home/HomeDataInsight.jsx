@@ -21,7 +21,7 @@ function barPercent(row) {
   return nums ? Math.min(100, Math.max(...nums.map((n) => parseFloat(n.replace(",", "."))))) : 0;
 }
 
-function Chart({ title, rows: chartRows }) {
+function Chart({ title, rows: chartRows, rowGap = "gap-[30px]" }) {
   return (
     <div
       className="w-full xl:w-[614px] shrink-0 rounded-[8px] border border-white/10 px-6 pt-6 pb-8 lg:px-9 lg:pt-[33px] lg:pb-[28px] shadow-[0px_5.333px_16px_0px_rgba(0,0,0,0.16)] backdrop-blur-sm"
@@ -31,7 +31,7 @@ function Chart({ title, rows: chartRows }) {
       }}
     >
       {title && <p className="font-medium text-[20px] lg:text-[24px] leading-6 tracking-[-0.48px] text-(--color-light-grey)">{title}</p>}
-      <div className="mt-6 lg:mt-[26px] flex flex-col gap-[30px]">
+      <div className={`mt-6 lg:mt-[26px] flex flex-col ${rowGap}`}>
         {chartRows.map((row, i) => (
           <div key={i} className="flex flex-col gap-3">
             <div className="flex items-baseline justify-between gap-4 text-[18px] lg:text-[20px] leading-6 tracking-[-0.4px]">
@@ -55,7 +55,10 @@ function Chart({ title, rows: chartRows }) {
   );
 }
 
-export default function HomeDataInsight({ data }) {
+// variant "icp" — Figma ICP Adding locations "Turn data into profitability" (324:7050): chart rows
+// 18 apart (card 410 tall) and 144 below the card (followed by the dark testimonials)
+export default function HomeDataInsight({ data, variant }) {
+  const icp = variant === "icp";
   const usps = rows(data?.usps).filter((u) => u.title);
   const chartRows = rows(data?.chart_rows).filter((r) => r.label);
   const [open, setOpen] = React.useState(false);
@@ -64,7 +67,7 @@ export default function HomeDataInsight({ data }) {
 
   return (
     <section
-      className="pt-18 pb-12 lg:pt-36 lg:pb-[72px]"
+      className={`pt-18 lg:pt-36 ${icp ? "pb-18 lg:pb-36" : "pb-12 lg:pb-[72px]"}`}
       style={sectionBackground(data, { background: "var(--color-light-grey)" })}
     >
       <div className="cs-container flex flex-col items-center gap-10 lg:gap-16">
@@ -130,7 +133,7 @@ export default function HomeDataInsight({ data }) {
 
           {chartRows.length > 0 && (
             <div className="w-full xl:w-auto xl:pt-[18px]">
-              <Chart title={chart_title} rows={chartRows} />
+              <Chart title={chart_title} rows={chartRows} rowGap={icp ? "gap-[18px]" : undefined} />
             </div>
           )}
         </div>

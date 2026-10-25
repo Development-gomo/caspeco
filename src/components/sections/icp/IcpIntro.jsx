@@ -40,18 +40,22 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
   const headingClass = "cs-h2 cs-highlight cs-rich text-(--color-heading)";
 
   return (
-    <section className="overflow-hidden py-18 lg:py-36" style={sectionBackground(data, { background: GRADIENT })}>
+    // Figma section-gap rule: before the light tabs section the intro keeps 72 below (72 + 72)
+    <section className={`overflow-hidden pt-18 lg:pt-36 ${data?._next === "tab_section" ? "pb-12 lg:pb-[72px]" : "pb-18 lg:pb-36"}`} style={sectionBackground(data, { background: GRADIENT })}>
       <div className="cs-container flex flex-col gap-12 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
         {/* Opening soon: text 600 wide, centred on the image; Levelling up: rotating heading 850 wide, text 474 */}
         <Reveal className={`flex flex-col items-start gap-6 lg:gap-10 ${rolling.length ? "max-w-[850px]" : "max-w-[600px]"}`}>
           <div className="flex flex-col gap-5">
             {rolling.length > 0 ? (
               // Rotating question: grid stack keeps the height of the longest line, no jumps
-              <h2 className={`${headingClass} grid`} aria-live="polite">
+              // Figma "ICP_levelling_up_scroll_text": 176px box = heading + 10px above and below
+              <h2 className={`${headingClass} grid lg:py-2.5`} aria-live="polite">
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.span
                     key={index}
                     className="col-start-1 row-start-1"
+                    // Figma: #000 — inline, because the global ".cs-h2 span" rule turns spans yellow
+                    style={{ color: "var(--color-heading)" }}
                     initial={{ opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -24 }}

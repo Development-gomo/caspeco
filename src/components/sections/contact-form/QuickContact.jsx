@@ -15,11 +15,12 @@ import { mediaUrl, toHtml, rows } from "@/lib/content";
 import { cf7FormId } from "@/lib/forms";
 import RuleLine from "../../../../public/icons/quick-contact-rule.svg";
 
-export default function QuickContact({ data, lang = DEFAULT_LANG, id }) {
+// form: optional ready-made form node for the card (ICP pages: HubSpot embed)
+export default function QuickContact({ data, lang = DEFAULT_LANG, id, form }) {
   const { background_colour, sub_heading, heading, short_description, cta_text, cta_url, form_shortcode } = data || {};
   const hasAcfForm = rows(data?.form_fields).some((f) => f.name);
   const cf7Id = !hasAcfForm && cf7FormId(form_shortcode);
-  if (!heading && !hasAcfForm && !cf7Id) return null;
+  if (!heading && !hasAcfForm && !cf7Id && !form) return null;
   const bgImage = mediaUrl(data?.bg_image);
 
   return (
@@ -30,8 +31,8 @@ export default function QuickContact({ data, lang = DEFAULT_LANG, id }) {
     >
       {bgImage && (
         <>
-          <Image src={bgImage} alt="" fill sizes="100vw" className="-z-10 object-cover" />
-          <span className="absolute inset-0 -z-10 bg-black/55" aria-hidden />
+          {/* Figma ICP "Quick contact": photo with 31.2px layer blur over #0B2533, no extra overlay */}
+          <Image src={bgImage} alt="" fill sizes="100vw" className="-z-10 scale-110 object-cover blur-[31.2px]" />
         </>
       )}
       <div className="flex flex-col gap-4 items-start w-full lg:w-[476px] shrink-0">
@@ -55,7 +56,9 @@ export default function QuickContact({ data, lang = DEFAULT_LANG, id }) {
         )}
       </div>
 
-      {hasAcfForm || cf7Id ? (
+      {form ? (
+        <div className="w-full lg:w-[493px] shrink-0 rounded-lg bg-white border-6 border-white/50 shadow-[0px_2px_4.5px_0px_rgba(0,0,0,0.1)] py-7 px-[18px]">{form}</div>
+      ) : hasAcfForm || cf7Id ? (
         <div className={`w-full lg:w-[493px] shrink-0 rounded-lg bg-white border-6 border-white/50 shadow-[0px_2px_4.5px_0px_rgba(0,0,0,0.1)] py-7 ${hasAcfForm ? "px-[18px]" : ""}`}>
           {hasAcfForm ? (
             <QuickContactForm data={data} lang={lang} />

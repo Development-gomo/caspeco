@@ -1,6 +1,9 @@
 // src/components/sections/icp/PeopleCards.jsx
 // ACF layout: people_section — Figma "Your people in Sweden and Norway": heading and up to
 // 4 cards (photo, petrol location tag, name with a yellow rule, role).
+// Figma "Person" (324:6807): 303×308, radius 8, #FDFDFD, no shadow, no hover; photo 303×172
+// (Fill), details padding 24 / gap 16. The kontakt photos are portrait head shots (~5:7), so
+// the crop is set to keep the face (eyes to chin) in the landscape box instead of the hair.
 
 import Image from "next/image";
 import Reveal from "@/components/ui/Reveal";
@@ -17,18 +20,14 @@ export default function PeopleCards({ data, joined = false }) {
   return (
     <section className={`pb-18 lg:pb-36 ${joined ? "pt-14 lg:pt-[100px]" : "pt-18 lg:pt-36"}`} style={joined ? undefined : sectionBackground(data, { background: GRADIENT })}>
       <div className="cs-container flex flex-col gap-10 lg:gap-16">
-        {heading && <Reveal as="h2" className="cs-h3 cs-highlight cs-rich font-extrabold! text-(--color-black)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+        {heading && <Reveal as="h2" className="cs-h3 cs-highlight cs-rich font-extrabold! text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
 
         {people.length > 0 && (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {people.map((person, i) => {
               const photo = mediaUrl(person.photo);
               return (
-                <Reveal
-                  key={i}
-                  delay={0.1 + i * 0.08}
-                  className="group overflow-hidden rounded-[8px] bg-(--color-light-grey) transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0px_8px_24px_rgba(0,0,0,0.12)]"
-                >
+                <div key={i} className="overflow-hidden rounded-[8px] bg-(--color-light-grey)">
                   <div className="relative aspect-[303/172] overflow-hidden bg-(--color-grey-medium)">
                     {photo && (
                       <Image
@@ -36,7 +35,7 @@ export default function PeopleCards({ data, joined = false }) {
                         alt={person.photo?.alt || person.name}
                         fill
                         sizes="(min-width: 1024px) 303px, (min-width: 640px) 50vw, 100vw"
-                        className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                        className="object-cover object-[50%_42%]"
                       />
                     )}
                   </div>
@@ -50,7 +49,7 @@ export default function PeopleCards({ data, joined = false }) {
                       </div>
                     </div>
                   </div>
-                </Reveal>
+                </div>
               );
             })}
           </div>

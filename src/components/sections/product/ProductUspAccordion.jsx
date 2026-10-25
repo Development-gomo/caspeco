@@ -15,6 +15,10 @@ import Chevron from "../../../../public/icons/product/chevron.svg";
 import { DEFAULT_LANG, langHref } from "@/config";
 import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
+// enable_gradient (ICP "USP Accordion"): Figma "USP's" fill — #DADCDD 80% → #FFFFFF 50%, top to
+// bottom, over #FDFDFD
+const GRADIENT = "linear-gradient(180deg, rgba(218, 220, 221, 0.80) -0.94%, rgba(255, 255, 255, 0.50) 100.94%), #FDFDFD";
+
 function AccordionItem({ item, isOpen, onToggle, lang }) {
   const icon = mediaUrl(item.icon);
   return (
@@ -24,7 +28,9 @@ function AccordionItem({ item, isOpen, onToggle, lang }) {
       }`}
     >
       <h3 className="normal-case">
-        <button type="button" onClick={onToggle} aria-expanded={isOpen} className={`flex w-full cursor-pointer items-center gap-4 pt-[21px] text-left ${isOpen ? "pb-[15px]" : "pb-[21px]"}`}>
+        {/* Figma: icon box 28, title line 24 at the top of the row, chevron centred on the title;
+            open item 21 + 24 + 15 + text + 15 + link + 21 (the icon column doesn't add height) */}
+        <button type="button" onClick={onToggle} aria-expanded={isOpen} className={`flex w-full cursor-pointer items-start gap-4 pt-[21px] text-left ${isOpen ? "pb-[11px]" : "pb-[21px]"}`}>
           <span className="relative flex size-7 shrink-0 items-center justify-center">
             {icon && (
               <Image src={icon} alt="" width={28} height={28} className={`max-h-7 w-auto object-contain transition ${isOpen ? "brightness-0 invert" : ""}`} />
@@ -38,7 +44,7 @@ function AccordionItem({ item, isOpen, onToggle, lang }) {
             alt=""
             width={14}
             height={8}
-            className={`shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180 brightness-0 invert" : ""}`}
+            className={`mt-2 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180 brightness-0 invert" : ""}`}
           />
         </button>
       </h3>
@@ -73,21 +79,22 @@ function AccordionItem({ item, isOpen, onToggle, lang }) {
   );
 }
 
-export default function ProductUspAccordion({ data, lang = DEFAULT_LANG }) {
+// variant "icp": heading X-Bold (Figma ICP "USP's"); the global .cs-h3 weight would win otherwise
+export default function ProductUspAccordion({ data, lang = DEFAULT_LANG, variant }) {
   const items = rows(data?.items).filter((i) => i.title);
   const [open, setOpen] = React.useState(0);
   const { heading, short_text, sub_text, cta_text, cta_url } = data || {};
   if (!heading && items.length === 0) return null;
 
   return (
-    <section className="py-18 lg:py-36" style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
+    <section className="py-18 lg:py-36" style={sectionBackground(data, { background: data?.enable_gradient ? GRADIENT : "var(--color-light-grey)" })}>
       <div className="cs-container flex flex-col gap-12 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
         <Reveal className="flex flex-col items-start gap-10 lg:max-w-[507px]">
           <div className="flex flex-col gap-4">
-            {heading && <h2 className="cs-h3 cs-highlight font-extrabold text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+            {heading && <h2 className={`cs-h3 cs-highlight text-black ${variant === "icp" ? "font-extrabold!" : "font-extrabold"}`} dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
             {short_text && <div className="cs-p2 cs-rich text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
-            {/* optional second paragraph (ICP pages: bold lead + body text) */}
-            {sub_text && <div className="cs-p2 cs-rich mt-2 text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(sub_text) }} />}
+            {/* optional second paragraph — Figma ICP "USP's": Bold 20/24, 24 below the text */}
+            {sub_text && <div className="cs-p2 cs-rich mt-2 font-bold text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(sub_text) }} />}
           </div>
           {cta_text && cta_url && <CtaButton href={langHref(cta_url.trim(), lang)}>{cta_text}</CtaButton>}
         </Reveal>
