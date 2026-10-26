@@ -13,13 +13,27 @@ import CtaButton from "@/components/ui/CtaButton";
 import { DEFAULT_LANG, langHref } from "@/config";
 import { mediaUrl, toHtml, rows } from "@/lib/content";
 import { cf7FormId } from "@/lib/forms";
+import { parseHubspotEmbed } from "@/lib/hubspot";
+import HubspotEmbed from "@/components/ui/HubspotEmbed";
 import RuleLine from "../../../../public/icons/quick-contact-rule.svg";
 
+// Form card: 493 wide, content 445 (Figma "phone-contact-form", 864 → 1309).
+// variant "icp" — Figma ICP "Quick contact" (Opening soon / Levelling up): #FBFAF9 card, padding
+// 28/24, shadow 0 2 9 #000@10% (no white glass edge)
+const CARD = {
+  default: "rounded-lg bg-white border-6 border-white/50 shadow-[0px_2px_4.5px_0px_rgba(0,0,0,0.1)] py-7 px-[18px]",
+  icp: "rounded-lg bg-[#FBFAF9] shadow-[0px_2px_9px_0px_rgba(0,0,0,0.1)] px-6 py-7",
+};
+
 // form: optional ready-made form node for the card (ICP pages: HubSpot embed)
-export default function QuickContact({ data, lang = DEFAULT_LANG, id, form }) {
+export default function QuickContact({ data, lang = DEFAULT_LANG, id, form, variant = "default" }) {
+  const card = `w-full lg:w-[493px] shrink-0 ${CARD[variant] || CARD.default}`;
   const { background_colour, sub_heading, heading, short_description, cta_text, cta_url, form_shortcode } = data || {};
   const hasAcfForm = rows(data?.form_fields).some((f) => f.name);
-  const cf7Id = !hasAcfForm && cf7FormId(form_shortcode);
+  // form_shortcode (Theme options footer) takes a CF7 shortcode / ID or a HubSpot embed code
+  const hubspotCode = !form && !hasAcfForm && parseHubspotEmbed(form_shortcode) ? form_shortcode : "";
+  if (hubspotCode) form = <HubspotEmbed code={hubspotCode} />;
+  const cf7Id = !hasAcfForm && !hubspotCode && cf7FormId(form_shortcode);
   if (!heading && !hasAcfForm && !cf7Id && !form) return null;
   const bgImage = mediaUrl(data?.bg_image);
 
@@ -57,9 +71,9 @@ export default function QuickContact({ data, lang = DEFAULT_LANG, id, form }) {
       </div>
 
       {form ? (
-        <div className="w-full lg:w-[493px] shrink-0 rounded-lg bg-white border-6 border-white/50 shadow-[0px_2px_4.5px_0px_rgba(0,0,0,0.1)] py-7 px-[18px]">{form}</div>
+        <div className={card}>{form}</div>
       ) : hasAcfForm || cf7Id ? (
-        <div className={`w-full lg:w-[493px] shrink-0 rounded-lg bg-white border-6 border-white/50 shadow-[0px_2px_4.5px_0px_rgba(0,0,0,0.1)] py-7 ${hasAcfForm ? "px-[18px]" : ""}`}>
+        <div className={card}>
           {hasAcfForm ? (
             <QuickContactForm data={data} lang={lang} />
           ) : (

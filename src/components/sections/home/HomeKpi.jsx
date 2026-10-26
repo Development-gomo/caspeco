@@ -105,16 +105,21 @@ function KpiCard({ card, hint }) {
 
 const AFTER_DARK = new Set(["testimonial_slider_section", "industry_testimonials_section", "system_check_section"]);
 
-export default function HomeKpi({ data, lang = DEFAULT_LANG }) {
+// variant "icp" — Figma ICP Operating at scale "KPI's": note under the cards Light Italic 16/34
+// #3F3E3C; before the light data-insight block the section keeps 72 below (72 + 72)
+export default function HomeKpi({ data, lang = DEFAULT_LANG, variant }) {
+  const icp = variant === "icp";
   const cards = rows(data?.cards).filter((c) => c.label || c.value);
   if (!data?.heading && cards.length === 0) return null;
   // subtitle: short_text (Page Builder) or sub_heading (Page Builder ICP Page); card.note renders inside KpiCard
   const subtitle = data.short_text || data.sub_heading;
+  // note under the cards: bottom_text (Page Builder) or result_notes (Page Builder ICP Page)
+  const bottomText = data.bottom_text || data.result_notes;
 
   return (
     // Homepage: the section above provides the top spacing (2px). After a dark section (ICP:
     // testimonial carousel) the KPI block starts its own 144px in, as in Figma "KPI's".
-    <section className={`${AFTER_DARK.has(data?._prev) ? "pt-18 lg:pt-36" : "lg:pt-[2px]"} pb-18 lg:pb-36`} style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
+    <section className={`${AFTER_DARK.has(data?._prev) ? "pt-18 lg:pt-36" : "lg:pt-[2px]"} ${icp && data?._next === "data_insight_section" ? "pb-12 lg:pb-[72px]" : "pb-18 lg:pb-36"}`} style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       <div className="cs-container flex flex-col items-center gap-10 lg:gap-16">
         {(data.heading || subtitle) && (
           <div className="flex flex-col items-center gap-4 text-center">
@@ -135,10 +140,10 @@ export default function HomeKpi({ data, lang = DEFAULT_LANG }) {
           </div>
         )}
 
-        {(data.bottom_text || (data.cta_text && data.cta_url)) && (
+        {(bottomText || (data.cta_text && data.cta_url)) && (
           <div className="flex max-w-[616px] flex-col items-center gap-6 text-center">
-            {data.bottom_text && (
-              <div className="cs-rich text-[18px] lg:text-[20px] font-medium leading-[26px] tracking-[-0.4px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(data.bottom_text) }} />
+            {bottomText && (
+              <div className={`cs-rich text-(--color-grey-dark) ${icp ? "text-[16px] font-light italic leading-[34px] tracking-[-0.32px]" : "text-[18px] lg:text-[20px] font-medium leading-[26px] tracking-[-0.4px]"}`} dangerouslySetInnerHTML={{ __html: toHtml(bottomText) }} />
             )}
             {data.cta_text && data.cta_url && (
               <CtaButton href={langHref(data.cta_url.trim(), lang)} wrap className="max-w-full">

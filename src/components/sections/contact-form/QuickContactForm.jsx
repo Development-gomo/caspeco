@@ -91,7 +91,7 @@ export default function QuickContactForm({ data, lang = DEFAULT_LANG }) {
       <button
         type="submit"
         disabled={state.submitting}
-        className="w-full cursor-pointer select-none rounded-[100px] bg-(--color-yellow) px-6 py-[14px] text-[18px] font-bold text-(--color-grey-dark) transition-colors duration-400 ease-out hover:bg-(--color-gold) hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+        className="w-full cursor-pointer select-none rounded-[100px] bg-(--color-yellow) px-6 py-4 text-[18px] font-bold leading-[22px] text-(--color-grey-dark) transition-colors duration-400 ease-out hover:bg-(--color-gold) hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
       >
         {state.submitting ? data?.sending_text || "Sending…" : data?.cta_text || "Get a call"}
       </button>

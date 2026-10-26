@@ -975,3 +975,106 @@ span.subheading-label.text-\[var\(--color-accent\)\],
   :is(a, button):hover .cs-link-redraw,
   :is(a, button):focus-visible .cs-link-redraw { animation: none; }
 }
+
+/* =====================================================================
+   HubSpot forms (embed codes pasted in ACF, rendered as raw HTML by
+   components/ui/HubspotEmbed). Styled to the Figma form designs:
+   .cs-hubspot--quick  Quick contact "phone-contact-form" card: inputs 51
+                       (15 + 19 + 15 + 1px stroke), full-width button, consent under it
+   .cs-hubspot--rep    "Let's talk" contact-person card (324:7454): inputs 53,
+                       2-column rows, Call me / Email me toggle, 40 between groups
+   Field changes in HubSpot need no code change — only the look lives here.
+   ===================================================================== */
+.cs-hubspot,
+.cs-hubspot * { font-family: inherit; }
+.cs-hubspot form { display: flex; flex-direction: column; gap: 16px; }
+.cs-hubspot fieldset { margin: 0; padding: 0; border: 0; min-width: 0; max-width: none !important; }
+.cs-hubspot fieldset.form-columns-2 { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 40rem) {
+  .cs-hubspot fieldset.form-columns-2 { grid-template-columns: 1fr 1fr; }
+}
+.cs-hubspot fieldset > .hs-form-field,
+.cs-hubspot .hs-form-field { width: 100% !important; float: none !important; padding: 0 !important; }
+.cs-hubspot .hs-form-field { display: flex; flex-direction: column; gap: 8px; }
+.cs-hubspot .hs-form-field .input { margin: 0 !important; }
+.cs-hubspot .hs-form-field > label {
+  font-size: 16px; font-weight: 700; line-height: 20px; letter-spacing: -0.32px; color: var(--color-grey-dark);
+}
+.cs-hubspot .hs-form-required { margin-left: 2px; color: inherit; }
+.cs-hubspot .hs-field-desc:empty { display: none; }
+
+/* text / email / tel / number / select / textarea */
+.cs-hubspot .hs-input:not([type="radio"]):not([type="checkbox"]) {
+  width: 100% !important; box-sizing: border-box; background: #fff; color: var(--color-grey-dark);
+  border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; font-size: 16px; line-height: 19px;
+  outline: none; transition: border-color 0.2s ease-out;
+}
+.cs-hubspot--rep .hs-input:not([type="radio"]):not([type="checkbox"]) { padding: 16px; }
+.cs-hubspot .hs-input::placeholder { color: #8f8d88; opacity: 1; }
+.cs-hubspot .hs-input:focus { border-color: var(--color-grey-medium-dark); }
+.cs-hubspot .hs-input.invalid,
+.cs-hubspot .hs-input.error { border-color: #ef4444; }
+.cs-hubspot textarea.hs-input { min-height: 97px; resize: vertical; }
+
+/* radio → Figma segmented toggle (#F1F1F1 track, white 42px pill with radius 8) */
+.cs-hubspot .hs-fieldtype-radio .inputs-list {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; margin: 0; padding: 4px;
+  list-style: none; background: #f1f1f1; border-radius: 12px;
+}
+.cs-hubspot .hs-fieldtype-radio .inputs-list li { margin: 0; }
+.cs-hubspot .hs-form-radio-display {
+  position: relative; display: block; cursor: pointer; border-radius: 8px; padding: 11px 8px; text-align: center;
+  font-size: 16px; font-weight: 700; line-height: 20px; letter-spacing: -0.32px; color: var(--color-grey-dark);
+  transition: background-color 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+.cs-hubspot .hs-form-radio-display:has(input:checked) { background: #fff; box-shadow: 0 2px 3px rgba(0, 0, 0, 0.09); }
+.cs-hubspot .hs-form-radio-display:has(input:focus-visible) { outline: 2px solid var(--color-yellow); }
+.cs-hubspot .hs-form-radio-display input { position: absolute; opacity: 0; pointer-events: none; }
+
+/* consent checkboxes: 16px box, radius 3, 1.2px #3F3E3C stroke; text Regular 14 #8F8D88, 10 gap, 12 between */
+.cs-hubspot .inputs-list { margin: 0; padding: 0; list-style: none; }
+.cs-hubspot .legal-consent-container { display: flex; flex-direction: column; gap: 12px; }
+.cs-hubspot .legal-consent-container .hs-form-field { gap: 0; }
+.cs-hubspot .legal-consent-container p { margin: 0; font-size: 14px; line-height: 17px; color: #8f8d88; }
+.cs-hubspot .hs-form-booleancheckbox-display,
+.cs-hubspot .hs-form-checkbox-display { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+.cs-hubspot .hs-form-booleancheckbox-display > span,
+.cs-hubspot .hs-form-checkbox-display > span { margin: 0 !important; font-size: 14px; line-height: 17px; color: #8f8d88; }
+.cs-hubspot .hs-form-booleancheckbox-display a,
+.cs-hubspot .legal-consent-container a { font-weight: 500; color: var(--color-dark-petrol); text-decoration: underline; }
+.cs-hubspot input[type="checkbox"] {
+  /* !important: HubSpot injects per-form rules (fieldset.form-columns-1 input[type=checkbox] { width: auto }) */
+  appearance: none; flex: none; width: 16px !important; height: 16px !important; margin: 1px 0 0 !important; cursor: pointer;
+  background: #fff center / 16px 16px no-repeat; border: 1.2px solid var(--color-grey-dark); border-radius: 3px;
+}
+.cs-hubspot input[type="checkbox"]:checked {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='%233F3E3C' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+.cs-hubspot input[type="checkbox"]:focus-visible { outline: 2px solid var(--color-yellow); outline-offset: 1px; }
+
+/* submit: yellow pill, Bold 18/22, padding 16/38; hover gold + white (Smart Animate 600 ms ease-out) */
+.cs-hubspot .hs_submit .actions { margin: 0; padding: 0; }
+.cs-hubspot .hs-button {
+  display: inline-flex; align-items: center; justify-content: center; cursor: pointer; border: 0; border-radius: 9999px;
+  background: var(--color-yellow); color: var(--color-grey-dark); padding: 16px 38px;
+  font-size: 18px; font-weight: 700; line-height: 22px; -webkit-appearance: none; appearance: none;
+  transition: background-color 0.6s ease-out, color 0.6s ease-out;
+}
+.cs-hubspot .hs-button:hover,
+.cs-hubspot .hs-button:focus-visible { background: var(--color-gold); color: #fff; }
+
+/* validation + thank-you message */
+.cs-hubspot .hs-error-msgs { margin: 4px 0 0; padding: 0; list-style: none; }
+.cs-hubspot .hs-error-msg,
+.cs-hubspot .hs-error-msgs label { font-size: 12px; line-height: 16px; font-weight: 400; color: #dc2626; }
+.cs-hubspot .hs_error_rollup { order: 9; }
+.cs-hubspot .submitted-message { font-size: 18px; line-height: 26px; color: var(--color-grey-dark); }
+
+/* Quick contact: fields → 24 → full-width button → 24 → consent */
+.cs-hubspot--quick .hs-button { width: 100%; }
+.cs-hubspot--quick .hs_submit { order: 2; margin-top: 8px; }
+.cs-hubspot--quick fieldset:has(.legal-consent-container) { order: 3; margin-top: 8px; }
+
+/* Contact person: fields → 40 → consent → 40 → button */
+.cs-hubspot--rep fieldset:has(.legal-consent-container) { margin-top: 24px; }
+.cs-hubspot--rep .hs_submit { margin-top: 24px; }

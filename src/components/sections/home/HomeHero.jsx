@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import React from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import CtaButton from "@/components/ui/CtaButton";
@@ -94,15 +93,10 @@ export default function HomeHero({ data, lang = DEFAULT_LANG }) {
               )}
 
               {secondaryCtaText && secondaryCtaUrl && (
-                <Link
-                  href={secondaryCtaUrl}
-                  className="group inline-flex items-center gap-2 text-[16px] text-white select-none"
-                >
+                // Figma hero "Light / Secondary" button, 24px right of the primary
+                <CtaButton variant="outline-light-gold" href={secondaryCtaUrl}>
                   {secondaryCtaText}
-                  <span className="text-(--color-yellow) transition-transform duration-300 ease-out group-hover:translate-x-1">
-                    →
-                  </span>
-                </Link>
+                </CtaButton>
               )}
             </div>
           )}

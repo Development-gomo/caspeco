@@ -53,7 +53,7 @@ export default function SwitchSteps({ data, lang = DEFAULT_LANG, joined = false 
               <Reveal
                 key={i}
                 delay={0.1 + i * 0.1}
-                className="flex min-h-[230px] flex-col justify-between gap-10 rounded-[8px] bg-(--color-dark-petrol) p-6 text-(--color-white) shadow-[0px_14px_32px_rgba(16,39,51,0.13)] transition-[translate] duration-300 hover:-translate-y-1 lg:min-h-[270px]"
+                className="flex min-h-[230px] flex-col justify-between gap-10 rounded-[8px] bg-(--color-dark-petrol) p-6 text-(--color-white) shadow-[0px_14px_32px_rgba(16,39,51,0.13)] transition-[translate] duration-300 hover:-translate-y-1 lg:min-h-[266px]"
               >
                 {step.label && <p className="text-[18px] lg:text-[20px] leading-5 tracking-[-0.4px]">{step.label}</p>}
                 <div className="flex flex-col gap-5">

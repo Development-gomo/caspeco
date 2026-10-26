@@ -12,9 +12,14 @@ import { useState } from "react";
 import { DEFAULT_LANG } from "@/config";
 import { submitForm } from "@/lib/forms";
 
-const LABEL = "text-[14px] font-bold leading-5 tracking-[-0.28px] text-(--color-grey-dark)";
+// Figma "Contact form" (324:7364): label Bold 16/20 #3F3E3C, 8 above a 53px input (padding 16,
+// radius 12, 1px #E2E8F0, white), placeholder Regular 16 #8F8D88
+const LABEL = "text-[16px] font-bold leading-5 tracking-[-0.32px] text-(--color-grey-dark)";
 const INPUT =
-  "w-full rounded-[12px] border bg-white px-4 py-4 text-[16px] text-(--color-grey-dark) outline-none transition-colors placeholder:text-(--color-grey-medium-dark)";
+  "w-full rounded-[12px] border bg-white p-4 text-[16px] leading-[19px] text-(--color-grey-dark) outline-none transition-colors placeholder:text-[#8F8D88]";
+// Figma checkbox: 16px, radius 3, white with a 1.2px #3F3E3C border (tick drawn when checked)
+const CHECKBOX =
+  "mt-px size-4 shrink-0 cursor-pointer appearance-none rounded-[3px] border-[1.2px] border-(--color-grey-dark) bg-white bg-center bg-no-repeat checked:bg-[url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='%233F3E3C' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")] focus-visible:outline-2 focus-visible:outline-(--color-yellow)";
 const EMPTY = { full_name: "", company: "", contact_method: "call", email: "", phone: "", message: "" };
 
 export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
@@ -93,13 +98,14 @@ export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
 
         <fieldset className="flex flex-col gap-2">
           <legend className={`${LABEL} mb-2`}>{t("method_label", "How should we reach you?")}</legend>
-          {/* Segmented toggle (Figma "Contact method"): the white pill marks the choice */}
-          <div className="grid grid-cols-2 rounded-[12px] bg-(--color-grey-medium)/60 p-1">
+          {/* Segmented toggle (Figma "Contact method"): #F1F1F1 track (padding 4, radius 12), white
+              42px pill (radius 8, shadow 0 2 3 #000@9%) marks the choice; labels Bold 16/20 */}
+          <div className="grid grid-cols-2 rounded-[12px] bg-[#F1F1F1] p-1">
             {methods.map(([value, label]) => (
               <label
                 key={value}
-                className={`cursor-pointer rounded-[9px] py-2.5 text-center text-[14px] font-bold transition-colors duration-200 has-focus-visible:outline-2 has-focus-visible:outline-(--color-yellow) ${
-                  values.contact_method === value ? "bg-white text-(--color-grey-dark) shadow-[0px_1px_3px_rgba(0,0,0,0.12)]" : "text-(--color-grey-dark)/80 hover:text-(--color-grey-dark)"
+                className={`cursor-pointer rounded-[8px] py-[11px] text-center text-[16px] font-bold leading-5 tracking-[-0.32px] text-(--color-grey-dark) transition-[background-color,box-shadow] duration-200 has-focus-visible:outline-2 has-focus-visible:outline-(--color-yellow) ${
+                  values.contact_method === value ? "bg-white shadow-[0px_2px_3px_rgba(0,0,0,0.09)]" : ""
                 }`}
               >
                 <input type="radio" name="contact_method" value={value} checked={values.contact_method === value} onChange={() => set("contact_method", value)} className="sr-only" />
@@ -141,17 +147,18 @@ export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
                     setConsent(e.target.checked);
                     setErrors((er) => ({ ...er, consent: "" }));
                   }}
-                  className="mt-0.5 size-4 shrink-0 accent-(--color-yellow)"
+                  className={CHECKBOX}
                 />
-                <span className="text-[13px] leading-[17px] text-(--color-grey-medium-dark) [&_a]:font-bold [&_a]:text-(--color-dark-petrol) [&_a]:underline [&_p]:m-0" dangerouslySetInnerHTML={{ __html: data.consent_text }} />
+                {/* Figma: Regular 14 #8F8D88, gap 10; the privacy link Medium, underlined, #0B2533 */}
+                <span className="text-[14px] leading-[17px] text-[#8F8D88] [&_a]:font-medium [&_a]:text-(--color-dark-petrol) [&_a]:underline [&_p]:m-0" dangerouslySetInnerHTML={{ __html: data.consent_text }} />
               </label>
               {errors.consent && <p className="text-xs text-red-600">{errors.consent}</p>}
             </div>
           )}
           {data?.newsletter_text && (
             <label className="flex cursor-pointer items-start gap-2.5">
-              <input type="checkbox" checked={newsletter} onChange={(e) => setNewsletter(e.target.checked)} className="mt-0.5 size-4 shrink-0 accent-(--color-yellow)" />
-              <span className="text-[13px] leading-[17px] text-(--color-grey-medium-dark)">{data.newsletter_text}</span>
+              <input type="checkbox" checked={newsletter} onChange={(e) => setNewsletter(e.target.checked)} className={CHECKBOX} />
+              <span className="text-[14px] leading-[17px] text-[#8F8D88]">{data.newsletter_text}</span>
             </label>
           )}
         </div>

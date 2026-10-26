@@ -20,7 +20,8 @@ export default function ContactRep({ data, lang = DEFAULT_LANG, rep, form }) {
   const photo = rep?.photo || mediaUrl(data?.rep_photo);
 
   return (
-    <section className="relative isolate overflow-hidden bg-(--color-black) py-18 lg:py-36" style={data?.bg_color ? { background: data.bg_color } : undefined}>
+    // Figma 324:7454: #0B2533 under the blurred photo
+    <section className="relative isolate overflow-hidden bg-(--color-dark-petrol) py-18 lg:py-36" style={data?.bg_color ? { background: data.bg_color } : undefined}>
       {/* Figma: photo with 31.2px layer blur, no extra overlay */}
       {bg && <Image src={bg} alt="" fill sizes="100vw" className="-z-10 scale-110 object-cover blur-[31.2px]" />}
 
@@ -49,8 +50,9 @@ export default function ContactRep({ data, lang = DEFAULT_LANG, rep, form }) {
           )}
         </Reveal>
 
-        {/* Figma "Contact form": 691 wide (overhangs the 1272 container by 32px), #FBFAF9, 1px #E2E8F0, shadow 0 2 9 #000@10% */}
-        <Reveal x={40} y={0} delay={0.15} className="w-full rounded-[8px] border border-[#E2E8F0] bg-[#FBFAF9] p-6 shadow-[0px_2px_9px_rgba(0,0,0,0.1)] sm:p-10 lg:-mr-8 lg:w-[691px] lg:flex-none">
+        {/* Figma "Contact form": 691 wide (overhangs the 1272 container by 32px), padding 40, #FBFAF9,
+            1px #E2E8F0 inside stroke (inset shadow, so the content stays 611 wide), shadow 0 2 9 #000@10% */}
+        <Reveal x={40} y={0} delay={0.15} className="w-full rounded-[8px] bg-[#FBFAF9] p-6 shadow-[inset_0_0_0_1px_#E2E8F0,0px_2px_9px_rgba(0,0,0,0.1)] sm:p-10 lg:-mr-8 lg:w-[691px] lg:flex-none">
           {form || <ContactRepForm data={data} lang={lang} />}
         </Reveal>
       </div>

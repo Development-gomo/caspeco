@@ -24,7 +24,8 @@ function loadHubspot(region) {
   return scriptPromise;
 }
 
-export default function HubspotEmbed({ code, className = "" }) {
+// variant "quick" (Quick contact card) or "rep" (contact-person card) — styles in globals.css (.cs-hubspot)
+export default function HubspotEmbed({ code, className = "", variant = "quick" }) {
   const ref = React.useRef(null);
   const config = React.useMemo(() => parseHubspotEmbed(code), [code]);
 
@@ -47,5 +48,5 @@ export default function HubspotEmbed({ code, className = "" }) {
   }, [config]);
 
   if (!config) return null;
-  return <div ref={ref} className={className} />;
+  return <div ref={ref} className={`cs-hubspot cs-hubspot--${variant} ${className}`} />;
 }

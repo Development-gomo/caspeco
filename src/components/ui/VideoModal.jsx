@@ -8,12 +8,55 @@ import React from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 
+// Uploaded / direct video files play in a <video>; YouTube and Vimeo in their players;
+// any other link (Loom, Wistia, a hosted player page …) is embedded as an iframe.
+const FILE = /\.(mp4|webm|ogg|ogv|mov|m4v)(?:[?#]|$)/i;
+
+// "1m30s" / "90" → 90
+const seconds = (t) => {
+  if (!t) return 0;
+  if (/^\d+$/.test(t)) return Number(t);
+  const m = t.match(/(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?/);
+  return m ? Number(m[1] || 0) * 3600 + Number(m[2] || 0) * 60 + Number(m[3] || 0) : 0;
+};
+
 function embedUrl(url) {
-  const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/);
-  if (yt) return `https://www.youtube.com/embed/${yt[1]}?autoplay=1&rel=0`;
-  const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-  if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}?autoplay=1`;
-  return null;
+  let u;
+  try {
+    u = new URL(url);
+  } catch {
+    return null;
+  }
+  const host = u.hostname.replace(/^(www|m)\./, "");
+
+  // YouTube: watch?v=, youtu.be/, embed/, shorts/, live/, v/ and youtube-nocookie.com
+  const yt =
+    (host === "youtube.com" || host === "youtube-nocookie.com" || host === "music.youtube.com"
+      ? u.searchParams.get("v") || u.pathname.match(/^\/(?:embed|shorts|live|v)\/([\w-]{11})/)?.[1]
+      : host === "youtu.be"
+        ? u.pathname.slice(1, 12)
+        : null) || null;
+  if (yt) {
+    const start = seconds(u.searchParams.get("t") || u.searchParams.get("start"));
+    return `https://www.youtube.com/embed/${yt}?autoplay=1&rel=0${start ? `&start=${start}` : ""}`;
+  }
+
+  // Vimeo: vimeo.com/123, vimeo.com/123/<hash> (unlisted), /channels|groups/…/123, player.vimeo.com/video/123?h=…
+  if (host === "vimeo.com" || host === "player.vimeo.com") {
+    const m = u.pathname.match(/(?:^|\/)(\d{6,})(?:\/([\da-f]{6,}))?/i);
+    if (m) {
+      const hash = m[2] || u.searchParams.get("h");
+      return `https://player.vimeo.com/video/${m[1]}?autoplay=1${hash ? `&h=${hash}` : ""}`;
+    }
+  }
+
+  // Loom share links have an embed twin
+  if (host === "loom.com") {
+    const id = u.pathname.match(/\/(?:share|embed)\/([\w-]+)/)?.[1];
+    if (id) return `https://www.loom.com/embed/${id}?autoplay=1`;
+  }
+
+  return FILE.test(u.pathname) ? null : url;
 }
 
 export default function VideoModal({ open, url, title = "", onClose }) {

@@ -10,7 +10,8 @@
 //   title_label       customer name (logo alt / text fallback)
 //   testimonial       quote
 //   text_line_1 / data_1, text_line_2 / data_2   the two stats
-//   video_url         File (ID) or URL  → "See clip"
+//   video_url         URL (YouTube, Vimeo, an uploaded WordPress video or any external video link;
+//                     older entries still hold a media ID) → "See clip"
 //   banner_image      Image (ID), optional wide photo (≥ 2400px) for full-width backgrounds
 //                     (testimonial slider); the featured image is a 426×700 card crop
 
@@ -36,6 +37,21 @@ export function twinMediaIds(posts) {
     });
   }
   return [...ids];
+}
+
+// WordPress site root (…/wp-json removed) for site-relative upload paths
+const WP_ORIGIN = String(process.env.NEXT_PUBLIC_WP_BASE || "").replace(/\/wp-json\/?$/, "");
+
+// Pasted video links → absolute URL: "www.youtube.com/…", "//player.vimeo.com/…" and
+// "/wp-content/uploads/clip.mp4" all play; anything else that isn't a link is ignored
+function videoUrl(value) {
+  const v = clean(value);
+  if (!v) return "";
+  if (/^https?:\/\//i.test(v)) return v;
+  if (v.startsWith("//")) return `https:${v}`;
+  if (v.startsWith("/")) return WP_ORIGIN ? `${new URL(WP_ORIGIN).origin}${v}` : "";
+  if (/^(?:www\.)?[\w-]+(?:\.[\w-]+)+\//i.test(v)) return `https://${v}`;
+  return "";
 }
 
 function resolveMedia(value, mediaById) {
@@ -71,7 +87,7 @@ export function mapTwinCases(posts, media = []) {
         { value: clean(acf.data_1), label: clean(acf.text_line_1) },
         { value: clean(acf.data_2), label: clean(acf.text_line_2) },
       ].filter((s) => s.value),
-      clipUrl: resolveMedia(acf.video_url, mediaById)?.url || "",
+      clipUrl: mediaId(acf.video_url) ? resolveMedia(acf.video_url, mediaById)?.url || "" : acf.video_url?.url || videoUrl(acf.video_url),
     };
   });
 }

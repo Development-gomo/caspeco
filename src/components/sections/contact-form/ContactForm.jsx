@@ -8,11 +8,11 @@ import {
   submitCf7FormProxy,
 } from "@/lib/api";
 
-// Field styling matches the Figma "phone-contact-form" card:
-// bold dark-grey label, rounded-xl input with a light border, grey placeholder.
-export const LABEL_CLASSES = "text-[16px] font-bold leading-5 tracking-[-0.32px] text-(--color-grey-dark)";
+// Field styling matches the Figma "phone-contact-form" card: label Bold 16/20 #3F3E3C (block, 8
+// above the input); input 51 tall = 16 padding + 19 text inside a 1px #E2E8F0 stroke, radius 12.
+export const LABEL_CLASSES = "block text-[16px] font-bold leading-5 tracking-[-0.32px] text-(--color-grey-dark)";
 export const INPUT_CLASSES =
-  "w-full rounded-[12px] border p-4 text-[16px] text-(--color-grey-dark) outline-none " +
+  "w-full rounded-[12px] border p-[15px] text-[16px] leading-[19px] text-(--color-grey-dark) outline-none " +
   "placeholder:text-(--color-grey-medium-dark) bg-white";
 
 function Field({ field, value, setValue, error }) {
@@ -286,8 +286,8 @@ export default function ContactForm({ formId = 982, lang = DEFAULT_LANG, submitL
         type="submit"
         disabled={state.submitting}
         className="w-full cursor-pointer select-none
-                    rounded-[100px] bg-(--color-yellow) px-6 py-[14px]
-                    text-[18px] font-bold text-(--color-grey-dark)
+                    rounded-[100px] bg-(--color-yellow) px-6 py-4
+                    text-[18px] font-bold leading-[22px] text-(--color-grey-dark)
                     transition-colors duration-400 ease-out hover:bg-(--color-gold) hover:text-white
                     disabled:opacity-50 disabled:cursor-not-allowed
                   "

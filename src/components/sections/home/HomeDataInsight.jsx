@@ -21,6 +21,9 @@ function barPercent(row) {
   return nums ? Math.min(100, Math.max(...nums.map((n) => parseFloat(n.replace(",", "."))))) : 0;
 }
 
+// "Value Label" is an ACF number field (31) → shown as "31%" like Figma; text values ("2 - 6%") as entered
+const valueText = (v) => { const t = String(v ?? "").trim(); return /^-?\d+(?:[.,]\d+)?$/.test(t) ? `${t}%` : t; };
+
 function Chart({ title, rows: chartRows, rowGap = "gap-[30px]" }) {
   return (
     <div
@@ -36,7 +39,7 @@ function Chart({ title, rows: chartRows, rowGap = "gap-[30px]" }) {
           <div key={i} className="flex flex-col gap-3">
             <div className="flex items-baseline justify-between gap-4 text-[18px] lg:text-[20px] leading-6 tracking-[-0.4px]">
               <span className="text-(--color-grey-medium)">{row.label}</span>
-              <span className="font-extrabold text-(--color-light-grey) whitespace-nowrap">{row.value_label}</span>
+              <span className="font-extrabold text-(--color-light-grey) whitespace-nowrap">{valueText(row.value_label)}</span>
             </div>
             <div className="h-[25px] w-full overflow-hidden rounded-sm bg-[rgba(0,0,0,0.22)]">
               <motion.div
@@ -67,7 +70,7 @@ export default function HomeDataInsight({ data, variant }) {
 
   return (
     <section
-      className={`pt-18 lg:pt-36 ${icp ? "pb-18 lg:pb-36" : "pb-12 lg:pb-[72px]"}`}
+      className={`${icp && data?._prev === "home_kpi_section" ? "pt-12 lg:pt-[72px]" : "pt-18 lg:pt-36"} ${icp ? "pb-18 lg:pb-36" : "pb-12 lg:pb-[72px]"}`}
       style={sectionBackground(data, { background: "var(--color-light-grey)" })}
     >
       <div className="cs-container flex flex-col items-center gap-10 lg:gap-16">

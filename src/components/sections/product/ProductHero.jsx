@@ -7,7 +7,6 @@
 
 import Image from "next/image";
 import CtaButton from "@/components/ui/CtaButton";
-import ArrowLink from "@/components/ui/ArrowLink";
 import Reveal from "@/components/ui/Reveal";
 import HeroLabels from "@/components/ui/HeroLabels";
 import { DEFAULT_LANG, langHref } from "@/config";
@@ -56,9 +55,10 @@ export default function ProductHero({ data, lang = DEFAULT_LANG, overlay }) {
             <Reveal onMount delay={0.4} className="flex flex-wrap items-center gap-6">
               {cta_text && cta_url && <CtaButton href={langHref(cta_url.trim(), lang)}>{cta_text}</CtaButton>}
               {secondary_cta_text && secondary_cta_url && (
-                <ArrowLink tone="light" href={langHref(secondary_cta_url.trim(), lang)}>
+                // Figma hero "Light / Secondary" button, 24px right of the primary
+                <CtaButton variant="outline-light-gold" href={langHref(secondary_cta_url.trim(), lang)}>
                   {secondary_cta_text}
-                </ArrowLink>
+                </CtaButton>
               )}
             </Reveal>
           )}

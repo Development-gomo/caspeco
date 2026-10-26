@@ -13,6 +13,8 @@
 //   outline-light  → yellow fill + stroke (client request), white label (400 ms)
 //   outline-light-yellow → yellow fill, white stroke kept, white label (Integrations, Industry case slider, Casper AI)
 //   outline-soft-yellow → #F1F1F1 stroke + label (Figma "View all cases" on the testimonial carousel), yellow fill on hover
+//   outline-light-gold → hero secondary CTA (Figma "Light / Secondary"): 2px #FDFDFD stroke + label; hover
+//     fills #C59A28 (yellow under a 30% #3F3E3C layer), stroke #FFF, label stays #FDFDFD (Dissolve 100 ms ease-out)
 // Hover colours differ per section on purpose — pick the variant the section's Figma uses.
 
 import Link from "next/link";
@@ -30,6 +32,8 @@ const VARIANTS = {
     "border-2 border-(--color-white) text-white hover:border-(--color-yellow) hover:bg-(--color-yellow) hover:text-white duration-400 px-[36px] py-[14px]",
   "outline-light-yellow":
     "border-2 border-(--color-white) text-white hover:bg-(--color-yellow) hover:text-white duration-400 px-[36px] py-[14px]",
+  "outline-light-gold":
+    "border-2 border-(--color-white) text-(--color-white) hover:border-[#FFFFFF] hover:bg-(--color-gold) duration-100 px-[36px] py-[14px]",
   "outline-soft-yellow":
     "border-2 border-[#F1F1F1] text-[#F1F1F1] hover:bg-(--color-yellow) hover:text-white duration-400 px-[36px] py-[14px]",
 };
