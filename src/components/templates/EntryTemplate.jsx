@@ -21,6 +21,8 @@ export default function EntryTemplate({ entry, lang, slug, entryType, routeType 
       // without a localized route the switcher falls back to each language's homepage
       entryId={linkTranslations ? entry?.id : null}
       themeOptions={themeOptions}
+      // the footer Quick contact would repeat the page's own form
+      hideQuickContact={hasBuilder && sections.some((b) => b?._layout === "contact_form_section" || b?._layout === "quick_contact_section")}
     >
       {hasBuilder ? (
         <PageBuilder sections={sections} lang={lang} />

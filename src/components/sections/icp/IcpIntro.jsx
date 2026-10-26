@@ -34,7 +34,8 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
   const { heading, cta_text, cta_url, image } = data || {};
   const text = data?.text || data?.short_text; // short_text in "Page Builder ICP Page"
   const video = mediaUrl(data?.video) || data?.video_url || "";
-  if (!heading && rolling.length === 0) return null;
+  // Page Builder content_section may have only text / CTA / image (no heading)
+  if (!heading && rolling.length === 0 && !text && !mediaUrl(image)) return null;
 
   const variant = data?.cta_variant === "outline" ? "outline-dark" : "yellow";
   const headingClass = "cs-h2 cs-highlight cs-rich text-(--color-heading)";
@@ -42,7 +43,8 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
   return (
     // Figma section-gap rule: before the light tabs section the intro keeps 72 below (72 + 72)
     <section className={`overflow-hidden pt-18 lg:pt-36 ${data?._next === "tab_section" ? "pb-12 lg:pb-[72px]" : "pb-18 lg:pb-36"}`} style={sectionBackground(data, { background: GRADIENT })}>
-      <div className="cs-container flex flex-col gap-12 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
+      {/* image_postion "left" (Page Builder content_section): image first on desktop */}
+      <div className={`cs-container flex flex-col gap-12 lg:items-center lg:justify-between lg:gap-16 ${data?.image_postion === "left" ? "lg:flex-row-reverse" : "lg:flex-row"}`}>
         {/* Opening soon: text 600 wide, centred on the image; Levelling up: rotating heading 850 wide, text 474 */}
         <Reveal className={`flex flex-col items-start gap-6 lg:gap-10 ${rolling.length ? "max-w-[850px]" : "max-w-[600px]"}`}>
           <div className="flex flex-col gap-5">
@@ -65,7 +67,7 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
                 </AnimatePresence>
               </h2>
             ) : (
-              <h2 className={headingClass} dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
+              heading && <h2 className={headingClass} dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
             )}
             {text && (
               // Figma: Regular 20/24 #3F3E3C; the emphasised phrase is Medium Italic #000

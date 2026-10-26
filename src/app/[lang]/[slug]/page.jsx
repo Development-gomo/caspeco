@@ -20,6 +20,9 @@ export async function generateStaticParams() {
   );
 }
 
+const FORM_LAYOUTS = new Set(["contact_form_section", "quick_contact_section"]);
+const hasPageForm = (sections) => Array.isArray(sections) && sections.some((b) => FORM_LAYOUTS.has(b?._layout));
+
 export default async function SinglePage({ params }) {
   const resolved = await params;
   const parsed = resolveParams(resolved);
@@ -51,7 +54,8 @@ export default async function SinglePage({ params }) {
       <main>
         <PageBuilder sections={acf.page_builder} lang={lang} />
       </main>
-      <Footer lang={lang} currentSlug={slug} />
+      {/* the footer Quick contact would repeat the page's own form */}
+      <Footer lang={lang} currentSlug={slug} hideQuickContact={hasPageForm(acf.page_builder)} />
     </>
   );
 }

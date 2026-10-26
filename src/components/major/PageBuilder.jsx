@@ -17,7 +17,7 @@ const InnerHero = dynamic(() => import("../sections/inner-pages/InnerHero"));
 const Overview = dynamic(() => import("../sections/inner-pages/Overview"));
 const TeamSection = dynamic(() => import("../sections/inner-pages/Teams"));
 const LargeContent = dynamic(() => import("../sections/inner-pages/LargeContent"));
-const Connectform = dynamic(() => import("../sections/inner-pages/Cform"));
+const PageContactForm = dynamic(() => import("../sections/inner-pages/PageContactForm"));
 const CaseStudyListing = dynamic(() => import("../sections/inner-pages/CaseStusyListing"));
 const NewsListing = dynamic(() => import("../sections/inner-pages/NewsListing"));
 const HomeColumnSection = dynamic(() => import("../sections/home/HomeColumnSection"));
@@ -148,8 +148,19 @@ export default async function PageBuilder({ sections: rawSections, lang = DEFAUL
           case "home_column_section":
             return <HomeColumnSection key={i} data={block} lang={lang} />;
 
+          // Contact us / Kontakt / Careers: Figma "Let's talk" card style, HubSpot or CF7 form
           case "contact_form_section":
-            return <Connectform key={i} data={block} lang={lang} />;
+            return <PageContactForm key={i} data={block} lang={lang} />;
+
+          // Heading or rolling words, text, CTA and an image left/right — the Figma ICP intro design
+          case "content_section":
+            return (
+              <IcpIntro
+                key={i}
+                lang={lang}
+                data={{ ...block, rolling_headings: (Array.isArray(block.rolling_words) ? block.rolling_words : []).map((r) => ({ text: r?.short_text })) }}
+              />
+            );
 
           case "intro_video_section":
             return <HomeIntroVideo key={i} data={block} lang={lang} />;

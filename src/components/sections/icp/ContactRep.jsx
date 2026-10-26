@@ -11,30 +11,37 @@ import ContactRepForm from "./ContactRepForm";
 import { DEFAULT_LANG } from "@/config";
 import { mediaUrl, toHtml } from "@/lib/content";
 
-export default function ContactRep({ data, lang = DEFAULT_LANG, rep, form }) {
+// tone "light" (Page Builder contact_form_section): plain light page background, dark heading
+// (#151411) and grey text (#3F3E3C) — no photo background
+export default function ContactRep({ data, lang = DEFAULT_LANG, rep, form, tone = "dark" }) {
+  const light = tone === "light";
   const { heading, short_text } = data || {};
   if (!heading) return null;
-  const bg = mediaUrl(data?.bg_image);
+  const bg = light ? null : mediaUrl(data?.bg_image);
   const rep_name = rep?.name || data?.rep_name;
   const rep_role = rep?.role || data?.rep_role;
   const photo = rep?.photo || mediaUrl(data?.rep_photo);
+  // optional italic eyebrow above the heading (Page Builder contact_form_section "Sub Heading"),
+  // same style as the Quick contact sub heading (Regular Italic 24/28)
+  const eyebrow = data?.eyebrow;
 
   return (
     // Figma 324:7454: #0B2533 under the blurred photo
-    <section className="relative isolate overflow-hidden bg-(--color-dark-petrol) py-18 lg:py-36" style={data?.bg_color ? { background: data.bg_color } : undefined}>
+    <section className={`relative isolate overflow-hidden py-18 lg:py-36 ${light ? "bg-(--color-light-grey)" : "bg-(--color-dark-petrol)"}`} style={data?.bg_color ? { background: data.bg_color } : undefined}>
       {/* Figma: photo with 31.2px layer blur, no extra overlay */}
       {bg && <Image src={bg} alt="" fill sizes="100vw" className="-z-10 scale-110 object-cover blur-[31.2px]" />}
 
       <div className="cs-container flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
-        <Reveal className="flex flex-col gap-10 text-(--color-white) lg:max-w-[549px]">
+        <Reveal className={`flex flex-col gap-10 lg:max-w-[549px] ${light ? "text-(--color-grey-dark)" : "text-(--color-white)"}`}>
           <div className="flex flex-col gap-[30px]">
-            <h2 className="cs-h2 cs-highlight cs-rich" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
+            {eyebrow && <p className="-mb-3.5 italic text-[24px] leading-7 tracking-[-0.48px]">{eyebrow}</p>}
+            <h2 className={`cs-h2 cs-highlight cs-rich ${light ? "text-(--color-black)" : ""}`} dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
             {short_text && <div className="cs-p1 cs-rich" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
           </div>
 
           {photo && (
             <figure className="relative aspect-[400/391] w-full max-w-[400px] overflow-hidden rounded-[8px] border-[3px] border-[#D8D8D8]">
-              <Image src={photo} alt={rep_name || ""} fill sizes="400px" className="object-cover" />
+              <Image src={photo} alt={rep?.alt || rep_name || ""} fill sizes="400px" className="object-cover" />
               {(rep_name || rep_role) && (
                 // Glass name bar (Figma "Representative details")
                 // Figma "Representative details": #000@60%, radius 4, padding 16/24/16/28, 9px from the card edge
