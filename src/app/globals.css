@@ -650,24 +650,58 @@ span.subheading-label.text-\[var\(--color-accent\)\],
   transition: color 0.3s ease;
 }
 
-.privacy-text p {
-  margin-bottom: 1em;
+/* ---------------------------------------------------------------------
+   Rich text from the WordPress editor (Large Content section: Privacy,
+   Cookie policy, GDPR …). Clear H2–H6 scale on the site's type ramp,
+   paragraph rhythm, real list bullets/numbers, links and tables.
+   --------------------------------------------------------------------- */
+.privacy-text { color: var(--color-grey-dark); font-size: 16px; line-height: 26px; }
+.privacy-text > :first-child { margin-top: 0 !important; }
+.privacy-text > :last-child { margin-bottom: 0 !important; }
+
+.privacy-text p { margin: 0 0 16px; }
+.privacy-text :is(strong, b) { font-weight: 700; color: var(--color-black); }
+.privacy-text em { font-style: italic; }
+
+.privacy-text :is(h1, h2, h3, h4, h5, h6) { font-family: var(--font-primary); color: var(--color-black); text-transform: none; }
+.privacy-text :is(h1, h2, h3, h4, h5, h6) :is(strong, b) { font-weight: inherit; }
+.privacy-text h1 { margin: 56px 0 20px; font-size: 32px; line-height: 36px; letter-spacing: -1.28px; font-weight: 800; }
+.privacy-text h2 { margin: 48px 0 16px; font-size: 26px; line-height: 30px; letter-spacing: -0.78px; font-weight: 800; }
+.privacy-text h3 { margin: 36px 0 12px; font-size: 21px; line-height: 26px; letter-spacing: -0.42px; font-weight: 700; }
+.privacy-text h4 { margin: 28px 0 10px; font-size: 18px; line-height: 24px; letter-spacing: -0.36px; font-weight: 700; }
+.privacy-text h5 { margin: 24px 0 8px; font-size: 16px; line-height: 22px; letter-spacing: -0.32px; font-weight: 700; }
+.privacy-text h6 { margin: 20px 0 8px; font-size: 14px; line-height: 20px; letter-spacing: 0.5px; font-weight: 700; text-transform: uppercase; }
+@media (min-width: 64rem) {
+  .privacy-text { font-size: 18px; line-height: 28px; }
+  .privacy-text h1 { font-size: 40px; line-height: 44px; letter-spacing: -1.6px; }
+  .privacy-text h2 { font-size: 32px; line-height: 36px; letter-spacing: -0.96px; }
+  .privacy-text h3 { font-size: 24px; line-height: 28px; letter-spacing: -0.48px; }
+  .privacy-text h4 { font-size: 20px; line-height: 26px; letter-spacing: -0.4px; }
+  .privacy-text h5 { font-size: 18px; line-height: 24px; letter-spacing: -0.36px; }
+  .privacy-text h6 { font-size: 15px; line-height: 20px; }
 }
 
-.privacy-text p b {
-  font-size: 20px;
-}
+/* lists: bullets / numbers outside the text, nested levels indented */
+.privacy-text :is(ul, ol) { margin: 0 0 16px; padding-left: 24px; }
+.privacy-text ul { list-style: disc outside; }
+.privacy-text ol { list-style: decimal outside; }
+.privacy-text :is(ul, ol) :is(ul, ol) { margin: 8px 0 0; }
+.privacy-text ul ul { list-style-type: circle; }
+.privacy-text ol ol { list-style-type: lower-alpha; }
+.privacy-text li { margin-bottom: 8px; padding-left: 4px; }
+.privacy-text li::marker { color: var(--color-grey-dark); }
+.privacy-text li > p { margin: 0; }
 
-.privacy-text ul {
-  margin-bottom: 1em;
-  list-style: disc;
-  list-style-position: outside;
-  margin-left: 25px;
-}
+.privacy-text a { color: var(--color-dark-petrol); font-weight: 500; text-decoration: underline; text-underline-offset: 2px; word-break: break-word; }
+.privacy-text a:hover { color: var(--color-petrol); }
+.privacy-text hr { margin: 40px 0; border: 0; border-top: 1px solid #e2e8f0; }
+.privacy-text blockquote { margin: 0 0 16px; padding-left: 20px; border-left: 3px solid var(--color-yellow); font-style: italic; }
 
-.privacy-text ul li {
-  margin-bottom: 0.5em;
-}
+/* tables (e.g. the cookie list): bordered, header row tinted, scrolls sideways on small screens */
+.privacy-text table { display: block; width: 100%; max-width: 100%; overflow-x: auto; margin: 0 0 24px; border-collapse: collapse; font-size: 15px; line-height: 22px; }
+.privacy-text :is(th, td) { padding: 10px 14px; border: 1px solid #e2e8f0; text-align: left; vertical-align: top; min-width: 120px; }
+.privacy-text th { background: #f1f1f1; color: var(--color-black); font-weight: 700; }
+.privacy-text tbody tr:nth-child(even) td { background: #fbfaf9; }
 
 .result-number:nth-child(1) .suffix-text {
   font-size: 70px;
