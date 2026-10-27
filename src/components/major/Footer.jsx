@@ -6,6 +6,7 @@ import Image from "next/image";
 import { getThemeOptions } from "@/lib/api";
 import { DEFAULT_LANG, langHref } from "@/config";
 import MoreLocationsToggle from "./MoreLocationsToggle";
+import FooterNavColumn from "./FooterNavColumn";
 import QuickContact from "@/components/sections/contact-form/QuickContact";
 
 import PhoneIcon from "../../../public/icons/footer-phone.svg";
@@ -110,102 +111,110 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
           FOOTER
          ===================================================== */}
       <footer className="bg-black text-white relative z-10">
-        <div className="cs-container mx-auto w-full web-width pt-16 pb-16 lg:pt-[72px] lg:pb-36 flex flex-col gap-12">
-          {/* ============ MAIN ROW: contact / stat card / nav columns ============ */}
+        {/* Mobile = Figma "Home_Page_Mobile_Mockup" FOOTER (2517:5308): padding 48/24, 48 between blocks */}
+        <div className="cs-container mx-auto w-full web-width pt-12 pb-12 lg:pt-[72px] lg:pb-36 flex flex-col gap-12">
+          {/* ============ MAIN ROW: contact / stat card / nav columns ============
+              Mobile order (Figma): logo → menus → stat card → contact; the logo/contact column
+              is `contents` below lg so its two parts can be ordered separately. */}
           <div className="flex flex-col lg:flex-row lg:items-start gap-12 lg:gap-[59px]">
             {/* LOGO + CONTACT INFO */}
-            <div className="lg:w-[200px] shrink-0 flex flex-col gap-6 lg:gap-10 items-start">
+            <div className="contents lg:w-[200px] lg:shrink-0 lg:flex lg:flex-col lg:gap-10 lg:items-start">
               {footerOptions?.footer_logo?.url ? (
                 <Image
                   src={footerOptions.footer_logo.url}
                   alt=""
                   width={173}
                   height={27}
-                  className="h-[27px] w-auto object-contain"
+                  className="order-1 self-start h-[27px] w-auto object-contain lg:order-none"
                 />
               ) : (
-                <p className="text-[24px] leading-none font-extrabold text-white uppercase">
+                <p className="order-1 self-start text-[24px] leading-none font-extrabold text-white uppercase lg:order-none">
                   caspeco<span className="text-(--color-yellow)">.</span>
                 </p>
               )}
 
-              {contactRows.length > 0 && (
-                <div className="flex flex-col gap-3 text-[18px] font-medium leading-[1.1] tracking-[-0.36px] text-(--color-grey-medium)">
-                  {contactRows.map(([icon, value, href]) =>
-                    href ? (
-                      <a key={icon} href={href} className="group flex items-center gap-2 transition-colors hover:text-(--color-white)">
-                        <span className="shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5">{CONTACT_ICONS[icon]}</span>
-                        <span className="cs-link-draw">{value}</span>
-                      </a>
-                    ) : (
-                      <div key={icon} className="flex items-center gap-2">
-                        <span className="shrink-0">{CONTACT_ICONS[icon]}</span>
-                        <span>{value}</span>
-                      </div>
-                    ),
-                  )}
-                </div>
-              )}
+              <div className="order-4 flex flex-col items-start gap-6 lg:order-none lg:gap-10">
+                {/* mobile: rows 16 apart, icon in a 24px box 12px from the text */}
+                {contactRows.length > 0 && (
+                  <div className="flex flex-col gap-4 lg:gap-3 text-[18px] font-medium leading-[1.1] tracking-[-0.36px] text-(--color-grey-medium)">
+                    {contactRows.map(([icon, value, href]) =>
+                      href ? (
+                        <a key={icon} href={href} className="group flex items-center gap-3 lg:gap-2 transition-colors hover:text-(--color-white)">
+                          <span className="flex w-6 shrink-0 justify-center lg:block lg:w-auto transition-transform duration-300 group-hover:-translate-y-0.5">{CONTACT_ICONS[icon]}</span>
+                          <span className="cs-link-draw max-lg:pb-0!">{value}</span>
+                        </a>
+                      ) : (
+                        <div key={icon} className="flex items-center gap-3 lg:gap-2">
+                          <span className="flex w-6 shrink-0 justify-center lg:block lg:w-auto">{CONTACT_ICONS[icon]}</span>
+                          <span>{value}</span>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                )}
 
-              {see_location_label && moreLocation && (
-                <MoreLocationsToggle label={see_location_label} html={moreLocation} />
-              )}
+                {see_location_label && moreLocation && (
+                  <MoreLocationsToggle label={see_location_label} html={moreLocation} />
+                )}
+              </div>
             </div>
 
-            {/* STAT CARD — Figma "USP framed": on hover (Smart Animate 150 ms ease-out) the
-                gradient gives way to a 30% #fdfdfd fill and the number grows 64px → 71px */}
+            {/* STAT CARD — desktop Figma "USP framed": on hover (Smart Animate 150 ms ease-out) the
+                gradient gives way to a 30% #fdfdfd fill and the number grows 64px → 71px.
+                Mobile Figma (2517:5342): full-width row, padding 24, gap 24, 2px #FFC120 inside
+                stroke, radial gradient from the top-left at 40%, number Bold 54/56, text Regular 16/16. */}
             {statCard.stat_number && (
-              <div className="group relative shrink-0 size-60 overflow-hidden rounded-lg pt-[22px] pb-8  px-5 flex flex-col justify-between bg-(--color-grey-dark) shadow-[0px_4px_12px_0px_rgba(0,0,0,0.16)]">
+              <div className="group relative order-3 flex w-full items-center gap-6 overflow-hidden rounded-lg border-2 border-(--color-yellow) p-[22px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.16)] lg:order-none lg:size-60 lg:shrink-0 lg:flex-col lg:items-stretch lg:justify-between lg:gap-0 lg:border-0 lg:bg-(--color-grey-dark) lg:px-5 lg:pt-[22px] lg:pb-8">
                 <span
                   aria-hidden
-                  className="absolute inset-0 transition-opacity duration-150 ease-out group-hover:opacity-0"
+                  className="absolute inset-0 lg:hidden"
+                  style={{
+                    backgroundImage:
+                      "radial-gradient(141.42% 141.42% at 0% 0%, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.2) 49%, rgba(218,220,221,0.2) 100%)",
+                  }}
+                />
+                <span
+                  aria-hidden
+                  className="absolute inset-0 hidden transition-opacity duration-150 ease-out group-hover:opacity-0 lg:block"
                   style={{
                     backgroundImage:
                       "radial-gradient(circle at 0% 0%, rgba(255,255,255,0.5) 0%, rgba(218,220,221,0.2) 50%, transparent 80%)",
                   }}
                 />
-                <span aria-hidden className="absolute inset-0 bg-[rgba(253,253,253,0.3)] opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100" />
+                <span aria-hidden className="absolute inset-0 hidden bg-[rgba(253,253,253,0.3)] opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100 lg:block" />
 
-                <p className="relative flex items-start gap-1 text-[64px] leading-16 tracking-[-1.28px] text-(--color-yellow) transition-[font-size,line-height] duration-150 ease-out group-hover:text-[71px] group-hover:leading-[71px]">
+                <p className="relative flex shrink-0 items-start text-[54px] leading-14 tracking-[-1.08px] text-(--color-yellow) lg:gap-1 lg:text-[64px] lg:leading-16 lg:tracking-[-1.28px] lg:transition-[font-size,line-height] lg:duration-150 lg:ease-out lg:group-hover:text-[71px] lg:group-hover:leading-[71px]">
                   <CountUp value={String(statCard.stat_number)} className="font-bold" />
-                  <span className="font-light">%</span>
+                  <span className="font-normal lg:font-light">%</span>
                 </p>
                 {statCard.short_text && (
-                  <p className="relative text-[20px] leading-6 tracking-[-0.4px] text-white">{statCard.short_text}</p>
+                  <p className="relative min-w-0 flex-1 text-[16px] leading-4 tracking-[-0.32px] text-white lg:flex-none lg:text-[20px] lg:leading-6 lg:tracking-[-0.4px]">{statCard.short_text}</p>
                 )}
               </div>
             )}
 
             {/* NAV COLUMNS: Services / Company / Insights — splits the
-                available space evenly among however many columns exist */}
+                available space evenly among however many columns exist.
+                Mobile: stacked accordions (FooterNavColumn); lg: Figma columns side by side */}
             {navColumns.length > 0 && (
-              <div className="flex flex-wrap gap-12 lg:gap-24">
+              <div className="order-2 flex flex-col lg:order-none lg:flex-row lg:flex-wrap lg:gap-24">
                 {navColumns.map((col, ci) => (
-                  <div key={ci} className="min-w-[150px] lg:w-[174px]">
-                    {col.title && (
-                      <p className="mb-5 text-[24px] font-bold leading-[1.1] tracking-[-0.48px] text-white">
-                        {col.title}
-                      </p>
-                    )}
-                    <ul className="space-y-3 text-[18px] font-light leading-[1.1] tracking-[-0.36px] text-(--color-grey-medium)">
-                      {col.links.map((item, i) => (
-                        <li key={i}>
-                          <Link href={langHref(item.link, lang)} className="cs-link-draw hover:text-white">
-                            {item.title}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  <FooterNavColumn
+                    key={ci}
+                    title={col.title}
+                    links={col.links.map((item) => ({ title: item.title, href: langHref(item.link, lang) }))}
+                  />
                 ))}
               </div>
             )}
           </div>
 
           {/* ============ BOTTOM ROW: social / legal links / copyright ============ */}
-          <div className="border-t border-white/10 pt-6 flex flex-col-reverse lg:flex-row items-center justify-between gap-6">
+          {/* Mobile (Figma): 1px #8F8D88 rule, 48 below it the social row (24 icons, 24 apart,
+              8px top/bottom padding), then the legal links stacked 16 apart, then © — 24 between */}
+          <div className="border-t border-(--color-grey-medium-dark) pt-12 flex flex-col items-start gap-6 lg:border-white/10 lg:pt-6 lg:flex-row lg:items-center lg:justify-between">
             {socialLinks.length > 0 && (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-6 py-2 lg:gap-4 lg:py-0">
                 {socialLinks.map(([network, url]) => (
                   <Link
                     key={network}
@@ -221,12 +230,13 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
             )}
 
             {legalLinks.length > 0 && (
-              <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-16 text-[18px] font-medium leading-[1.1] tracking-[-0.36px] text-(--color-grey-medium-dark)">
+              <div className="flex flex-col items-start gap-4 lg:flex-row lg:flex-wrap lg:items-center lg:justify-center lg:gap-16 text-[18px] font-medium leading-[1.1] tracking-[-0.36px] text-(--color-grey-medium-dark)">
                 {legalLinks.map((item, i) => (
                   <Link
                     key={i}
                     href={langHref(item.link, lang)}
-                    className="cs-link-redraw hover:text-white"
+                    // mobile Figma: no underline at rest (the redraw line is desktop only)
+                    className="cs-link-redraw max-lg:bg-none! max-lg:pb-0! hover:text-white"
                   >
                     {item.title}
                   </Link>

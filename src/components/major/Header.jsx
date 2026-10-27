@@ -196,12 +196,13 @@ export default function Header({
   return (
     <header className={headerClasses}>
       <span aria-hidden className={headerBarClasses} />
-      <div className="cs-container py-4 lg:py-0 lg:h-[84px] flex items-center justify-between relative">
+      {/* mobile = Figma "Top menu": 72px bar, 24px side padding, logo 115×18 */}
+      <div className="cs-container h-[72px] lg:h-[84px] flex items-center justify-between relative">
         {/* LOGO + DESKTOP LINKS */}
         <div className="flex items-center gap-8 xl:gap-16">
           <Link
             href={langHome(lang)}
-            className="flex relative h-8 w-[100px] lg:h-[22px] lg:w-[140px] xl:h-[26px] xl:w-[170px]"
+            className="flex relative h-[18px] w-[115px] lg:h-[22px] lg:w-[140px] xl:h-[26px] xl:w-[170px]"
           >
             {(() => {
               // Header is always the dark translucent bar, so always use the light logo variant
@@ -461,11 +462,19 @@ export default function Header({
         </div>
 
         {/* MOBILE MENU BUTTON */}
+        {/* Figma mobile "Menu" (Closed): 36×25, three #FFC120 bars 3px tall, rounded, right-aligned 24 / 36 / 28 wide */}
         <button
-          className="lg:hidden text-3xl text-white"
+          type="button"
+          aria-label="Open menu"
+          aria-expanded={mobileOpen}
+          className="lg:hidden flex cursor-pointer items-center justify-center"
           onClick={() => setMobileOpen(true)}
         >
-          ☰
+          <svg width="36" height="25" viewBox="0 0 36 25" aria-hidden="true">
+            <rect x="12" y="0" width="24" height="3" rx="1.5" fill="#FFC120" />
+            <rect x="0" y="11" width="36" height="3" rx="1.5" fill="#FFC120" />
+            <rect x="8" y="22" width="28" height="3" rx="1.5" fill="#FFC120" />
+          </svg>
         </button>
         {/* MOBILE SLIDE-IN MENU */}
         {mobileOpen && (
@@ -474,14 +483,20 @@ export default function Header({
               {/* HEADER */}
               <div className="p-6 flex items-center justify-between">
                 <span className="text-white font-semibold">Menu</span>
+                {/* Figma mobile "Menu" (Open): the bars cross into a #FFC120 X */}
                 <button
-                  className="text-white text-3xl"
+                  type="button"
+                  aria-label="Close menu"
+                  className="flex cursor-pointer items-center justify-center"
                   onClick={() => {
                     setMobileOpen(false);
                     setOpenSubmenu(null);
                   }}
                 >
-                  ✕
+                  <svg width="36" height="27" viewBox="0 0 36 27" aria-hidden="true">
+                    <path fill="#FFC120" d="M34.727.439a1.5 1.5 0 0 1 0 2.122L11.393 25.895a1.5 1.5 0 1 1-2.121-2.121L32.606.439a1.5 1.5 0 0 1 2.121 0Z" />
+                    <path fill="#FFC120" d="M34.516 26.187a1.5 1.5 0 0 1-2.121 0L9.06 2.852A1.5 1.5 0 1 1 11.182.731l23.334 23.335a1.5 1.5 0 0 1 0 2.121Z" />
+                  </svg>
                 </button>
               </div>
 

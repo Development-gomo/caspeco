@@ -13,9 +13,10 @@ export default function MoreLocationsToggle({ label, html }) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex cursor-pointer items-center gap-2 text-[16px] font-medium text-white transition-colors hover:text-(--color-grey-medium)"
+        // mobile Figma "Text CTA" (Light): Medium 16/20, -2%, 20px tall
+        className="flex cursor-pointer items-center gap-2 text-[16px] font-medium text-white transition-colors hover:text-(--color-grey-medium) max-lg:leading-5 max-lg:tracking-[-0.32px]"
       >
-        <span className="cs-link-redraw">{label}</span>
+        <span className="cs-link-redraw max-lg:pb-0!">{label}</span>
         <span className={`transition-transform duration-300 ${open ? "rotate-180" : ""}`}>
           <Image src={DownSvg} alt="" width={10} height={10} />
         </span>
