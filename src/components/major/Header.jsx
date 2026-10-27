@@ -196,13 +196,13 @@ export default function Header({
   return (
     <header className={headerClasses}>
       <span aria-hidden className={headerBarClasses} />
-      {/* mobile = Figma "Top menu": 72px bar, 24px side padding, logo 115×18 */}
-      <div className="cs-container h-[72px] lg:h-[84px] flex items-center justify-between relative">
+      {/* mobile (< 768px) = Figma "Top menu": 72px bar, 24px side padding, logo 115×18; tablet unchanged */}
+      <div className="cs-container py-4 lg:py-0 lg:h-[84px] max-md:h-[72px] max-md:py-0 flex items-center justify-between relative">
         {/* LOGO + DESKTOP LINKS */}
         <div className="flex items-center gap-8 xl:gap-16">
           <Link
             href={langHome(lang)}
-            className="flex relative h-[18px] w-[115px] lg:h-[22px] lg:w-[140px] xl:h-[26px] xl:w-[170px]"
+            className="flex relative h-8 w-[100px] max-md:h-[18px] max-md:w-[115px] lg:h-[22px] lg:w-[140px] xl:h-[26px] xl:w-[170px]"
           >
             {(() => {
               // Header is always the dark translucent bar, so always use the light logo variant
@@ -467,7 +467,8 @@ export default function Header({
           type="button"
           aria-label="Open menu"
           aria-expanded={mobileOpen}
-          className="lg:hidden flex cursor-pointer items-center justify-center"
+          // md:h-9 keeps the tablet bar at its original 68px (the old ☰ glyph was 36px tall)
+          className="lg:hidden flex cursor-pointer items-center justify-center md:h-9"
           onClick={() => setMobileOpen(true)}
         >
           <svg width="36" height="25" viewBox="0 0 36 25" aria-hidden="true">

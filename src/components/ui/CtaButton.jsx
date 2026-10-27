@@ -49,7 +49,8 @@ export default function CtaButton({
   wrap = false, // allow long labels to wrap (full-width buttons on mobile)
   ...rest
 }) {
-  const classes = `inline-flex items-center justify-center select-none cursor-pointer
+  // cs-btn: Figma "Button Mobile" size below 768px (globals.css); desktop/tablet unchanged
+  const classes = `cs-btn inline-flex items-center justify-center select-none cursor-pointer
     rounded-full text-[18px] leading-[22px] font-bold
     ${wrap ? "whitespace-normal text-center" : "whitespace-nowrap"}
     transition-colors ease-out
