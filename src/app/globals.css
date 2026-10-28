@@ -921,6 +921,13 @@ span.subheading-label.text-\[var\(--color-accent\)\],
   .cs-btn.border-2 {
     padding: 0 36px;
   }
+  /* every CtaButton fills its container below 768px; add .cs-btn-auto to keep one at its own width */
+  .cs-btn {
+    width: 100%;
+  }
+  .cs-btn.cs-btn-auto {
+    width: auto;
+  }
 }
 
 /* Article body (single post WYSIWYG content) — reading typography from the live
