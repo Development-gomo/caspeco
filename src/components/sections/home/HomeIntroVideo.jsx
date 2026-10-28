@@ -35,13 +35,15 @@ export default function HomeIntroVideo({ data, lang = DEFAULT_LANG }) {
   // "Watch video" plays the inline video; without a video it falls back to the CTA URL.
   const button = cta_text
     ? videoSrc
-      ? <CtaButton variant="outline-dark-gold" onClick={playVideo}>{cta_text}</CtaButton>
-      : cta_url && <CtaButton variant="outline-dark-gold" href={langHref(cta_url, lang)}>{cta_text}</CtaButton>
+      ? <CtaButton variant="outline-dark-grey" className="max-md:w-full" onClick={playVideo}>{cta_text}</CtaButton>
+      : cta_url && <CtaButton variant="outline-dark-grey" className="max-md:w-full" href={langHref(cta_url, lang)}>{cta_text}</CtaButton>
     : null;
 
   return (
+    // Mobile (Figma Home "USP's" 2517:4794): 64px top and bottom (cs-sec), H2 → sub 8, sub → body 24,
+    // body Regular 16/20 #3F3E3C, body → button 24, button → video 48, video r8
     <section
-      className="py-18 lg:py-36"
+      className={`cs-sec py-18 lg:py-36 ${data?._next === "home_kpi_section" ? "max-md:[--sec-pb:0px]" : ""}`}
       style={sectionBackground(data, {
         backgroundImage: "linear-gradient(180deg, rgba(218,220,221,0.8) 0.94%, rgba(255,255,255,0.5) 100.94%)",
       })}
@@ -56,7 +58,7 @@ export default function HomeIntroVideo({ data, lang = DEFAULT_LANG }) {
             // Every phrase is rendered invisibly in the same grid cell, so the box takes the
             // size of the longest one (width and wrapped height) at every breakpoint; the
             // animated phrase sits on top. Only the vertical axis is clipped for the roll.
-            <div className="cs-h2 relative grid w-full md:min-h-16 xl:min-h-[99px] overflow-y-clip pb-[0.12em] text-(--color-yellow)" aria-live="polite">
+            <div className="cs-h2 relative grid w-full md:min-h-16 xl:min-h-[99px] overflow-y-clip pb-[0.12em] max-md:pb-2 text-(--color-yellow)" aria-live="polite">
               {words.map((word, i) => (
                 <span key={i} aria-hidden className="invisible [grid-area:1/1]">
                   {word}
@@ -78,23 +80,23 @@ export default function HomeIntroVideo({ data, lang = DEFAULT_LANG }) {
           )}
 
           {sub_heading && (
-            <p className="font-bold text-[18px] leading-[22px] xl:text-[23px] xl:leading-[23px] tracking-[-0.46px] text-black xl:-mt-[12px]">
+            <p className="font-bold text-[18px] leading-[22px] xl:text-[23px] xl:leading-[23px] tracking-[-0.46px] text-black xl:-mt-[12px] max-md:tracking-[-0.36px] max-md:text-(--color-grey-dark)">
               {sub_heading}
             </p>
           )}
 
           {short_text && (
             <div
-              className="cs-p2 cs-rich mt-8 xl:mt-12 max-w-[474px] text-(--color-grey-dark)"
+              className="cs-p2 cs-text-sm cs-rich mt-8 xl:mt-12 max-w-[474px] text-(--color-grey-dark) max-md:mt-6"
               dangerouslySetInnerHTML={{ __html: toHtml(short_text) }}
             />
           )}
 
-          {button && <div className="mt-8 xl:mt-[45px]">{button}</div>}
+          {button && <div className="mt-8 xl:mt-[45px] max-md:mt-6 max-md:w-full">{button}</div>}
         </div>
 
         {videoSrc && (
-          <div className="relative w-full lg:w-[568px] aspect-[568/320] shrink-0 overflow-hidden rounded-[4.675px] bg-(--color-dark-petrol)">
+          <div className="relative w-full lg:w-[568px] aspect-[568/320] shrink-0 overflow-hidden rounded-[4.675px] max-md:rounded-[8px] bg-(--color-dark-petrol)">
             <video
               ref={videoRef}
               src={videoSrc}
