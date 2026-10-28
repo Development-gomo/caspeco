@@ -16,25 +16,74 @@ function LangFlag({ code, className = "" }) {
   return <Image src={src} alt="" width={24} height={16} unoptimized className={`w-6 h-4 shrink-0 object-cover ${className}`} />;
 }
 
-// Log-in links point at external portals: absolute URLs open as-is, relative ones get the
-// language prefix, and an empty/"#" URL renders plain text instead of a dead link.
-function LoginLink({ url, lang, className: baseClassName, onClick, children }) {
-  // pointer even when rendered as text: "Log In" also opens the dropdown on hover
+// ACF "Theme Settings - Menu" link values are plain text fields (menu_title_link, links[].url);
+// the card's button_link is an ACF Link (array). Normalise any of them to a trimmed URL string,
+// or "" when there is no real target ("#" placeholders included).
+const urlOf = (v) => {
+  const url = (typeof v === "string" ? v : v?.url || "").trim();
+  return url === "#" ? "" : url;
+};
+
+// Every menu / log-in link: no URL → plain text (pointer kept — a parent still opens its
+// dropdown on hover), absolute URL → a normal <a> (external portals such as cloud.caspeco.se),
+// site path → <Link> with the language prefix. "#anchor" stays a same-page anchor.
+function NavLink({ url, lang, className: baseClassName, onClick, target, children }) {
   const className = `cursor-pointer ${baseClassName}`;
-  const href = (url || "").trim();
-  if (!href || href === "#") return <span className={className}>{children}</span>;
-  if (/^https?:\/\//.test(href)) {
+  const href = urlOf(url);
+  if (!href) return <span className={className}>{children}</span>;
+  if (/^(https?:)?\/\//.test(href) || /^(mailto|tel):/.test(href)) {
     return (
-      <a href={href} className={className} onClick={onClick}>
+      <a href={href} target={target || undefined} rel={target === "_blank" ? "noopener noreferrer" : undefined} className={className} onClick={onClick}>
         {children}
       </a>
     );
   }
   return (
-    <Link href={langHref(href, lang)} className={className} onClick={onClick}>
+    <Link href={langHref(href, lang)} target={target || undefined} className={className} onClick={onClick}>
       {children}
     </Link>
   );
+}
+
+// layout_type → how many columns of the Columns repeater the dropdown shows
+const LAYOUT_COLUMNS = { no_column: 0, one_column: 1, two_column: 2, three_column: 3 };
+
+// Theme Settings - Menu → nav items. Empty rows, labels and cards are dropped so the markup
+// never renders blank links or an empty card.
+function menuItems(megaMenu) {
+  return (Array.isArray(megaMenu) ? megaMenu : [])
+    .filter((entry) => entry?.menu_title?.trim())
+    .map((entry, i) => {
+      const maxColumns = LAYOUT_COLUMNS[entry.layout_type] ?? 3; // older rows without layout_type
+      const columns = (Array.isArray(entry.columns) ? entry.columns : [])
+        .slice(0, maxColumns)
+        .map((col) => {
+          const links = (Array.isArray(col?.links) ? col.links : [])
+            .filter((link) => link?.label?.trim())
+            .map((link) => ({ label: link.label.trim(), url: urlOf(link.url) }));
+          const c = col?.card;
+          const button = c?.button_link && typeof c.button_link === "object" ? c.button_link : null;
+          const card = c?.title?.trim()
+            ? {
+                title: c.title.trim(),
+                description: c.description || "",
+                button: urlOf(button) ? { url: urlOf(button), title: button.title || "", target: button.target || "" } : null,
+              }
+            : null;
+          return { links, card };
+        })
+        .filter((col) => col.links.length > 0 || col.card);
+      const side = entry.side_image;
+      return {
+        id: `mega-${i}`,
+        title: entry.menu_title.trim(),
+        url: urlOf(entry.menu_title_link),
+        columns,
+        card: columns.map((col) => col.card).find(Boolean) || null,
+        sideImage: (typeof side === "string" ? side : side?.url) || null,
+        links: columns.flatMap((col) => col.links),
+      };
+    });
 }
 
 export default function Header({
@@ -56,32 +105,8 @@ export default function Header({
   const isLoading = !options;
   const [scrolled, setScrolled] = useState(false);
 
-  // Nav items come from the Theme Options "mega_menu" repeater (entries with
-  // menu_title set) — each entry's columns/links/card drive the dropdown.
-  const navItems = (options?.mega_menu || [])
-    .filter((entry) => entry.menu_title)
-    .map((entry, i) => {
-      const columns = (entry.columns || []).filter(
-        (col) => col.links?.length > 0 || col.card?.title
-      );
-      const card = columns.map((col) => col.card).find((c) => c?.title);
-      const children = columns.flatMap((col, ci) =>
-        (col.links || []).map((link, li) => ({
-          id: `mega-${i}-${ci}-${li}`,
-          title: link.label,
-          url: link.url?.url || "#",
-        }))
-      );
-      return {
-        id: `mega-${i}`,
-        title: entry.menu_title,
-        url: entry.menu_title_link?.url || "#",
-        columns,
-        card,
-        sideImage: entry.side_image?.url || null,
-        children,
-      };
-    });
+  // Nav items from Theme Settings - Menu (mega_menu), normalised by menuItems() above
+  const navItems = menuItems(options?.mega_menu);
 
   // Theme Options "Log In Submenu" rows with text
   const loginItems = (Array.isArray(options?.login_submenu) ? options.login_submenu : []).filter((row) => row?.link_text?.trim());
@@ -107,7 +132,8 @@ export default function Header({
   // backdrop-filter stops descendants (the hover dropdowns) from blurring what is behind them.
   const headerClasses = "fixed top-0 w-full z-50 text-white";
   const headerBarClasses = `absolute inset-0 -z-10 transition-[background-color,backdrop-filter] duration-300 ${
-    scrolled ? "backdrop-blur-[8px] bg-black/40" : "bg-transparent"
+    // mobile (< 768px, Figma "Top menu"): solid Casp black #151411 once scrolled, no blur
+    scrolled ? "backdrop-blur-[8px] bg-black/40 max-md:backdrop-blur-none max-md:bg-(--color-black)" : "bg-transparent"
   }`;
 
   // Mobile menu state
@@ -118,13 +144,21 @@ export default function Header({
   const langRef = React.useRef(null);
 
   function handleNavClick(e, rawUrl, closeMobile = false) {
-    if (!rawUrl?.includes("#")) return;
-    const hash = "#" + rawUrl.split("#")[1];
-    const el = document.querySelector(hash);
-    if (el) {
-      e.preventDefault();
-      el.scrollIntoView({ behavior: "smooth" });
+    // same-page anchor ("#pricing", "/en/x#pricing" on that page): smooth-scroll instead of jumping
+    const hash = rawUrl?.includes("#") ? "#" + rawUrl.split("#")[1] : "";
+    if (hash.length > 1) {
+      let el = null;
+      try {
+        el = document.querySelector(hash);
+      } catch {
+        el = null; // not a valid selector
+      }
+      if (el) {
+        e.preventDefault();
+        el.scrollIntoView({ behavior: "smooth" });
+      }
     }
+    // any tap in the mobile menu closes it (was skipped for links without "#")
     if (closeMobile) {
       setMobileOpen(false);
       setOpenSubmenu(null);
@@ -238,130 +272,78 @@ export default function Header({
                 </>
               ) : (
                 // REAL MENU
-                navItems.map((item) => (
-                  <li key={item.id} className="relative group">
-                    <Link
-                      href={langHref(item.url, lang)}
-                      prefetch={true}
-                      onClick={(e) => handleNavClick(e, item.url)}
-                      className="text-(--color-light-grey) hover:opacity-70 focus-visible:opacity-70 relative z-9 text-[16px] xl:text-[18px] font-bold transition-opacity duration-300 ease-out leading-[18px] flex items-center gap-2 whitespace-nowrap"
-                    >
-                      {item.title}
-
-                      {item.children?.length > 0 && (
-                        <span className="transition-transform duration-300 group-hover:rotate-180">
-                          <Image
-                            src={DownSvg}
-                            alt="arrow"
-                            width={10}
-                            height={10}
-                          />
-                        </span>
-                      )}
-                    </Link>
-
-                    {/* MEGA MENU PANEL — multi-column, driven by ACF columns/links/card */}
-                    {item.columns?.length > 0 ? (
-                      <div
-                        className="
-                            top-[15px]
-                            absolute left-1/2 mt-1
-                            -translate-x-1/2 min-w-[520px]
-                            pt-8
-                            pointer-events-none
-                            group-hover:pointer-events-auto
-                         z-2
-                          "
+                navItems.map((item) => {
+                  const hasDropdown = item.columns.length > 0;
+                  return (
+                    <li key={item.id} className="relative group">
+                      <NavLink
+                        url={item.url}
+                        lang={lang}
+                        onClick={(e) => handleNavClick(e, item.url)}
+                        className="text-(--color-light-grey) hover:opacity-70 focus-visible:opacity-70 relative z-9 text-[16px] xl:text-[18px] font-bold transition-opacity duration-300 ease-out leading-[18px] flex items-center gap-2 whitespace-nowrap"
                       >
-                        <div className="
-                            opacity-0 translate-x-4
-                            group-hover:opacity-100 group-hover:translate-x-0
-                            transition-all duration-300 ease-out bg-black/40 backdrop-blur-[8px] text-white rounded-sm shadow-lg overflow-hidden
-                            flex
-                          "
-                        >
-                          <div className="flex flex-1 divide-x divide-white/10">
-                            {item.columns.map((col, ci) => (
-                              <ul key={ci} className="min-w-[180px] py-2">
-                                {(col.links || []).map((link, li) => (
-                                  <li key={li}>
-                                    <Link
-                                      href={langHref(link.url?.url || "#", lang)}
-                                      prefetch={true}
-                                      onClick={(e) => handleNavClick(e, link.url?.url)}
-                                      target={link.url?.target || undefined}
-                                      className="block px-4 py-3 text-white text-sm hover:text-white/70 transition"
-                                    >
-                                      {link.label}
-                                    </Link>
-                                  </li>
-                                ))}
-                              </ul>
-                            ))}
-                          </div>
+                        {item.title}
+                        {hasDropdown && (
+                          <span className="transition-transform duration-300 group-hover:rotate-180" aria-hidden>
+                            <Image src={DownSvg} alt="" width={10} height={10} />
+                          </span>
+                        )}
+                      </NavLink>
 
-                          {item.card && (
-                            <div className="w-[220px] shrink-0 bg-white/5 p-5 flex flex-col gap-2">
-                              {item.sideImage && (
-                                <div className="relative w-full h-[100px] mb-2">
-                                  <Image src={item.sideImage} alt="" fill className="object-cover rounded-sm" />
-                                </div>
-                              )}
-                              <p className="font-bold text-sm">{item.card.title}</p>
-                              {item.card.description && (
-                                <p className="text-xs text-white/70">{item.card.description}</p>
-                              )}
-                              {item.card.button_link?.url && (
-                                <Link
-                                  href={langHref(item.card.button_link.url, lang)}
-                                  target={item.card.button_link.target || undefined}
-                                  className="mt-2 text-sm font-bold text-(--color-yellow) hover:underline"
-                                >
-                                  {item.card.button_link.title || "Learn more"}
-                                </Link>
+                      {/* DROPDOWN — layout_type columns of links, optional card + side image */}
+                      {hasDropdown && (
+                        <div className="absolute left-1/2 top-[15px] z-2 mt-1 min-w-[180px] -translate-x-1/2 pt-8 pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto">
+                          <div className="flex overflow-hidden rounded-sm bg-black/40 text-white shadow-lg backdrop-blur-[8px] opacity-0 translate-x-4 transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-x-0 group-focus-within:opacity-100 group-focus-within:translate-x-0">
+                            <div className="flex flex-1 divide-x divide-white/10">
+                              {item.columns.map((col, ci) =>
+                                col.links.length > 0 ? (
+                                  <ul key={ci} className="min-w-[180px] py-2">
+                                    {col.links.map((link, li) => (
+                                      <li key={li}>
+                                        <NavLink
+                                          url={link.url}
+                                          lang={lang}
+                                          onClick={(e) => handleNavClick(e, link.url)}
+                                          className="block whitespace-nowrap px-4 py-3 text-sm text-white transition hover:text-white/70"
+                                        >
+                                          {link.label}
+                                        </NavLink>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                ) : null
                               )}
                             </div>
-                          )}
+
+                            {item.card && (
+                              <div className="flex w-[220px] shrink-0 flex-col gap-2 bg-white/5 p-5">
+                                {item.sideImage && (
+                                  <div className="relative mb-2 h-[100px] w-full">
+                                    <Image src={item.sideImage} alt="" fill sizes="180px" className="rounded-sm object-cover" />
+                                  </div>
+                                )}
+                                <p className="text-sm font-bold">{item.card.title}</p>
+                                {item.card.description && (
+                                  <div className="cs-rich text-xs text-white/70" dangerouslySetInnerHTML={{ __html: item.card.description }} />
+                                )}
+                                {item.card.button && (
+                                  <NavLink
+                                    url={item.card.button.url}
+                                    lang={lang}
+                                    target={item.card.button.target}
+                                    className="mt-2 text-sm font-bold text-(--color-yellow) hover:underline"
+                                  >
+                                    {item.card.button.title || "Learn more"}
+                                  </NavLink>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ) : item.children?.length > 0 && (
-                      <div
-                        className="
-                            top-[15px]
-                            absolute left-1/2  mt-1
-                            -translate-x-1/2 min-w-[180px]
-                            pt-8
-                            pointer-events-none
-                            group-hover:pointer-events-auto
-                         z-2
-                          "
-                      >
-                        <ul className="
-                            opacity-0 translate-x-4
-                            group-hover:opacity-100 group-hover:translate-x-0
-                            transition-all duration-300 ease-out bg-black/40 backdrop-blur-[8px] text-white rounded-sm shadow-lg overflow-hidden
-                          "
-                        >
-                          {item.children.map((sub) => (
-                            <li key={sub.id}>
-                              <Link
-                                href={langHref(sub.url, lang)}
-                                prefetch={true}
-                                onClick={(e) => handleNavClick(e, sub.url)}
-                                className="
-                                    block px-4 py-3 text-white text-sm
-                                    hover:text-white/70 transition
-                                  "
-                              >
-                                {sub.title}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </li>
-                ))
+                      )}
+                    </li>
+                  );
+                })
               )}
             </ul>
           </nav>
@@ -414,26 +396,26 @@ export default function Header({
           {/* LOG IN — Theme Options log_in_text / log_in_url, hover dropdown from login_submenu (no arrow) */}
           {options?.log_in_text && (
             <div className="relative group">
-              <LoginLink
+              <NavLink
                 url={options.log_in_url}
                 lang={lang}
                 className="block py-4 px-1 xl:px-2 whitespace-nowrap text-[16px] xl:text-[18px] font-bold text-(--color-yellow) hover:text-(--color-yellow)/80 transition"
               >
                 {options.log_in_text}
-              </LoginLink>
+              </NavLink>
 
               {loginItems.length > 0 && (
                 <div className="absolute right-0 top-full z-2 pt-1 pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto">
                   <ul className="min-w-40 opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:translate-y-0 transition-all duration-200 ease-out bg-black/40 backdrop-blur-sm rounded-sm shadow-lg overflow-hidden">
                     {loginItems.map((item, i) => (
                       <li key={i}>
-                        <LoginLink
+                        <NavLink
                           url={item.link_url}
                           lang={lang}
                           className="block px-4 py-3 text-sm text-white hover:text-white/70 transition whitespace-nowrap"
                         >
                           {item.link_text}
-                        </LoginLink>
+                        </NavLink>
                       </li>
                     ))}
                   </ul>
@@ -463,20 +445,33 @@ export default function Header({
 
         {/* MOBILE MENU BUTTON */}
         {/* Figma mobile "Menu" (Closed): 36×25, three #FFC120 bars 3px tall, rounded, right-aligned 24 / 36 / 28 wide */}
-        <button
-          type="button"
-          aria-label="Open menu"
-          aria-expanded={mobileOpen}
-          // md:h-9 keeps the tablet bar at its original 68px (the old ☰ glyph was 36px tall)
-          className="lg:hidden flex cursor-pointer items-center justify-center md:h-9"
-          onClick={() => setMobileOpen(true)}
-        >
-          <svg width="36" height="25" viewBox="0 0 36 25" aria-hidden="true">
-            <rect x="12" y="0" width="24" height="3" rx="1.5" fill="#FFC120" />
-            <rect x="0" y="11" width="36" height="3" rx="1.5" fill="#FFC120" />
-            <rect x="8" y="22" width="28" height="3" rx="1.5" fill="#FFC120" />
-          </svg>
-        </button>
+        <div className="lg:hidden flex items-center gap-6">
+          {/* Figma mobile "Top menu": Theme Options button_text / button_url as a #FFC120 text link
+              (Bold 16/102%, -2%) 24px before the icon — below 768px only */}
+          {options?.button_text && options?.button_url && (
+            <Link
+              href={langHref(options.button_url, lang)}
+              onClick={(e) => handleNavClick(e, options.button_url)}
+              className="hidden max-md:inline-block whitespace-nowrap text-[16px] font-bold leading-[16.32px] tracking-[-0.32px] text-(--color-yellow)"
+            >
+              {options.button_text}
+            </Link>
+          )}
+          <button
+            type="button"
+            aria-label="Open menu"
+            aria-expanded={mobileOpen}
+            // md:h-9 keeps the tablet bar at its original 68px (the old ☰ glyph was 36px tall)
+            className="flex cursor-pointer items-center justify-center md:h-9"
+            onClick={() => setMobileOpen(true)}
+          >
+            <svg width="36" height="25" viewBox="0 0 36 25" aria-hidden="true">
+              <rect x="12" y="0" width="24" height="3" rx="1.5" fill="#FFC120" />
+              <rect x="0" y="11" width="36" height="3" rx="1.5" fill="#FFC120" />
+              <rect x="8" y="22" width="28" height="3" rx="1.5" fill="#FFC120" />
+            </svg>
+          </button>
+        </div>
         {/* MOBILE SLIDE-IN MENU */}
         {mobileOpen && (
           <div className="fixed h-screen inset-0 z-60 bg-black/60 backdrop-blur-sm lg:hidden" onClick={() => { setMobileOpen(false); setOpenSubmenu(null); }}>
@@ -510,24 +505,28 @@ export default function Header({
                   }`}
                 >
                   {navItems.map((item) => {
-                    const hasChildren = item.children?.length > 0;
-
-                    const parentHref = langHref(item.url, lang);
+                    const hasChildren = item.links.length > 0;
 
                     return (
                       <div
                         key={item.id}
                         className="flex items-center justify-between"
                       >
-                        {/* Parent link */}
-                        <Link
-                          href={parentHref}
-                          prefetch={true}
-                          className="text-white text-lg px-6"
-                          onClick={(e) => handleNavClick(e, item.url, true)}
-                        >
-                          {item.title}
-                        </Link>
+                        {/* Parent: a link when it has a URL; otherwise tapping it opens its submenu */}
+                        {item.url || !hasChildren ? (
+                          <NavLink
+                            url={item.url}
+                            lang={lang}
+                            className="text-white text-lg px-6"
+                            onClick={(e) => handleNavClick(e, item.url, true)}
+                          >
+                            {item.title}
+                          </NavLink>
+                        ) : (
+                          <button type="button" onClick={() => setOpenSubmenu(item.id)} className="cursor-pointer text-left text-white text-lg px-6">
+                            {item.title}
+                          </button>
+                        )}
 
                         {/* Arrow → open submenu */}
                         {hasChildren && (
@@ -575,27 +574,42 @@ export default function Header({
                       </button>
 
                       {/* Parent title */}
-                      <Link
-                        href={langHref(item.url, lang)}
-                        className="text-white text-lg font-semibold"
+                      <NavLink
+                        url={item.url}
+                        lang={lang}
+                        className="text-white text-lg font-bold"
                         onClick={(e) => handleNavClick(e, item.url, true)}
                       >
                         {item.title}
-                      </Link>
+                      </NavLink>
 
-                      {/* Children */}
+                      {/* Children (all layout columns, in order) */}
                       <div className="mt-2 flex flex-col gap-4">
-                        {item.children.map((sub) => (
-                          <Link
-                            key={sub.id}
-                            href={langHref(sub.url, lang)}
-                            prefetch={true}
+                        {item.links.map((link, li) => (
+                          <NavLink
+                            key={li}
+                            url={link.url}
+                            lang={lang}
                             className="text-white/80 text-base hover:text-white transition"
-                            onClick={(e) => handleNavClick(e, sub.url, true)}
+                            onClick={(e) => handleNavClick(e, link.url, true)}
                           >
-                            {sub.title}
-                          </Link>
+                            {link.label}
+                          </NavLink>
                         ))}
+                        {item.card?.button && (
+                          <NavLink
+                            url={item.card.button.url}
+                            lang={lang}
+                            target={item.card.button.target}
+                            className="text-base font-bold text-(--color-yellow)"
+                            onClick={() => {
+                              setMobileOpen(false);
+                              setOpenSubmenu(null);
+                            }}
+                          >
+                            {item.card.button.title || item.card.title}
+                          </NavLink>
+                        )}
                       </div>
                     </div>
                   );
@@ -630,7 +644,7 @@ export default function Header({
                 {/* Log in + its submenu links */}
                 {options?.log_in_text && (
                   <div className="flex flex-col gap-2">
-                    <LoginLink
+                    <NavLink
                       url={options.log_in_url}
                       lang={lang}
                       className="text-[16px] font-bold text-(--color-yellow) hover:text-(--color-yellow)/80 transition"
@@ -640,9 +654,9 @@ export default function Header({
                       }}
                     >
                       {options.log_in_text}
-                    </LoginLink>
+                    </NavLink>
                     {loginItems.map((item, i) => (
-                      <LoginLink
+                      <NavLink
                         key={i}
                         url={item.link_url}
                         lang={lang}
@@ -653,7 +667,7 @@ export default function Header({
                         }}
                       >
                         {item.link_text}
-                      </LoginLink>
+                      </NavLink>
                     ))}
                   </div>
                 )}
