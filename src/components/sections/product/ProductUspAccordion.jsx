@@ -100,7 +100,7 @@ export default function ProductUspAccordion({ data, lang = DEFAULT_LANG, variant
             {heading && <h2 className={`cs-h3 cs-title cs-highlight text-black ${variant === "icp" ? "font-extrabold!" : "font-extrabold"}`} dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
             {short_text && <div className={`cs-p2 cs-rich text-(--color-grey-dark) ${variant === "icp" ? "" : "max-md:font-light"}`} dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
             {/* optional second paragraph — Figma ICP "USP's": Bold 20/24, 24 below the text */}
-            {sub_text && <div className="cs-p2 cs-rich mt-2 font-bold text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(sub_text) }} />}
+            {sub_text && <div className="cs-p2 cs-rich mt-2 max-md:mt-0 font-bold text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(sub_text) }} />}
           </div>
           {cta_text && cta_url && (
             <div className="max-md:hidden">
@@ -119,9 +119,9 @@ export default function ProductUspAccordion({ data, lang = DEFAULT_LANG, variant
           </div>
         )}
 
-        {/* mobile: button below the list, 24px under it (container gap 48 − 24) */}
+        {/* mobile: button below the list, 48 under it (Figma Product 601:9591 / ICP 601:14114) */}
         {cta_text && cta_url && (
-          <div className="md:hidden max-md:-mt-6">
+          <div className="md:hidden">
             <CtaButton href={langHref(cta_url.trim(), lang)}>{cta_text}</CtaButton>
           </div>
         )}
