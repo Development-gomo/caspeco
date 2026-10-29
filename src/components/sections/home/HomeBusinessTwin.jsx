@@ -108,7 +108,7 @@ function CaseCard({ match, lang, clipText, readMoreText }) {
           <VideoModal open={clipOpen} url={match.clipUrl} title={match.title} onClose={closeClip} />
         </div>
         {match.quote && (
-          <div className="cs-rich italic font-medium text-[20px] sm:text-[24px] leading-[1.3] text-white" dangerouslySetInnerHTML={{ __html: toHtml(match.quote) }} />
+          <div className="cs-rich italic font-medium text-[20px] sm:text-[24px] leading-[1.3] text-white max-md:font-bold max-md:text-[20px]!" dangerouslySetInnerHTML={{ __html: toHtml(match.quote) }} />
         )}
       </div>
 
@@ -121,8 +121,8 @@ function CaseCard({ match, lang, clipText, readMoreText }) {
                 className="flex flex-col gap-6 sm:gap-10 rounded-[8px] p-4 sm:p-6 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.16)]"
                 style={{ backgroundImage: "radial-gradient(ellipse 100% 100% at 0% 0%, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.2) 49%, rgba(218,220,221,0.2) 100%)" }}
               >
-                <span className="font-bold text-[40px] sm:text-[64px] leading-none tracking-[-1.28px] text-(--color-yellow) whitespace-nowrap"><CountUp value={s.value} /></span>
-                <span className="text-[16px] sm:text-[20px] leading-6 tracking-[-0.4px] text-(--color-light-grey)">{s.label}</span>
+                <span className="font-bold text-[40px] sm:text-[64px] leading-none tracking-[-1.28px] text-(--color-yellow) whitespace-nowrap max-md:font-extrabold max-md:text-[32px]! max-md:leading-[25.6px] max-md:tracking-[-0.64px]"><CountUp value={s.value} /></span>
+                <span className="text-[16px] sm:text-[20px] leading-6 tracking-[-0.4px] text-(--color-light-grey) max-md:text-[14px]! max-md:leading-4! max-md:tracking-[-0.28px]">{s.label}</span>
               </div>
             ))}
           </div>

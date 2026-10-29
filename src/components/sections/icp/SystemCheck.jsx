@@ -8,6 +8,9 @@
 //    hand-drawn #FFC120 2px underline, subtitle Light Italic 16/34 -2% #FDFDFD@80%, checklist
 //    Medium 20/32 -2% with 18px white tick boxes, rows 10 apart
 //  - card 80 from the top, 90 from the bottom; text column vertically centred on the card
+// Mobile (Figma "Mobile comparison block", < 768 only): padding 48, eyebrow → H 8, H X-Bold 36,
+//  H → text 16 (Bold 18/22), intro → card 24, CTA below the card (24); card padding 24, title
+//  Regular Italic 32/38 with a 131px underline under the last line, subtitle Regular, checklist 18/24
 
 import Image from "next/image";
 import CtaButton from "@/components/ui/CtaButton";
@@ -29,7 +32,7 @@ function Tick() {
 // Figma "Line 405": 364×4, 2px #FFC120, round caps — exact path; starts 12px in from the title
 function Underline() {
   return (
-    <svg viewBox="-1 -1 366 6" preserveAspectRatio="none" aria-hidden className="absolute left-3 top-10 h-[6px] w-[calc(94.8%+2px)] overflow-visible">
+    <svg viewBox="-1 -1 366 6" preserveAspectRatio="none" aria-hidden className="absolute left-3 top-10 h-[6px] w-[calc(94.8%+2px)] overflow-visible max-md:left-[3px] max-md:top-[81px] max-md:w-[131px]">
       <path d="M 0 4 C 0 4 82.38 0.76 135.31 0.14 C 224.63 -0.89 363.96 4 363.96 4" fill="none" stroke="#FFC120" strokeWidth="2" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
     </svg>
   );
@@ -43,26 +46,28 @@ export default function SystemCheck({ data, lang = DEFAULT_LANG }) {
   const bg = mediaUrl(data?.bg_image);
 
   return (
-    <section className="relative isolate overflow-hidden bg-(--color-black) py-18 lg:pt-20 lg:pb-[90px]" style={data?.bg_color ? { background: data.bg_color } : undefined}>
+    <section className="cs-sec relative isolate overflow-hidden bg-(--color-black) py-18 max-md:[--sec-pt:48px] max-md:[--sec-pb:48px] lg:pt-20 lg:pb-[90px]" style={data?.bg_color ? { background: data.bg_color } : undefined}>
       {/* photo with Figma layer blur (scaled so the blurred edge stays outside the section) */}
       {bg && <Image src={bg} alt="" fill sizes="100vw" className="-z-10 scale-110 object-cover blur-[24.8px]" />}
       <div className="absolute inset-0 -z-10" style={{ background: "linear-gradient(90deg, #000 -0.9%, rgba(0, 0, 0, 0.4) 100.9%)" }} aria-hidden />
 
-      <div className="cs-container flex flex-col gap-12 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
-        <Reveal className="flex flex-col items-start gap-10 lg:max-w-[507px]">
-          <div className="flex flex-col gap-5 text-(--color-white)">
-            <div className="flex flex-col">
-              {eyebrow && <p className="italic font-normal text-[18px] lg:text-[20px] leading-[26px] tracking-[-0.8px] text-(--color-yellow)">{eyebrow}</p>}
-              {heading && <h2 className="cs-h3 cs-highlight cs-rich" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+      <div className="cs-container flex flex-col gap-12 max-md:gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
+        <Reveal className="flex flex-col items-start gap-10 max-md:gap-6 lg:max-w-[507px]">
+          <div className="flex flex-col gap-5 max-md:gap-4 text-(--color-white)">
+            <div className="flex flex-col max-md:gap-2">
+              {eyebrow && <p className="italic font-normal text-[18px] lg:text-[20px] leading-[26px] tracking-[-0.8px] max-md:tracking-[-0.72px] text-(--color-yellow)">{eyebrow}</p>}
+              {heading && <h2 className="cs-h3 cs-title cs-highlight cs-rich" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
             </div>
             {text && (
-              <div className="cs-rich max-w-[446px] font-bold text-[18px] lg:text-[20px] leading-6 tracking-[-0.4px]" dangerouslySetInnerHTML={{ __html: toHtml(text) }} />
+              <div className="cs-rich max-w-[446px] font-bold text-[18px] lg:text-[20px] leading-6 tracking-[-0.4px] max-md:leading-[22px] max-md:tracking-[-0.36px]" dangerouslySetInnerHTML={{ __html: toHtml(text) }} />
             )}
           </div>
           {cta_text && cta_url && (
-            <CtaButton href={langHref(cta_url.trim(), lang)} wrap className="max-w-full">
-              {cta_text}
-            </CtaButton>
+            <div className="max-md:hidden">
+              <CtaButton href={langHref(cta_url.trim(), lang)} wrap className="max-w-full">
+                {cta_text}
+              </CtaButton>
+            </div>
           )}
         </Reveal>
 
@@ -71,20 +76,20 @@ export default function SystemCheck({ data, lang = DEFAULT_LANG }) {
             x={40}
             y={0}
             delay={0.15}
-            className={`w-full rounded-[8px] p-6 text-(--color-white) sm:p-8 lg:w-[701px] lg:flex-none ${GLASS_CLASS}`}
+            className={`w-full rounded-[8px] p-6 text-(--color-white) sm:p-8 max-md:px-6! max-md:pt-6! max-md:pb-7! lg:w-[701px] lg:flex-none ${GLASS_CLASS}`}
             style={GLASS_STYLE}
           >
             {card_title && (
-              <p className="relative inline-block pb-2 italic font-normal text-[26px] lg:text-[32px] leading-[42.8px] tracking-[-0.64px]">
+              <p className="relative inline-block pb-2 italic font-normal text-[26px] lg:text-[32px] leading-[42.8px] tracking-[-0.64px] max-md:pb-[13px] max-md:text-[32px] max-md:leading-[38px]">
                 {card_title}
                 <Underline />
               </p>
             )}
-            {card_subtitle && <p className="mt-5 italic font-light text-[16px] leading-[34px] tracking-[-0.32px] text-(--color-white)/80">{card_subtitle}</p>}
+            {card_subtitle && <p className="mt-5 italic font-light max-md:font-normal text-[16px] leading-[34px] tracking-[-0.32px] text-(--color-white)/80">{card_subtitle}</p>}
             {items.length > 0 && (
               <ul className="mt-2 flex flex-col gap-2.5">
                 {items.map((item, i) => (
-                  <Reveal as="li" key={i} x={-12} y={0} delay={0.3 + i * 0.07} className="flex items-start gap-2.5 font-medium text-[18px] lg:text-[20px] leading-8 tracking-[-0.4px]">
+                  <Reveal as="li" key={i} x={-12} y={0} delay={0.3 + i * 0.07} className="flex items-start gap-2.5 font-medium text-[18px] lg:text-[20px] leading-8 tracking-[-0.4px] max-md:leading-6 max-md:tracking-[-0.36px]">
                     <Tick />
                     <span>{item}</span>
                   </Reveal>
@@ -92,6 +97,14 @@ export default function SystemCheck({ data, lang = DEFAULT_LANG }) {
               </ul>
             )}
           </Reveal>
+        )}
+
+        {cta_text && cta_url && (
+          <div className="md:hidden">
+            <CtaButton href={langHref(cta_url.trim(), lang)} wrap className="max-w-full">
+              {cta_text}
+            </CtaButton>
+          </div>
         )}
       </div>
     </section>

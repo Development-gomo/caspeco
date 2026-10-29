@@ -866,6 +866,70 @@ span.subheading-label.text-\[var\(--color-accent\)\],
   .cs-p2 { font-size: 20px; line-height: 24px; letter-spacing: -0.4px; }
 }
 
+/* ==========================================
+   MOBILE (< 768px) — Figma "Final Mobile Mockups" (393px frames)
+   The one place for the repeated mobile styling. Every rule sits inside this max-width query,
+   so tablet (768–1023px) and desktop keep their current, client-approved values untouched.
+   Unlayered on purpose: these must win over the Tailwind utilities on the same elements.
+   Per-section exceptions: set the CSS variables (e.g. max-md:[--sec-pb:32px]) or use a
+   max-md:…! utility in the component.
+
+   .cs-title      section H2 — Tenon X-Bold 36 / 102%, -2% (also applied to every .cs-h2)
+   .cs-card-title card / module title — Tenon Bold 26/28, -2%
+   .cs-text       section intro / body — 18/22, -2% (also .cs-p1 / .cs-p2 line-height)
+   .cs-text-sm    small body (card descriptions) — 16/20, -2%
+   .cs-sec        section padding — 64px top and bottom (--sec-pt / --sec-pb to change)
+   .cs-btn        Figma "Button Mobile" — 48px tall, Tenon Bold 16 (set by CtaButton)
+========================================== */
+@media (max-width: 767.98px) {
+  .cs-h2,
+  .cs-title {
+    font-size: 36px;
+    line-height: 36.72px;
+    letter-spacing: -0.72px;
+    font-weight: 800;
+  }
+  .cs-card-title {
+    font-size: 26px;
+    line-height: 28px;
+    letter-spacing: -0.52px;
+    font-weight: 700;
+  }
+  .cs-p1,
+  .cs-p2,
+  .cs-text {
+    font-size: 18px;
+    line-height: 22px;
+    letter-spacing: -0.36px;
+  }
+  .cs-text-sm {
+    font-size: 16px;
+    line-height: 20px;
+    letter-spacing: -0.32px;
+  }
+  .cs-sec {
+    padding-top: var(--sec-pt, 64px);
+    padding-bottom: var(--sec-pb, 64px);
+  }
+  /* yellow / dark: 32px side padding; outline variants: 2px stroke + 36px = Figma 38 */
+  .cs-btn {
+    min-height: 48px;
+    padding: 0 32px;
+    font-size: 16px;
+    line-height: 20px;
+  }
+  .cs-btn.border-2 {
+    padding: 0 36px;
+  }
+  /* every CtaButton fills its container below 768px; add .cs-btn-auto to keep one at its own width */
+  .cs-btn {
+    width: 100%;
+  }
+  .cs-btn.cs-btn-auto {
+    width: auto;
+  }
+}
+
 /* Article body (single post WYSIWYG content) — reading typography from the live
    caspeco.com article page: 18px / 1.65, 16px paragraph spacing, coral list markers */
 .cs-article {
@@ -1112,3 +1176,9 @@ span.subheading-label.text-\[var\(--color-accent\)\],
 /* Contact person: fields → 40 → consent → 40 → button */
 .cs-hubspot--rep fieldset:has(.legal-consent-container) { margin-top: 24px; }
 .cs-hubspot--rep .hs_submit { margin-top: 24px; }
+
+@media (min-width: 1023px) {
+.home #data-insights {
+  padding-top: 0 !important;
+}
+}

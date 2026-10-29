@@ -4,6 +4,8 @@
 // title, featured image and permalink. An optional ACF `icon` image on the CPT
 // overrides the default fork-and-knife icon from the Figma design.
 // Cards run off the right edge (Figma "Card presentation more than 4"); arrows and dots page through.
+// Mobile (< 768, Figma "Tailor your solution mobile"): swipe only, 32px gaps, no arrows, the
+// graded "Slider points" (MobileDots) centred 24px under the cards; section padding 64.
 
 "use client";
 
@@ -62,9 +64,9 @@ function IndustryCard({ card, lang }) {
   );
 }
 
-function Dots({ pages, active, onSelect }) {
+function Dots({ pages, active, onSelect, className = "" }) {
   return (
-    <div className="flex items-center gap-[9px]">
+    <div className={`flex items-center gap-[9px] ${className}`}>
       {Array.from({ length: pages }).map((_, i) => (
         <button
           key={i}
@@ -77,6 +79,32 @@ function Dots({ pages, active, onSelect }) {
           }`}
         />
       ))}
+    </div>
+  );
+}
+
+// Figma mobile "Slider points" (md:hidden): 13 / 10 / 8px by distance from the active snap,
+// 11px apart, inactive #FDFDFD on this section's background (same look as ui/MobileSlider).
+const DOT_SIZE = [13, 10, 8];
+function MobileDots({ pages, active, onSelect }) {
+  if (pages < 2) return null;
+  return (
+    <div className="flex items-center justify-center gap-[11px] md:hidden">
+      {Array.from({ length: pages }, (_, i) => {
+        const d = Math.abs(i - active);
+        if (d > 2) return null;
+        return (
+          <button
+            key={i}
+            type="button"
+            aria-label={`${i + 1} / ${pages}`}
+            aria-current={d === 0 ? "true" : undefined}
+            onClick={() => onSelect(i)}
+            className="shrink-0 cursor-pointer rounded-full transition-[width,height,background-color] duration-300 ease-out"
+            style={{ width: DOT_SIZE[d], height: DOT_SIZE[d], backgroundColor: d === 0 ? "#FFC120" : "#FDFDFD" }}
+          />
+        );
+      })}
     </div>
   );
 }
@@ -97,20 +125,24 @@ export default function HomeIndustrySlider({ data, lang = DEFAULT_LANG, prefetch
 
   return (
     <section
-      className="overflow-hidden pt-12 pb-18 lg:pt-[72px] lg:pb-36"
+      className="cs-sec overflow-hidden pt-12 pb-18 lg:pt-[72px] lg:pb-36"
       style={sectionBackground(data, {
         backgroundImage: "linear-gradient(180deg, rgba(255,255,255,0.5) 0.94%, #dadcdd 80.71%)",
       })}
     >
-      <div className="cs-container flex flex-col gap-10 lg:gap-16">
-        <div className="flex flex-col gap-4">
+      <div className="cs-container flex flex-col gap-10 lg:gap-16 max-md:gap-6">
+        <div className="flex flex-col gap-4 max-md:gap-6">
           {heading && <h2 className="cs-h2 cs-highlight text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
-          {short_text && <div className="cs-p1 cs-rich max-w-[636px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
-          {tagline && <p className="text-[14px] lg:text-[16px] font-medium leading-5 tracking-[-0.32px] text-(--color-heading)">{tagline}</p>}
+          {short_text && <div className="cs-p1 cs-rich max-w-[636px] text-(--color-grey-dark) max-md:font-normal!" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
+          {tagline && (
+            <p className="text-[14px] lg:text-[16px] font-medium leading-5 tracking-[-0.32px] text-(--color-heading) max-md:-mt-1 max-md:text-[18px] max-md:font-bold max-md:leading-[22px] max-md:tracking-[-0.36px]">
+              {tagline}
+            </p>
+          )}
         </div>
 
         {cards.length > 0 && (
-          <div className="flex flex-col items-center gap-8">
+          <div className="flex flex-col items-center gap-8 max-md:gap-6">
             <Swiper
               onSwiper={(s) => {
                 swiperRef.current = s;
@@ -119,8 +151,8 @@ export default function HomeIndustrySlider({ data, lang = DEFAULT_LANG, prefetch
               onSnapGridLengthChange={syncPages}
               onSlideChange={(s) => setActive(s.snapIndex)}
               slidesPerView="auto"
-              spaceBetween={24}
-              breakpoints={{ 1024: { spaceBetween: 48 } }}
+              spaceBetween={32}
+              breakpoints={{ 768: { spaceBetween: 24 }, 1024: { spaceBetween: 48 } }}
               className="w-full !overflow-visible"
             >
               {cards.map((card, i) => (
@@ -131,13 +163,14 @@ export default function HomeIndustrySlider({ data, lang = DEFAULT_LANG, prefetch
             </Swiper>
 
             {/* Figma "Frame 8934350" (industry module): arrows + text link left, dots right */}
-            <div className="flex w-full flex-wrap items-center justify-between gap-6">
+            <div className={`flex w-full flex-wrap items-center justify-between gap-6 ${cta_text && cta_url ? "" : "max-md:hidden"}`}>
               <div className="flex flex-wrap items-center gap-8 lg:gap-12">
-                <SliderArrows index={active} count={pages} onChange={(i) => swiperRef.current?.slideTo(i)} />
+                <SliderArrows index={active} count={pages} onChange={(i) => swiperRef.current?.slideTo(i)} className="max-md:hidden" />
                 {cta_text && cta_url && <ArrowLink href={langHref(cta_url.trim(), lang)}>{cta_text}</ArrowLink>}
               </div>
-              {pages > 1 && <Dots pages={pages} active={active} onSelect={(i) => swiperRef.current?.slideTo(i)} />}
+              {pages > 1 && <Dots pages={pages} active={active} onSelect={(i) => swiperRef.current?.slideTo(i)} className="max-md:hidden" />}
             </div>
+            <MobileDots pages={pages} active={active} onSelect={(i) => swiperRef.current?.slideTo(i)} />
           </div>
         )}
       </div>

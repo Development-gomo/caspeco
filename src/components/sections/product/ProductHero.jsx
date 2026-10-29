@@ -22,7 +22,7 @@ export default function ProductHero({ data, lang = DEFAULT_LANG, overlay }) {
   const bgVideo = mediaUrl(data?.bg_video);
 
   return (
-    <section className="relative isolate flex min-h-[640px] w-full items-end overflow-hidden bg-black lg:min-h-[982px]">
+    <section className="relative isolate flex min-h-[640px] w-full items-end overflow-hidden bg-black lg:min-h-[982px] max-md:min-h-[672px]">
       {/* background settles from a slight zoom on load */}
       <Reveal onMount y={0} scale={1.08} duration={1.6} className="absolute inset-0 -z-10">
         {bgVideo ? (
@@ -33,14 +33,16 @@ export default function ProductHero({ data, lang = DEFAULT_LANG, overlay }) {
       </Reveal>
       {overlay && <div className="absolute inset-0 -z-10" style={{ background: overlay }} aria-hidden />}
 
-      <div className="cs-container flex min-h-[640px] flex-col justify-between gap-16 pt-28 pb-16 lg:min-h-[982px] lg:pt-[148px] lg:pb-36">
+      {/* Mobile (Figma Product 2517:6623 / ICP heroes): 600px below the 72px fixed header, labels 16px
+          under it, content bottom-aligned with 64px below; H1 → text 16, text → CTA 24 */}
+      <div className="cs-container flex min-h-[640px] flex-col justify-between gap-16 pt-28 pb-16 lg:min-h-[982px] lg:pt-[148px] lg:pb-36 max-md:min-h-[672px] max-md:gap-10 max-md:pt-[88px]">
         {/* keeps the heading block at the bottom even without labels */}
         <div>
           <HeroLabels labels={data?.label} lang={lang} />
         </div>
 
-        <div className="flex max-w-[893px] flex-col items-start gap-8 lg:gap-12">
-          <div className="flex flex-col gap-6 lg:gap-8 text-(--color-light-grey)">
+        <div className="flex max-w-[893px] flex-col items-start gap-8 lg:gap-12 max-md:gap-6">
+          <div className="flex flex-col gap-6 lg:gap-8 text-(--color-light-grey) max-md:gap-4">
             <Reveal
               as="h1"
               onMount
@@ -49,10 +51,10 @@ export default function ProductHero({ data, lang = DEFAULT_LANG, overlay }) {
               className="cs-highlight cs-rich normal-case font-extrabold text-[48px] leading-12 tracking-[-1.92px] md:text-[80px] md:leading-[78px] md:tracking-[-3.2px] xl:text-[112px] xl:leading-[104px] xl:tracking-[-4.48px]"
               dangerouslySetInnerHTML={{ __html: toHtml(heading) }}
             />
-            {text && <Reveal onMount delay={0.2} className="cs-p1 cs-rich max-w-[850px]" dangerouslySetInnerHTML={{ __html: toHtml(text) }} />}
+            {text && <Reveal onMount delay={0.2} className="cs-p1 cs-rich max-w-[850px] max-md:text-(--color-grey-medium)" dangerouslySetInnerHTML={{ __html: toHtml(text) }} />}
           </div>
           {((cta_text && cta_url) || (secondary_cta_text && secondary_cta_url)) && (
-            <Reveal onMount delay={0.4} className="flex flex-wrap items-center gap-6">
+            <Reveal onMount delay={0.4} className="flex flex-wrap items-center gap-6 max-md:flex-col max-md:items-start max-md:gap-4">
               {cta_text && cta_url && <CtaButton href={langHref(cta_url.trim(), lang)}>{cta_text}</CtaButton>}
               {secondary_cta_text && secondary_cta_url && (
                 // Figma hero "Light / Secondary" button, 24px right of the primary

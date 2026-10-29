@@ -30,23 +30,25 @@ export default function HomePartners({ data, logos: themeLogos }) {
         <div className="absolute inset-0 -z-2" style={{ backgroundImage: `url(${bgImage})`, backgroundPosition: '100% -10%', backgroundRepeat: 'no-repeat', backgroundSize: 'auto' }} suppressHydrationWarning />
       ) : null}
 
-      {/* MARQUEE SLIDER — Figma "Customer logos desktop": plain dark logos, 120px apart, 97px strip */}
+      {/* MARQUEE SLIDER — Figma "Customer logos desktop": plain dark logos, 120px apart, 97px strip.
+          Mobile (Figma "Customer logos" 2517:4793): 64px strip, logos 24px apart, at most 19px tall / 69px wide
+          (O'Learys 53×19, Skistar 69×10 as in Figma) */}
       <div className="partners-marquee-mask overflow-hidden">
         <div
-          className="partners-marquee-track flex items-center h-[97px]"
+          className="partners-marquee-track flex items-center h-[97px] max-md:h-16"
           style={{
             width: "max-content",
             animation: "partners-marquee 30s linear infinite",
           }}
         >
           {logos.map((logo, index) => (
-            <div key={index} className="flex items-center justify-center shrink-0 pr-16 lg:pr-[120px]">
+            <div key={index} className="flex items-center justify-center shrink-0 pr-16 lg:pr-[120px] max-md:pr-6">
               <Image
                 src={logo.url}
                 alt={logo.alt || logo.title || ""}
                 width={logo.width || 120}
                 height={34}
-                className="partner-logo h-[34px] w-auto max-w-[120px] object-contain "
+                className="partner-logo h-[34px] w-auto max-w-[120px] object-contain max-md:h-[19px] max-md:max-w-[69px]"
               />
             </div>
           ))}

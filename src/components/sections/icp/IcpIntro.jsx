@@ -38,16 +38,18 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
   if (!heading && rolling.length === 0 && !text && !mediaUrl(image)) return null;
 
   const variant = data?.cta_variant === "outline" ? "outline-dark" : "yellow";
-  const headingClass = "cs-h2 cs-highlight cs-rich text-(--color-heading)";
+  // mobile (Figma "USP's"): heading #151411 (desktop stays #000)
+  const headingClass = "cs-h2 cs-highlight cs-rich text-(--color-heading) max-md:text-(--color-black)";
 
   return (
     // Figma section-gap rule: before the light tabs section the intro keeps 72 below (72 + 72)
-    <section className={`overflow-hidden pt-18 lg:pt-36 ${data?._next === "tab_section" ? "pb-12 lg:pb-[72px]" : "pb-18 lg:pb-36"}`} style={sectionBackground(data, { background: GRADIENT })}>
+    // Mobile (Figma "USP's"): 64 top/bottom, text block → image 40, heading → text 16
+    <section className={`cs-sec overflow-hidden pt-18 lg:pt-36 ${data?._next === "tab_section" ? "pb-12 lg:pb-[72px]" : "pb-18 lg:pb-36"}`} style={sectionBackground(data, { background: GRADIENT })}>
       {/* image_postion "left" (Page Builder content_section): image first on desktop */}
-      <div className={`cs-container flex flex-col gap-12 lg:items-center lg:justify-between lg:gap-16 ${data?.image_postion === "left" ? "lg:flex-row-reverse" : "lg:flex-row"}`}>
+      <div className={`cs-container flex flex-col gap-12 max-md:gap-10 lg:items-center lg:justify-between lg:gap-16 ${data?.image_postion === "left" ? "lg:flex-row-reverse" : "lg:flex-row"}`}>
         {/* Opening soon: text 600 wide, centred on the image; Levelling up: rotating heading 850 wide, text 474 */}
         <Reveal className={`flex flex-col items-start gap-6 lg:gap-10 ${rolling.length ? "max-w-[850px]" : "max-w-[600px]"}`}>
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-5 max-md:gap-4">
             {rolling.length > 0 ? (
               // Rotating question: grid stack keeps the height of the longest line, no jumps
               // Figma "ICP_levelling_up_scroll_text": 176px box = heading + 10px above and below
@@ -55,9 +57,8 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.span
                     key={index}
-                    className="col-start-1 row-start-1"
-                    // Figma: #000 — inline, because the global ".cs-h2 span" rule turns spans yellow
-                    style={{ color: "var(--color-heading)" }}
+                    // Figma: #000 (mobile #151411) — important, because the global ".cs-h2 span" rule turns spans yellow
+                    className="col-start-1 row-start-1 text-(--color-heading)! max-md:text-(--color-black)!"
                     initial={{ opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -24 }}
@@ -71,8 +72,9 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
             )}
             {text && (
               // Figma: Regular 20/24 #3F3E3C; the emphasised phrase is Medium Italic #000
+              // Mobile: 18/20 (Opening soon) or 16/20 (Levelling up, rolling heading); emphasis on the same 20px line
               <div
-                className={`cs-p2 cs-rich text-(--color-grey-dark) [&_em]:font-medium [&_em]:leading-8 [&_em]:text-(--color-heading) [&_strong]:font-medium [&_strong]:leading-8 [&_strong]:text-(--color-heading) ${rolling.length ? "max-w-[474px]" : "max-w-[600px]"}`}
+                className={`cs-p2 cs-rich text-(--color-grey-dark) [&_em]:font-medium [&_em]:leading-8 [&_em]:text-(--color-heading) [&_strong]:font-medium [&_strong]:leading-8 [&_strong]:text-(--color-heading) max-md:[&_em]:text-(--color-grey-dark) max-md:[&_strong]:text-(--color-grey-dark) max-md:leading-5! max-md:[&_em]:leading-5 max-md:[&_strong]:leading-5 ${rolling.length ? "max-w-[474px] max-md:text-[16px]! max-md:tracking-[-0.32px]!" : "max-w-[600px]"}`}
                 dangerouslySetInnerHTML={{ __html: toHtml(text) }}
               />
             )}

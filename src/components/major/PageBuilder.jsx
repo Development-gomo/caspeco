@@ -1,6 +1,6 @@
 //src/components/major/PageBuilder.jsx
 
-import { withNeighbours } from "@/lib/content";
+import { rows, withNeighbours } from "@/lib/content";
 import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
 import { getAllServices, getCaseStudies, getAllPosts, getAllTeam, getPostsByIds, getAllIndustries, getTwinCaseStudies, getMediaByIds, getLogoGalleries, getPostsPage } from "@/lib/api";
@@ -172,6 +172,12 @@ export default async function PageBuilder({ sections: rawSections, lang = DEFAUL
             return <HomeRestaurantMap key={i} data={block} lang={lang} />;
 
           case "home_tab_section":
+            // ACF "ICP Tab styling" = enable: the ICP tab design (Figma ICP "Time to build your perfect set up");
+            // its tabs take one image, so the Home tab gallery contributes its first image
+            if (block.icp_tab_styling === "enable") {
+              const icpTabs = rows(block.tabs).map((t) => ({ ...t, image: Array.isArray(t.images) ? t.images[0] : t.images }));
+              return <ProductSalesChannels key={i} data={{ ...block, tabs: icpTabs }} lang={lang} defaultCtaVariant="outline" variant="icp" mobilePanel />;
+            }
             return <HomeHelpTabs key={i} data={block} lang={lang} />;
 
           case "data_insight_section":

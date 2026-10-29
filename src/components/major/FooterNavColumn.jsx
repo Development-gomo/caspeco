@@ -1,9 +1,9 @@
 // src/components/major/FooterNavColumn.jsx
 // One footer nav column (Services / Company / Insights).
-// Desktop (lg+): Figma desktop footer — heading with the links always open.
-// Mobile: Figma "Home_Page_Mobile_Mockup" FOOTER (2517:5308) — accordion. Heading row Bold 24/110%
-// with the #8F8D88 chevron (down when closed, up when open); 16px above/below each #FDFDFD@15%
-// divider; open: links Light 18/110% #FDFDFD, 8px apart and 8px under the heading.
+// md+ (tablet and desktop): unchanged — heading with the links always open.
+// Mobile (< 768px): Figma "Home_Page_Mobile_Mockup" FOOTER (2517:5308) — accordion. Heading row
+// Bold 24 on a 26px line with the #8F8D88 chevron (down when closed, up when open); 16px above and
+// 15px + 1px #FDFDFD@15% rule below each row; open: links Light 18/110% #FDFDFD, 8px apart.
 "use client";
 
 import { useId, useState } from "react";
@@ -18,7 +18,7 @@ export default function FooterNavColumn({ title, links }) {
 
   return (
     // Figma: 26px row, 16 gap, 1px rule (0-height line), 16 gap → 58px pitch, 158 for three
-    <div className="border-b border-(--color-white)/15 pt-4 pb-[15px] first:pt-0 lg:w-[174px] lg:border-0 lg:p-0">
+    <div className="min-w-[150px] lg:w-[174px] max-md:w-full max-md:border-b max-md:border-(--color-white)/15 max-md:pt-4 max-md:pb-[15px] max-md:first:pt-0">
       {title && (
         <>
           <button
@@ -26,7 +26,7 @@ export default function FooterNavColumn({ title, links }) {
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-controls={listId}
-            className={`flex w-full cursor-pointer items-center justify-between gap-4 text-left leading-[26px]! lg:hidden ${HEADING}`}
+            className={`flex w-full cursor-pointer items-center justify-between gap-4 text-left leading-[26px]! md:hidden ${HEADING}`}
           >
             {title}
             {/* Figma "Chevron" (Open = down, Close = rotated 180°) */}
@@ -43,19 +43,19 @@ export default function FooterNavColumn({ title, links }) {
               />
             </svg>
           </button>
-          <p className={`mb-5 hidden lg:block ${HEADING}`}>{title}</p>
+          <p className={`mb-5 max-md:hidden ${HEADING}`}>{title}</p>
         </>
       )}
 
-      {/* collapsed on mobile (invisible keeps the hidden links out of the tab order); always open on lg */}
+      {/* collapsed on mobile (invisible keeps the hidden links out of the tab order); always open from md */}
       <div
         id={listId}
-        className={`grid transition-all duration-300 ease-out lg:visible lg:mt-0 lg:grid-rows-[1fr] lg:opacity-100 ${
-          expanded ? `visible grid-rows-[1fr] opacity-100 ${title ? "mt-2" : ""}` : "invisible grid-rows-[0fr] opacity-0"
+        className={`grid md:visible md:grid-rows-[1fr] md:opacity-100 max-md:transition-all max-md:duration-300 max-md:ease-out ${
+          expanded ? `visible grid-rows-[1fr] opacity-100 ${title ? "max-md:mt-2" : ""}` : "max-md:invisible grid-rows-[0fr] max-md:opacity-0"
         }`}
       >
-        <div className="overflow-hidden">
-          <ul className="space-y-2 text-[18px] font-light leading-[1.1] tracking-[-0.36px] text-(--color-white) lg:space-y-3 lg:text-(--color-grey-medium)">
+        <div className="overflow-hidden md:overflow-visible">
+          <ul className="space-y-3 max-md:space-y-2 text-[18px] font-light leading-[1.1] tracking-[-0.36px] text-(--color-grey-medium) max-md:text-(--color-white)">
             {links.map((item, i) => (
               <li key={i}>
                 <Link href={item.href} className="cs-link-draw hover:text-white">

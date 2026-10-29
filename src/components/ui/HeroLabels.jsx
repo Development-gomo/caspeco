@@ -4,6 +4,7 @@
 // (client request: all hero layouts). ACF: `label` repeater of { label, link }, max 3.
 // If the field is empty (or the layout doesn't have it) the three DEFAULT_LABELS show.
 // Links that are empty or "#" render as plain text. Fades in on load.
+// Mobile (Figma "USP section"): Tenon X-Bold 14/16, -2%, #FDFDFD, 16px apart.
 
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -21,7 +22,7 @@ export default function HeroLabels({ labels, lang = DEFAULT_LANG, className = ""
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
-      className={`flex flex-wrap items-center gap-4 lg:gap-8 font-extrabold text-[16px] lg:text-[20px] leading-[22px] text-white ${className}`}
+      className={`flex flex-wrap items-center gap-4 lg:gap-8 font-extrabold text-[16px] lg:text-[20px] leading-[22px] text-white max-md:text-[14px] max-md:leading-4 max-md:tracking-[-0.28px] max-md:text-(--color-light-grey) ${className}`}
     >
       {items.map((row, i) =>
         row.link && row.link.trim() !== "#" ? (

@@ -19,7 +19,7 @@ const INPUT =
   "w-full rounded-[12px] border bg-white p-4 text-[16px] leading-[19px] text-(--color-grey-dark) outline-none transition-colors placeholder:text-[#8F8D88]";
 // Figma checkbox: 16px, radius 3, white with a 1.2px #3F3E3C border (tick drawn when checked)
 const CHECKBOX =
-  "mt-px size-4 shrink-0 cursor-pointer appearance-none rounded-[3px] border-[1.2px] border-(--color-grey-dark) bg-white bg-center bg-no-repeat checked:bg-[url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='%233F3E3C' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")] focus-visible:outline-2 focus-visible:outline-(--color-yellow)";
+  "mt-px size-4 max-md:size-[18px] shrink-0 cursor-pointer appearance-none rounded-[3px] border-[1.2px] border-(--color-grey-dark) bg-white bg-center bg-no-repeat checked:bg-[url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='%233F3E3C' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")] focus-visible:outline-2 focus-visible:outline-(--color-yellow)";
 const EMPTY = { full_name: "", company: "", contact_method: "call", email: "", phone: "", message: "" };
 
 export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
@@ -64,7 +64,7 @@ export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
   }
 
   const field = (name, label, placeholder, type = "text", autoComplete) => (
-    <div className="flex w-full flex-col gap-2">
+    <div className="flex w-full flex-col gap-2 max-md:gap-1">
       <label htmlFor={`cr-${name}`} className={LABEL}>
         {label}
       </label>
@@ -89,15 +89,17 @@ export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
   ];
 
   return (
-    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-10">
+    // Figma mobile (final 601:14461): card padding 16, everything 16 apart; name + restaurant side by side
+    // (8 apart), labels 4 above their input, textarea 54 tall, consent label Regular 13
+    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-10 max-md:gap-4">
       <div className="flex flex-col gap-4">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 max-md:grid-cols-2 max-md:items-end max-md:gap-2">
           {field("full_name", t("name_label", "Full name"), t("name_placeholder", ""), "text", "name")}
           {field("company", t("company_label", "Restaurant or company"), t("company_placeholder", ""), "text", "organization")}
         </div>
 
-        <fieldset className="flex flex-col gap-2">
-          <legend className={`${LABEL} mb-2`}>{t("method_label", "How should we reach you?")}</legend>
+        <fieldset className="flex flex-col gap-2 max-md:gap-1">
+          <legend className={`${LABEL} mb-2 max-md:mb-0`}>{t("method_label", "How should we reach you?")}</legend>
           {/* Segmented toggle (Figma "Contact method"): #F1F1F1 track (padding 4, radius 12), white
               42px pill (radius 8, shadow 0 2 3 #000@9%) marks the choice; labels Bold 16/20 */}
           <div className="grid grid-cols-2 rounded-[12px] bg-[#F1F1F1] p-1">
@@ -115,12 +117,12 @@ export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
           </div>
         </fieldset>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 max-md:grid-cols-1">
           {field("email", t("email_label", "Email"), t("email_placeholder", ""), "email", "email")}
           {field("phone", t("phone_label", "Phone"), t("phone_placeholder", ""), "tel", "tel")}
         </div>
 
-        <div className="flex w-full flex-col gap-2">
+        <div className="flex w-full flex-col gap-2 max-md:gap-1">
           <label htmlFor="cr-message" className={LABEL}>
             {t("message_label", "Anything we should know? (optional)")}
           </label>
@@ -130,13 +132,13 @@ export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
             value={values.message}
             placeholder={t("message_placeholder", "")}
             onChange={(e) => set("message", e.target.value)}
-            className={`${INPUT} min-h-[97px] border-[#e2e8f0] focus:border-(--color-grey-medium-dark)`}
+            className={`${INPUT} min-h-[97px] max-md:h-[54px] max-md:min-h-0 border-[#e2e8f0] focus:border-(--color-grey-medium-dark)`}
           />
         </div>
       </div>
 
       {(data?.consent_text || data?.newsletter_text) && (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 max-md:gap-4">
           {data?.consent_text && (
             <div>
               <label className="flex cursor-pointer items-start gap-2.5">
@@ -150,7 +152,7 @@ export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
                   className={CHECKBOX}
                 />
                 {/* Figma: Regular 14 #8F8D88, gap 10; the privacy link Medium, underlined, #0B2533 */}
-                <span className="text-[14px] leading-[17px] text-[#8F8D88] [&_a]:font-medium [&_a]:text-(--color-dark-petrol) [&_a]:underline [&_p]:m-0" dangerouslySetInnerHTML={{ __html: data.consent_text }} />
+                <span className="text-[14px] leading-[17px] max-md:leading-[19px] text-[#8F8D88] [&_a]:font-medium [&_a]:text-(--color-dark-petrol) [&_a]:underline [&_p]:m-0" dangerouslySetInnerHTML={{ __html: data.consent_text }} />
               </label>
               {errors.consent && <p className="text-xs text-red-600">{errors.consent}</p>}
             </div>
@@ -158,7 +160,7 @@ export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
           {data?.newsletter_text && (
             <label className="flex cursor-pointer items-start gap-2.5">
               <input type="checkbox" checked={newsletter} onChange={(e) => setNewsletter(e.target.checked)} className={CHECKBOX} />
-              <span className="text-[14px] leading-[17px] text-[#8F8D88]">{data.newsletter_text}</span>
+              <span className="text-[14px] leading-[17px] text-[#8F8D88] max-md:text-[13px] max-md:leading-4 max-md:text-(--color-grey-dark)">{data.newsletter_text}</span>
             </label>
           )}
         </div>
@@ -168,7 +170,7 @@ export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
         <button
           type="submit"
           disabled={state.submitting}
-          className="cursor-pointer select-none rounded-full bg-(--color-yellow) px-[38px] py-4 text-[18px] font-bold leading-[22px] text-(--color-grey-dark) transition-colors duration-600 ease-out hover:bg-(--color-gold) hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+          className="cursor-pointer select-none rounded-full bg-(--color-yellow) px-[38px] py-4 max-md:h-12 max-md:w-full max-md:py-0 text-[18px] font-bold leading-[22px] text-(--color-grey-dark) transition-colors duration-600 ease-out hover:bg-(--color-gold) hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
           {state.submitting ? t("sending_text", "Sending…") : t("cta_text", "Send")}
         </button>
