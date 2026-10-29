@@ -3,7 +3,7 @@
 // heading, text and 3 full-image cards linking to the other ICP pages (title, text and a
 // yellow "Explore →" link over a dark bottom gradient). The whole card is clickable.
 // Mobile (< 768, Figma ICP "Frame 1689"): full-bleed swipe slider of 295×330 cards 32 apart from
-// x24, title 26/28, text Regular 18/22, graded dots 40 below; the card reveal is off on mobile
+// x24, title 26/28, text Regular 18/22, 48 under the intro, graded dots 48 below, padding 64; the card reveal is off on mobile
 // (cards off-screen to the side would otherwise stay invisible until swiped fully in).
 
 "use client";
@@ -31,11 +31,11 @@ export default function StageCards({ data, lang = DEFAULT_LANG }) {
   if (!heading && cards.length === 0) return null;
 
   return (
-    <section className="cs-sec pt-12 pb-18 lg:pt-[72px] lg:pb-36 max-md:[--sec-pb:46px]" style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
-      <div className="cs-container flex flex-col gap-10 lg:gap-16">
+    <section className="cs-sec pt-12 pb-18 lg:pt-[72px] lg:pb-36" style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
+      <div className="cs-container flex flex-col gap-10 max-md:gap-12 lg:gap-16">
         {(heading || short_text) && (
           <Reveal className="flex flex-col gap-6">
-            {heading && <h2 className="cs-h2 cs-highlight cs-rich max-w-[985px] text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+            {heading && <h2 className="cs-h2 cs-highlight cs-rich max-w-[985px] text-(--color-heading) max-md:text-(--color-black)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
             {short_text && <div className="cs-p1 cs-rich max-w-[680px] text-(--color-grey-dark) max-md:font-normal!" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
           </Reveal>
         )}

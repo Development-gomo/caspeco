@@ -61,7 +61,7 @@ export default function PeopleCards({ data, joined = false }) {
             })}
           </div>
         )}
-        {people.length > 1 && <SliderPoints trackRef={trackRef} count={people.length} className="max-md:mt-4" />}
+        {people.length > 1 && <SliderPoints trackRef={trackRef} count={people.length} inactive="#FFFFFF" className="max-md:mt-4" />}
       </div>
     </section>
   );
