@@ -6,7 +6,7 @@
 // (next to its existing grid classes) and MOBILE_SLIDE on each card. Every class is max-md:
 // scoped, so tablet and desktop keep their current layout untouched.
 // Under the track render <SliderPoints trackRef={ref} count={n} /> — the Figma "Slider points"
-// (3 graded dots: active 13px #FFC120, next 10px, then 8px; 11px apart; hidden from md up).
+// (3 graded dots: active 12.6px #FFC120, next 10.1px, then 7.6px; 11.4px apart; hidden from md up).
 
 "use client";
 
@@ -59,9 +59,9 @@ export function useSlideIndex(trackRef, align = "start") {
   return index;
 }
 
-// Figma "Slider points": sizes by distance from the active slide (13 / 10 / 8px); dots three or
+// Figma "Slider points": sizes by distance from the active slide (12.6 / 10.1 / 7.6px); dots three or
 // more slides away are hidden, so a 4-card slider reads 13·10·8 exactly like the mockup.
-const SIZE = [13, 10, 8];
+const SIZE = [12.6, 10.1, 7.6];
 
 export function SliderPoints({ trackRef, count, align = "start", inactive = "#DADCDD", className = "" }) {
   const index = useSlideIndex(trackRef, align);
@@ -79,7 +79,7 @@ export function SliderPoints({ trackRef, count, align = "start", inactive = "#DA
   };
 
   return (
-    <div className={`flex items-center justify-center gap-[11px] md:hidden ${className}`}>
+    <div className={`flex items-center justify-center gap-[11.4px] md:hidden ${className}`}>
       {Array.from({ length: count }, (_, i) => {
         const d = Math.abs(i - index);
         if (d > 2) return null;

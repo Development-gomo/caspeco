@@ -25,8 +25,8 @@ export default function PeopleCards({ data, joined = false }) {
   if (!heading && people.length === 0) return null;
 
   return (
-    <section className={`cs-sec pb-18 lg:pb-36 ${joined ? "pt-14 lg:pt-[100px] max-md:[--sec-pt:40px]" : "pt-18 lg:pt-36"}`} style={joined ? undefined : sectionBackground(data, { background: GRADIENT })}>
-      <div className="cs-container flex flex-col gap-10 lg:gap-16">
+    <section className={`cs-sec pb-18 lg:pb-36 ${joined ? "pt-14 lg:pt-[100px] max-md:[--sec-pt:48px]" : "pt-18 lg:pt-36"}`} style={joined ? undefined : sectionBackground(data, { background: GRADIENT })}>
+      <div className="cs-container flex flex-col gap-10 max-md:gap-8 lg:gap-16">
         {heading && <Reveal as="h2" className="cs-h3 cs-card-title cs-highlight cs-rich font-extrabold! text-black max-md:font-bold!" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
 
         {people.length > 0 && (
@@ -61,7 +61,7 @@ export default function PeopleCards({ data, joined = false }) {
             })}
           </div>
         )}
-        {people.length > 1 && <SliderPoints trackRef={trackRef} count={people.length} />}
+        {people.length > 1 && <SliderPoints trackRef={trackRef} count={people.length} className="max-md:mt-4" />}
       </div>
     </section>
   );
