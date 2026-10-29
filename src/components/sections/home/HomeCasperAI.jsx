@@ -132,12 +132,12 @@ export default function HomeCasperAI({ data, lang = DEFAULT_LANG }) {
           </div>
         ) : (
           mediaUrl(sectionImage) && (
-            // mobile: edge to edge (100% of the screen); the box takes the picture's own ratio so a square image is not letterboxed
+            // mobile (Figma 345×347 card): container width, the box takes the picture's own ratio (square), 8px radius + 10% white border
             <div
-              className="relative w-full lg:w-[570px] aspect-[570/347] shrink-0 lg:mt-[26px] max-md:-mx-6 max-md:w-[calc(100%+3rem)] max-md:aspect-[var(--img-ratio,570/347)]"
+              className="relative w-full lg:w-[570px] aspect-[570/347] shrink-0 lg:mt-[26px] max-md:aspect-[var(--img-ratio,570/347)] max-md:overflow-hidden max-md:rounded-lg max-md:border max-md:border-white/10"
               style={Number(sectionImage?.width) > 0 && Number(sectionImage?.height) > 0 ? { "--img-ratio": `${sectionImage.width} / ${sectionImage.height}` } : undefined}
             >
-              <Image src={mediaUrl(sectionImage)} alt={sectionImage?.alt || ""} fill sizes="(min-width: 1024px) 570px, 100vw" className="object-contain max-md:m-6" />
+              <Image src={mediaUrl(sectionImage)} alt={sectionImage?.alt || ""} fill sizes="(min-width: 1024px) 570px, 100vw" className="object-contain" />
             </div>
           )
         )}
