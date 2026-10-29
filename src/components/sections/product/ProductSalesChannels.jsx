@@ -16,7 +16,7 @@ import Reveal from "@/components/ui/Reveal";
 import CheckList from "./CheckList";
 import { DEFAULT_LANG, langHref } from "@/config";
 import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
-import { MobileTabFade, revealTab, titleHtml } from "../home/HomeHelpTabs";
+import { revealTab, titleHtml } from "../home/HomeHelpTabs";
 
 // panel halves: image enters from the left, copy from the right
 const side = (dir, reduce) => ({
@@ -70,17 +70,13 @@ export default function ProductSalesChannels({ data, lang = DEFAULT_LANG, defaul
 
         {tabs.length > 0 && (
           <Reveal delay={0.15} className={`flex w-full flex-col items-center ${icp ? "gap-10 lg:gap-[97px]" : "gap-6"}`}>
-            {/* Mobile: the wrapper is the fixed-width pill (ICP 48 tall white r56 / Product 49 tall #FDFDFD r50,
-                shadow 0 2 9 10%) and the tabs scroll inside it; md:contents = no box at ≥ 768 */}
-            <div
-              className={`md:contents max-md:relative max-md:w-full ${
-                panel ? "" : `max-md:overflow-hidden max-md:shadow-[0px_2px_9px_rgba(0,0,0,0.1)] ${icp ? "max-md:h-12 max-md:rounded-[56px] max-md:bg-white" : "max-md:h-[49px] max-md:rounded-[50px] max-md:bg-(--color-light-grey)"}`
-              }`}
-            >
-            <div ref={tabScroller} data-tab-scroller className={`max-w-full overflow-x-auto px-1 py-2 [scrollbar-width:none] max-md:p-0 ${panel ? "max-md:overflow-visible" : "max-md:h-full max-md:overscroll-x-contain max-md:[&::-webkit-scrollbar]:hidden"}`}>
+            {/* Mobile: the tabs are a 2×2 grid of chips (Figma "Chip" 167×47, 8 apart, no scrolling pill);
+                md:contents = no box at ≥ 768 */}
+            <div className="md:contents max-md:relative max-md:w-full">
+            <div ref={tabScroller} data-tab-scroller className="max-w-full overflow-x-auto px-1 py-2 [scrollbar-width:none] max-md:overflow-visible max-md:p-0">
               <div
                 role="tablist"
-                className={`flex w-max items-center gap-1 rounded-[56px] bg-white p-[5px] shadow-[0px_2px_4.5px_rgba(0,0,0,0.1)] max-md:rounded-none max-md:bg-transparent max-md:py-0 max-md:shadow-none ${panel ? "max-md:grid max-md:w-full max-md:grid-cols-2 max-md:gap-x-2 max-md:gap-y-[7px] max-md:p-0" : `max-md:h-full ${icp ? "" : "max-md:pl-1.5"}`}`}
+                className={`flex w-max items-center gap-1 rounded-[56px] bg-white p-[5px] shadow-[0px_2px_4.5px_rgba(0,0,0,0.1)] max-md:grid max-md:w-full max-md:grid-cols-2 max-md:rounded-none max-md:bg-transparent max-md:p-0 max-md:shadow-none ${panel ? "max-md:gap-x-2 max-md:gap-y-[7px]" : "max-md:gap-2"}`}
               >
                 {tabs.map((t, i) => (
                   <button
@@ -92,23 +88,24 @@ export default function ProductSalesChannels({ data, lang = DEFAULT_LANG, defaul
                       setActive(i);
                       revealTab(e.currentTarget);
                     }}
-                    // mobile — ICP (Figma "Category tab"): Medium 14, padding 12, active 39 tall #3A3A37 / white,
-                    // inactive 31 tall #121212; Product ("Menu bar item"): Light 16/20 -2%, all 39 tall
+                    // mobile — panel (Figma "Category tab"): 48 tall, border 1, active #3A3A37 / white, inactive white / #DADCDD;
+                    // Product + ICP (Figma "Chip"): 47 tall, border 1.5, Medium 16/20 -2%, active #3F3E3C / white,
+                    // inactive #FDFDFD with #DADCDD stroke / #151411
                     className={`relative h-[39px] cursor-pointer whitespace-nowrap rounded-[50px] px-[14px] text-[16px] lg:text-[18px] leading-[22px] font-medium tracking-[-0.36px] transition-colors duration-300 ${
                       panel
                         ? "max-md:h-12 max-md:border max-md:px-3 max-md:text-[16px] max-md:leading-5 max-md:tracking-normal max-md:whitespace-normal"
-                        : icp ? "max-md:px-3 max-md:text-[14px] max-md:leading-[17px] max-md:tracking-normal" : "max-md:font-light max-md:leading-5 max-md:tracking-[-0.32px]"
+                        : "max-md:h-[47px] max-md:border-[1.5px] max-md:px-[14px] max-md:leading-5 max-md:tracking-[-0.32px] max-md:whitespace-normal"
                     } ${
                       active === i
-                        ? `text-(--color-light-grey) ${panel ? "max-md:border-[#3A3A37] max-md:text-white" : icp ? "max-md:text-white" : ""}`
-                        : `text-(--color-grey-dark) hover:bg-(--color-grey-medium) ${panel ? "max-md:border-[#DADCDD] max-md:bg-white max-md:text-[#151411] max-md:hover:bg-white" : icp ? "max-md:h-[31px] max-md:text-[#121212]" : ""}`
+                        ? `text-(--color-light-grey) max-md:text-white ${panel ? "max-md:border-[#3A3A37]" : "max-md:border-[#3F3E3C]"}`
+                        : `text-(--color-grey-dark) hover:bg-(--color-grey-medium) ${panel ? "max-md:border-[#DADCDD] max-md:bg-white max-md:text-[#151411] max-md:hover:bg-white" : "max-md:border-[#DADCDD] max-md:bg-[#FDFDFD] max-md:text-[#151411] max-md:hover:bg-[#FDFDFD]"}`
                     }`}
                   >
                     {active === i && (
                       <motion.span
                         layoutId={pillId}
                         aria-hidden
-                        className={`absolute inset-0 rounded-[50px] bg-(--color-grey-dark) ${icp ? "max-md:bg-[#3A3A37]" : ""}`}
+                        className={`absolute inset-0 rounded-[50px] bg-(--color-grey-dark) ${panel ? "max-md:bg-[#3A3A37]" : "max-md:bg-[#3F3E3C]"}`}
                         transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 420, damping: 36 }}
                       />
                     )}
@@ -117,7 +114,6 @@ export default function ProductSalesChannels({ data, lang = DEFAULT_LANG, defaul
                 ))}
               </div>
             </div>
-            {!panel && <MobileTabFade scrollerRef={tabScroller} />}
             </div>
 
             <AnimatePresence mode="wait">
