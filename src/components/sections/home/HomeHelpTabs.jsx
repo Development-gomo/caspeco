@@ -208,7 +208,7 @@ export default function HomeHelpTabs({ data, lang = DEFAULT_LANG }) {
             </div>
             </div>
 
-            <div role="tabpanel" className="relative flex w-full flex-col items-center gap-10 lg:flex-row lg:items-start lg:justify-center xl:gap-[120px] max-md:-mx-6 max-md:w-[calc(100%+48px)] max-md:overflow-hidden max-md:bg-[#3A3A37] max-md:px-6 max-md:py-12">
+            <div role="tabpanel" className="relative flex w-full flex-col items-center gap-10 lg:flex-row lg:items-start lg:justify-center xl:gap-[120px] max-md:-mx-6 max-md:w-[calc(100%+48px)] max-md:overflow-hidden max-md:bg-[#3A3A37] max-md:px-6 max-md:pt-12">
               {/* stays mounted so its frames can animate from one tab's layout to the next */}
               {hasCollage && <Collage images={rows(tab.images)} />}
 

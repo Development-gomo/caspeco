@@ -6,7 +6,7 @@
 "use client";
 
 import { useState } from "react";
-import { LABEL_CLASSES, INPUT_CLASSES } from "./ContactForm";
+import { LABEL_CLASSES, INPUT_CLASSES, QUICK_M } from "./ContactForm";
 import { DEFAULT_LANG } from "@/config";
 import { submitForm } from "@/lib/forms";
 import { rows } from "@/lib/content";
@@ -61,7 +61,7 @@ export default function QuickContactForm({ data, lang = DEFAULT_LANG }) {
         {fields.map((f) => {
           const id = `qc-${f.name}`;
           const error = errors[f.name];
-          const border = error ? "border-red-500" : "border-[#e2e8f0] focus:border-(--color-grey-medium-dark)";
+          const border = error ? "border-red-500" : `border-[#e2e8f0] focus:border-(--color-grey-medium-dark) ${QUICK_M.border}`;
           const common = {
             id,
             name: f.name,
@@ -74,13 +74,13 @@ export default function QuickContactForm({ data, lang = DEFAULT_LANG }) {
           };
           return (
             <div key={f.name} className="flex w-full flex-col gap-2">
-              <label htmlFor={id} className={LABEL_CLASSES}>
+              <label htmlFor={id} className={`${LABEL_CLASSES} ${QUICK_M.label}`}>
                 {f.label} {f.required ? "*" : ""}
               </label>
               {f.type === "textarea" ? (
                 <textarea {...common} className={`${common.className} min-h-[140px]`} />
               ) : (
-                <input {...common} type={INPUT_TYPES.includes(f.type) ? f.type : "text"} autoComplete={f.type === "tel" ? "tel" : f.type === "email" ? "email" : undefined} />
+                <input {...common} className={`${common.className} ${QUICK_M.input}`} type={INPUT_TYPES.includes(f.type) ? f.type : "text"} autoComplete={f.type === "tel" ? "tel" : f.type === "email" ? "email" : undefined} />
               )}
               {error && <p className="text-xs text-red-600">{error}</p>}
             </div>
@@ -91,13 +91,13 @@ export default function QuickContactForm({ data, lang = DEFAULT_LANG }) {
       <button
         type="submit"
         disabled={state.submitting}
-        className="w-full cursor-pointer select-none rounded-[100px] bg-(--color-yellow) px-6 py-4 text-[18px] font-bold leading-[22px] text-(--color-grey-dark) transition-colors duration-400 ease-out hover:bg-(--color-gold) hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+        className={`w-full cursor-pointer select-none rounded-[100px] bg-(--color-yellow) px-6 py-4 text-[18px] font-bold leading-[22px] text-(--color-grey-dark) transition-colors duration-400 ease-out hover:bg-(--color-gold) hover:text-white disabled:cursor-not-allowed disabled:opacity-50 ${QUICK_M.button}`}
       >
         {state.submitting ? data?.sending_text || "Sending…" : data?.cta_text || "Get a call"}
       </button>
 
       {consentText && (
-        <div>
+        <div className={QUICK_M.consent}>
           <label className="flex cursor-pointer items-start gap-2">
             <input
               type="checkbox"
@@ -118,7 +118,7 @@ export default function QuickContactForm({ data, lang = DEFAULT_LANG }) {
       )}
 
       {state.msg && (
-        <p role="status" className={`text-sm ${state.ok ? "text-green-700" : "text-red-700"}`}>
+        <p role="status" className={`text-sm ${state.ok ? "text-green-700" : "text-red-700"} ${QUICK_M.msg}`}>
           {state.msg}
         </p>
       )}

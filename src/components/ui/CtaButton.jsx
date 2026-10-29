@@ -9,7 +9,8 @@
 //   yellow / dark  → gold fill #C59A28, white label (Smart Animate 600 ms ease-out)
 //   outline-dark   → yellow fill, dark stroke kept, white label (Dissolve 400 ms ease-out)
 //   outline-dark-grey → dark-grey fill, dark stroke kept, light-grey label (Figma "All insights" Variant2; Insights section)
-//   outline-dark-gold → gold fill, dark stroke kept, white label (Home intro video "Watch Video")
+//   outline-dark-gold → gold fill, dark stroke kept, white label (no longer used by the intro video)
+//   (Home intro video "Watch Video" now uses outline-dark-grey)
 //   outline-light  → yellow fill + stroke (client request), white label (400 ms)
 //   outline-light-yellow → yellow fill, white stroke kept, white label (Integrations, Industry case slider, Casper AI)
 //   outline-soft-yellow → #F1F1F1 stroke + label (Figma "View all cases" on the testimonial carousel), yellow fill on hover

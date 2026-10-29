@@ -8,6 +8,9 @@
 // person_name, designation. The section's own bg_image is used when a case has no image.
 // All quotes share one grid cell, so the section keeps the height of the longest one
 // instead of jumping between slides.
+// Mobile (< 768, Figma Product "Customer testimonial — Mobile"): padding 160 top / 48 bottom,
+// gradient black → black 50%, quote Bold Italic 26/28 white, name 20/24, company Medium 16/20,
+// one controls row (arrows 30 apart left, counter + dashes right).
 
 "use client";
 
@@ -57,12 +60,12 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
           </motion.div>
         )}
       </AnimatePresence>
-      <div className="absolute inset-0 -z-10 bg-linear-to-r from-black to-transparent" aria-hidden />
+      <div className="absolute inset-0 -z-10 bg-linear-to-r from-black to-transparent max-md:to-black/50" aria-hidden />
 
-      <div className="cs-container py-16 lg:py-[72px]">
+      <div className="cs-container py-16 lg:py-[72px] max-md:pt-40 max-md:pb-12">
         <Reveal className="flex flex-col items-start gap-12 lg:gap-16">
           {heading && (
-            <h2 className="cs-h3 cs-highlight cs-rich max-w-[660px] font-extrabold text-(--color-light-grey)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
+            <h2 className="cs-h3 cs-title cs-highlight cs-rich max-w-[660px] font-extrabold text-(--color-light-grey)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
           )}
 
           {/* every quote is rendered in the same cell; only the active one is visible */}
@@ -79,15 +82,15 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
                   className={`flex flex-col justify-end gap-6 text-(--color-light-grey) [grid-area:1/1] ${active ? "" : "pointer-events-none"}`}
                 >
                   <blockquote
-                    className="italic font-bold text-[28px] leading-9 md:text-[36px] md:leading-[46px] xl:text-[42px] xl:leading-[52px]"
+                    className="italic font-bold text-[28px] leading-9 max-md:text-[26px] max-md:leading-7 max-md:text-[#FFFFFF] md:text-[36px] md:leading-[46px] xl:text-[42px] xl:leading-[52px]"
                     dangerouslySetInnerHTML={{ __html: toHtml(slide.quote) }}
                   />
                   {(slide.name || slide.company) && (
                     <figcaption className="flex items-center gap-3">
-                      <span className="h-12 w-[3px] shrink-0 rounded-[10px] bg-(--color-yellow)" aria-hidden />
+                      <span className="h-12 w-[3px] shrink-0 rounded-[10px] bg-(--color-yellow) max-md:rounded-[8px]" aria-hidden />
                       <span className="flex flex-col gap-1">
-                        {slide.name && <span className="font-bold text-[20px] lg:text-[24px] leading-7 tracking-[-0.48px]">{slide.name}</span>}
-                        {slide.company && <span className="font-medium text-[16px] lg:text-[18px] leading-6 tracking-[0.15px]">{slide.company}</span>}
+                        {slide.name && <span className="font-bold text-[20px] lg:text-[24px] leading-7 tracking-[-0.48px] max-md:leading-6 max-md:tracking-[-0.4px]">{slide.name}</span>}
+                        {slide.company && <span className="font-medium text-[16px] lg:text-[18px] leading-6 tracking-[0.15px] max-md:leading-5 max-md:tracking-normal">{slide.company}</span>}
                       </span>
                     </figcaption>
                   )}
@@ -99,9 +102,9 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
           {(slides.length > 1 || hasCta) && (
             <div className="flex w-full flex-wrap items-center justify-between gap-8">
               {slides.length > 1 && (
-                <div className="flex flex-wrap items-center gap-8 lg:gap-12">
-                  <SliderArrows index={index} count={slides.length} onChange={setIndex} />
-                  <div className="flex items-center gap-4 text-[14px] font-semibold leading-5 tracking-[0.1px] text-(--color-light-grey)">
+                <div className="flex flex-wrap items-center gap-8 lg:gap-12 max-md:w-full max-md:justify-between max-md:gap-x-0">
+                  <SliderArrows index={index} count={slides.length} onChange={setIndex} className="max-md:gap-[30px]" />
+                  <div className="flex items-center gap-4 text-[14px] font-semibold leading-5 tracking-[0.1px] text-(--color-light-grey) max-md:flex-col max-md:items-start max-md:gap-[10px]">
                     <span aria-live="polite">
                       {pad(index + 1)} / {pad(slides.length)}
                     </span>
@@ -109,7 +112,7 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
                       {slides.map((_, i) => (
                         <span
                           key={i}
-                          className={`h-[3px] rounded-[2px] transition-all duration-300 ${i === index ? "w-9 bg-(--color-yellow)" : "w-6 bg-(--color-light-grey)"}`}
+                          className={`h-[3px] rounded-[2px] transition-all duration-300 ${i === index ? "w-9 bg-(--color-yellow) max-md:w-[34px]" : "w-6 bg-(--color-light-grey) max-md:w-[23px]"}`}
                         />
                       ))}
                     </div>

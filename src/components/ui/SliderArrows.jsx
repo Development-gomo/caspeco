@@ -1,6 +1,8 @@
 // src/components/ui/SliderArrows.jsx
 // Figma "Arrow navigation slider": two 51px round arrows, 32px apart.
 // Yellow when the step is possible, grey when it isn't (first / last slide).
+// Mobile (< 768, Figma "Final Mobile Mockups"): 48px circles; the gap differs per section, so
+// callers pass it as a max-md: class (e.g. className="max-md:gap-6").
 
 import Image from "next/image";
 import ArrowActive from "../../../public/icons/product/slider-arrow-active.svg";
@@ -20,7 +22,7 @@ function Arrow({ direction, disabled, onClick, label }) {
         alt=""
         width={51.2}
         height={51.2}
-        className={direction === "prev" ? "rotate-180" : ""}
+        className={`max-md:size-12 ${direction === "prev" ? "rotate-180" : ""}`}
       />
     </button>
   );

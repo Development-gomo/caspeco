@@ -1176,3 +1176,9 @@ span.subheading-label.text-\[var\(--color-accent\)\],
 /* Contact person: fields → 40 → consent → 40 → button */
 .cs-hubspot--rep fieldset:has(.legal-consent-container) { margin-top: 24px; }
 .cs-hubspot--rep .hs_submit { margin-top: 24px; }
+
+@media (min-width: 1023px) {
+.home #data-insights {
+  padding-top: 0 !important;
+}
+}

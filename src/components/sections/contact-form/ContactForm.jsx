@@ -14,15 +14,27 @@ export const LABEL_CLASSES = "block text-[16px] font-bold leading-5 tracking-[-0
 export const INPUT_CLASSES =
   "w-full rounded-[12px] border p-[15px] text-[16px] leading-[19px] text-(--color-grey-dark) outline-none " +
   "placeholder:text-(--color-grey-medium-dark) bg-white";
+// Quick contact card on mobile (Figma "Contact card" 2517:5286, < 768 only): label Bold 14/20 #3E3D3B;
+// single-line inputs 48 tall (padding 0 16), radius 8, 1px #DCE3EC, text 16/20, placeholder #92908C;
+// fields → 32 → consent → 24 → button 48 tall, Bold 16/20
+export const QUICK_M = {
+  label: "max-md:text-[14px] max-md:tracking-normal max-md:text-[#3E3D3B]",
+  input: "max-md:h-12 max-md:rounded-[8px] max-md:px-4 max-md:py-0 max-md:leading-5 max-md:placeholder:text-[#92908C]",
+  border: "max-md:border-[#DCE3EC]",
+  consent: "max-md:order-1 max-md:mt-2",
+  button: "max-md:order-2 max-md:h-12 max-md:py-0 max-md:text-[16px] max-md:leading-5",
+  msg: "max-md:order-3",
+};
 
-function Field({ field, value, setValue, error }) {
+function Field({ field, value, setValue, error, quick = false }) {
   const label = field.label || field.key;
-  const borderClass = error ? "border-red-500" : "border-[#e2e8f0] focus:border-(--color-grey-medium-dark)";
+  const borderClass = error ? "border-red-500" : `border-[#e2e8f0] focus:border-(--color-grey-medium-dark) ${quick ? QUICK_M.border : ""}`;
+  const labelClass = `${LABEL_CLASSES} ${quick ? QUICK_M.label : ""}`;
 
   if (field.type === "textarea") {
     return (
       <div className="space-y-2 w-full">
-        <label className={LABEL_CLASSES}>
+        <label className={labelClass}>
           {label} {field.required ? "*" : ""}
         </label>
         <textarea
@@ -39,11 +51,11 @@ function Field({ field, value, setValue, error }) {
   if (field.type === "select") {
     return (
       <div className="space-y-2 w-full">
-        <label className={LABEL_CLASSES}>
+        <label className={labelClass}>
           {label} {field.required ? "*" : ""}
         </label>
         <select
-          className={`${INPUT_CLASSES} ${borderClass}`}
+          className={`${INPUT_CLASSES} ${borderClass} ${quick ? QUICK_M.input : ""}`}
           value={value || ""}
           onChange={(e) => setValue(field.key, e.target.value)}
         >
@@ -87,11 +99,11 @@ function Field({ field, value, setValue, error }) {
 
   return (
     <div className="space-y-2 w-full">
-      <label className={LABEL_CLASSES}>
+      <label className={labelClass}>
         {label} {field.required ? "*" : ""}
       </label>
       <input
-        className={`${INPUT_CLASSES} ${borderClass}`}
+        className={`${INPUT_CLASSES} ${borderClass} ${quick ? QUICK_M.input : ""}`}
         type={type}
         value={value || ""}
         placeholder={field.placeholder || ""}
@@ -102,7 +114,8 @@ function Field({ field, value, setValue, error }) {
   );
 }
 
-export default function ContactForm({ formId = 982, lang = DEFAULT_LANG, submitLabel = "Send Message" }) {
+// quick: rendered in the Quick contact card (QuickContact) — adds the Figma mobile field styling (QUICK_M)
+export default function ContactForm({ formId = 982, lang = DEFAULT_LANG, submitLabel = "Send Message", quick = false }) {
   const [schema, setSchema] = useState(null);
   const [values, setValues] = useState({});
   const [errors, setErrors] = useState({});
@@ -278,6 +291,7 @@ export default function ContactForm({ formId = 982, lang = DEFAULT_LANG, submitL
             value={values[f.key]}
             setValue={setValue}
             error={errors[f.key]}
+            quick={quick}
           />
         ))}
       </div>
@@ -285,29 +299,26 @@ export default function ContactForm({ formId = 982, lang = DEFAULT_LANG, submitL
       <button
         type="submit"
         disabled={state.submitting}
-        className="w-full cursor-pointer select-none
+        className={`w-full cursor-pointer select-none
                     rounded-[100px] bg-(--color-yellow) px-6 py-4
                     text-[18px] font-bold leading-[22px] text-(--color-grey-dark)
                     transition-colors duration-400 ease-out hover:bg-(--color-gold) hover:text-white
                     disabled:opacity-50 disabled:cursor-not-allowed
-                  "
+                    ${quick ? QUICK_M.button : ""}
+                  `}
       >
         {state.submitting ? "Sending…" : submitLabel}
       </button>
 
       {acceptanceFields.map((f) => (
-        <Field
-          key={f.key}
-          field={f}
-          value={values[f.key]}
-          setValue={setValue}
-          error={errors[f.key]}
-        />
+        <div key={f.key} className={quick ? QUICK_M.consent : undefined}>
+          <Field field={f} value={values[f.key]} setValue={setValue} error={errors[f.key]} quick={quick} />
+        </div>
       ))}
 
       {state.msg ? (
         <p
-          className={`text-sm ${state.ok ? "text-green-700" : "text-red-700"}`}
+          className={`text-sm ${state.ok ? "text-green-700" : "text-red-700"} ${quick ? QUICK_M.msg : ""}`}
         >
           {state.msg}
         </p>

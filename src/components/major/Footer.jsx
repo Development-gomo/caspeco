@@ -165,7 +165,7 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
                 Mobile Figma (2517:5342): full-width row, padding 24, gap 24, 2px #FFC120 inside
                 stroke, radial gradient from the top-left at 40%, number Bold 54/56, text Regular 16/16. */}
             {statCard.stat_number && (
-              <div className="group relative shrink-0 size-60 overflow-hidden rounded-lg pt-[22px] pb-8 px-5 flex flex-col justify-between bg-(--color-grey-dark) shadow-[0px_4px_12px_0px_rgba(0,0,0,0.16)] max-md:order-3 max-md:size-auto max-md:w-full max-md:flex-row max-md:items-center max-md:justify-start max-md:gap-6 max-md:border-2 max-md:border-(--color-yellow) max-md:bg-transparent max-md:p-[22px]">
+              <div className="group relative shrink-0 size-60 overflow-hidden rounded-lg pt-[22px] pb-8 px-5 flex flex-col justify-between bg-(--color-grey-dark) shadow-[0px_4px_12px_0px_rgba(0,0,0,0.16)] max-md:order-3 max-md:size-auto max-md:w-full max-md:flex-row max-md:items-center max-md:justify-start max-md:gap-6 max-md:bg-transparent max-md:p-[22px]">
                 <span
                   aria-hidden
                   className="absolute inset-0 md:hidden"

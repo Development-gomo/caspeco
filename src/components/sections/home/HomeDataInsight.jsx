@@ -75,7 +75,7 @@ export default function HomeDataInsight({ data, variant }) {
     // Mobile (Figma Home "Frame 8934297" 601:9172): 64 top and bottom (cs-sec), H2 -> card 40 (ICP 32);
     // card 32/24 padding, blocks 32 apart. Content hidden on mobile: the intro paragraph and the USP icons /
     // descriptions — the USPs show as yellow-check lines (X-Bold 18/22, 8 apart, check 8 before the label)
-    <section
+    <section id="data-insights"
       className={`cs-sec ${icp && data?._prev === "home_kpi_section" ? "pt-12 lg:pt-[72px]" : "pt-18 lg:pt-36"} ${icp ? "pb-18 lg:pb-36" : "pb-12 lg:pb-[72px]"}`}
       style={sectionBackground(data, { background: "var(--color-light-grey)" })}
     >
