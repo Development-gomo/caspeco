@@ -64,7 +64,7 @@ export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
   }
 
   const field = (name, label, placeholder, type = "text", autoComplete) => (
-    <div className="flex w-full flex-col gap-2">
+    <div className="flex w-full flex-col gap-2 max-md:gap-1">
       <label htmlFor={`cr-${name}`} className={LABEL}>
         {label}
       </label>
@@ -89,16 +89,17 @@ export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
   ];
 
   return (
-    // Figma mobile ("Contact form" 2517:13091): one column, fields 20 apart; fields → 32 → consent → 32 → button
-    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-10 max-md:gap-8">
-      <div className="flex flex-col gap-4 max-md:gap-5">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 max-md:grid-cols-1 max-md:gap-5">
+    // Figma mobile (final 601:14461): card padding 16, everything 16 apart; name + restaurant side by side
+    // (8 apart), labels 4 above their input, textarea 54 tall, consent label Regular 13
+    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-10 max-md:gap-4">
+      <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 max-md:grid-cols-2 max-md:items-end max-md:gap-2">
           {field("full_name", t("name_label", "Full name"), t("name_placeholder", ""), "text", "name")}
           {field("company", t("company_label", "Restaurant or company"), t("company_placeholder", ""), "text", "organization")}
         </div>
 
-        <fieldset className="flex flex-col gap-2">
-          <legend className={`${LABEL} mb-2`}>{t("method_label", "How should we reach you?")}</legend>
+        <fieldset className="flex flex-col gap-2 max-md:gap-1">
+          <legend className={`${LABEL} mb-2 max-md:mb-0`}>{t("method_label", "How should we reach you?")}</legend>
           {/* Segmented toggle (Figma "Contact method"): #F1F1F1 track (padding 4, radius 12), white
               42px pill (radius 8, shadow 0 2 3 #000@9%) marks the choice; labels Bold 16/20 */}
           <div className="grid grid-cols-2 rounded-[12px] bg-[#F1F1F1] p-1">
@@ -116,12 +117,12 @@ export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
           </div>
         </fieldset>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 max-md:grid-cols-1 max-md:gap-5">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 max-md:grid-cols-1">
           {field("email", t("email_label", "Email"), t("email_placeholder", ""), "email", "email")}
           {field("phone", t("phone_label", "Phone"), t("phone_placeholder", ""), "tel", "tel")}
         </div>
 
-        <div className="flex w-full flex-col gap-2">
+        <div className="flex w-full flex-col gap-2 max-md:gap-1">
           <label htmlFor="cr-message" className={LABEL}>
             {t("message_label", "Anything we should know? (optional)")}
           </label>
@@ -131,7 +132,7 @@ export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
             value={values.message}
             placeholder={t("message_placeholder", "")}
             onChange={(e) => set("message", e.target.value)}
-            className={`${INPUT} min-h-[97px] max-md:min-h-[112px] border-[#e2e8f0] focus:border-(--color-grey-medium-dark)`}
+            className={`${INPUT} min-h-[97px] max-md:h-[54px] max-md:min-h-0 border-[#e2e8f0] focus:border-(--color-grey-medium-dark)`}
           />
         </div>
       </div>
@@ -159,7 +160,7 @@ export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
           {data?.newsletter_text && (
             <label className="flex cursor-pointer items-start gap-2.5">
               <input type="checkbox" checked={newsletter} onChange={(e) => setNewsletter(e.target.checked)} className={CHECKBOX} />
-              <span className="text-[14px] leading-[17px] max-md:leading-[19px] text-[#8F8D88]">{data.newsletter_text}</span>
+              <span className="text-[14px] leading-[17px] text-[#8F8D88] max-md:text-[13px] max-md:leading-4 max-md:text-(--color-grey-dark)">{data.newsletter_text}</span>
             </label>
           )}
         </div>

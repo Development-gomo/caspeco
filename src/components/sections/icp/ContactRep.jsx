@@ -31,17 +31,17 @@ export default function ContactRep({ data, lang = DEFAULT_LANG, rep, form, tone 
       {/* Figma: photo with 31.2px layer blur, no extra overlay */}
       {bg && <Image src={bg} alt="" fill sizes="100vw" className="-z-10 scale-110 object-cover blur-[31.2px]" />}
 
-      {/* Figma mobile ("Let's talk … — Mobile"): heading → 20 → text → 32 → rep card → 32 → form card */}
-      <div className="cs-container flex flex-col gap-12 max-md:gap-8 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
-        <Reveal className={`flex flex-col gap-10 max-md:gap-8 lg:max-w-[549px] ${light ? "text-(--color-grey-dark)" : "text-(--color-white)"}`}>
+      {/* Figma mobile (final 601:14461): heading → 20 → text → 24 → compact rep pill → 24 → form card */}
+      <div className="cs-container flex flex-col gap-12 max-md:gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
+        <Reveal className={`flex flex-col gap-10 max-md:gap-6 lg:max-w-[549px] ${light ? "text-(--color-grey-dark)" : "text-(--color-white)"}`}>
           <div className="flex flex-col gap-[30px] max-md:gap-5">
             {eyebrow && <p className="-mb-3.5 italic text-[24px] leading-7 tracking-[-0.48px]">{eyebrow}</p>}
             <h2 className={`cs-h2 cs-highlight cs-rich ${light ? "text-(--color-black)" : ""}`} dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
-            {short_text && <div className="cs-p1 cs-rich" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
+            {short_text && <div className="cs-p1 cs-rich max-md:font-medium!" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
           </div>
 
           {photo && (
-            <figure className="relative aspect-[400/391] max-md:aspect-[345/334] w-full max-w-[400px] max-md:max-w-none overflow-hidden rounded-[8px] border-[3px] border-[#D8D8D8]">
+            <figure className="relative aspect-[400/391] max-md:hidden w-full max-w-[400px] overflow-hidden rounded-[8px] border-[3px] border-[#D8D8D8]">
               <Image src={photo} alt={rep?.alt || rep_name || ""} fill sizes="400px" className="object-cover" />
               {(rep_name || rep_role) && (
                 // Glass name bar (Figma "Representative details")
@@ -57,11 +57,24 @@ export default function ContactRep({ data, lang = DEFAULT_LANG, rep, form, tone 
               )}
             </figure>
           )}
+          {/* mobile: compact glass pill (Figma "Group 1810"): #FDFDFD@8%, 1px #FDFDFD@14%, avatar 52, rule 2×37 */}
+          {photo && (
+            <figure className="flex items-center gap-4 rounded-[8px] border border-[rgba(253,253,253,0.14)] bg-[rgba(253,253,253,0.08)] px-4 py-[8.5px] md:hidden">
+              <span className="relative size-[52px] shrink-0 overflow-hidden rounded-full">
+                <Image src={photo} alt={rep?.alt || rep_name || ""} fill sizes="52px" className="object-cover" />
+              </span>
+              <span className="h-[37px] w-0.5 shrink-0 rounded-[1.4px] bg-(--color-yellow)" aria-hidden />
+              <figcaption className="flex min-w-0 flex-col gap-px">
+                {rep_name && <span className="font-bold text-[15px] leading-[21px] text-(--color-light-grey)">{rep_name}</span>}
+                {rep_role && <span className="text-[12px] leading-[14px] text-[#BFC3C5]">{rep_role}</span>}
+              </figcaption>
+            </figure>
+          )}
         </Reveal>
 
         {/* Figma "Contact form": 691 wide (overhangs the 1272 container by 32px), padding 40, #FBFAF9,
             1px #E2E8F0 inside stroke (inset shadow, so the content stays 611 wide), shadow 0 2 9 #000@10% */}
-        <Reveal x={40} y={0} delay={0.15} className="w-full rounded-[8px] bg-[#FBFAF9] p-6 shadow-[inset_0_0_0_1px_#E2E8F0,0px_2px_9px_rgba(0,0,0,0.1)] sm:p-10 max-md:p-5! lg:-mr-8 lg:w-[691px] lg:flex-none">
+        <Reveal x={40} y={0} delay={0.15} className="w-full rounded-[8px] bg-[#FBFAF9] p-6 shadow-[inset_0_0_0_1px_#E2E8F0,0px_2px_9px_rgba(0,0,0,0.1)] sm:p-10 max-md:p-4! lg:-mr-8 lg:w-[691px] lg:flex-none">
           {form || <ContactRepForm data={data} lang={lang} />}
         </Reveal>
       </div>
