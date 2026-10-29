@@ -6,9 +6,10 @@
 // grey → white gradient. (promise_title / promise_text from older content still render.)
 // Motion: heading/cards reveal on scroll (staggered), the big stat counts up, cards lift on
 // hover and their photo zooms slightly.
-// Mobile (< 768, Figma Industry mobile): padding 64 top (0 before the tabs), H2 without the forced
-// <br>, feature card padding 48/24/24/24 gap 24 (stat Bold 80/80 -8px, text Bold 26/28, 12 apart),
-// cards stacked 16 apart: padding 24, icon → body 48, title Bold 26/28, text Regular 18/22.
+// Mobile (< 768, final Figma Industry 601:9981): padding 64 top (0 before the tabs), H2 without the
+// forced <br>, 48 under the H2, feature card padding 48/24/24/24 gap 24 (stat Bold 80/80 -8px, text
+// Bold 26/28, 12 apart), cards stacked 16 apart: padding 24, no icon, title Bold 26/28, 8, text
+// Regular 18/22.
 
 import Image from "next/image";
 import CountUp from "@/components/ui/CountUp";
@@ -29,7 +30,7 @@ function ChallengeCard({ item, index }) {
   return (
     <Reveal
       delay={0.15 + index * 0.08}
-      className="group relative isolate flex min-h-[228px] flex-col justify-between gap-8 overflow-hidden max-md:min-h-0 max-md:justify-start max-md:gap-12 rounded-[8px] bg-(--color-dark-petrol) p-6 text-(--color-light-grey) shadow-[0px_4px_6px_rgba(0,0,0,0.16)] transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0px_10px_24px_rgba(0,0,0,0.25)] lg:p-8"
+      className="group relative isolate flex min-h-[228px] flex-col justify-between gap-8 overflow-hidden max-md:min-h-0 max-md:justify-start max-md:gap-0 rounded-[8px] bg-(--color-dark-petrol) p-6 text-(--color-light-grey) shadow-[0px_4px_6px_rgba(0,0,0,0.16)] transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0px_10px_24px_rgba(0,0,0,0.25)] lg:p-8 max-md:shadow-none"
     >
       {photo && (
         <Image
@@ -42,7 +43,7 @@ function ChallengeCard({ item, index }) {
       )}
       {photo && <span className="absolute inset-0 -z-10 bg-linear-to-b from-black/45 to-black/75" aria-hidden />}
 
-      <span className="flex size-9 items-center justify-center rounded-full bg-(--color-yellow)">
+      <span className="flex size-9 items-center justify-center rounded-full bg-(--color-yellow) max-md:hidden">
         {icon && <Image src={icon} alt="" width={18} height={18} className="size-[18px] object-contain brightness-0" />}
       </span>
       <div className="flex flex-col gap-2">
@@ -64,7 +65,7 @@ export default function IndustryChallenges({ data, lang = DEFAULT_LANG }) {
 
   return (
     <section className={`cs-sec pt-18 lg:pt-36 ${data?._next === "home_tab_section" ? "pb-12 max-md:[--sec-pb:0px] lg:pb-[72px]" : "pb-18 lg:pb-36"}`} style={sectionBackground(data, fallback)}>
-      <div className="cs-container flex flex-col gap-10 lg:gap-16">
+      <div className="cs-container flex flex-col gap-10 max-md:gap-12 lg:gap-16">
         {heading && (
           // Mobile: the editor's forced line breaks are for desktop; below 768 they become a space so the
           // heading wraps naturally (Figma mobile: 3 lines)
