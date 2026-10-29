@@ -14,7 +14,7 @@ const IndustryTestimonials = dynamic(() => import("./industry/IndustryTestimonia
 export default function TestimonialSlider({ data, lang, cases = [], defaultType = "fullwidth" }) {
   const type = data?.slider_type === "card" || data?.slider_type === "fullwidth" ? data.slider_type : defaultType;
   return type === "card" ? (
-    <IndustryTestimonials data={data} lang={lang} cases={cases} />
+    <IndustryTestimonials data={data} lang={lang} cases={cases} variant="industry" />
   ) : (
     <ProductTestimonials data={data} lang={lang} cases={cases} />
   );
