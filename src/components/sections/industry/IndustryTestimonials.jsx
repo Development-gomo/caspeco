@@ -25,7 +25,7 @@ import Reveal from "@/components/ui/Reveal";
 import SliderArrows from "@/components/ui/SliderArrows";
 import { GLASS_CLASS, GLASS_STYLE } from "@/components/ui/glass";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { mediaUrl, toHtml } from "@/lib/content";
+import { curlyQuote, mediaUrl, toHtml } from "@/lib/content";
 
 const pad = (n) => String(n).padStart(2, "0");
 
@@ -37,13 +37,6 @@ const MAX_CASES = 4;
 
 // Figma: the accent bar next to the name cycles #FFC120 → #FF8D6A → #1F8690 (3×48, radius 10)
 const ACCENTS = ["#FFC120", "#FF8D6A", "#1F8690"];
-
-// Plain-text quote in curly quotes (Figma: “The whole staff learned so quickly.”)
-const curly = (q) => {
-  if (!q || /<[a-z][\s\S]*>/i.test(q)) return q;
-  const text = q.trim().replace(/^["“”']+|["“”']+$/g, "");
-  return `“${text}”`;
-};
 
 function QuoteCard({ card, lang, accent }) {
   const logo = mediaUrl(card.logo);
@@ -64,7 +57,7 @@ function QuoteCard({ card, lang, accent }) {
       {card.quote && (
         <blockquote
           className="font-bold text-[26px] leading-8 tracking-[-0.52px] max-md:leading-7 lg:text-[32px] lg:leading-8 lg:tracking-[-0.64px]"
-          dangerouslySetInnerHTML={{ __html: toHtml(curly(card.quote)) }}
+          dangerouslySetInnerHTML={{ __html: toHtml(curlyQuote(card.quote)) }}
         />
       )}
       <figcaption className={`flex items-end justify-between gap-4 ${card.quote ? "" : "mt-auto"}`}>

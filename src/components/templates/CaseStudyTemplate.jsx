@@ -16,7 +16,7 @@ export default function CaseStudyTemplate({ caseStudy, lang, slug, themeOptions 
   return (
     <Shell lang={lang} slug={slug} entryType="casestudies" routeType="casestudy" entryId={caseStudy?.id} themeOptions={themeOptions} hideQuickContact={hasForm}>
       {hasPageBuilder ? (
-        <CasePageBuilder sections={acf.page_builder} lang={lang} currentId={caseStudy?.id} />
+        <CasePageBuilder sections={acf.page_builder} lang={lang} currentId={caseStudy?.id} logo={acf.logo} />
       ) : (
         <CaseStudyBuilder sections={acf.case_study_builder} lang={lang} />
       )}

@@ -20,7 +20,7 @@ const RelatedCases = dynamic(() => import("../sections/case-study/RelatedCases")
 const IndustryChallenges = dynamic(() => import("../sections/industry/IndustryChallenges"));
 const ProductTestimonials = dynamic(() => import("../sections/product/ProductTestimonials"));
 
-export default async function CasePageBuilder({ sections: rawSections, lang = DEFAULT_LANG, currentId }) {
+export default async function CasePageBuilder({ sections: rawSections, lang = DEFAULT_LANG, currentId, logo }) {
   const sections = withNeighbours(rawSections); // _prev/_next per block (Figma section-gap rule)
   if (!Array.isArray(sections) || sections.length === 0) return null;
 
@@ -57,7 +57,7 @@ export default async function CasePageBuilder({ sections: rawSections, lang = DE
                 key={i}
                 lang={lang}
                 data={block}
-                cases={rows(block.testimonial).map((t) => ({ quote: t.testimonial_text, personName: t.person_name, designation: t.designation }))}
+                cases={rows(block.testimonial).map((t) => ({ quote: t.testimonial_text, personName: t.person_name, designation: t.designation, logo: logo?.url ? { url: logo.url, alt: logo.alt || "" } : null }))}
               />
             );
 

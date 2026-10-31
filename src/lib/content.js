@@ -8,6 +8,12 @@
  * textarea (e.g. <strong>last month</strong>) are kept, so editors can mark
  * the yellow highlight in either field type.
  */
+// Plain-text quote wrapped in curly quotes (“…”); HTML quotes and empty values are returned as is
+export function curlyQuote(q) {
+  if (!q || /<[a-z][\s\S]*>/i.test(q)) return q;
+  return `“${q.trim().replace(/^["“”']+|["“”']+$/g, "")}”`;
+}
+
 export function toHtml(value) {
   if (!value || typeof value !== "string") return "";
   const trimmed = value.trim();

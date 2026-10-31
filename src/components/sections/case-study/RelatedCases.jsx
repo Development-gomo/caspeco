@@ -15,6 +15,8 @@ import Reveal from "@/components/ui/Reveal";
 import SliderArrows from "@/components/ui/SliderArrows";
 import { DEFAULT_LANG, entryHref } from "@/config";
 import { sectionBackground, toHtml } from "@/lib/content";
+import { postStrings } from "@/lib/postStrings";
+import ArrowLight from "../../../../public/icons/home/arrow-light.svg";
 
 const MAX_CASES = 12;
 
@@ -23,7 +25,8 @@ export default function RelatedCases({ data, lang = DEFAULT_LANG, cases = [] }) 
   const swiperRef = React.useRef(null);
   const [index, setIndex] = React.useState(0);
   const [snapCount, setSnapCount] = React.useState(1);
-  const { heading, short_text } = data || {};
+  const { heading, short_text, read_more_text } = data || {};
+  const readMore = read_more_text || postStrings(lang).readFullCase;
   if (list.length === 0) return null;
 
   // Dots follow Swiper's real snap positions (with 3.2 slides visible the last slides share one position)
@@ -69,13 +72,36 @@ export default function RelatedCases({ data, lang = DEFAULT_LANG, cases = [] }) 
                 <SwiperSlide key={c.id} className="!h-auto">
                   <Link
                     href={entryHref("casestudy", c.slug, lang)}
-                    className="group relative flex h-[380px] flex-col justify-end overflow-hidden rounded-[16px] bg-(--color-black) p-6 text-(--color-white) shadow-[0px_4px_12px_rgba(0,0,0,0.16)] lg:h-[422px] lg:p-8 max-md:h-[330px]"
+                    className="group relative flex h-[480px] flex-col justify-end overflow-hidden rounded-[16px] bg-(--color-black) p-6 text-(--color-white) shadow-[0px_4px_12px_rgba(0,0,0,0.16)] lg:h-[540px] lg:p-8 max-md:h-[460px]"
                   >
                     <Image src={image.url} alt={image.alt || ""} fill sizes="(min-width: 1280px) 403px, (min-width: 768px) 45vw, 85vw" className="object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
                     <span className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0, 0, 0, 0) 19.8%, #000 100%)" }} aria-hidden />
-                    <div className="relative flex flex-col gap-3">
-                      {c.industry && <span className="text-[14px] font-bold uppercase leading-4 tracking-[0.6px] text-(--color-yellow)">{c.industry}</span>}
+                    {c.logo?.url && (
+                      <Image
+                        src={c.logo.url}
+                        alt={c.logo.alt || c.title || ""}
+                        width={134}
+                        height={48}
+                        unoptimized={/\.svg(\?|$)/i.test(c.logo.url)}
+                        className="absolute left-6 top-6 h-9 w-auto max-w-[134px] object-contain object-left lg:left-8 lg:top-8 lg:h-12"
+                      />
+                    )}
+                    <div className="relative flex flex-col gap-6">
                       <h3 className="font-bold text-[26px] lg:text-[32px] leading-[1.1] tracking-[-0.64px] normal-case max-md:leading-7 max-md:tracking-[-0.52px]">{c.title}</h3>
+                      {(c.personName || c.designation) && (
+                        <div className="flex items-center gap-3">
+                          <span className="h-12 w-[3px] shrink-0 rounded-[10px] bg-(--color-yellow)" aria-hidden />
+                          <span className="flex flex-col gap-1">
+                            {c.personName && <span className="font-bold text-[20px] leading-6 tracking-[-0.4px]">{c.personName}</span>}
+                            {c.designation && <span className="font-medium text-[16px] leading-5">{c.designation}</span>}
+                          </span>
+                        </div>
+                      )}
+                      {/* the whole card is the link, so this is styled like ArrowLink but is not an anchor */}
+                      <span className="inline-flex items-center gap-2 self-end text-[16px] font-medium leading-5 tracking-[-0.32px] text-(--color-light-grey)">
+                        <span className="underline decoration-1 underline-offset-2">{readMore}</span>
+                        <Image src={ArrowLight} alt="" width={17.5} height={11} className="transition-transform duration-300 group-hover:translate-x-1" />
+                      </span>
                     </div>
                   </Link>
                 </SwiperSlide>

@@ -21,7 +21,7 @@ import CtaButton from "@/components/ui/CtaButton";
 import SliderArrows from "@/components/ui/SliderArrows";
 import Reveal from "@/components/ui/Reveal";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { mediaUrl, toHtml } from "@/lib/content";
+import { curlyQuote, mediaUrl, toHtml } from "@/lib/content";
 
 const pad = (n) => String(n).padStart(2, "0");
 const MAX_CASES = 6;
@@ -33,6 +33,7 @@ const caseToSlide = (c) => ({
   quote: c.quote,
   name: c.personName,
   company: c.designation,
+  logo: c.logo,
 });
 
 export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases = [] }) {
@@ -62,7 +63,7 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
       </AnimatePresence>
       <div className="absolute inset-0 -z-10 bg-linear-to-r from-black to-transparent max-md:to-black/50" aria-hidden />
 
-      <div className="cs-container py-16 lg:py-[72px] max-md:pt-40 max-md:pb-12">
+      <div className="cs-container py-16 lg:py-36 max-md:pt-40 max-md:pb-12">
         <Reveal className="flex flex-col items-start gap-12 lg:gap-16">
           {heading && (
             <h2 className="cs-h3 cs-title cs-highlight cs-rich max-w-[660px] font-extrabold text-(--color-light-grey)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
@@ -81,9 +82,12 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
                   aria-hidden={!active || undefined}
                   className={`flex flex-col justify-end gap-6 text-(--color-light-grey) [grid-area:1/1] ${active ? "" : "pointer-events-none"}`}
                 >
+                  {slide.logo?.url && (
+                    <Image src={slide.logo.url} alt={slide.logo.alt || slide.name || ""} width={slide.logo.width || 155} height={slide.logo.height || 48} className="h-10 w-auto max-w-[155px] object-contain object-left lg:h-12" />
+                  )}
                   <blockquote
-                    className="italic font-bold text-[28px] leading-9 max-md:text-[26px] max-md:leading-7 max-md:text-[#FFFFFF] md:text-[36px] md:leading-[46px] xl:text-[42px] xl:leading-[52px]"
-                    dangerouslySetInnerHTML={{ __html: toHtml(slide.quote) }}
+                    className="font-bold text-[28px] leading-9 max-md:text-[26px] max-md:leading-7 max-md:text-[#FFFFFF] md:text-[36px] md:leading-[46px] xl:text-[42px] xl:leading-[52px]"
+                    dangerouslySetInnerHTML={{ __html: toHtml(curlyQuote(slide.quote)) }}
                   />
                   {(slide.name || slide.company) && (
                     <figcaption className="flex items-center gap-3">
