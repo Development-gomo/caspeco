@@ -48,12 +48,9 @@ export async function getPageBySlug(slug, lang = DEFAULT_LANG) {
   return getSingleEntry("pages", slug, lang);
 }
 
-export async function getServiceBySlug(slug, lang = DEFAULT_LANG) {
-  return getSingleEntry("solutions", slug, lang);
-}
-
+// acf_format=standard: the "Page Builder Case study" group otherwise returns images as IDs
 export async function getCaseStudyBySlug(slug, lang = DEFAULT_LANG) {
-  return getSingleEntry("casestudies", slug, lang);
+  return getSingleEntry("casestudies", slug, lang, "&acf_format=standard");
 }
 
 // acf_format=standard: the "Page Builder Products" group otherwise returns images as
@@ -89,7 +86,7 @@ export async function getKontaktByIds(ids, lang = DEFAULT_LANG) {
 }
 
 export async function getPartnerBySlug(slug, lang = DEFAULT_LANG) {
-  return getSingleEntry("partner", slug, lang);
+  return getSingleEntry("partner", slug, lang, "&_embed=wp:featuredmedia");
 }
 
 // Child page by its full path (["articles", "blackbox-sce-2-0"]): the last segment is
@@ -131,6 +128,14 @@ export async function getPartnersByCategory(termId, lang = DEFAULT_LANG) {
     `/wp/v2/partner?partner_category=${termId}&lang=${lang}&per_page=100&orderby=title&order=asc&_embed=wp:featuredmedia`
   );
   return Array.isArray(partners) ? partners : [];
+}
+
+// Other partners (logo + name cards under a partner page), the current one excluded
+export async function getOtherPartners(excludeId, lang = DEFAULT_LANG, limit = 3) {
+  const partners = await fetchWP(
+    `/wp/v2/partner?lang=${lang}&per_page=${limit + 1}&orderby=title&order=asc&_embed=wp:featuredmedia`
+  );
+  return Array.isArray(partners) ? partners.filter((p) => p.id !== excludeId).slice(0, limit) : [];
 }
 
 export async function getPostBySlug(slug, lang = DEFAULT_LANG) {
@@ -230,14 +235,6 @@ export async function getTranslations(pageId) {
 // Get a page by ID (for finding translated slugs)
 export async function getPageById(id, lang) {
   return await getEntryById("pages", id, lang);
-}
-
-export async function getServiceById(id, lang) {
-  return await getEntryById("solutions", id, lang);
-}
-
-export async function getAllServices(lang = DEFAULT_LANG) {
-  return await fetchWP(`/wp/v2/solutions?lang=${lang}&per_page=100&_embed`);
 }
 
 export async function getCaseStudies(lang = DEFAULT_LANG) {

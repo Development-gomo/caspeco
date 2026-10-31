@@ -103,13 +103,12 @@ export const BODY_CLASS = {
 /**
  * Page type for a URL path, used as the <body> class:
  * "/" → "home", "/en/product/pos" → "product", "/artiklar/x" → "article",
- * "/kontakt" → "page", "/service/x" → "service"; child pages → "page".
+ * "/kontakt" → "page"; child pages → "page".
  */
 export function pageTypeFromPath(pathname) {
   const segments = (pathname || "").split("/").filter(Boolean);
   const lang = SUPPORTED_LANGS.includes(segments[0]) ? segments.shift() : DEFAULT_LANG;
   if (segments.length === 0) return "home";
-  if (segments.length === 2 && segments[0] === "service") return "service";
   if (segments.length === 2) {
     const type = typeFromBase(segments[0], lang);
     if (type) return BODY_CLASS[type] || type;
@@ -118,7 +117,7 @@ export function pageTypeFromPath(pathname) {
 }
 
 /** Every class pageTypeFromPath can return (to swap the body class on client navigation) */
-export const PAGE_TYPES = ["home", "page", "service", ...Object.values(BODY_CLASS)];
+export const PAGE_TYPES = ["home", "page", ...Object.values(BODY_CLASS)];
 
 /** Prefix a local path with the current language (skip prefix for default lang) */
 export function langHref(url, lang) {

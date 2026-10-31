@@ -407,9 +407,6 @@ em {
     padding-bottom: 120px;
   }
 
-  #home #services-section {
-    padding-top: 0;
-  }
   /* main#home section#case-section {
     padding-bottom: 0px; 
   } */
@@ -539,10 +536,6 @@ span.subheading-label.text-\[var\(--color-accent\)\],
   }
 }
 
-.overflow-visible.service-swiper {
-  overflow: visible !important;
-}
-
 /* Content heading */
 .content-heading {
   font-size: 22px;
@@ -634,11 +627,6 @@ span.subheading-label.text-\[var\(--color-accent\)\],
 .tracking-widest {
   letter-spacing: 0.6px;
   color: var(--color-grey) !important;
-}
-
-.service-link img {
-  height: 24px !important;
-  width: auto !important;
 }
 
 .footer-quick-link:nth-child(1) img {

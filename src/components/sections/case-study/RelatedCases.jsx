@@ -1,0 +1,117 @@
+// src/components/sections/case-study/RelatedCases.jsx
+// ACF layout: case_study_slider ("Related Case Study Listing"): heading, text and the other case
+// studies of the same language as full-image cards in a Swiper slider (current case excluded by
+// the builder). Below the slider: yellow arrows (SliderArrows) left, dot indicators right; on mobile only the dots.
+// All copy comes from ACF / the cases themselves.
+
+"use client";
+
+import React from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import Reveal from "@/components/ui/Reveal";
+import SliderArrows from "@/components/ui/SliderArrows";
+import { DEFAULT_LANG, entryHref } from "@/config";
+import { sectionBackground, toHtml } from "@/lib/content";
+
+const MAX_CASES = 12;
+
+export default function RelatedCases({ data, lang = DEFAULT_LANG, cases = [] }) {
+  const list = (Array.isArray(cases) ? cases : []).filter((c) => c.slug && (c.image?.url || c.bannerImage?.url)).slice(0, MAX_CASES);
+  const swiperRef = React.useRef(null);
+  const [index, setIndex] = React.useState(0);
+  const [snapCount, setSnapCount] = React.useState(1);
+  const { heading, short_text } = data || {};
+  if (list.length === 0) return null;
+
+  // Dots follow Swiper's real snap positions (with 3.2 slides visible the last slides share one position)
+  const sync = (s) => {
+    setIndex(s.snapIndex);
+    setSnapCount(s.snapGrid.length);
+  };
+
+  return (
+    <section className="cs-sec overflow-hidden py-18 lg:py-36" style={sectionBackground(data, { background: "#F1F1F1" })}>
+      <div className="cs-container flex flex-col gap-10 max-md:gap-8 lg:gap-16">
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+          {(heading || short_text) && (
+            <Reveal className="flex flex-col gap-6">
+              {heading && <h2 className="cs-h2 cs-highlight cs-rich max-w-[985px] text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+              {short_text && <div className="cs-p2 cs-rich max-w-[680px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
+            </Reveal>
+          )}
+        </div>
+
+        {/* Slides bleed to the right edge of the screen; the left side is clipped at the container edge */}
+        <div className="[clip-path:inset(-24px_-100vw_-24px_0)]">
+          <Swiper
+            onSwiper={(s) => {
+              swiperRef.current = s;
+              sync(s);
+            }}
+            onSlideChange={sync}
+            onReachEnd={sync}
+            onResize={sync}
+            onBreakpoint={sync}
+            slidesPerView={1.15}
+            spaceBetween={24}
+            breakpoints={{
+              768: { slidesPerView: 2.2, spaceBetween: 24 },
+              1280: { slidesPerView: 3.2, spaceBetween: 32 },
+            }}
+            className="w-full !overflow-visible"
+          >
+            {list.map((c) => {
+              const image = c.image || c.bannerImage;
+              return (
+                <SwiperSlide key={c.id} className="!h-auto">
+                  <Link
+                    href={entryHref("casestudy", c.slug, lang)}
+                    className="group relative flex h-[380px] flex-col justify-end overflow-hidden rounded-[16px] bg-(--color-black) p-6 text-(--color-white) shadow-[0px_4px_12px_rgba(0,0,0,0.16)] lg:h-[422px] lg:p-8 max-md:h-[330px]"
+                  >
+                    <Image src={image.url} alt={image.alt || ""} fill sizes="(min-width: 1280px) 403px, (min-width: 768px) 45vw, 85vw" className="object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
+                    <span className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0, 0, 0, 0) 19.8%, #000 100%)" }} aria-hidden />
+                    <div className="relative flex flex-col gap-3">
+                      {c.industry && <span className="text-[14px] font-bold uppercase leading-4 tracking-[0.6px] text-(--color-yellow)">{c.industry}</span>}
+                      <h3 className="font-bold text-[26px] lg:text-[32px] leading-[1.1] tracking-[-0.64px] normal-case max-md:leading-7 max-md:tracking-[-0.52px]">{c.title}</h3>
+                    </div>
+                  </Link>
+                </SwiperSlide>
+              );
+            })}
+          </Swiper>
+        </div>
+
+        {list.length > 1 && snapCount > 1 && (
+          <div className="flex items-center justify-between gap-6 max-md:justify-center">
+            {/* Mobile: dots only, no arrows */}
+            <SliderArrows
+              index={index}
+              count={snapCount}
+              onChange={(i) => swiperRef.current?.slideTo(Math.max(0, Math.min(snapCount - 1, i)))}
+              className="max-md:hidden"
+            />
+            <div className="flex items-center gap-3" role="tablist">
+              {Array.from({ length: snapCount }, (_, i) => {
+                const active = i === index;
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    aria-label={list[i]?.title || String(i + 1)}
+                    onClick={() => swiperRef.current?.slideTo(i)}
+                    className={`cursor-pointer rounded-full transition-all duration-300 ${active ? "size-4 bg-(--color-yellow)" : "size-2 bg-[#DADCDD]"}`}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}

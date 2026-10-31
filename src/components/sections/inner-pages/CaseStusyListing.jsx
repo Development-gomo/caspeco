@@ -5,11 +5,13 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
-import ArrowSvg from "../../../../public/right-arrow.svg";
-import CheckSvg from "../../../../public/check.svg";
 
 import { DEFAULT_LANG, entryHref } from "@/config";
 import CtaButton from "@/components/ui/CtaButton";
+import ArrowLink from "@/components/ui/ArrowLink";
+
+const INITIAL_COUNT = 9;
+const LOAD_MORE_STEP = 9;
 
 export default function CaseStudyListing({
   data,
@@ -17,12 +19,18 @@ export default function CaseStudyListing({
   prefetchedCases,
 }) {
   const cases = prefetchedCases || [];
-  const [visibleCount, setVisibleCount] = useState(6);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_COUNT);
   const visibleCases = cases.slice(0, visibleCount);
   const hasMore = visibleCount < cases.length;
   const bgImage = data?.bg_image?.url || "";
-  const { sub_heading, heading, cta_text, cta_url, read_more_text } =
-    data || {};
+  const {
+    sub_heading,
+    heading,
+    cta_text,
+    cta_url,
+    read_more_text,
+    load_more_text,
+  } = data || {};
 
   return (
     <>
@@ -71,97 +79,80 @@ export default function CaseStudyListing({
               <CtaButton href={cta_url}>{cta_text}</CtaButton>
             )}
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6"  >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {visibleCases.map((item, idx) => {
+              const acf = item?.acf || {};
               const img =
                 item?._embedded?.["wp:featuredmedia"]?.[0]?.source_url || "";
-              const clientLogo = item?.acf?.client_logo?.url || "";
-              const sliderData = item?.acf?.slider_card_data || [];
+              const logo = [acf.logo, acf.client_logo].find((f) => f?.url)?.url || "";
               const title = item?.title?.rendered || "";
-              const excerpt = item?.excerpt?.rendered || "";
-              const section_label = item?.acf?.section_label || "";
+              const name = acf.person_name || "";
+              const designation = acf.designation || "";
 
               return (
                 <motion.div
                   key={item.id}
-                  className="group rounded-lg overflow-hidden bg-(--color-black)"
+                  className="group relative isolate flex min-h-[460px] md:min-h-[530px] flex-col overflow-hidden rounded-lg bg-(--color-black) p-6 lg:p-8 text-white"
                   initial={{ opacity: 0, y: 24 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: (idx % 6) * 0.1 }}
+                  transition={{ duration: 0.5, delay: (idx % 3) * 0.1 }}
                   viewport={{ once: true }}
                 >
-                  <div className="relative z-10 h-75 overflow-hidden">
-                    {img && (
-                      <Image
-                        src={img}
-                        fill
-                        alt={title}
-                        className="object-cover h-255 transition-transform duration-500 ease-out group-hover:scale-105"
+                  {/* BACKGROUND IMAGE + GRADIENT */}
+                  {img && (
+                    <Image
+                      src={img}
+                      fill
+                      sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                      alt={title}
+                      className="-z-20 object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                    />
+                  )}
+                  <div
+                    className="absolute inset-0 -z-10 bg-gradient-to-t from-black/70 via-black/10 to-black/40"
+                    aria-hidden
+                  />
+
+                  {/* CLIENT LOGO */}
+                  {logo ? (
+                    <Image
+                      src={logo}
+                      alt={title}
+                      width={134}
+                      height={48}
+                      className="h-10 lg:h-12 w-auto max-w-[134px] object-contain object-left"
+                    />
+                  ) : (
+                    <span className="h-10 lg:h-12" aria-hidden />
+                  )}
+
+                  {/* TITLE + PERSON */}
+                  <div className="mt-auto">
+                    {title && (
+                      <h3
+                        className="mb-8 text-[24px] lg:text-[26px] leading-8 font-bold tracking-[-0.5px]"
+                        dangerouslySetInnerHTML={{ __html: title }}
                       />
                     )}
-
-                    {/* CLIENT LOGO */}
-                    {clientLogo && (
-                      <div className="absolute max-w-[134px] top-4 right-4 bg-(--color-bg) px-3 py-3 rounded-sm">
-                        <Image
-                          src={clientLogo}
-                          alt="client logo"
-                          width={100}
-                          height={35}
-                        />
+                    {(name || designation) && (
+                      <div className="flex items-center gap-3">
+                        <span className="h-12 w-[3px] shrink-0 rounded-[10px] bg-(--color-yellow)" aria-hidden />
+                        <span className="flex flex-col gap-1">
+                          {name && <span className="font-bold text-[20px] leading-6 tracking-[-0.4px]">{name}</span>}
+                          {designation && <span className="font-medium text-[16px] leading-5 text-(--color-light-grey)">{designation}</span>}
+                        </span>
                       </div>
                     )}
                   </div>
-                  <div className=" bg-(--color-black) text-white z-20 p-6 lg:p-8 flex flex-col justify-center">
-                    <h3
-                      className="text-[24px] leading-8 md:text-[24px] lg:leading-8 mb-4"
-                      dangerouslySetInnerHTML={{ __html: title }}
-                    />
-                    {/* Excerpt */}
-                    {excerpt && (
-                      <div
-                        className="text-[14px] leading-6 text-[#ffffffb3] mb-6"
-                        dangerouslySetInnerHTML={{ __html: excerpt }}
-                      />
-                    )}
-                    {/* Achievements */}
-                    {sliderData?.length > 0 && (
-                      <>
-                        <div className="gap-3">
-                          {sliderData.map((row, i) => (
-                            <span
-                              key={i}
-                              className="inline-block mb-4 nth-2:mb-0">
-                              <span className="flex text-xs items-center justify- ">
-                                <span className="flex items-center gap-2 pr-2">
-                                  <span className="h-6 w-6 bg-[#ffffff40] flex items-center justify-center rounded-full">
-                                    <Image
-                                      src={CheckSvg}
-                                      width={11}
-                                      height={9}
-                                      alt="no-follow"
-                                    />
-                                  </span>
-                                  <span className="text-[14px]">
-                                    {row.what_we_achieve}
-                                  </span>
-                                </span>
-                                <span className="text-center px-2 text-[14px] border-l font-semibold">
-                                  {row.stats}
-                                </span>
-                              </span>
-                            </span>
-                          ))}
-                        </div>
-                      </>
-                    )}
-                    <CtaButton
-                      href={entryHref("casestudy", item.slug, lang)}
-                      className="mt-8"
-                    >
-                      {read_more_text}
-                    </CtaButton>
-                  </div>
+
+                  {/* TEXT LINK */}
+                  <ArrowLink
+                    tone="light"
+                    href={entryHref("casestudy", item.slug, lang)}
+                    className="mt-4 self-end"
+                  >
+                    {read_more_text}
+                  </ArrowLink>
                 </motion.div>
               );
             })}
@@ -169,22 +160,9 @@ export default function CaseStudyListing({
 
           {hasMore && (
             <div className="flex justify-center mt-10">
-              <button
-                onClick={() => setVisibleCount((prev) => prev + 6)}
-                className="gap-3 group relative inline-flex items-center rounded-sm bg-(--color-black) px-8 py-4 text-white transition-all duration-300 hover:bg-(--color-black) overflow-hidden select-none"
-              >
-                <span className="relative w-6 flex items-center justify-center">
-                  <span className="absolute h-2 w-2 rounded-full bg-[#27E0C0] transition-all duration-300 ease-out group-hover:opacity-0 group-hover:-translate-x-1"></span>
-                </span>
-                <span className="flex-1 text-[16px] leading-none transition-all duration-300 ease-out group-hover:-translate-x-4 whitespace-nowrap">
-                  Load More
-                </span>
-                <span className="relative w-4 flex items-center justify-center">
-                  <span className="w-4 absolute opacity-0 -translate-x-4 transition-all duration-300 ease-out group-hover:opacity-100 group-hover:-translate-x-2">
-                    <Image src={ArrowSvg} width={13} height={13} alt="arrow" />
-                  </span>
-                </span>
-              </button>
+              <CtaButton onClick={() => setVisibleCount((prev) => prev + LOAD_MORE_STEP)}>
+                {load_more_text || "Load More"}
+              </CtaButton>
             </div>
           )}
         </div>

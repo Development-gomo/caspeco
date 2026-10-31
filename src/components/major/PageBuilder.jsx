@@ -3,12 +3,11 @@
 import { rows, withNeighbours } from "@/lib/content";
 import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
-import { getAllServices, getCaseStudies, getAllPosts, getAllTeam, getPostsByIds, getAllIndustries, getTwinCaseStudies, getMediaByIds, getLogoGalleries, getPostsPage } from "@/lib/api";
+import { getCaseStudies, getAllPosts, getAllTeam, getPostsByIds, getAllIndustries, getTwinCaseStudies, getMediaByIds, getLogoGalleries, getPostsPage } from "@/lib/api";
 import { mapTwinCases, twinMediaIds } from "@/lib/caseStudies";
 
 const Hero = dynamic(() => import("../sections/home/HomeHero"));
 const AboutUs = dynamic(() => import("../sections/home/HomeAbout"));
-const ServicesSlider = dynamic(() => import("../sections/home/HomeServices"));
 const HomeCounter = dynamic(() => import("../sections/home/HomeCounter"));
 const HomeCaseStudies = dynamic(() => import("../sections/home/HomeCaseStudies"));
 const AskAI = dynamic(() => import("../sections/home/HomeAIAsk"));
@@ -59,11 +58,10 @@ const ContactRep = dynamic(() => import("../sections/icp/ContactRep"));
 async function prefetchSectionData(sections, lang) {
   if (!sections) return {};
 
-  const needs = { services: false, cases: false, posts: false, team: false, industries: false, twin: false, logos: false, newsPage: false };
+  const needs = { cases: false, posts: false, team: false, industries: false, twin: false, logos: false, newsPage: false };
   const pickedPostIds = [];
 
   for (const block of sections) {
-    if (block._layout === "services_section") needs.services = true;
     if (block._layout === "casestudies_section") needs.cases = true;
     if (block._layout === "case_study_listing") needs.cases = true;
     if (block._layout === "news_section") needs.posts = true;
@@ -82,8 +80,7 @@ async function prefetchSectionData(sections, lang) {
     }
   }
 
-  const [services, cases, posts, team, pickedPosts, industries, twinPosts, logos, newsPage] = await Promise.all([
-    needs.services ? getAllServices(lang) : null,
+  const [cases, posts, team, pickedPosts, industries, twinPosts, logos, newsPage] = await Promise.all([
     needs.cases ? getCaseStudies(lang) : null,
     needs.posts ? getAllPosts(lang) : null,
     needs.team ? getAllTeam(lang) : null,
@@ -97,7 +94,19 @@ async function prefetchSectionData(sections, lang) {
   // Business Twin: resolve logo/clip media IDs, then reduce to small objects for the client
   const twinCases = twinPosts ? mapTwinCases(twinPosts, await getMediaByIds(twinMediaIds(twinPosts))) : null;
 
-  return { services, cases, posts, team, pickedPosts, industries, twinCases, logos, newsPage };
+  // Case study listing cards: acf.logo is a media ID → swap in {url, alt}
+  if (Array.isArray(cases)) {
+    const logoIds = [...new Set(cases.map((c) => Number(c?.acf?.logo)).filter(Boolean))];
+    if (logoIds.length) {
+      const byId = new Map((await getMediaByIds(logoIds)).map((m) => [m.id, { url: m.source_url, alt: m.alt_text || "" }]));
+      for (const c of cases) {
+        const logo = byId.get(Number(c?.acf?.logo));
+        if (logo) c.acf.logo = logo;
+      }
+    }
+  }
+
+  return { cases, posts, team, pickedPosts, industries, twinCases, logos, newsPage };
 }
 
 export default async function PageBuilder({ sections: rawSections, lang = DEFAULT_LANG }) {
@@ -116,8 +125,6 @@ export default async function PageBuilder({ sections: rawSections, lang = DEFAUL
           case "about_us_section":
             return <AboutUs key={i} data={block} lang={lang} />;
 
-          case "services_section":
-            return <ServicesSlider key={i} data={block} lang={lang} prefetchedServices={prefetched.services} />;
 
           case "counter_section":
             return <HomeCounter key={i} data={block} lang={lang} />;
