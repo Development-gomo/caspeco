@@ -17,7 +17,7 @@ import { mapTwinCases, twinMediaIds } from "@/lib/caseStudies";
 const HomeHero = dynamic(() => import("../sections/home/HomeHero"));
 const IntroFeature = dynamic(() => import("../sections/case-study/IntroFeature"));
 const RelatedCases = dynamic(() => import("../sections/case-study/RelatedCases"));
-const IndustryChallenges = dynamic(() => import("../sections/industry/IndustryChallenges"));
+const ChallengeCards = dynamic(() => import("../sections/case-study/ChallengeCards"));
 const ProductTestimonials = dynamic(() => import("../sections/product/ProductTestimonials"));
 
 export default async function CasePageBuilder({ sections: rawSections, lang = DEFAULT_LANG, currentId, logo }) {
@@ -40,15 +40,9 @@ export default async function CasePageBuilder({ sections: rawSections, lang = DE
           case "case_feature_cards":
             return <IntroFeature key={i} data={block} lang={lang} />;
 
-          // Cards (icon, label, text) → the Industry "Challenges" cards (icon, value, text)
+          // Challenge / solution / result cards (icon, label, text) on glass cards over the photo
           case "challenges_and_solution":
-            return (
-              <IndustryChallenges
-                key={i}
-                lang={lang}
-                data={{ ...block, items: rows(block.cards).map((c) => ({ icon: c.icon, value: c.label, text: c.text })) }}
-              />
-            );
+            return <ChallengeCards key={i} data={block} />;
 
           // Quotes typed on the case itself → the product "full width" testimonial slider
           case "testimonial_section":

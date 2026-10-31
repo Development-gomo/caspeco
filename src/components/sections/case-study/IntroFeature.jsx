@@ -8,6 +8,7 @@
 import Reveal from "@/components/ui/Reveal";
 import CtaButton from "@/components/ui/CtaButton";
 import ReadMoreText from "./ReadMoreText";
+import VideoCta from "./VideoCta";
 import { DEFAULT_LANG, langHref } from "@/config";
 import { rows, sectionBackground, toHtml } from "@/lib/content";
 
@@ -19,7 +20,8 @@ const pills = (text) =>
 
 export default function IntroFeature({ data, lang = DEFAULT_LANG }) {
   const cards = rows(data?.cards).filter((c) => c.title);
-  const { heading, short_text, cta_text, cta_url } = data || {};
+  const { heading, short_text, cta_text, cta_url, video_url } = data || {};
+  const video = typeof video_url === "string" ? video_url.trim() : "";
   if (!heading && !short_text && cards.length === 0) return null;
 
   return (
@@ -28,7 +30,12 @@ export default function IntroFeature({ data, lang = DEFAULT_LANG }) {
         <Reveal className="flex flex-col items-start gap-6 lg:w-1/2">
           {heading && <h2 className="cs-h2 cs-highlight cs-rich text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
           {short_text && <ReadMoreText lang={lang} moreLabel={data.read_more_text} lessLabel={data.read_less_text} className="cs-p2 cs-rich max-w-[560px] text-(--color-grey-dark)" html={toHtml(short_text)} />}
-          {cta_text && cta_url && <CtaButton href={langHref(cta_url.trim(), lang)}>{cta_text}</CtaButton>}
+          {/* Video CTA text + Video URL → button opening the video popup; a plain CTA URL still works as a link */}
+          {cta_text && video ? (
+            <VideoCta url={video}>{cta_text}</VideoCta>
+          ) : (
+            cta_text && cta_url && <CtaButton href={langHref(cta_url.trim(), lang)}>{cta_text}</CtaButton>
+          )}
         </Reveal>
 
         {cards.length > 0 && (
