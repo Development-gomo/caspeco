@@ -8,7 +8,6 @@ import { SUPPORTED_LANGS, ROUTE_TYPES } from "@/config";
 const POST_TYPE_PREFIX = {
   page:        "",            // /en/about-us
   pages:       "",
-  solutions:   "service",     // /en/service/seo
 };
 
 // Types with a localized base (/sv/artiklar/x, /en/articles/x …) — see ROUTE_TYPES in src/config

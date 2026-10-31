@@ -19,7 +19,6 @@ const based = (type) => (s, lang) => `/${ROUTE_TYPES[type].base[lang]}/${s}`;
 
 const CONTENT_TYPES = [
   { endpoint: "/wp/v2/pages",            path: (s) => `/${s}`,          priority: 0.8, changeFrequency: "monthly", skip: new Set(["frontpage"]) },
-  { endpoint: "/wp/v2/solutions",        path: (s) => `/service/${s}`,  priority: 0.8, changeFrequency: "monthly" },
   { endpoint: "/wp/v2/products",         path: based("product"),        priority: 0.8, changeFrequency: "monthly" },
   { endpoint: "/wp/v2/industries",       path: based("industry"),       priority: 0.7, changeFrequency: "monthly" },
   { endpoint: "/wp/v2/icp",              path: based("icp"),            priority: 0.7, changeFrequency: "monthly" },

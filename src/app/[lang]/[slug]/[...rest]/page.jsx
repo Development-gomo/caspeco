@@ -31,6 +31,7 @@ import EntryTemplate from "@/components/templates/EntryTemplate";
 import ProductTemplate from "@/components/templates/ProductTemplate";
 import IndustryTemplate from "@/components/templates/IndustryTemplate";
 import IcpTemplate from "@/components/templates/IcpTemplate";
+import PartnerTemplate from "@/components/templates/PartnerTemplate";
 import PartnerCategoryTemplate from "@/components/templates/PartnerCategoryTemplate";
 
 export const revalidate = 300;
@@ -116,7 +117,7 @@ export default async function LocalizedEntryPage({ params }) {
     case "icp":
       return <IcpTemplate icp={route.entry} {...common} />;
     case "partner":
-      return <EntryTemplate entry={route.entry} entryType="partner" routeType="partner" {...common} />;
+      return <PartnerTemplate entry={route.entry} {...common} />;
     case "partnerCategory":
       return <PartnerCategoryTemplate term={route.entry} partners={route.partners} {...common} />;
     default:
