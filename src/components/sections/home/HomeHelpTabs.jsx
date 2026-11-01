@@ -180,7 +180,7 @@ export default function HomeHelpTabs({ data, lang = DEFAULT_LANG }) {
         )}
 
         {tabs.length > 0 && (
-          <div className="flex w-full flex-col items-center gap-8 max-md:gap-10">
+          <div className="flex w-full flex-col items-center gap-6 max-md:gap-10">
             {/* Pill tabs — scroll horizontally on small screens. Mobile: the wrapper is the fixed
                 345×48 white pill (r56, shadow 0 2 9 10%) and the tabs scroll inside it; md:contents = no box at ≥ 768 */}
             <div className="md:contents max-md:w-full">

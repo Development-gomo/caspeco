@@ -1,6 +1,7 @@
 //src/components/major/PageBuilder.jsx
 
 import { rows, withNeighbours } from "@/lib/content";
+import { Fragment } from "react";
 import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
 import {
@@ -56,6 +57,7 @@ const HomeHelpTabs = dynamic(() => import("../sections/home/HomeHelpTabs"));
 const HomeDataInsight = dynamic(
   () => import("../sections/home/HomeDataInsight"),
 );
+const HomeConnectedData = dynamic(() => import("../sections/home/HomeConnectedData"));
 const HomeCasperAI = dynamic(() => import("../sections/home/HomeCasperAI"));
 const HomeBusinessTwin = dynamic(
   () => import("../sections/home/HomeBusinessTwin"),
@@ -331,28 +333,38 @@ export default async function PageBuilder({
             return <HomeRestaurantMap key={i} data={block} lang={lang} />;
 
           case "home_tab_section":
-            // ACF "ICP Tab styling" = enable: the ICP tab design (Figma ICP "Time to build your perfect set up");
-            // its tabs take one image, so the Home tab gallery contributes its first image
+            // ACF "ICP Tab styling" = enable: desktop (>=768px) keeps the Home collage design (HomeHelpTabs),
+            // mobile (<768px) shows the ICP mobile panel (Figma ICP "Time to build your perfect set up").
+            // The ICP tabs take one image, so the Home tab gallery contributes its first image
             if (block.icp_tab_styling === "enable") {
               const icpTabs = rows(block.tabs).map((t) => ({
                 ...t,
                 image: Array.isArray(t.images) ? t.images[0] : t.images,
               }));
               return (
-                <ProductSalesChannels
-                  key={i}
-                  data={{ ...block, tabs: icpTabs }}
-                  lang={lang}
-                  defaultCtaVariant="outline"
-                  variant="icp"
-                  mobilePanel
-                />
+                <Fragment key={i}>
+                  <div className="max-md:hidden">
+                    <HomeHelpTabs data={block} lang={lang} />
+                  </div>
+                  <div className="md:hidden">
+                    <ProductSalesChannels
+                      data={{ ...block, tabs: icpTabs }}
+                      lang={lang}
+                      defaultCtaVariant="outline"
+                      variant="icp"
+                      mobilePanel
+                    />
+                  </div>
+                </Fragment>
               );
             }
             return <HomeHelpTabs key={i} data={block} lang={lang} />;
 
           case "data_insight_section":
             return <HomeDataInsight key={i} data={block} lang={lang} />;
+
+          case "data_section":
+            return <HomeConnectedData key={i} data={block} lang={lang} />;
 
           case "home_ai_section":
             return <HomeCasperAI key={i} data={block} lang={lang} />;

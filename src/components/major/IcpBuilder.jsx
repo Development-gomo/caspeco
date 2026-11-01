@@ -63,6 +63,7 @@ const ProductUspAccordion = dynamic(() => import("../sections/product/ProductUsp
 const ProductResults = dynamic(() => import("../sections/product/ProductResults"));
 const HomeDataInsight = dynamic(() => import("../sections/home/HomeDataInsight"));
 const HomeKpi = dynamic(() => import("../sections/home/HomeKpi"));
+const HomeConnectedData = dynamic(() => import("../sections/home/HomeConnectedData"));
 const ProductHero = dynamic(() => import("../sections/product/ProductHero"));
 const ProductTestimonials = dynamic(() => import("../sections/product/ProductTestimonials"));
 const IndustryTestimonials = dynamic(() => import("../sections/industry/IndustryTestimonials"));
@@ -182,6 +183,9 @@ export default async function IcpBuilder({ sections: rawSections, lang = DEFAULT
 
           case "data_insight_section":
             return <HomeDataInsight key={i} data={block} lang={lang} variant="icp" />;
+
+          case "data_section":
+            return <HomeConnectedData key={i} data={block} lang={lang} />;
 
           case "testimonial_slider_section": {
             if (block.slider_type === "fullwidth") {

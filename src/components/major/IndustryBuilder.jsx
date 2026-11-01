@@ -16,6 +16,7 @@ const IndustryChallenges = dynamic(() => import("../sections/industry/IndustryCh
 const IndustryResults = dynamic(() => import("../sections/industry/IndustryResults"));
 const TestimonialSlider = dynamic(() => import("../sections/TestimonialSlider"));
 const HomeIndustrySlider = dynamic(() => import("../sections/home/HomeIndustrySlider"));
+const HomeConnectedData = dynamic(() => import("../sections/home/HomeConnectedData"));
 
 export default async function IndustryBuilder({ sections: rawSections, lang = DEFAULT_LANG, currentId }) {
   const sections = withNeighbours(rawSections); // _prev/_next per block (Figma section-gap rule)
@@ -51,6 +52,9 @@ export default async function IndustryBuilder({ sections: rawSections, lang = DE
                 <HomeIndustrySlider data={block} lang={lang} prefetchedIndustries={otherIndustries} />
               </Reveal>
             );
+
+          case "data_section":
+            return <HomeConnectedData key={i} data={block} lang={lang} />;
 
           default:
             return <ProductBuilder key={i} sections={[block]} lang={lang} />;
