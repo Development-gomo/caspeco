@@ -13,6 +13,8 @@ import {
   getMediaByIds,
   getLogoGalleries,
   getPostsPage,
+  getPartnerCategories,
+  getAllPartners,
 } from "@/lib/api";
 import { mapTwinCases, twinMediaIds } from "@/lib/caseStudies";
 
@@ -39,6 +41,7 @@ const CaseStudyListing = dynamic(
 const NewsListing = dynamic(
   () => import("../sections/inner-pages/NewsListing"),
 );
+const IntegrationsListing = dynamic(() => import("../sections/inner-pages/IntegrationsListing"));
 const HomeColumnSection = dynamic(
   () => import("../sections/home/HomeColumnSection"),
 );
@@ -119,12 +122,14 @@ async function prefetchSectionData(sections, lang) {
     twin: false,
     logos: false,
     newsPage: false,
+    partners: false,
   };
   const pickedPostIds = [];
 
   for (const block of sections) {
     if (block._layout === "casestudies_section") needs.cases = true;
     if (block._layout === "case_study_listing") needs.cases = true;
+    if (block._layout === "integrations_listing") needs.partners = true;
     if (block._layout === "news_section") needs.posts = true;
     if (block._layout === "news_listing") needs.newsPage = true;
     if (block._layout === "team_section") needs.team = true;
@@ -156,6 +161,8 @@ async function prefetchSectionData(sections, lang) {
     twinPosts,
     logos,
     newsPage,
+    partnerCategories,
+    partners,
   ] = await Promise.all([
     needs.cases ? getCaseStudies(lang) : null,
     needs.posts ? getAllPosts(lang) : null,
@@ -165,6 +172,8 @@ async function prefetchSectionData(sections, lang) {
     needs.twin ? getTwinCaseStudies(lang) : null,
     needs.logos ? getLogoGalleries(lang) : null,
     needs.newsPage ? getPostsPage(lang, 1) : null, // NewsListing: first 9 + totals
+    needs.partners ? getPartnerCategories(lang) : null,
+    needs.partners ? getAllPartners(lang) : null,
   ]);
 
   // Business Twin: resolve logo/clip media IDs, then reduce to small objects for the client
@@ -200,6 +209,8 @@ async function prefetchSectionData(sections, lang) {
     twinCases,
     logos,
     newsPage,
+    partnerCategories,
+    partners,
   };
 }
 
@@ -242,6 +253,17 @@ export default async function PageBuilder({
                 data={block}
                 lang={lang}
                 prefetchedCases={prefetched.cases}
+              />
+            );
+
+          case "integrations_listing":
+            return (
+              <IntegrationsListing
+                key={i}
+                data={block}
+                lang={lang}
+                categories={prefetched.partnerCategories}
+                partners={prefetched.partners}
               />
             );
           case "home_ask_ai_section":

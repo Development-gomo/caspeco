@@ -138,6 +138,19 @@ export async function getOtherPartners(excludeId, lang = DEFAULT_LANG, limit = 3
   return Array.isArray(partners) ? partners.filter((p) => p.id !== excludeId).slice(0, limit) : [];
 }
 
+// All partner categories and all partners (Integrations listing groups the partners by category)
+export async function getPartnerCategories(lang = DEFAULT_LANG) {
+  const terms = await fetchWP(`/wp/v2/partner_category?per_page=100&lang=${lang}&orderby=name&order=asc&_fields=id,name,slug,count`);
+  return Array.isArray(terms) ? terms : [];
+}
+
+export async function getAllPartners(lang = DEFAULT_LANG) {
+  const partners = await fetchWP(
+    `/wp/v2/partner?per_page=100&lang=${lang}&orderby=title&order=asc&_embed=wp:featuredmedia&_fields=id,slug,title,partner_category,featured_media,_links,_embedded`
+  );
+  return Array.isArray(partners) ? partners : [];
+}
+
 export async function getPostBySlug(slug, lang = DEFAULT_LANG) {
   const post = await getSingleEntry("posts", slug, lang);
 
@@ -312,10 +325,6 @@ export async function getAllIndustries(lang = DEFAULT_LANG) {
 
 export async function getPartnerById(id, lang) {
   return await getEntryById("partner", id, lang);
-}
-
-export async function getAllPartners(lang = DEFAULT_LANG) {
-  return await fetchWP(`/wp/v2/partner?lang=${lang}&per_page=100&_embed`);
 }
 
 // Get translations for any entry type - try custom endpoint first, then fallback
