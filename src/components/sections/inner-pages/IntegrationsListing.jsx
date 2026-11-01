@@ -33,8 +33,18 @@ export default function IntegrationsListing({ data, lang = DEFAULT_LANG, categor
   if (list.length === 0) return null;
 
   // API order (alphabetical); categories without partners are skipped
-  const groups = (Array.isArray(categories) ? categories : [])
-    .map((cat) => ({ ...cat, partners: list.filter((p) => p.partner_category?.includes(cat.id)) }))
+  const cats = Array.isArray(categories) ? categories : [];
+  // partners in no category go into the "Other partners" category (or a group of that name if the language has none)
+  const uncategorised = list.filter((p) => !p.partner_category?.length);
+  const otherCat = cats.find((c) => /^(other-partners|ovriga-partners)/.test(c.slug)) || { id: "other", slug: "other-partners", name: "Other partners" };
+  const groups = [...cats.filter((c) => c.id !== otherCat.id), otherCat]
+    .map((cat) => ({
+      ...cat,
+      partners: [
+        ...list.filter((p) => p.partner_category?.includes(cat.id)),
+        ...(cat.id === otherCat.id ? uncategorised : []),
+      ],
+    }))
     .filter((cat) => cat.partners.length > 0);
 
   const { heading, short_text, cta_text, cta_url } = data || {};
