@@ -316,6 +316,7 @@ export default async function PageBuilder({
                 data={{
                   ...block,
                   listStyle: true, // bullet list styling, Page Builder only
+                  _prevGradient: sections[i - 1]?.bg_gradient,
                   rolling_headings: (Array.isArray(block.rolling_words)
                     ? block.rolling_words
                     : []

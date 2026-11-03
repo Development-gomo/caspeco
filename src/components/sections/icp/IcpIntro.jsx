@@ -18,8 +18,8 @@ import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 const ROLL_MS = 3200;
 // bg_gradient (ACF button group) → class defined in globals.css: top = grey at the top fading to white (Figma fill
 // #DADCDD 80% → #FFFFFF 50%), bottom = white fading to grey (same fill as the Switch steps section), none = plain
-// page background. Unset keeps the top gradient.
-const GRADIENT_CLASSES = { top: "bg-topgrad", bottom: "bg-bottomgrad", none: "bg-none" };
+// page background, full = solid #f1f1f1 (whole section). Unset keeps the top gradient.
+const GRADIENT_CLASSES = { top: "bg-topgrad", bottom: "bg-bottomgrad", none: "bg-none", full: "bg-full" };
 
 export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
   const rolling = rows(data?.rolling_headings).map((r) => r.text).filter(Boolean);
@@ -42,8 +42,14 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
   const variant = data?.cta_variant === "outline" ? "outline-dark" : "yellow";
   // mobile (Figma "USP's"): heading #151411 (desktop stays #000)
   const headingClass = "cs-h3 cs-highlight cs-rich text-(--color-heading) max-md:text-(--color-black)";
-  // stacked content_sections: the section above already provides the gap
-  const stackedAfterContent = data?._prev === "content_section";
+  // stacked content_sections: drop the top padding only when the edge between them is the same background
+  const gradient = data?.bg_gradient || "top";
+  const prevGradient = data?._prevGradient || "top";
+  const prevBottomGrey = prevGradient === "bottom" || prevGradient === "full";
+  const topGrey = gradient === "top" || gradient === "full";
+  const stackedAfterContent =
+    data?._prev === "content_section" &&
+    ((!prevBottomGrey && !topGrey) || (prevGradient === "full" && gradient === "full"));
 
   return (
     // Figma section-gap rule: before the light tabs section the intro keeps 72 below (72 + 72)

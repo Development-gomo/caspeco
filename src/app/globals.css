@@ -856,6 +856,9 @@ span.subheading-label.text-\[var\(--color-accent\)\],
 .bg-none {
   background: none;
 }
+.bg-full {
+  background: #f1f1f1;
+}
 
 /* P2 — Tenon Regular 20/24, -0.4 */
 .cs-p2 {
