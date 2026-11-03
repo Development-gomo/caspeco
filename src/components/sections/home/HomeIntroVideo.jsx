@@ -1,21 +1,25 @@
 // src/components/sections/home/HomeIntroVideo.jsx
 // ACF layout: intro_video_section — "We know the / average bill" rolling text + video.
+// video_url plays in the box: files in a <video>, YouTube / Vimeo / Loom in an iframe loaded on click.
 
 "use client";
 
 import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import CtaButton from "@/components/ui/CtaButton";
-import { DEFAULT_LANG, langHref } from "@/config";
-import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
+import { rows, sectionBackground, toHtml } from "@/lib/content";
+import { embedUrl, videoUrl, youtubePoster } from "@/lib/video";
 
 const ROLL_INTERVAL_MS = 2600;
 
-export default function HomeIntroVideo({ data, lang = DEFAULT_LANG }) {
+export default function HomeIntroVideo({ data }) {
   const words = rows(data?.rolling_words).map((r) => r.short_text || r.word).filter(Boolean);
-  const videoSrc = mediaUrl(data?.video_url) || mediaUrl(data?.video);
-  const poster = mediaUrl(data?.poster_image);
-  const { heading, sub_heading, short_text, cta_text, cta_url } = data || {};
+  // video_url is an ACF url field; data.video is the old file field
+  const videoSrc = videoUrl(data?.video_url) || videoUrl(data?.video);
+  const embed = videoSrc ? embedUrl(videoSrc) : null; // null → direct file, plays in <video>
+  const poster = videoUrl(data?.poster_image) || youtubePoster(videoSrc);
+  const { heading, sub_heading, short_text, cta_text } = data || {};
+  const label = cta_text || "Watch Video";
 
   const [index, setIndex] = React.useState(0);
   const [playing, setPlaying] = React.useState(false);
@@ -27,17 +31,13 @@ export default function HomeIntroVideo({ data, lang = DEFAULT_LANG }) {
     return () => clearInterval(id);
   }, [words.length]);
 
+  if (!toHtml(heading) && !words.length && !toHtml(short_text) && !videoSrc) return null;
+
+  // Embeds mount their iframe (autoplay) only now, so nothing loads from YouTube / Vimeo before the click
   const playVideo = () => {
     setPlaying(true);
     videoRef.current?.play();
   };
-
-  // "Watch video" plays the inline video; without a video it falls back to the CTA URL.
-  const button = cta_text
-    ? videoSrc
-      ? <CtaButton variant="outline-dark-grey" className="max-md:w-full" onClick={playVideo}>{cta_text}</CtaButton>
-      : cta_url && <CtaButton variant="outline-dark-grey" className="max-md:w-full" href={langHref(cta_url, lang)}>{cta_text}</CtaButton>
-    : null;
 
   return (
     // Mobile (Figma Home "USP's" 2517:4794): 64px top and bottom (cs-sec), H2 → sub 8, sub → body 24,
@@ -49,6 +49,7 @@ export default function HomeIntroVideo({ data, lang = DEFAULT_LANG }) {
       })}
     >
       <div className="cs-container flex flex-col lg:flex-row lg:items-center lg:justify-between gap-12">
+        {/* first:mt-0 — without heading / rolling words the column starts flush */}
         <div className="flex flex-col items-start lg:max-w-[700px]">
           {heading && (
             <h2 className="cs-h2 text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
@@ -80,38 +81,57 @@ export default function HomeIntroVideo({ data, lang = DEFAULT_LANG }) {
           )}
 
           {sub_heading && (
-            <p className="font-bold text-[18px] leading-[22px] xl:text-[23px] xl:leading-[23px] tracking-[-0.46px] text-black xl:-mt-[12px] max-md:tracking-[-0.36px] max-md:text-(--color-grey-dark)">
+            <p className="font-bold text-[18px] leading-[22px] xl:text-[23px] xl:leading-[23px] tracking-[-0.46px] text-black xl:-mt-[12px] first:mt-0 max-md:tracking-[-0.36px] max-md:text-(--color-grey-dark)">
               {sub_heading}
             </p>
           )}
 
           {short_text && (
             <div
-              className="cs-p2 cs-text-sm cs-rich mt-8 xl:mt-12 max-w-[474px] text-(--color-grey-dark) max-md:mt-6"
+              className="cs-p2 cs-text-sm cs-rich mt-8 xl:mt-12 max-w-[474px] text-(--color-grey-dark) max-md:mt-6 first:mt-0"
               dangerouslySetInnerHTML={{ __html: toHtml(short_text) }}
             />
           )}
 
-          {button && <div className="mt-8 xl:mt-[45px] max-md:mt-6 max-md:w-full">{button}</div>}
+          {videoSrc && (
+            <div className="mt-8 xl:mt-[45px] max-md:mt-6 max-md:w-full first:mt-0">
+              <CtaButton variant="outline-dark-grey" className="max-md:w-full" onClick={playVideo}>{label}</CtaButton>
+            </div>
+          )}
         </div>
 
         {videoSrc && (
           <div className="relative w-full lg:w-[568px] aspect-[568/320] shrink-0 overflow-hidden rounded-[4.675px] max-md:rounded-[8px] bg-(--color-dark-petrol)">
-            <video
-              ref={videoRef}
-              src={videoSrc}
-              poster={poster || undefined}
-              controls={playing}
-              playsInline
-              preload="metadata"
-              className="absolute inset-0 size-full object-cover"
-              onPlay={() => setPlaying(true)}
-            />
+            {embed ? (
+              playing ? (
+                <iframe
+                  src={embed}
+                  title={label}
+                  allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+                  allowFullScreen
+                  className="absolute inset-0 size-full border-0"
+                />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element -- third-party poster (i.ytimg.com), not a WP image
+                poster && <img src={poster} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />
+              )
+            ) : (
+              <video
+                ref={videoRef}
+                src={videoSrc}
+                poster={poster || undefined}
+                controls={playing}
+                playsInline
+                preload="metadata"
+                className="absolute inset-0 size-full object-cover"
+                onPlay={() => setPlaying(true)}
+              />
+            )}
             {!playing && (
               <button
                 type="button"
                 onClick={playVideo}
-                aria-label={cta_text || "Play video"}
+                aria-label={label}
                 className="absolute inset-0 cursor-pointer"
               />
             )}

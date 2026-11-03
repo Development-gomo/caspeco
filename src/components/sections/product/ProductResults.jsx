@@ -1,5 +1,7 @@
 // src/components/sections/product/ProductResults.jsx
-// ACF layout: results_section — "Results at all levels". Background photo with a
+// ACF layouts: `result_section` (Page Builder, icon = icon_picker URL string, title = textarea)
+// and `results_section` (Products / ICP `result_section`, icon = ACF image array) — "Results at
+// all levels". Background photo with a
 // 40% black overlay, a frosted dark card with a centred heading/text and two
 // comparison columns (icon + coloured title + list of title/text rows).
 // Mobile (< 768, Figma Product "Mobile comparison block" / ICP Adding locations 2516:12461):
@@ -10,13 +12,28 @@
 
 import Image from "next/image";
 import Reveal from "@/components/ui/Reveal";
-import { mediaUrl, rows, toHtml } from "@/lib/content";
+import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
 // ACF "Title Colour"; orange = Figma "Reduce" title on the ICP Comparison block (#FF8D6B)
 const TITLE_COLOR = { petrol: "text-(--color-petrol)", yellow: "text-(--color-yellow)", white: "text-(--color-light-grey)", orange: "text-[#FF8D6B]" };
 
+// Safe next/image src from an ACF icon: URL string (icon_picker), image array ({ url }) or
+// { type: "url", value }. Anything else (dashicons-… names, numeric IDs, empty) -> "".
+function iconSrc(icon) {
+  if (!icon) return "";
+  if (typeof icon === "string") {
+    const s = icon.trim();
+    return /^(https?:\/\/|\/)/i.test(s) ? s : "";
+  }
+  if (typeof icon === "object") {
+    if (typeof icon.url === "string") return iconSrc(icon.url);
+    if (icon.type === "url" && typeof icon.value === "string") return iconSrc(icon.value);
+  }
+  return "";
+}
+
 function Column({ column, index, icp }) {
-  const icon = mediaUrl(column.icon);
+  const icon = iconSrc(column.icon);
   const items = rows(column.items).filter((i) => i.title);
   return (
     // ICP: Figma columns 400 + 80 + 408 (888 row, the second column fills the rest)
@@ -27,7 +44,7 @@ function Column({ column, index, icp }) {
       {column.title && (
         <div className="flex items-center gap-3 max-md:gap-2.5">
           {icon && <Image src={icon} alt="" width={32} height={32} className="size-8 shrink-0 object-contain max-md:h-6! max-md:w-auto!" />}
-          <h3 className={`cs-h4 ${TITLE_COLOR[column.title_color] || TITLE_COLOR.petrol}`}>{column.title}</h3>
+          <h3 className={`cs-h4 ${TITLE_COLOR[column.title_color] || TITLE_COLOR.petrol}`} dangerouslySetInnerHTML={{ __html: toHtml(column.title) }} />
         </div>
       )}
       {items.length > 0 && (
@@ -54,7 +71,7 @@ export default function ProductResults({ data, variant }) {
   const bg = mediaUrl(data?.bg_image);
 
   return (
-    <section className="relative isolate overflow-hidden bg-black py-16 lg:py-20">
+    <section className="relative isolate overflow-hidden bg-black py-16 lg:py-20" style={sectionBackground({ bg_color: data?.bg_color })}>
       {bg && <Image src={bg} alt="" fill sizes="100vw" className="-z-10 object-cover" />}
       <div className="absolute inset-0 -z-10 bg-black/40" aria-hidden />
 

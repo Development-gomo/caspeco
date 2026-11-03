@@ -430,6 +430,7 @@ export default async function PageBuilder({
             return <ProductSalesChannels key={i} data={block} lang={lang} />;
 
           case "results_section":
+          case "result_section":
             return <ProductResults key={i} data={block} lang={lang} />;
 
           case "testimonial_slider_section":
