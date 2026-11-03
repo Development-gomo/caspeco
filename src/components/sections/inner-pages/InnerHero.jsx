@@ -31,7 +31,7 @@ export default function InnerHero({ data, lang = DEFAULT_LANG }) {
     <section
       ref={sectionRef}
       // isolate: own stacking context, so the -z-10 image paints above the section's background colour
-      className={`relative isolate w-full overflow-hidden hero ${full ? "min-h-screen xl:min-h-240" : ""}`}
+      className={`relative isolate w-full overflow-hidden hero ${full ? "min-h-screen xl:min-h-200" : ""}`}
       style={{ backgroundColor: data?.background_color || "var(--color-black)", ...(full ? {} : { minHeight: `${height}vh` }) }}
     >
       {/* BG IMAGE */}
