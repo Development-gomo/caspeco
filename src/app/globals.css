@@ -899,6 +899,17 @@ span.subheading-label.text-\[var\(--color-accent\)\],
     padding-top: var(--sec-pt, 64px);
     padding-bottom: var(--sec-pb, 64px);
   }
+  /* section background gradient (ACF bg_gradient): top = grey fading to white, bottom = white fading to grey, none = plain */
+  .bg-topgrad {
+    background: linear-gradient(180deg, rgba(218, 220, 221, 0.8) 0%, rgba(255, 255, 255, 0.5) 100%), #fff;
+  }
+  .bg-bottomgrad {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, #dadcdd 80.6%), #fff;
+    padding-top: 0 !important;
+  }
+  .bg-none {
+    background: none;
+  }
   /* yellow / dark: 32px side padding; outline variants: 2px stroke + 36px = Figma 38 */
   .cs-btn {
     min-height: 48px;

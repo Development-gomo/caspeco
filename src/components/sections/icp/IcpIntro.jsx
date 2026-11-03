@@ -16,12 +16,10 @@ import { DEFAULT_LANG, langHref } from "@/config";
 import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
 const ROLL_MS = 3200;
-// Figma fill: linear #DADCDD 80% → #FFFFFF 50% (over the white page)
-const GRADIENT = "linear-gradient(180deg, rgba(218, 220, 221, 0.80) 0%, rgba(255, 255, 255, 0.50) 100%), #FFF";
-// bg_gradient (ACF button group): top = grey at the top fading to white (above), bottom = white fading to grey
-// at the bottom (same fill as the Switch steps section), none = plain page background. Unset keeps the top gradient.
-const GRADIENT_BOTTOM = "linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, #DADCDD 80.6%), #FFFFFF";
-const GRADIENTS = { top: { background: GRADIENT }, bottom: { background: GRADIENT_BOTTOM }, none: {} };
+// bg_gradient (ACF button group) → class defined in globals.css: top = grey at the top fading to white (Figma fill
+// #DADCDD 80% → #FFFFFF 50%), bottom = white fading to grey (same fill as the Switch steps section), none = plain
+// page background. Unset keeps the top gradient.
+const GRADIENT_CLASSES = { top: "bg-topgrad", bottom: "bg-bottomgrad", none: "bg-none" };
 
 export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
   const rolling = rows(data?.rolling_headings).map((r) => r.text).filter(Boolean);
@@ -48,7 +46,7 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
   return (
     // Figma section-gap rule: before the light tabs section the intro keeps 72 below (72 + 72)
     // Mobile (Figma "USP's"): 64 top/bottom, text block → image 40, heading → text 16
-    <section className={`cs-sec overflow-hidden pt-18 lg:pt-36 ${data?._next === "tab_section" ? "pb-12 lg:pb-[72px]" : "pb-18 lg:pb-36"}`} style={sectionBackground(data, GRADIENTS[data?.bg_gradient] || GRADIENTS.top)}>
+    <section className={`cs-sec overflow-hidden pt-18 lg:pt-36 ${GRADIENT_CLASSES[data?.bg_gradient] || GRADIENT_CLASSES.top} ${data?._next === "tab_section" ? "pb-12 lg:pb-[72px]" : "pb-18 lg:pb-36"}`} style={sectionBackground(data)}>
       {/* image_postion "left" (Page Builder content_section): image first on desktop */}
       <div className={`cs-container flex flex-col gap-12 max-md:gap-10 lg:items-center lg:justify-between lg:gap-16 ${data?.image_postion === "left" ? "lg:flex-row-reverse" : "lg:flex-row"}`}>
         {/* Opening soon: text 600 wide, centred on the image; Levelling up: rotating heading 850 wide, text 474 */}
