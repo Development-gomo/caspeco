@@ -21,7 +21,7 @@ export default function LargeContent({ data }) {
         )}
         {heading && (
           <h2
-            className="cs-h3 cs-highlight cs-rich text-(--color-heading) max-md:text-(--color-black) mb-6 md:mb-14"
+            className="cs-h3 max-w-3xl m-auto cs-highlight cs-rich text-(--color-heading) max-md:text-(--color-black) mb-6 md:mb-14"
             dangerouslySetInnerHTML={{ __html: heading }}
           />
         )}
