@@ -995,6 +995,14 @@ span.subheading-label.text-\[var\(--color-accent\)\],
 /* CMS rich text: bold/strong = yellow highlight (works in any language's word order) */
 .cs-rich p { margin: 0; }
 .cs-rich p + p { margin-top: 8px; }
+/* Brand bullets for lists in the content_section body (IcpIntro adds .cs-list for the Page Builder layout) */
+.cs-list ul { list-style: none; margin: 16px 0 0; padding: 0; }
+.cs-list ul + p, .cs-list p + ul { margin-top: 16px; }
+.cs-list li { position: relative; padding-left: 24px; }
+.cs-list li + li { margin-top: 16px; }
+/* top: half the line box minus half the 8px dot, so it centres on the first line at every breakpoint (lh = line-height) */
+.cs-list li::before { content: ""; position: absolute; left: 0; top: calc(0.5lh - 4px); width: 8px; height: 8px; border-radius: 9999px; background: var(--color-yellow); }
+.cs-list li a { text-decoration: underline; text-underline-offset: 2px; }
 .cs-highlight strong,
 .cs-highlight b {
   color: var(--color-yellow);

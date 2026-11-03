@@ -1,32 +1,54 @@
-// src/components/sections/HomeCaseStudies.jsx
+// src/components/sections/home/HomeCaseStudies.jsx
+// ACF layout: casestudies_section ("Case Study Listing Section"): sub_heading, heading, short_text,
+// CTA button, and the latest 3 case studies (newest first, same language) as listing cards
+// (ui/CaseCard) in a Swiper slider. Desktop (lg+) shows all 3 side by side at the listing grid's
+// card width, so the arrows/progress rail only appear on smaller screens where cards peek.
+
 "use client";
 
 import React from "react";
 import { motion } from "framer-motion";
-import Image from "next/image";
-
-import CheckSvg from "../../../../public/check.svg";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Autoplay } from "swiper/modules";
+import { Navigation } from "swiper/modules";
 
 import "swiper/css";
 import "swiper/css/navigation";
 
-import { DEFAULT_LANG, entryHref } from "@/config";
+import { DEFAULT_LANG } from "@/config";
 import CtaButton from "@/components/ui/CtaButton";
+import CaseCard from "@/components/ui/CaseCard";
+import { toHtml } from "@/lib/content";
+import { postStrings } from "@/lib/postStrings";
 
 const AUTOPLAY_DELAY = 5000;
+const MAX_CASES = 3;
+
+// Newest first; the REST list is already date-desc, sort defensively when every item has a date
+function latestCases(list) {
+  const cases = Array.isArray(list) ? list : [];
+  const dated = cases.every((c) => !Number.isNaN(Date.parse(c?.date)));
+  const sorted = dated ? [...cases].sort((a, b) => Date.parse(b.date) - Date.parse(a.date)) : cases;
+  return sorted.slice(0, MAX_CASES);
+}
 
 export default function HomeCaseStudies({ data, lang = DEFAULT_LANG, prefetchedCases }) {
-  const cases = prefetchedCases || [];
-  const [activeIndex, setActiveIndex] = React.useState(cases.length > 1 ? 1 : 0);
+  const cases = latestCases(prefetchedCases);
+  const [activeIndex, setActiveIndex] = React.useState(0);
+  const [snapCount, setSnapCount] = React.useState(cases.length);
 
   const bgImage = data?.bg_image?.url || "";
-  const { sub_heading, heading, cta_text, cta_url, read_more_text } =
+  const { sub_heading, heading, short_text, cta_text, cta_url, read_more_text } =
     data || {};
+  const readMore = read_more_text || postStrings(lang).readFullCase;
 
   if (!cases.length) return null;
+
+  // Rail segments follow Swiper's real snap positions (with 2.1 slides visible the last two share one)
+  const sync = (s) => {
+    setActiveIndex(s.snapIndex);
+    setSnapCount(s.snapGrid.length);
+  };
 
   return (
     <>
@@ -51,170 +73,113 @@ export default function HomeCaseStudies({ data, lang = DEFAULT_LANG, prefetchedC
             </motion.div>
           )}
 
-          {/* TOP HEADING + CTA */}
+          {/* TOP HEADING + SHORT TEXT + CTA */}
           <div className="md:flex md:justify-between items-end mb-10 lg:mb-14">
             <motion.div
-              className="section-heading mb-4 md:mb-0"
-              dangerouslySetInnerHTML={{ __html: heading }}
+              className="mb-4 md:mb-0"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.15 }}
               viewport={{ once: true }}
-            />
+            >
+              {heading && (
+                <div className="section-heading" dangerouslySetInnerHTML={{ __html: heading }} />
+              )}
+              {short_text && (
+                <div
+                  className="cs-p2 cs-rich max-w-[680px] mt-4 text-(--color-grey-dark)"
+                  dangerouslySetInnerHTML={{ __html: toHtml(short_text) }}
+                />
+              )}
+            </motion.div>
 
             {cta_text && cta_url && (
               <CtaButton href={cta_url}>{cta_text}</CtaButton>
             )}
           </div>
-        </div>
 
-        {/* FULL WIDTH SLIDER */}
-        <div className="w-full">
-          <Swiper
-            className="case-swiper"
-            modules={[Navigation]}
-            navigation={{
-              nextEl: ".case-next-btn",
-              prevEl: ".case-prev-btn",
-            }}
-            onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
-            initialSlide={cases.length > 1 ? 1 : 0}
-            slidesPerView={1.5}
-            spaceBetween={32}
-            centeredSlides={true}
-            breakpoints={{
-              280: { slidesPerView: 1.1 },
-              510: { slidesPerView: 1.1 },
-              640: { slidesPerView: 1.5 },
-              1024: { slidesPerView: 1.5 },
-              1280: { slidesPerView: 1.4 },
-              1536: { slidesPerView: 1.4 },
-            }}
+          {/* SLIDER — same card width as the listing grid (3 columns, 24px gap) on desktop */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
           >
-            {cases.map((item) => {
-              const img =
-                item?._embedded?.["wp:featuredmedia"]?.[0]?.source_url || "";
-              const clientLogo = item?.acf?.client_logo?.url || "";
-              const sliderData = item?.acf?.slider_card_data || [];
-              const title = item?.title?.rendered || "";
-              const section_label = item?.acf?.section_label || "";
-
-              return (
-                <SwiperSlide key={item.id}>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 rounded-lg overflow-hidden bg-(--color-black)">
-                    <div className=" bg-(--color-black) md:w-[600px] text-white z-20 p-6 lg:p-12 flex flex-col justify-center">
-                      <h3
-                        className="text-[24px] leading-8 md:text-[32px] lg:leading-10"
-                        dangerouslySetInnerHTML={{ __html: title }}
-                      />
-                      <CtaButton
-                        href={entryHref("casestudy", item.slug, lang)}
-                        className="mt-8 mb-15"
-                      >
-                        {read_more_text}
-                      </CtaButton>
-
-                      {/* Achievements */}
-                      {sliderData?.length > 0 && (
-                        <>
-                          <p className="mb-4 font-medium text-[18px]">
-                            {section_label}
-                          </p>
-                          <div className="gap-3">
-                            {sliderData.map((row, i) => (
-                              <span
-                                key={i}
-                                className="inline-block mb-4 [&:nth-child(2)]:mb-0"
-                              >
-                                <span className="flex text-xs items-center justify- border border-white rounded-sm">
-                                  <span className="flex items-center p-2 gap-2 min-w-[175px]">
-                                    <span className="h-6 w-6 bg-[#ffffff40] flex items-center justify-center rounded-full">
-                                      <Image
-                                        src={CheckSvg}
-                                        width={11}
-                                        height={9}
-                                        alt="no-follow"
-                                      />
-                                    </span>
-                                    <span className="text-[14px]">
-                                      {row.what_we_achieve}
-                                    </span>
-                                  </span>
-                                  <span className="w-[50px] text-center px-3 py-3 text-[14px] border-l font-semibold">
-                                    {row.stats}
-                                  </span>
-                                </span>
-                              </span>
-                            ))}
-                          </div>
-                        </>
-                      )}
-                    </div>
-                    <div className="relative z-10 h-[350px] lg:h-full">
-                      {img && (
-                        <Image
-                          src={img}
-                          fill
-                          alt={title}
-                          className="object-cover"
-                        />
-                      )}
-
-                      {/* CLIENT LOGO */}
-                      {clientLogo && (
-                        <div className="absolute max-w-[134px] top-12 right-12 bg-(--color-bg) px-3 py-3 rounded-sm">
-                          <Image
-                            src={clientLogo}
-                            alt="client logo"
-                            width={100}
-                            height={35}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
+            <Swiper
+              modules={[Navigation]}
+              navigation={{
+                nextEl: ".case-next-btn",
+                prevEl: ".case-prev-btn",
+              }}
+              onSwiper={sync}
+              onSlideChange={sync}
+              onResize={sync}
+              onBreakpoint={sync}
+              slidesPerView={1.1}
+              spaceBetween={16}
+              breakpoints={{
+                768: { slidesPerView: 2.1, spaceBetween: 24 },
+                1024: { slidesPerView: 3, spaceBetween: 24 },
+              }}
+            >
+              {cases.map((item, i) => (
+                <SwiperSlide key={item.id} className="!h-auto">
+                  <CaseCard
+                    item={item}
+                    lang={lang}
+                    readMore={readMore}
+                    index={i}
+                    reveal={false}
+                    className="h-full"
+                  />
                 </SwiperSlide>
-              );
-            })}
-          </Swiper>
-
-          {/* PROGRESS RAIL */}
-          <div className="flex justify-center gap-2 mt-10 lg:mt-12 web-width px-6">
-            {cases.map((item, i) => (
-              <div
-                key={item.id}
-                className="case-progress-track flex-1 max-w-40 h-[3px] rounded-full bg-(--color-grey)/25 overflow-hidden"
-              >
-                <span
-                  key={i === activeIndex ? `${i}-active` : i}
-                  className="case-progress-fill block h-full bg-(--color-black)"
-                  style={{
-                    width: i < activeIndex ? "100%" : i === activeIndex ? undefined : "0%",
-                    animation:
-                      i === activeIndex
-                        ? `case-progress-fill ${AUTOPLAY_DELAY}ms linear forwards`
-                        : "none",
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* NAV BUTTONS */}
-          <div className="flex justify-center gap-4 mt-6 lg:mt-8">
-            <button className="cursor-pointer case-prev-btn w-12 h-12 rounded-md border border-(--color-grey-medium) group flex items-center justify-center hover:bg-(--color-grey) transition-colors duration-300">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12.532 12.403" className="transition-colors duration-300">
-                <path d="M248.292,12.738h10.661a.338.338,0,1,1,0,.675H248.292l5.162,5.161a.338.338,0,1,1-.478.478L247,13.075,252.976,7.1a.338.338,0,1,1,.478.478Z" transform="translate(-246.859 -6.874)" className="fill-(--color-grey) stroke-(--color-grey) group-hover:fill-white group-hover:stroke-white" strokeWidth="0.2" fillRule="evenodd"/>
-              </svg>
-            </button>
-
-            <button className="cursor-pointer case-next-btn w-12 h-12 rounded-md border border-(--color-grey-medium) group flex items-center justify-center hover:bg-(--color-grey) transition-colors duration-300">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12.532 12.403" className="transition-colors duration-300">
-                <path d="M258,12.738H247.338a.338.338,0,1,0,0,.675H258l-5.162,5.161a.338.338,0,0,0,.478.478l5.976-5.977L253.314,7.1a.338.338,0,0,0-.478.478Z" transform="translate(-246.9 -6.874)" className="fill-(--color-grey) stroke-(--color-grey) group-hover:fill-white group-hover:stroke-white" strokeWidth="0.2" fillRule="evenodd"/>
-              </svg>
-            </button>
-          </div>
+              ))}
+            </Swiper>
+          </motion.div>
         </div>
+
+        {/* Controls: hidden on desktop (all 3 cards visible) and whenever nothing can scroll.
+            Kept mounted (CSS-hidden) so Swiper's navigation keeps its button elements across resizes. */}
+        {cases.length > 1 && (
+          <div className={`lg:hidden ${snapCount > 1 ? "" : "hidden"}`}>
+            {/* PROGRESS RAIL */}
+            <div className="flex justify-center gap-2 mt-10 web-width px-6">
+              {Array.from({ length: snapCount }, (_, i) => (
+                <div
+                  key={i}
+                  className="case-progress-track flex-1 max-w-40 h-[3px] rounded-full bg-(--color-grey)/25 overflow-hidden"
+                >
+                  <span
+                    key={i === activeIndex ? `${i}-active` : i}
+                    className="case-progress-fill block h-full bg-(--color-black)"
+                    style={{
+                      width: i < activeIndex ? "100%" : i === activeIndex ? undefined : "0%",
+                      animation:
+                        i === activeIndex
+                          ? `case-progress-fill ${AUTOPLAY_DELAY}ms linear forwards`
+                          : "none",
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* NAV BUTTONS */}
+            <div className="flex justify-center gap-4 mt-6">
+              <button type="button" aria-label="Previous" className="cursor-pointer case-prev-btn w-12 h-12 rounded-md border border-(--color-grey-medium) group flex items-center justify-center hover:bg-(--color-grey) transition-colors duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12.532 12.403" className="transition-colors duration-300" aria-hidden>
+                  <path d="M248.292,12.738h10.661a.338.338,0,1,1,0,.675H248.292l5.162,5.161a.338.338,0,1,1-.478.478L247,13.075,252.976,7.1a.338.338,0,1,1,.478.478Z" transform="translate(-246.859 -6.874)" className="fill-(--color-grey) stroke-(--color-grey) group-hover:fill-white group-hover:stroke-white" strokeWidth="0.2" fillRule="evenodd"/>
+                </svg>
+              </button>
+
+              <button type="button" aria-label="Next" className="cursor-pointer case-next-btn w-12 h-12 rounded-md border border-(--color-grey-medium) group flex items-center justify-center hover:bg-(--color-grey) transition-colors duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12.532 12.403" className="transition-colors duration-300" aria-hidden>
+                  <path d="M258,12.738H247.338a.338.338,0,1,0,0,.675H258l-5.162,5.161a.338.338,0,0,0,.478.478l5.976-5.977L253.314,7.1a.338.338,0,0,0-.478.478Z" transform="translate(-246.9 -6.874)" className="fill-(--color-grey) stroke-(--color-grey) group-hover:fill-white group-hover:stroke-white" strokeWidth="0.2" fillRule="evenodd"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
       </section>
     </>
   );

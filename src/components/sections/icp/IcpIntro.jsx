@@ -42,11 +42,13 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
   const variant = data?.cta_variant === "outline" ? "outline-dark" : "yellow";
   // mobile (Figma "USP's"): heading #151411 (desktop stays #000)
   const headingClass = "cs-h3 cs-highlight cs-rich text-(--color-heading) max-md:text-(--color-black)";
+  // stacked content_sections: the section above already provides the gap
+  const stackedAfterContent = data?._prev === "content_section";
 
   return (
     // Figma section-gap rule: before the light tabs section the intro keeps 72 below (72 + 72)
     // Mobile (Figma "USP's"): 64 top/bottom, text block → image 40, heading → text 16
-    <section className={`cs-sec overflow-hidden pt-18 lg:pt-36 ${GRADIENT_CLASSES[data?.bg_gradient] || GRADIENT_CLASSES.top} ${data?._next === "tab_section" ? "pb-12 lg:pb-[72px]" : "pb-18 lg:pb-36"}`} style={sectionBackground(data)}>
+    <section className={`cs-sec overflow-hidden ${stackedAfterContent ? "pt-0" : "pt-18 lg:pt-36"} ${GRADIENT_CLASSES[data?.bg_gradient] || GRADIENT_CLASSES.top} ${data?._next === "tab_section" ? "pb-12 lg:pb-[72px]" : "pb-18 lg:pb-36"}`} style={sectionBackground(data)}>
       {/* image_postion "left" (Page Builder content_section): image first on desktop */}
       <div className={`cs-container flex flex-col gap-12 max-md:gap-10 lg:items-center lg:justify-between lg:gap-16 ${data?.image_postion === "left" ? "lg:flex-row-reverse" : "lg:flex-row"}`}>
         {/* Opening soon: text 600 wide, centred on the image; Levelling up: rotating heading 850 wide, text 474 */}
@@ -76,7 +78,7 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
               // Figma: Regular 20/24 #3F3E3C; the emphasised phrase is Medium Italic #000
               // Mobile: 18/20 (Opening soon) or 16/20 (Levelling up, rolling heading); emphasis on the same 20px line
               <div
-                className={`cs-p2 cs-rich text-(--color-grey-dark) [&_em]:font-medium [&_em]:leading-8 [&_em]:text-(--color-heading) [&_strong]:font-medium [&_strong]:leading-8 [&_strong]:text-(--color-heading) max-md:[&_em]:text-(--color-grey-dark) max-md:[&_strong]:text-(--color-grey-dark) max-md:leading-5! max-md:[&_em]:leading-5 max-md:[&_strong]:leading-5 ${rolling.length ? "max-w-[474px] max-md:text-[16px]! max-md:tracking-[-0.32px]!" : "max-w-[600px]"}`}
+                className={`cs-p2 cs-rich text-(--color-grey-dark) [&_em]:font-medium [&_em]:leading-8 [&_em]:text-(--color-heading) [&_strong]:font-medium [&_strong]:leading-8 [&_strong]:text-(--color-heading) max-md:[&_em]:text-(--color-grey-dark) max-md:[&_strong]:text-(--color-grey-dark) max-md:leading-5! max-md:[&_em]:leading-5 max-md:[&_strong]:leading-5 ${data?.listStyle ? "cs-list" : ""} ${rolling.length ? "max-w-[474px] max-md:text-[16px]! max-md:tracking-[-0.32px]!" : "max-w-[600px]"}`}
                 dangerouslySetInnerHTML={{ __html: toHtml(text) }}
               />
             )}

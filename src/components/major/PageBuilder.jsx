@@ -315,6 +315,7 @@ export default async function PageBuilder({
                 lang={lang}
                 data={{
                   ...block,
+                  listStyle: true, // bullet list styling, Page Builder only
                   rolling_headings: (Array.isArray(block.rolling_words)
                     ? block.rolling_words
                     : []
