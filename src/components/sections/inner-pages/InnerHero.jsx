@@ -2,7 +2,7 @@
 // ACF layout: hero_section (Page Builder, inner pages). Same look as HomeHero: label row
 // ("One platform / One partner / One login") pinned near the top, heading block pinned to the
 // bottom, HomeHero type scale (up to 112/104) and the Medium 24/28 short text.
-// Fields: sub_heading (italic eyebrow above the heading), heading, short_text, bg_image,
+// Fields: sub_heading (italic eyebrow above the heading), heading, short_text, cta_text + cta_url (yellow button), bg_image,
 // background_color (used when there is no image), hero_height (25–100, % of the viewport).
 
 "use client";
@@ -10,6 +10,7 @@
 import Image from "next/image";
 import React from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import CtaButton from "@/components/ui/CtaButton";
 import HeroLabels from "@/components/ui/HeroLabels";
 import { DEFAULT_LANG } from "@/config";
 import { toHtml } from "@/lib/content";
@@ -23,6 +24,9 @@ export default function InnerHero({ data, lang = DEFAULT_LANG }) {
   const heading = data?.heading || "";
   const subHeading = data?.sub_heading || "";
   const shortText = data?.short_text || "";
+  const ctaText = (data?.cta_text || "").trim();
+  // editors already type site paths such as "/en/contact" — use the URL as entered (no langHref, it would double the prefix)
+  const ctaUrl = (data?.cta_url || "").trim();
   // hero_height: % of the viewport (ACF default 100); full height also keeps HomeHero's xl minimum
   const height = Math.min(100, Math.max(25, Number(data?.hero_height) || 100));
   const full = height >= 100;
@@ -79,6 +83,16 @@ export default function InnerHero({ data, lang = DEFAULT_LANG }) {
               className="cs-rich font-medium text-base leading-[22px] lg:max-w-[850px] lg:text-[24px] lg:leading-7 lg:tracking-[-0.48px]"
               dangerouslySetInnerHTML={{ __html: toHtml(shortText) }}
             />
+          )}
+
+          {ctaText && ctaUrl && (
+            <motion.div
+              initial={{ opacity: 0, y: 25 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.3 }}
+            >
+              <CtaButton href={ctaUrl}>{ctaText}</CtaButton>
+            </motion.div>
           )}
         </div>
       </div>
