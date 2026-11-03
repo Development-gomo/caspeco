@@ -39,7 +39,7 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
 
   const variant = data?.cta_variant === "outline" ? "outline-dark" : "yellow";
   // mobile (Figma "USP's"): heading #151411 (desktop stays #000)
-  const headingClass = "cs-h2 cs-highlight cs-rich text-(--color-heading) max-md:text-(--color-black)";
+  const headingClass = "cs-h3 cs-highlight cs-rich text-(--color-heading) max-md:text-(--color-black)";
 
   return (
     // Figma section-gap rule: before the light tabs section the intro keeps 72 below (72 + 72)
