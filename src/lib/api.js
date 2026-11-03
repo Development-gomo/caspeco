@@ -350,8 +350,6 @@ export async function getTranslationBySlug(slug, currentLang, targetLang, postTy
   // Map postType to WordPress REST endpoint names
   const endpointMap = {
     page: "pages",
-    service: "solutions",
-    solution: "solutions",
     case_study: "casestudies",
     casestudies: "casestudies",
     product: "products",

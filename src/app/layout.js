@@ -33,7 +33,7 @@ export default async function RootLayout({ children }) {
   const h = await headers();
   const lang = h.get("x-lang") || DEFAULT_LANG;
   // Page type from the URL (src/config pageTypeFromPath): home, page, product, industry,
-  // casestudy, article, partner, partner-category, service
+  // casestudy, article, partner, partner-category
   const pageType = h.get("x-page-type") || "page";
 
   return (
