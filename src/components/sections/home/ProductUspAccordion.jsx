@@ -6,6 +6,7 @@
 // 24, items padding 20 (title Medium 20/24, icon → title 12, body indent 40, Light 16/20 —
 // Regular on the ICP pages), closed items shadow -1 0 5 @10% (on the item and its frame).
 // overflow-x-clip: the items slide in from 32px right, which would widen the page before they reveal.
+// Items without an ACF icon get a fallback by position: 1 POS, 2 staff, 3 booking, 4 analytics (then repeats).
 
 "use client";
 
@@ -16,6 +17,10 @@ import CtaButton from "@/components/ui/CtaButton";
 import ArrowLink from "@/components/ui/ArrowLink";
 import Reveal from "@/components/ui/Reveal";
 import Chevron from "../../../../public/icons/product/chevron.svg";
+import IconPos from "../../../../public/case/pos.svg";
+import IconStaff from "../../../../public/case/staff.svg";
+import IconBooking from "../../../../public/case/booking.png";
+import IconAnalytics from "../../../../public/case/Analtic.svg";
 import { DEFAULT_LANG, langHref } from "@/config";
 import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
@@ -23,8 +28,11 @@ import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 // bottom, over #FDFDFD
 const GRADIENT = "linear-gradient(180deg, rgba(218, 220, 221, 0.80) -0.94%, rgba(255, 255, 255, 0.50) 100.94%), #FDFDFD";
 
-function AccordionItem({ item, isOpen, onToggle, lang, variant }) {
-  const icon = mediaUrl(item.icon);
+// Fallback icons for items with no icon assigned in ACF, by position: POS, staff, booking, analytics
+const FALLBACK_ICONS = [IconPos, IconStaff, IconBooking, IconAnalytics];
+
+function AccordionItem({ item, index, isOpen, onToggle, lang, variant }) {
+  const icon = mediaUrl(item.icon) || FALLBACK_ICONS[index % FALLBACK_ICONS.length];
   return (
     <div
       className={`rounded-[8px] pl-5 pr-6 lg:pr-8 max-md:pr-5 transition-colors duration-300 ${
@@ -113,7 +121,7 @@ export default function UspAccordion({ data, lang = DEFAULT_LANG, variant }) {
           <div className="flex w-full flex-col gap-2 lg:max-w-[671px]">
             {items.map((item, i) => (
               <Reveal key={i} x={32} y={0} delay={0.15 + i * 0.1}>
-                <AccordionItem item={item} lang={lang} variant={variant} isOpen={open === i} onToggle={() => setOpen(open === i ? null : i)} />
+                <AccordionItem item={item} index={i} lang={lang} variant={variant} isOpen={open === i} onToggle={() => setOpen(open === i ? null : i)} />
               </Reveal>
             ))}
           </div>

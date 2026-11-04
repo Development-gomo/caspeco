@@ -17,6 +17,10 @@ export default function HomeHero({ data, lang = DEFAULT_LANG }) {
 
   const bgImage = data?.bg_image?.url || "";
   const bgVideo = data?.bg_video?.url || "";
+  // enable_overlay: ACF Button Group ("enable" / "disable"), may arrive as "enable" or { value: "enable" };
+  // adds a dark overlay over the background image / video (off by default)
+  const overlayField = data?.enable_overlay;
+  const overlay = (overlayField?.value ?? overlayField) === "enable";
 
   const heading = data?.heading || "";
   const shortHeading = data?.short_heading || "";
@@ -32,7 +36,8 @@ export default function HomeHero({ data, lang = DEFAULT_LANG }) {
       className="relative w-full min-h-screen overflow-hidden hero xl:min-h-240 max-md:min-h-[672px]"
     >
       {/* BG IMAGE/VIDEO */}
-      <motion.div className="absolute hero-bg inset-0 -z-10" style={{ y: bgY }}>
+      {/* overlay on: the parallax lifts the image up to 2%, which would leave an image-less strip at the bottom under the static overlay (a grey band) — extend the image box so it always covers */}
+      <motion.div className="absolute hero-bg inset-0 -z-10" style={overlay ? { y: bgY, bottom: "-3%" } : { y: bgY }}>
         {bgVideo ? (
           <video
             src={bgVideo}
@@ -52,6 +57,8 @@ export default function HomeHero({ data, lang = DEFAULT_LANG }) {
           />
         ) : null}
       </motion.div>
+      {/* OVERLAY — static, so it covers the whole section while the image parallaxes */}
+      {(bgVideo || bgImage) && overlay && <div className="absolute inset-0 -z-10 bg-black/60" aria-hidden="true" />}
       {/* <div className="absolute inset-0 bg-linear-to-b from-black/40 via-black/65 to-transparent -z-10"></div> */}
       {/* Mobile only — Figma Home "Hero section" fill: linear #000 70% → 0% top to bottom at 40% layer opacity */}
       <div className="absolute inset-0 -z-10 md:hidden bg-[linear-gradient(180deg,rgba(0,0,0,0.28)_0%,rgba(0,0,0,0)_100%)]" aria-hidden />

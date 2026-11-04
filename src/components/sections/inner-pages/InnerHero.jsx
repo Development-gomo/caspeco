@@ -41,9 +41,9 @@ export default function InnerHero({ data, lang = DEFAULT_LANG }) {
       className={`relative isolate w-full overflow-hidden hero ${full ? "min-h-screen xl:min-h-200" : ""}`}
       style={{ backgroundColor: data?.background_color || "var(--color-black)", ...(full ? {} : { minHeight: `${height}vh` }) }}
     >
-      {/* BG IMAGE */}
+      {/* BG IMAGE — overlay on: the parallax lifts the image up to 2%, which would leave an image-less strip at the bottom under the static overlay (a grey band), so the image box is extended 3% below the section */}
       {bgImage && (
-        <motion.div className="absolute hero-bg inset-0 -z-10" style={{ y: bgY }}>
+        <motion.div className="absolute hero-bg inset-0 -z-10" style={overlay ? { y: bgY, bottom: "-3%" } : { y: bgY }}>
           <Image src={bgImage} alt="" fill priority className="object-cover object-top" />
         </motion.div>
       )}
