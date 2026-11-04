@@ -7,7 +7,8 @@
 // Mobile (< 768, Figma Product "Mobile comparison block" / ICP Adding locations 2516:12461):
 // section padding 64, panel padding 32, radius 4, 1px white@12 stroke, left-aligned
 // heading + intro (18/22, Light; Regular on ICP), 24px-high icons (own width: 24 house, 18 building), no list indent, a 1px #FDFDFD@15
-// divider on top of each column (24 above the title; ICP: 24 / 12, columns 16 apart). Figma's
+// divider on top of each column (24 from the divider to the title: 23 padding + 1px border; ICP: columns 24 apart,
+// bottom note 48 below them). Figma's
 // strokes are inside (no layout space), so the CSS 1px borders take 1px off the padding.
 
 import Image from "next/image";
@@ -39,7 +40,7 @@ function Column({ column, index, icp }) {
     // ICP: Figma columns 400 + 80 + 408 (888 row, the second column fills the rest)
     <Reveal
       delay={0.25 + index * 0.15}
-      className={`flex w-full flex-col gap-6 max-md:gap-4 max-md:border-t max-md:border-[rgba(253,253,253,0.15)] max-md:pt-[23px] ${icp ? "max-md:not-first:pt-[11px] lg:w-[400px] lg:last:w-auto lg:last:flex-1" : "lg:max-w-[400px]"}`}
+      className={`flex w-full flex-col gap-6 max-md:gap-4 max-md:border-t max-md:border-[rgba(253,253,253,0.15)] max-md:pt-[23px] ${icp ? "lg:w-[400px] lg:last:w-auto lg:last:flex-1" : "lg:max-w-[400px]"}`}
     >
       {column.title && (
         <div className="flex items-center gap-3 max-md:gap-2.5">
@@ -85,7 +86,7 @@ export default function ProductResults({ data, variant }) {
           </div>
 
           {columns.length > 0 && (
-            <div className={`flex w-full flex-col gap-12 md:flex-row md:justify-center lg:gap-20 ${icp ? "max-md:gap-4 lg:w-[888px]" : "max-md:gap-6"}`}>
+            <div className={`flex w-full flex-col gap-12 md:flex-row md:justify-center lg:gap-20 ${icp ? "max-md:gap-6 lg:w-[888px]" : "max-md:gap-6"}`}>
               {columns.map((column, i) => (
                 <Column key={i} column={column} index={i} icp={icp} />
               ))}
@@ -94,7 +95,7 @@ export default function ProductResults({ data, variant }) {
 
           {bottom_note && (
             // Figma: Bold 16/20 #FDFDFD, 754 wide, 64 below the columns
-            <p className="max-w-[754px] text-center font-bold text-[16px] leading-5 tracking-[-0.32px] text-(--color-light-grey) max-md:text-left max-md:leading-[1.1]">{bottom_note}</p>
+            <p className={`max-w-[754px] text-center font-bold text-[16px] leading-5 tracking-[-0.32px] text-(--color-light-grey) max-md:text-left max-md:leading-[1.1] ${icp ? "max-md:mt-6" : ""}`}>{bottom_note}</p>
           )}
         </Reveal>
       </div>

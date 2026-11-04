@@ -10,13 +10,18 @@
 // Mobile (< 768, final Figma Product "Frame 8934401" / Industry "Frame 8934361"): H2 → 40 → one
 // full-width 345 card (no peek, 24 apart, no loop) → 40 → graded slider dots (centred) → 23.4 → yellow
 // "All cases" text link; 64 above, 20.6 below (Product frame: 19.4 / 24.6). No outline button, arrows or counter. The card is the
-// desktop card scaled to 345 (radius 5.9, padding 17.8, 40 logo → quote, 17.8 quote → footer).
+// desktop card scaled to 345 (radius 5.9, padding 17.8, 40 logo → quote). Mobile card (QA + Figma): the
+// quote is top-aligned 40 under the logo (Tenon Regular Italic 20/18, -2%, #FDFDFD; not centred), the
+// name/venue footer is pinned to the card bottom, and a "Read full case" text link with arrow (Tenon
+// Medium 16/20, -2%, underlined, #FDFDFD, 16px arrow 8 right) sits bottom-right, 17.81 from the edges,
+// bottom-aligned with the footer. The link only renders with a case slug (md:hidden).
 // variant "industry": 30px between the arrows (Industry mockup); ICP mockups use 24.
 
 "use client";
 
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import ArrowLink from "@/components/ui/ArrowLink";
@@ -24,8 +29,9 @@ import CtaButton from "@/components/ui/CtaButton";
 import Reveal from "@/components/ui/Reveal";
 import SliderArrows from "@/components/ui/SliderArrows";
 import { GLASS_CLASS, GLASS_STYLE } from "@/components/ui/glass";
-import { DEFAULT_LANG, langHref } from "@/config";
+import { DEFAULT_LANG, entryHref, langHref } from "@/config";
 import { curlyQuote, mediaUrl, toHtml } from "@/lib/content";
+import { postStrings } from "@/lib/postStrings";
 
 const pad = (n) => String(n).padStart(2, "0");
 
@@ -38,14 +44,14 @@ const MAX_CASES = 4;
 // Figma: the accent bar next to the name cycles #FFC120 → #FF8D6A → #1F8690 (3×48, radius 10)
 const ACCENTS = ["#FFC120", "#FF8D6A", "#1F8690"];
 
-function QuoteCard({ card, lang, accent }) {
+function QuoteCard({ card, lang, accent, readMore }) {
   const logo = mediaUrl(card.logo);
   return (
     // Figma glass card (465 wide, radius 8, padding 24): logo, 54px gap, quote Bold 32/32 -2%,
     // 24px gap, name Bold 24/28 -2% + designation Medium 18/24 0.15px next to a 3×48 accent bar.
     // No ancestor may use opacity < 1, filter or clip-path, or the backdrop blur sees nothing.
     <figure
-      className={`flex h-full min-h-[286px] flex-col gap-[54px] rounded-[8px] p-6 text-(--color-white) transition-[translate] duration-300 hover:-translate-y-1 max-md:min-h-0 max-md:gap-10 max-md:rounded-[5.94px] max-md:p-[17.8px] max-md:shadow-[0px_3.96px_11.87px_0px_rgba(0,0,0,0.16)]! ${GLASS_CLASS}`}
+      className={`relative flex h-full min-h-[286px] flex-col gap-[54px] rounded-[8px] p-6 text-(--color-white) transition-[translate] duration-300 hover:-translate-y-1 max-md:min-h-0 max-md:gap-10 max-md:rounded-[5.94px] max-md:p-[17.8px] max-md:shadow-[0px_3.96px_11.87px_0px_rgba(0,0,0,0.16)]! ${GLASS_CLASS}`}
       style={GLASS_STYLE}
     >
       {logo ? (
@@ -53,14 +59,14 @@ function QuoteCard({ card, lang, accent }) {
       ) : (
         <span className="h-10 lg:h-12 max-md:h-[35.6px]" aria-hidden />
       )}
-      <div className="mt-auto flex flex-col gap-6 max-md:gap-[17.8px]">
+      <div className="mt-auto flex flex-col gap-6 max-md:mt-0 max-md:flex-1 max-md:gap-[17.8px]">
       {card.quote && (
         <blockquote
-          className="font-bold text-[26px] leading-8 tracking-[-0.52px] max-md:leading-7 lg:text-[32px] lg:leading-8 lg:tracking-[-0.64px]"
+          className="font-bold text-[26px] leading-8 tracking-[-0.52px] max-md:font-normal max-md:text-[20px] max-md:italic max-md:leading-[18px] max-md:tracking-[-0.4px] max-md:text-[#FDFDFD] lg:text-[32px] lg:leading-8 lg:tracking-[-0.64px]"
           dangerouslySetInnerHTML={{ __html: toHtml(curlyQuote(card.quote)) }}
         />
       )}
-      <figcaption className={`flex items-end justify-between gap-4 ${card.quote ? "" : "mt-auto"}`}>
+      <figcaption className={`flex items-end justify-between gap-4 max-md:mt-auto ${card.quote ? "" : "mt-auto"}`}>
         {(card.name || card.company) && (
           <span className="flex items-center gap-3 max-md:gap-[8.9px]">
             <span className="h-12 w-[3px] shrink-0 rounded-[10px] max-md:h-[35.6px] max-md:w-[2.2px] max-md:rounded-[7.4px]" style={{ background: accent || ACCENTS[0] }} aria-hidden />
@@ -77,6 +83,15 @@ function QuoteCard({ card, lang, accent }) {
         )}
       </figcaption>
       </div>
+      {card.slug && (
+        // mobile only: text link + 16px arrow, bottom-right (17.81 from the edges)
+        <Link href={entryHref("casestudy", card.slug, lang)} className="absolute right-[17.81px] bottom-[17.81px] hidden items-center gap-2 text-[16px] leading-5 font-medium tracking-[-0.32px] text-[#FDFDFD] max-md:flex">
+          <span className="underline decoration-1 underline-offset-2">{readMore}</span>
+          <svg width="16" height="10" viewBox="0 0 16 10" fill="none" aria-hidden className="shrink-0">
+            <path d="M0 5h15M11 1l4 4-4 4" stroke="#FDFDFD" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </Link>
+      )}
     </figure>
   );
 }
@@ -87,6 +102,7 @@ const caseToCard = (c) => ({
   quote: c.quote,
   name: c.personName,
   company: c.designation,
+  slug: c.slug,
 });
 
 export default function IndustryTestimonials({ data, lang = DEFAULT_LANG, cases = [], variant }) {
@@ -109,7 +125,8 @@ export default function IndustryTestimonials({ data, lang = DEFAULT_LANG, cases 
   // twice; index / counter / dashes always refer to the real card (realIndex % count).
   const loop = cards.length > 1 && !mobile;
   const slides = loop && cards.length < 8 ? [...cards, ...cards] : cards;
-  const { heading, link_text, link_url, cta_text, cta_url } = data || {};
+  const { heading, link_text, link_url, cta_text, cta_url, read_more_text } = data || {};
+  const readMore = read_more_text || postStrings(lang).readFullCase;
   // mobile shows one text link ("All cases"): the section's link, else its button
   const mobileLinkText = link_text && link_url ? link_text : cta_text;
   const mobileLinkUrl = link_text && link_url ? link_url : cta_url;
@@ -150,7 +167,7 @@ export default function IndustryTestimonials({ data, lang = DEFAULT_LANG, cases 
             >
               {slides.map((card, i) => (
                 <SwiperSlide key={i} className="!h-auto !w-[min(465px,85vw)] max-md:w-full!">
-                  <QuoteCard card={card} lang={lang} accent={ACCENTS[(i % cards.length) % ACCENTS.length]} />
+                  <QuoteCard card={card} lang={lang} accent={ACCENTS[(i % cards.length) % ACCENTS.length]} readMore={readMore} />
                 </SwiperSlide>
               ))}
             </Swiper>

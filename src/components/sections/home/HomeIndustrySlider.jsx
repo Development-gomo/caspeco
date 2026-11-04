@@ -6,6 +6,8 @@
 // Cards run off the right edge (Figma "Card presentation more than 4"); arrows and dots page through.
 // Mobile (< 768, Figma "Tailor your solution mobile"): swipe only, 32px gaps, no arrows, the
 // graded "Slider points" (MobileDots) centred 24px under the cards; section padding 64.
+// Mobile background (Figma): solid #F7F7F5. md+ keeps the white 50% -> #DADCDD gradient. Both are Tailwind
+// classes (no inline style), used only when no bg_color/bg_image is set; otherwise sectionBackground() inline.
 
 "use client";
 
@@ -117,6 +119,7 @@ export default function HomeIndustrySlider({ data, lang = DEFAULT_LANG, prefetch
   const [active, setActive] = React.useState(0);
   const { heading, short_text, tagline, cta_text, cta_url } = data || {};
   if (!heading && cards.length === 0) return null;
+  const customBg = Boolean(data?.bg_color || mediaUrl(data?.bg_image));
 
   const syncPages = (swiper) => {
     setPages(swiper.snapGrid.length);
@@ -125,10 +128,8 @@ export default function HomeIndustrySlider({ data, lang = DEFAULT_LANG, prefetch
 
   return (
     <section
-      className="cs-sec overflow-hidden pt-12 pb-18 lg:pt-[72px] lg:pb-36"
-      style={sectionBackground(data, {
-        backgroundImage: "linear-gradient(180deg, rgba(255,255,255,0.5) 0.94%, #dadcdd 80.71%)",
-      })}
+      className={`cs-sec overflow-hidden pt-12 pb-18 lg:pt-[72px] lg:pb-36 ${customBg ? "" : "max-md:bg-[#F7F7F5] md:bg-[linear-gradient(180deg,rgba(255,255,255,0.5)_0.94%,#dadcdd_80.71%)]"}`}
+      style={customBg ? sectionBackground(data) : undefined}
     >
       <div className="cs-container flex flex-col gap-10 lg:gap-16 max-md:gap-6">
         <div className="flex flex-col gap-4 max-md:gap-6">

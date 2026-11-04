@@ -19,6 +19,9 @@ const ROLL_MS = 3200;
 // bg_gradient (ACF button group) → class defined in globals.css: top = grey at the top fading to white (Figma fill
 // #DADCDD 80% → #FFFFFF 50%), bottom = white fading to grey (same fill as the Switch steps section), none = plain
 // page background, full = solid #f1f1f1 (whole section). Unset keeps the top gradient.
+// ICP intro only (not the Page Builder content_section, data.listStyle): on mobile the gradient is the Figma one
+// (178deg, fade stretched past the bottom edge — .bg-icp-intro-m in globals.css) and the CTA is the ghost
+// outline-dark-grey button (two buttons, max-md:hidden / md:hidden, like the Home tabs); desktop unchanged.
 const GRADIENT_CLASSES = { top: "bg-topgrad", bottom: "bg-bottomgrad", none: "bg-none", full: "bg-full" };
 
 export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
@@ -39,6 +42,7 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
   // Page Builder content_section may have only text / CTA / image (no heading)
   if (!heading && rolling.length === 0 && !text && !mediaUrl(image)) return null;
 
+  const icpMobile = !data?.listStyle; // ICP intro (content_section keeps its own look)
   const variant = data?.cta_variant === "outline" ? "outline-dark" : "yellow";
   // mobile (Figma "USP's"): heading #151411 (desktop stays #000)
   const headingClass = "cs-h3 cs-highlight cs-rich text-(--color-heading) max-md:text-(--color-black)";
@@ -54,7 +58,7 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
   return (
     // Figma section-gap rule: before the light tabs section the intro keeps 72 below (72 + 72)
     // Mobile (Figma "USP's"): 64 top/bottom, text block → image 40, heading → text 16
-    <section className={`cs-sec overflow-hidden ${stackedAfterContent ? "pt-0" : "pt-18 lg:pt-36"} ${GRADIENT_CLASSES[data?.bg_gradient] || GRADIENT_CLASSES.top} ${data?._next === "tab_section" ? "pb-12 lg:pb-[72px]" : "pb-18 lg:pb-36"}`} style={sectionBackground(data)}>
+    <section className={`cs-sec overflow-hidden ${stackedAfterContent ? "pt-0" : "pt-18 lg:pt-36"} ${GRADIENT_CLASSES[data?.bg_gradient] || GRADIENT_CLASSES.top} ${icpMobile && !GRADIENT_CLASSES[data?.bg_gradient] ? "bg-icp-intro-m" : ""} ${data?._next === "tab_section" ? "pb-12 lg:pb-[72px]" : "pb-18 lg:pb-36"}`} style={sectionBackground(data)}>
       {/* image_postion "left" (Page Builder content_section): image first on desktop */}
       <div className={`cs-container flex flex-col gap-12 max-md:gap-10 lg:items-center lg:justify-between lg:gap-16 ${data?.image_postion === "left" ? "lg:flex-row-reverse" : "lg:flex-row"}`}>
         {/* Opening soon: text 600 wide, centred on the image; Levelling up: rotating heading 850 wide, text 474 */}
@@ -92,14 +96,28 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
 
           {cta_text &&
             (video ? (
-              <CtaButton variant={variant} onClick={() => setVideoOpen(true)}>
-                {cta_text}
-              </CtaButton>
-            ) : (
-              cta_url && (
-                <CtaButton variant={variant} href={langHref(cta_url.trim(), lang)}>
+              <>
+                <CtaButton variant={variant} onClick={() => setVideoOpen(true)} className={icpMobile ? "max-md:hidden" : undefined}>
                   {cta_text}
                 </CtaButton>
+                {icpMobile && (
+                  <CtaButton variant="outline-dark-grey" onClick={() => setVideoOpen(true)} className="md:hidden">
+                    {cta_text}
+                  </CtaButton>
+                )}
+              </>
+            ) : (
+              cta_url && (
+                <>
+                  <CtaButton variant={variant} href={langHref(cta_url.trim(), lang)} className={icpMobile ? "max-md:hidden" : undefined}>
+                    {cta_text}
+                  </CtaButton>
+                  {icpMobile && (
+                    <CtaButton variant="outline-dark-grey" href={langHref(cta_url.trim(), lang)} className="md:hidden">
+                      {cta_text}
+                    </CtaButton>
+                  )}
+                </>
               )
             ))}
         </Reveal>

@@ -114,7 +114,7 @@ function Column({ kind, title, items }) {
                 <span className="flex w-11 shrink-0 justify-center">
                   <Icon />
                 </span>
-                <span className="cs-p2 flex-1 border-b border-(--color-grey-medium) py-3 lg:py-[14px]">{item.label}</span>
+                <span className={`cs-p2 flex-1 border-b border-(--color-grey-medium) py-3 lg:py-[14px] ${i === items.length - 1 ? "max-md:border-b-0" : ""}`}>{item.label}</span>
               </li>
             );
           })}
@@ -181,7 +181,7 @@ export default function HomeConnectedData({ data, lang = DEFAULT_LANG }) {
               />
             )}
             {(primaryHref || secondaryHref) && (
-              <div className="mt-4 flex w-full flex-wrap items-center gap-x-8 gap-y-5 max-md:mt-2 max-md:flex-col max-md:items-start">
+              <div className="mt-4 flex w-full flex-wrap items-center gap-x-8 gap-y-5 max-md:mt-2 max-md:flex-col max-md:items-center">
                 {primaryHref && <CtaButton href={primaryHref}>{cta_text}</CtaButton>}
                 {secondaryHref && <ArrowLink href={secondaryHref}>{secondary_cta_text}</ArrowLink>}
               </div>
@@ -210,13 +210,13 @@ export default function HomeConnectedData({ data, lang = DEFAULT_LANG }) {
 
               {hasLeft && hasRight && (
                 <div className="flex shrink-0 items-center justify-center md:flex-col" aria-hidden="true">
-                  <span className="hidden w-px flex-1 bg-(--color-grey-medium) md:block" />
-                  <span className="flex size-11 items-center justify-center rounded-full bg-(--color-white) text-(--color-dark-petrol) shadow-(--shadow-card) md:size-16">
+                  <span className="hidden w-px flex-1 bg-(--color-grey-medium) max-md:block max-md:h-px max-md:w-auto md:block" />
+                  <span className="flex size-11 items-center justify-center rounded-full bg-(--color-white) text-(--color-dark-petrol) shadow-(--shadow-card) md:size-16 max-md:size-12">
                     <Svg size={24} className="max-md:rotate-90">
                       <path d="M5 12h14M13 6l6 6-6 6" />
                     </Svg>
                   </span>
-                  <span className="hidden w-px flex-1 bg-(--color-grey-medium) md:block" />
+                  <span className="hidden w-px flex-1 bg-(--color-grey-medium) max-md:block max-md:h-px max-md:w-auto md:block" />
                 </div>
               )}
 

@@ -1,6 +1,8 @@
 // src/components/sections/home/HomeKpi.jsx
 // ACF layout: home_kpi_section — "Best-performing customers last month" flip cards.
 // Front: label + stat + optional note (cards → note, small footnote). Back: checklist (back_items). Clicking the card slides it left to the back.
+// Mobile (<768px): the card is min 124px tall and grows with its content; each face is a flex column with 16px
+// padding all round (68px right = 36px arrow + 16 + 16); back text is vertically centred. Desktop/tablet unchanged.
 // Optional (ICP pages): short_text under the heading; bottom_text + cta_text / cta_url under the cards.
 
 "use client";
@@ -42,24 +44,24 @@ function KpiCard({ card, hint }) {
   const canFlip = backItems.length > 0;
 
   // Front and back sit side by side in a strip; "flipping" slides the strip left
-  const face = "relative block h-full w-1/2 shrink-0";
+  const face = "relative block h-full w-1/2 shrink-0 max-md:flex max-md:min-h-[124px] max-md:flex-col max-md:p-4 max-md:pr-[68px]";
 
   return (
     <button
       type="button"
       onClick={() => canFlip && setFlipped((f) => !f)}
       aria-pressed={canFlip ? flipped : undefined}
-      className={`relative h-[228px] max-md:h-[124px] w-full overflow-hidden rounded-[8px] bg-(--color-dark-petrol) text-left text-(--color-light-grey) shadow-[0px_4px_6px_0px_rgba(0,0,0,0.16)] max-md:shadow-[0px_4px_12px_0px_rgba(0,0,0,0.16)] ${canFlip ? "cursor-pointer" : "cursor-default"}`}
+      className={`relative h-[228px] max-md:h-auto max-md:min-h-[124px] w-full overflow-hidden rounded-[8px] bg-(--color-dark-petrol) text-left text-(--color-light-grey) shadow-[0px_4px_6px_0px_rgba(0,0,0,0.16)] max-md:shadow-[0px_4px_12px_0px_rgba(0,0,0,0.16)] ${canFlip ? "cursor-pointer" : "cursor-default"}`}
     >
       <motion.span
-        className="absolute inset-y-0 left-0 flex w-[200%]"
+        className="absolute inset-y-0 left-0 flex w-[200%] max-md:relative max-md:inset-auto"
         animate={{ x: flipped ? "-50%" : "0%" }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
         {/* FRONT */}
-        <span className={face} aria-hidden={flipped || undefined}>
-          <span className="absolute left-6 top-6 max-w-[150px] max-md:top-[88px] max-md:max-w-[200px] text-[20px] leading-6 tracking-[-0.4px] max-md:text-[16px] max-md:leading-5 max-md:tracking-[-0.32px]">{card.label}</span>
-          <span className="absolute left-6 top-[84px] max-md:top-4 font-bold text-[64px] leading-16 tracking-[-1.28px] md:text-[80px] md:tracking-[-1.6px] max-md:font-extrabold">
+        <span className={`${face} max-md:justify-between`} aria-hidden={flipped || undefined}>
+          <span className="absolute left-6 top-6 max-w-[150px] max-md:static max-md:order-2 max-md:max-w-[200px] text-[20px] leading-6 tracking-[-0.4px] max-md:text-[16px] max-md:leading-5 max-md:tracking-[-0.32px]">{card.label}</span>
+          <span className="absolute left-6 top-[84px] max-md:static font-bold text-[64px] leading-16 tracking-[-1.28px] md:text-[80px] md:tracking-[-1.6px] max-md:font-extrabold">
             {/* Figma: digits Tenon Bold, a trailing "%" Tenon Regular */}
             {String(card.value ?? "").trim().endsWith("%") ? (
               <>
@@ -84,8 +86,8 @@ function KpiCard({ card, hint }) {
 
         {/* BACK */}
         {canFlip && (
-          <span className={face} aria-hidden={!flipped || undefined}>
-            <span className="absolute left-[22px] right-[64px] top-[46px] flex flex-col gap-[10px] max-md:left-6 max-md:top-3 max-md:gap-1.5">
+          <span className={`${face} max-md:justify-center`} aria-hidden={!flipped || undefined}>
+            <span className="absolute left-[22px] right-[64px] top-[46px] flex flex-col gap-[10px] max-md:static max-md:gap-1.5">
               {backItems.map((text, i) => (
                 <span key={i} className="flex items-start gap-2 text-[16px] max-md:text-[14px] leading-5 max-md:leading-4 tracking-[0.1px] text-white">
                   <Image src={CheckYellow} alt="" width={14} height={16} className="mt-0.5 shrink-0" />
@@ -145,7 +147,7 @@ export default function HomeKpi({ data, lang = DEFAULT_LANG, variant }) {
         )}
 
         {(bottomText || (data.cta_text && data.cta_url)) && (
-          <div className="flex max-w-[616px] flex-col items-center gap-6 text-center max-md:w-full">
+          <div className={`flex max-w-[616px] flex-col items-center gap-6 text-center max-md:w-full ${icp ? "max-md:hidden" : ""}`}>
             {bottomText && (
               <div className={`cs-rich text-(--color-grey-dark) ${icp ? "text-[16px] font-light italic leading-[34px] tracking-[-0.32px] max-md:text-[18px] max-md:font-normal max-md:leading-[22px] max-md:tracking-[-0.36px]" : "text-[18px] lg:text-[20px] font-medium leading-[26px] tracking-[-0.4px]"}`} dangerouslySetInnerHTML={{ __html: toHtml(bottomText) }} />
             )}
