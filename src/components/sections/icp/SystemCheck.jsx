@@ -11,6 +11,10 @@
 // Mobile (Figma "Mobile comparison block", < 768 only): padding 48, eyebrow → H 8, H X-Bold 36,
 //  H → text 16 (Bold 18/22), intro → card 24, CTA below the card (24); card padding 24, title
 //  Regular Italic 32/38 with a 131px underline under the last line, subtitle Regular, checklist 18/24
+// Mobile background (Figma 601:13564 / 601:12811 / 601:14281, QA "glass not visible"): the photo
+//  fills the section object-cover centred with NO blur (the 24.8 blur is desktop only) under a flat
+//  rgba(0,0,0,.4) overlay (no gradient), so the photo shows through the glass card; the card's
+//  backdrop blur is 66.67 on mobile (desktop keeps GLASS_CLASS)
 
 import Image from "next/image";
 import CtaButton from "@/components/ui/CtaButton";
@@ -32,7 +36,7 @@ function Tick() {
 // Figma "Line 405": 364×4, 2px #FFC120, round caps — exact path; starts 12px in from the title
 function Underline() {
   return (
-    <svg viewBox="-1 -1 366 6" preserveAspectRatio="none" aria-hidden className="absolute left-3 top-10 h-[6px] w-[calc(94.8%+2px)] overflow-visible max-md:left-[3px] max-md:top-[81px] max-md:w-[131px]">
+    <svg viewBox="-1 -1 366 6" preserveAspectRatio="none" aria-hidden className="absolute left-3 top-10 h-[6px] w-[calc(94.8%+2px)] overflow-visible max-md:left-[3px] max-md:top-auto max-md:bottom-[2px] max-md:w-[131px]">
       <path d="M 0 4 C 0 4 82.38 0.76 135.31 0.14 C 224.63 -0.89 363.96 4 363.96 4" fill="none" stroke="#FFC120" strokeWidth="2" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
     </svg>
   );
@@ -47,9 +51,10 @@ export default function SystemCheck({ data, lang = DEFAULT_LANG }) {
 
   return (
     <section className="cs-sec relative isolate overflow-hidden bg-(--color-black) py-18 max-md:[--sec-pt:48px] max-md:[--sec-pb:48px] lg:pt-20 lg:pb-[90px]" style={data?.bg_color ? { background: data.bg_color } : undefined}>
-      {/* photo with Figma layer blur (scaled so the blurred edge stays outside the section) */}
-      {bg && <Image src={bg} alt="" fill sizes="100vw" className="-z-10 scale-110 object-cover blur-[24.8px]" />}
-      <div className="absolute inset-0 -z-10" style={{ background: "linear-gradient(90deg, #000 -0.9%, rgba(0, 0, 0, 0.4) 100.9%)" }} aria-hidden />
+      {/* photo with Figma layer blur (scaled so the blurred edge stays outside the section); mobile: sharp, unscaled */}
+      {bg && <Image src={bg} alt="" fill sizes="100vw" className="-z-10 scale-110 object-cover blur-[24.8px] max-md:scale-100 max-md:filter-none" />}
+      <div className="absolute inset-0 -z-10 max-md:hidden" style={{ background: "linear-gradient(90deg, #000 -0.9%, rgba(0, 0, 0, 0.4) 100.9%)" }} aria-hidden />
+      <div className="absolute inset-0 -z-10 bg-[rgba(0,0,0,0.4)] md:hidden" aria-hidden />
 
       <div className="cs-container flex flex-col gap-12 max-md:gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
         <Reveal className="flex flex-col items-start gap-10 max-md:gap-6 lg:max-w-[507px]">
@@ -76,7 +81,7 @@ export default function SystemCheck({ data, lang = DEFAULT_LANG }) {
             x={40}
             y={0}
             delay={0.15}
-            className={`w-full rounded-[8px] p-6 text-(--color-white) sm:p-8 max-md:px-6! max-md:pt-6! max-md:pb-7! lg:w-[701px] lg:flex-none ${GLASS_CLASS}`}
+            className={`w-full rounded-[8px] p-6 text-(--color-white) sm:p-8 max-md:px-6! max-md:pt-6! max-md:pb-7! lg:w-[701px] lg:flex-none ${GLASS_CLASS} max-md:backdrop-blur-[66.67px]`}
             style={GLASS_STYLE}
           >
             {card_title && (
