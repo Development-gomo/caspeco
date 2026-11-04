@@ -70,7 +70,7 @@ export default function NewsListing({ data, lang = DEFAULT_LANG, initial }) {
 
         {page < totalPages && (
           <div className="flex flex-col items-center gap-3">
-            <CtaButton variant="outline-dark" onClick={loadMore} disabled={loading} aria-busy={loading} className="disabled:cursor-wait disabled:opacity-60">
+            <CtaButton variant="outline-dark-grey" onClick={loadMore} disabled={loading} aria-busy={loading} className="disabled:cursor-wait disabled:opacity-60">
               {text(data, "load_more_text")}
             </CtaButton>
             {failed && <p className="text-[14px] text-(--color-grey-dark)">Couldn&apos;t load more posts. Please try again.</p>}
