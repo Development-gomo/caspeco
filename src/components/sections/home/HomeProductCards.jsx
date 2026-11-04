@@ -4,6 +4,9 @@
 // Mobile (< 768, Figma "Frame 8934172"): swipe slider clipped at the container, 296×394 cards
 // 32 apart, 12px clip inset for the shadow, graded dots 40 below; section padding 64 / 64
 // (Product page: 0 below the dots, the USP section that follows brings its own 64).
+// Mobile background (Figma): white base + linear-gradient(180deg, #DADCDD 80% -> #FFF 50%). Applied as
+// Tailwind classes (max-md:), so only when no bg_color/bg_image is set; with a custom background (ProductBuilder
+// always passes one) the inline style from sectionBackground() is used as before. md+ keeps light grey.
 
 "use client";
 
@@ -13,6 +16,9 @@ import ArrowLink from "@/components/ui/ArrowLink";
 import { MOBILE_SLIDE, MOBILE_TRACK, SliderPoints } from "@/components/ui/MobileSlider";
 import { DEFAULT_LANG, langHref } from "@/config";
 import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
+
+// No inline style here, so the max-md: classes win; md+ stays var(--color-light-grey)
+const MOBILE_BG = "bg-(--color-light-grey) max-md:bg-white max-md:bg-[linear-gradient(180deg,rgba(218,220,221,0.8)_0%,rgba(255,255,255,0.5)_100%)]";
 
 // zoom: the first two cards scale their image 1.1× on hover
 function ProductCard({ card, lang, zoom = false }) {
@@ -59,10 +65,11 @@ export default function HomeProductCards({ data, lang = DEFAULT_LANG }) {
   const { heading, short_text, tagline } = data || {};
   const trackRef = React.useRef(null);
   if (!heading && cards.length === 0) return null;
+  const customBg = Boolean(data?.bg_color || mediaUrl(data?.bg_image));
 
   return (
     <section
-      className={`cs-sec pt-18 lg:pt-36 ${data?._next === "industry_results_section" ? "pb-18 lg:pb-36" : "pb-12 lg:pb-[72px]"} ${data?._next === "usp_accordion_section" ? "max-md:[--sec-pb:0px]" : ""}`} style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
+      className={`cs-sec ${customBg ? "" : MOBILE_BG} pt-18 lg:pt-36 ${data?._next === "industry_results_section" ? "pb-18 lg:pb-36" : "pb-12 lg:pb-[72px]"} ${data?._next === "usp_accordion_section" ? "max-md:[--sec-pb:0px]" : ""}`} style={customBg ? sectionBackground(data) : undefined}>
       <div className="cs-container flex flex-col gap-10 lg:gap-16">
         <div className="flex flex-col gap-4">
           {heading && <h2 className="cs-h2 cs-highlight text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}

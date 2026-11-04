@@ -4,6 +4,8 @@
 // ACF card is one row: title = grey label, text = white value, divider lines between rows.
 // "Make it button style" = enable → the value is shown as yellow pills (comma or line separated),
 // like the "Modules" row.
+// Mobile (<768px): the Video CTA is a ghost button (outline-dark-grey, as the Home intro video) and the
+// "Read more" toggle is a text link with arrow; desktop/tablet unchanged.
 
 import Reveal from "@/components/ui/Reveal";
 import CtaButton from "@/components/ui/CtaButton";
@@ -32,7 +34,7 @@ export default function IntroFeature({ data, lang = DEFAULT_LANG }) {
           {short_text && <ReadMoreText lang={lang} moreLabel={data.read_more_text} lessLabel={data.read_less_text} className="cs-p2 cs-rich max-w-[560px] text-(--color-grey-dark)" html={toHtml(short_text)} />}
           {/* Video CTA text + Video URL → button opening the video popup; a plain CTA URL still works as a link */}
           {cta_text && video ? (
-            <VideoCta url={video}>{cta_text}</VideoCta>
+            <VideoCta url={video} mobileVariant="outline-dark-grey">{cta_text}</VideoCta>
           ) : (
             cta_text && cta_url && <CtaButton href={langHref(cta_url.trim(), lang)}>{cta_text}</CtaButton>
           )}

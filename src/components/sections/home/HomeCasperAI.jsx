@@ -2,10 +2,11 @@
 // ACF layout: home_ai_section — "We built you a business partner" (Casper AI).
 // The chat card is built from text fields (chat_question / chat_answer /
 // input_placeholder) so it is translated per language. If those are empty and
-// a section_image is set, that image is shown in its place instead.
+// a section_image is set, that image — or video file (muted, loops, plays while in view) — is shown in its place instead.
 
 "use client";
 
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -15,6 +16,49 @@ import AvatarSmall from "../../../../public/icons/home/ai-avatar-small.svg";
 import SendIcon from "../../../../public/icons/home/send.svg";
 import { DEFAULT_LANG, langHref } from "@/config";
 import { mediaUrl, toHtml } from "@/lib/content";
+
+// section_image is an ACF File field: an image or a video (mp4 / webm / mov / ogg). ACF returns mime_type / type for
+// the array format; the file extension is the fallback.
+function isVideoFile(file) {
+  if (!file) return false;
+  if (typeof file === "object") {
+    if (String(file.mime_type || "").startsWith("video/") || file.type === "video") return true;
+  }
+  const url = typeof file === "string" ? file : file.url;
+  return /\.(mp4|webm|mov|m4v|ogv|ogg)(\?|#|$)/i.test(String(url || ""));
+}
+
+// Muted looping video that starts as soon as it scrolls into view and pauses when it leaves (no autoPlay attribute,
+// so nothing plays while it is off screen).
+function ViewportVideo({ src, label, className }) {
+  const ref = React.useRef(null);
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return undefined;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) el.play().catch(() => {});
+        else el.pause();
+      },
+      { threshold: 0.2 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [src]);
+  return (
+    <video
+      ref={ref}
+      src={src}
+      muted
+      loop
+      playsInline
+      preload="auto"
+      aria-label={label || undefined}
+      aria-hidden={label ? undefined : true}
+      className={className}
+    />
+  );
+}
 
 // The Figma robot is a Font Awesome glyph (not an exported asset), so it is drawn here.
 function RobotGlyph({ size }) {
@@ -137,7 +181,17 @@ export default function HomeCasperAI({ data, lang = DEFAULT_LANG }) {
               className="relative w-full lg:w-[570px] aspect-[570/347] shrink-0 lg:mt-[26px] max-md:aspect-[var(--img-ratio,570/347)] max-md:overflow-hidden max-md:rounded-lg max-md:border max-md:border-white/10"
               style={Number(sectionImage?.width) > 0 && Number(sectionImage?.height) > 0 ? { "--img-ratio": `${sectionImage.width} / ${sectionImage.height}` } : undefined}
             >
-              <Image src={mediaUrl(sectionImage)} alt={sectionImage?.alt || ""} fill sizes="(min-width: 1024px) 570px, 100vw" className="object-contain" />
+              {isVideoFile(sectionImage) ? (
+                <ViewportVideo
+                  src={mediaUrl(sectionImage)}
+                  label={sectionImage?.alt}
+                  // the film is 1920×1080 with the chat card small in the middle of a transparent frame: scale it up
+                  // (the section clips the overflow) and let clicks pass through to the text / CTA underneath
+                  className="pointer-events-none absolute inset-0 size-full scale-[2.2] object-contain"
+                />
+              ) : (
+                <Image src={mediaUrl(sectionImage)} alt={sectionImage?.alt || ""} fill sizes="(min-width: 1024px) 570px, 100vw" className="object-contain" />
+              )}
             </div>
           )
         )}

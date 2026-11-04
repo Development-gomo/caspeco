@@ -32,6 +32,8 @@ const side = (dir, reduce) => ({
 //  - after the ICP intro: 72 + 72
 //  - after the USP accordion ("Run many restaurants like one business", Adding locations): 144 + 0
 //  - before another tab section: 0 + 144
+// Mobile: the section after the USP accordion ("Run many restaurants like one business") uses the panel design
+// (full-bleed dark image panel) with 54px pill tabs; all other ICP tab sections keep the 47px chips.
 // Mobile (cs-sec): 64 top/bottom (Figma "Company size mobile" padding 64), keeping the same
 // 0-padding joins as desktop (after the USP accordion / before another tab section).
 function sectionPadding(data) {
@@ -44,7 +46,10 @@ function sectionPadding(data) {
 // all tabs as a 2×2 grid of buttons (no scrolling) and the tab image as the background of the content (white text)
 export default function ProductSalesChannels({ data, lang = DEFAULT_LANG, defaultCtaVariant = "yellow", variant, mobilePanel = false }) {
   const icp = variant === "icp";
-  const panel = mobilePanel;
+  // ICP "Run many restaurants like one business" (tab section right after the USP accordion; Figma 601:13360 /
+  // 601:14126) is always the mobile panel design, whatever the icp_tab_styling flag says
+  const icpPanel = icp && data?._prev === "usp_accordion";
+  const panel = mobilePanel || icpPanel;
   const tabs = rows(data?.tabs).filter((t) => t.tab_label);
   const [active, setActive] = React.useState(0);
   const reduce = useReducedMotion();
@@ -58,7 +63,7 @@ export default function ProductSalesChannels({ data, lang = DEFAULT_LANG, defaul
   const image = mediaUrl(imageField);
 
   return (
-    <section className={`cs-sec ${icp ? sectionPadding(data) : "py-18 lg:py-36"} ${panel ? "max-md:[--sec-pb:0px]" : ""}`} style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
+    <section className={`cs-sec ${icp ? sectionPadding(data) : "py-18 lg:py-36"} ${mobilePanel ? "max-md:[--sec-pb:0px]" : ""}`} style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       {/* mobile: Product 48 between headline / tabs+image / text, ICP 40 (Figma auto-layout gaps) */}
       <div className={`cs-container flex flex-col items-center gap-10 lg:gap-14 ${icp && !panel ? "" : "max-md:gap-12"}`}>
         {(data.heading || data.sub_heading) && (
@@ -88,13 +93,15 @@ export default function ProductSalesChannels({ data, lang = DEFAULT_LANG, defaul
                       setActive(i);
                       revealTab(e.currentTarget);
                     }}
-                    // mobile — panel (Figma "Category tab"): 48 tall, border 1, active #3A3A37 / white, inactive white / #DADCDD;
+                    // mobile — ICP "Run many restaurants" panel (Figma 601:13360): PILL tab 54 tall (168.5 wide), radius 999,
+                    // padding 7/12, border 1, label Medium 16 auto line height centred, wraps to 2 lines (144.5 box);
+                    // mobile — Home panel (Figma "Category tab"): 48 tall, border 1, active #3A3A37 / white, inactive white / #DADCDD;
                     // Product + ICP (Figma "Chip"): 47 tall, border 1.5, Medium 16/20 -2%, active #3F3E3C / white,
                     // inactive #FDFDFD with #DADCDD stroke / #151411
                     className={`relative h-[39px] cursor-pointer whitespace-nowrap rounded-[50px] px-[14px] text-[16px] lg:text-[18px] leading-[22px] font-medium tracking-[-0.36px] transition-colors duration-300 ${
                       panel
-                        ? "max-md:h-12 max-md:border max-md:px-3 max-md:text-[16px] max-md:leading-5 max-md:tracking-normal max-md:whitespace-normal"
-                        : "max-md:h-[47px] max-md:border-[1.5px] max-md:px-[14px] max-md:leading-5 max-md:tracking-[-0.32px] max-md:whitespace-normal"
+                        ? `max-md:border max-md:px-3 max-md:text-[16px] max-md:leading-5 max-md:tracking-normal max-md:whitespace-normal ${icpPanel ? "max-md:flex max-md:h-[54px] max-md:items-center max-md:justify-center max-md:rounded-full max-md:py-[7px] max-md:text-center" : "max-md:h-12"}`
+                        : "max-md:h-auto max-md:min-h-[47px] max-md:py-[5.5px] max-md:border-[1.5px] max-md:px-[14px] max-md:leading-5 max-md:tracking-[-0.32px] max-md:whitespace-normal"
                     } ${
                       active === i
                         ? `text-(--color-light-grey) max-md:text-white ${panel ? "max-md:border-[#3A3A37]" : "max-md:border-[#3F3E3C]"}`
@@ -105,7 +112,7 @@ export default function ProductSalesChannels({ data, lang = DEFAULT_LANG, defaul
                       <motion.span
                         layoutId={pillId}
                         aria-hidden
-                        className={`absolute inset-0 rounded-[50px] bg-(--color-grey-dark) ${panel ? "max-md:bg-[#3A3A37]" : "max-md:bg-[#3F3E3C]"}`}
+                        className={`absolute inset-0 rounded-[50px] ${icpPanel ? "max-md:rounded-full" : ""} bg-(--color-grey-dark) ${panel ? "max-md:bg-[#3A3A37]" : "max-md:bg-[#3F3E3C]"}`}
                         transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 420, damping: 36 }}
                       />
                     )}
@@ -124,7 +131,7 @@ export default function ProductSalesChannels({ data, lang = DEFAULT_LANG, defaul
                 animate="in"
                 exit="out"
                 transition={{ staggerChildren: 0.08 }}
-                className={`flex w-full flex-col items-center gap-10 lg:flex-row lg:justify-between ${icp ? "lg:pb-[73px]" : "max-md:gap-12"} ${panel ? "relative max-md:-mx-6 max-md:w-[calc(100%+48px)] max-md:overflow-hidden max-md:bg-[#3A3A37] max-md:px-6 max-md:py-12" : ""}`}
+                className={`flex w-full flex-col items-center gap-10 lg:flex-row lg:justify-between ${icp ? "lg:pb-[73px]" : "max-md:gap-12"} ${panel ? `${mobilePanel ? "relative" : "max-md:relative"} max-md:-mx-6 max-md:w-[calc(100%+48px)] max-md:overflow-hidden max-md:bg-[#3A3A37] max-md:px-6 max-md:py-12` : ""}`}
               >
                 {image && icp ? (
                   // ICP: 500×363 box (radius 8); image_size "small" = Figma "ICP_3_Run many restaurants",
@@ -141,11 +148,11 @@ export default function ProductSalesChannels({ data, lang = DEFAULT_LANG, defaul
                   </motion.div>
                 )}
 
-                <motion.div variants={side(1, reduce)} className={`flex w-full flex-col items-start gap-10 max-md:gap-6 ${panel ? "relative z-10" : ""} ${icp ? "max-w-[488px] lg:mr-[26px]" : "max-w-[538px] lg:px-6"}`}>
+                <motion.div variants={side(1, reduce)} className={`flex w-full flex-col items-start gap-10 max-md:gap-6 ${mobilePanel ? "relative z-10" : icpPanel ? "max-md:relative max-md:z-10" : ""} ${icp ? "max-w-[488px] lg:mr-[26px]" : "max-w-[538px] lg:px-6"}`}>
                   {/* mobile: title ICP Bold 26/28 (cs-h4) / Product X-Bold 36 (cs-title); body ICP Regular / Product Light 18/22;
                       benefits 12 apart, X-Bold 18/22 (ICP -2% #3F3E3C, Product 0 #171717) */}
                   <div className="flex flex-col gap-5 max-md:gap-4">
-                    {tab.title && <h3 className={`cs-h4 ${icp ? "text-(--color-black)" : "cs-title text-black max-md:text-(--color-black)"} ${panel ? "max-md:text-(--color-light-grey)" : ""}`} dangerouslySetInnerHTML={{ __html: panel ? titleHtml(tab.title) : toHtml(tab.title) }} />}
+                    {tab.title && <h3 className={`cs-h4 ${icp ? "text-(--color-black)" : "cs-title text-black max-md:text-(--color-black)"} ${panel ? "max-md:text-(--color-light-grey)" : ""}`} dangerouslySetInnerHTML={{ __html: mobilePanel ? titleHtml(tab.title) : toHtml(tab.title) }} />}
                     {tab.text && <div className={`cs-p2 cs-rich text-(--color-grey-dark) ${icp ? "" : "max-md:font-light"} ${panel ? "max-md:text-(--color-light-grey)" : ""}`} dangerouslySetInnerHTML={{ __html: toHtml(tab.text) }} />}
                     <CheckList
                       items={tab.checklist}

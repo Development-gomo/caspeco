@@ -40,7 +40,7 @@ export default function RelatedCases({ data, lang = DEFAULT_LANG, cases = [] }) 
       <div className="cs-container flex flex-col gap-10 max-md:gap-8 lg:gap-16">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           {(heading || short_text) && (
-            <Reveal className="flex flex-col gap-6">
+            <Reveal className="flex flex-col gap-6 max-md:gap-4">
               {heading && <h2 className="cs-h2 cs-highlight cs-rich max-w-[985px] text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
               {short_text && <div className="cs-p2 cs-rich max-w-[680px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
             </Reveal>

@@ -859,6 +859,12 @@ span.subheading-label.text-\[var\(--color-accent\)\],
 .bg-full {
   background: #f1f1f1;
 }
+/* ICP intro, mobile only (Figma): fade stretched past the bottom edge; must follow .bg-topgrad (same specificity) */
+@media (max-width: 767px) {
+  .bg-icp-intro-m {
+    background: linear-gradient(178deg, rgba(218, 220, 221, 0.8) 0%, rgba(255, 255, 255, 0.5) 144%), #fff;
+  }
+}
 
 /* P2 — Tenon Regular 20/24, -0.4 */
 .cs-p2 {
