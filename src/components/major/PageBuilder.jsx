@@ -43,6 +43,7 @@ const NewsListing = dynamic(
   () => import("../sections/inner-pages/NewsListing"),
 );
 const IntegrationsListing = dynamic(() => import("../sections/inner-pages/IntegrationsListing"));
+const BgGlassSection = dynamic(() => import("../sections/inner-pages/BgGlassSection"));
 const HomeColumnSection = dynamic(
   () => import("../sections/home/HomeColumnSection"),
 );
@@ -434,6 +435,10 @@ export default async function PageBuilder({
           case "results_section":
           case "result_section":
             return <ProductResults key={i} data={block} lang={lang} />;
+
+          // Full-bleed photo + frosted glass card on the right (heading + up to 5 coloured-title items)
+          case "bg_glass_effect_section":
+            return <BgGlassSection key={i} data={block} lang={lang} />;
 
           case "testimonial_slider_section":
             return (
