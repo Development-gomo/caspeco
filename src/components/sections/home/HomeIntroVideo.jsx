@@ -50,7 +50,7 @@ export default function HomeIntroVideo({ data }) {
     >
       <div className="cs-container flex flex-col lg:flex-row lg:items-center lg:justify-between gap-12">
         {/* first:mt-0 — without heading / rolling words the column starts flush */}
-        <div className="flex flex-col items-start lg:max-w-[700px]">
+        <div className="flex flex-col items-start lg:max-w-[700px] xl:max-w-[780px]">
           {heading && (
             <h2 className="cs-h2 text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
           )}
@@ -59,7 +59,7 @@ export default function HomeIntroVideo({ data }) {
             // Every phrase is rendered invisibly in the same grid cell, so the box takes the
             // size of the longest one (width and wrapped height) at every breakpoint; the
             // animated phrase sits on top. Only the vertical axis is clipped for the roll.
-            <div className="cs-h2 relative grid w-full md:min-h-16 xl:min-h-[99px] overflow-y-clip pb-[0.12em] max-md:pb-2 text-(--color-yellow)" aria-live="polite">
+            <div className="cs-h2 relative grid w-full md:min-h-16 xl:min-h-[99px] overflow-y-clip pb-[0.12em] max-md:pb-2 text-(--color-yellow) rolling-words" aria-live="polite">
               {words.map((word, i) => (
                 <span key={i} aria-hidden className="invisible [grid-area:1/1]">
                   {word}
@@ -94,7 +94,7 @@ export default function HomeIntroVideo({ data }) {
           )}
 
           {videoSrc && (
-            <div className="mt-8 xl:mt-[45px] max-md:mt-6 max-md:w-full first:mt-0">
+            <div className="mt-8 xl:mt-10 max-md:mt-6 max-md:w-full first:mt-0">
               <CtaButton variant="outline-dark-grey" className="max-md:w-full" onClick={playVideo}>{label}</CtaButton>
             </div>
           )}

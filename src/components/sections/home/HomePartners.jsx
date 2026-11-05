@@ -38,7 +38,7 @@ export default function HomePartners({ data, logos: themeLogos }) {
           className="partners-marquee-track flex items-center h-[97px] max-md:h-16"
           style={{
             width: "max-content",
-            animation: "partners-marquee 30s linear infinite",
+            animation: "partners-marquee 60s linear infinite",
           }}
         >
           {logos.map((logo, index) => (

@@ -102,7 +102,7 @@ export default function HomeRestaurantMap({ data, lang = DEFAULT_LANG }) {
     <section
       ref={sectionRef}
       // cs-sec: 64px top/bottom on mobile only
-      className="cs-sec relative overflow-hidden pt-12 lg:pt-[72px] max-md:[--sec-pb:41px]"
+      className="cs-sec relative overflow-hidden pt-12 pb-12 lg:pt-[72px] max-md:[--sec-pb:41px]"
       style={sectionBackground(data, {
         backgroundImage: "linear-gradient(180deg, #000 0%, rgba(0,0,0,0) 100%), linear-gradient(90deg, #0b2533 0%, #0b2533 100%)",
       })}
@@ -110,7 +110,7 @@ export default function HomeRestaurantMap({ data, lang = DEFAULT_LANG }) {
       {data.heading && (
         <div className="cs-container">
           <h2
-            className="cs-h2 cs-highlight mx-auto max-w-[839px] text-center text-(--color-light-grey) max-md:leading-9! max-md:tracking-[-1.44px]!"
+            className="cs-h2 cs-highlight mx-auto max-w-[839px] text-center text-(--color-light-grey) max-md:leading-9! max-md:tracking-[-1.44px]! mb-10"
             dangerouslySetInnerHTML={{ __html: toHtml(data.heading) }}
           />
         </div>
