@@ -20,6 +20,10 @@ export default function ProductHero({ data, lang = DEFAULT_LANG, overlay }) {
 
   const bgImage = mediaUrl(data?.bg_image);
   const bgVideo = mediaUrl(data?.bg_video);
+  // enable_overlay: ACF Button Group ("enable" / "disable"), may arrive as "enable" or { value: "enable" };
+  // dark layer over the background (off by default). The `overlay` prop (ICP gradient) takes priority.
+  const overlayField = data?.enable_overlay;
+  const overlayOn = (overlayField?.value ?? overlayField) === "enable";
 
   return (
     <section className="relative isolate flex min-h-[640px] w-full items-end overflow-hidden bg-black lg:min-h-[982px] max-md:min-h-[672px]">
@@ -32,6 +36,7 @@ export default function ProductHero({ data, lang = DEFAULT_LANG, overlay }) {
         )}
       </Reveal>
       {overlay && <div className="absolute inset-0 -z-10" style={{ background: overlay }} aria-hidden />}
+      {!overlay && overlayOn && (bgVideo || bgImage) && <div className="absolute inset-0 -z-10 bg-black/60" aria-hidden />}
 
       {/* Mobile (Figma Product 2517:6623 / ICP heroes): 600px below the 72px fixed header, labels 16px
           under it, content bottom-aligned with 64px below; H1 → text 16, text → CTA 24 */}
