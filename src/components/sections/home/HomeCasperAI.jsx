@@ -1,8 +1,13 @@
 // src/components/sections/home/HomeCasperAI.jsx
 // ACF layout: home_ai_section — "We built you a business partner" (Casper AI).
-// The chat card is built from text fields (chat_question / chat_answer /
-// input_placeholder) so it is translated per language. If those are empty and
-// a section_image is set, that image — or video file (muted, loops, plays while in view) — is shown in its place instead.
+// Right-hand media box, in precedence order:
+//   1. chat_exchanges / chat_suggestions with any text: the coded animated Casper chat (CasperChatAnimation), driven by
+//      chat_exchanges (question, answer, progress_percent, progress_label), chat_suggestions (text), casper_label,
+//      chat_speed, chat_loop and chat_end_hold.
+//   2. Else the static chat card, built from text fields (chat_question / chat_answer / input_placeholder) so it is
+//      translated per language.
+//   3. Else section_image: an image, or a video file (muted, loops, plays while in view).
+//   4. Else nothing.
 
 "use client";
 
@@ -11,11 +16,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import CtaButton from "@/components/ui/CtaButton";
+import CasperChatAnimation from "@/components/sections/home/CasperChatAnimation";
 import AvatarLarge from "../../../../public/icons/home/ai-avatar.svg";
 import AvatarSmall from "../../../../public/icons/home/ai-avatar-small.svg";
 import SendIcon from "../../../../public/icons/home/send.svg";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { mediaUrl, toHtml } from "@/lib/content";
+import { mediaUrl, rows, toHtml } from "@/lib/content";
 
 // section_image is an ACF File field: an image or a video (mp4 / webm / mov / ogg). ACF returns mime_type / type for
 // the array format; the file extension is the fallback.
@@ -139,6 +145,9 @@ export default function HomeCasperAI({ data, lang = DEFAULT_LANG }) {
   const bgImage = mediaUrl(data?.bg_image);
   const sectionImage = data?.section_image;
   const hasChat = chat_question || chat_answer || input_placeholder;
+  const hasAnimation =
+    rows(data?.chat_exchanges).some((row) => String(row.question || "").trim() || String(row.answer || "").trim()) ||
+    rows(data?.chat_suggestions).some((row) => String(row.text || "").trim());
   const href = cta_url ? langHref(cta_url, lang) : "";
 
   return (
@@ -170,7 +179,19 @@ export default function HomeCasperAI({ data, lang = DEFAULT_LANG }) {
           )}
         </div>
 
-        {hasChat ? (
+        {hasAnimation ? (
+          // same box as the video (desktop ratio 570/347, mobile 347 tall); the chat is not scaled
+          <div className="relative w-full lg:w-[570px] aspect-[570/347] h-[347px] lg:h-auto shrink-0 lg:mt-[26px] max-md:overflow-hidden max-md:rounded-lg max-md:border max-md:border-white/10">
+            <CasperChatAnimation
+              exchanges={data.chat_exchanges}
+              suggestions={data.chat_suggestions}
+              casperLabel={data.casper_label}
+              speed={data.chat_speed}
+              loop={data.chat_loop}
+              endHold={data.chat_end_hold}
+            />
+          </div>
+        ) : hasChat ? (
           <div className="w-full lg:mt-[26px] lg:w-[570px] shrink-0">
             <ChatCard question={chat_question} answer={chat_answer} placeholder={input_placeholder} href={href} />
           </div>

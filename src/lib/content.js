@@ -94,3 +94,60 @@ export function withNeighbours(sections) {
   if (sections.some((b) => b && "_prev" in b)) return sections; // already tagged upstream
   return sections.map((b, i) => (b ? { ...b, _prev: sections[i - 1]?._layout || null, _next: sections[i + 1]?._layout || null } : b));
 }
+
+// Bold markers: **text**, <strong>text</strong>, <b>text</b> (tag names case-insensitive)
+const CHAT_BOLD_PATTERN = /\*\*([\s\S]+?)\*\*|<(strong|b)\b[^>]*>([\s\S]*?)<\/\2\s*>/gi;
+const CHAT_ENTITIES = { "&amp;": "&", "&nbsp;": " ", "&lt;": "<", "&gt;": ">", "&#39;": "'", "&quot;": '"' };
+
+/** Strip remaining tags, then decode the supported entities (single pass, so &amp;lt; stays literal). */
+function chatPlainText(value) {
+  return value.replace(/<\/?[a-z][^>]*>/gi, "").replace(/&(amp|nbsp|lt|gt|#39|quot);/gi, (m) => CHAT_ENTITIES[m.toLowerCase()]);
+}
+
+/**
+ * Parse chat/CMS text into plain-data segments: [{ text, bold }].
+ * Bold comes from **…**, <strong> or <b>; other tags are dropped (inner text kept),
+ * <br> becomes "\n". Adjacent segments with the same bold value are merged.
+ * No HTML is generated, so the result is safe to render as text nodes.
+ */
+export function parseChatText(input) {
+  if (typeof input !== "string" || !input.trim()) return [];
+  const source = input.replace(/<br\s*\/?>/gi, "\n");
+  const segments = [];
+  const push = (text, bold) => {
+    if (!text) return;
+    const last = segments[segments.length - 1];
+    if (last && last.bold === bold) last.text += text;
+    else segments.push({ text, bold });
+  };
+  let cursor = 0;
+  for (const match of source.matchAll(CHAT_BOLD_PATTERN)) {
+    push(chatPlainText(source.slice(cursor, match.index)), false);
+    push(chatPlainText(match[1] ?? match[3]), true);
+    cursor = match.index + match[0].length;
+  }
+  push(chatPlainText(source.slice(cursor)), false);
+  return segments;
+}
+
+/** First `n` characters across segments (n <= 0 gives []; n >= total gives everything). */
+export function sliceSegments(segments, n) {
+  if (!Array.isArray(segments) || !(n > 0)) return [];
+  let left = Math.floor(n);
+  const out = [];
+  for (const seg of segments) {
+    if (left <= 0) break;
+    const text = typeof seg?.text === "string" ? seg.text : "";
+    if (!text) continue;
+    const kept = text.length <= left ? text : text.slice(0, left);
+    out.push({ text: kept, bold: !!seg.bold });
+    left -= kept.length;
+  }
+  return out;
+}
+
+/** Total character count across segments. */
+export function countSegmentChars(segments) {
+  if (!Array.isArray(segments)) return 0;
+  return segments.reduce((sum, seg) => sum + (typeof seg?.text === "string" ? seg.text.length : 0), 0);
+}

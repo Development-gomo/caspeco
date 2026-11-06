@@ -132,8 +132,17 @@ export default function HomeIntroVideo({ data }) {
                 type="button"
                 onClick={playVideo}
                 aria-label={label}
-                className="absolute inset-0 cursor-pointer"
-              />
+                className="group absolute inset-0 flex cursor-pointer items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-(--color-yellow)"
+              >
+                <span
+                  aria-hidden
+                  className="pointer-events-none flex size-14 lg:size-[72px] items-center justify-center rounded-full bg-(--color-yellow) shadow-[0_4px_24px_rgba(0,0,0,0.25)] transition-transform duration-200 group-hover:scale-105"
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="ml-[3px] size-6 lg:size-7 text-(--color-dark-petrol)">
+                    <path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11.04-6.86a1 1 0 0 0 0-1.72L9.5 4.28A1 1 0 0 0 8 5.14Z" />
+                  </svg>
+                </span>
+              </button>
             )}
           </div>
         )}
