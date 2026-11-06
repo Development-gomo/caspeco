@@ -30,7 +30,7 @@ export default function IntroFeature({ data, lang = DEFAULT_LANG }) {
     <section className="cs-sec py-18 lg:py-36" style={sectionBackground(data, { background: "var(--color-white)" })}>
       <div className="cs-container flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-16">
         <Reveal className="flex flex-col items-start gap-6 lg:w-1/2">
-          {heading && <h2 className="cs-h2 cs-highlight cs-rich text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+          {heading && <h2 className="cs-h2 cs-highlight cs-rich text-(--color-heading) xl:text-[56px]! xl:leading-[56px]! xl:tracking-[-2.24px]!" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
           {short_text && <ReadMoreText lang={lang} moreLabel={data.read_more_text} lessLabel={data.read_less_text} className="cs-p2 cs-rich max-w-[560px] text-(--color-grey-dark)" html={toHtml(short_text)} />}
           {/* Video CTA text + Video URL → button opening the video popup; a plain CTA URL still works as a link */}
           {cta_text && video ? (

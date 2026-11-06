@@ -19,6 +19,7 @@ const IntroFeature = dynamic(() => import("../sections/case-study/IntroFeature")
 const RelatedCases = dynamic(() => import("../sections/case-study/RelatedCases"));
 const ChallengeCards = dynamic(() => import("../sections/case-study/ChallengeCards"));
 const ProductTestimonials = dynamic(() => import("../sections/product/ProductTestimonials"));
+const HomeKpi = dynamic(() => import("../sections/home/HomeKpi"));
 
 export default async function CasePageBuilder({ sections: rawSections, lang = DEFAULT_LANG, currentId, logo }) {
   const sections = withNeighbours(rawSections); // _prev/_next per block (Figma section-gap rule)
@@ -57,6 +58,10 @@ export default async function CasePageBuilder({ sections: rawSections, lang = DE
 
           case "case_study_slider":
             return <RelatedCases key={i} data={block} lang={lang} cases={cases} />;
+
+          // KPI cards on a case page: own top spacing (variant "case")
+          case "home_kpi_section":
+            return <HomeKpi key={i} data={block} lang={lang} variant="case" />;
 
           default:
             return <ProductBuilder key={i} sections={[block]} lang={lang} />;

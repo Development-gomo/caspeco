@@ -87,7 +87,7 @@ function KpiCard({ card, hint }) {
         {/* BACK */}
         {canFlip && (
           <span className={`${face} max-md:justify-center`} aria-hidden={!flipped || undefined}>
-            <span className="absolute left-[22px] right-16 top-[26px] flex flex-col gap-2.5 max-md:static max-md:gap-1.5">
+            <span className="absolute left-[22px] right-16 top-[26px] md:top-0 md:bottom-0 md:justify-center flex flex-col gap-2.5 max-md:static max-md:gap-1.5">
               {backItems.map((text, i) => (
                 <span key={i} className="flex items-start gap-2 text-[14px] max-md:text-[14px] leading-5 max-md:leading-4 tracking-[0.1px] text-white">
                   <Image src={CheckYellow} alt="" width={14} height={16} className="mt-0.5 shrink-0" />
@@ -112,6 +112,7 @@ const AFTER_DARK = new Set(["testimonial_slider_section", "industry_testimonials
 // #3F3E3C; before the light data-insight block the section keeps 72 below (72 + 72)
 export default function HomeKpi({ data, lang = DEFAULT_LANG, variant }) {
   const icp = variant === "icp";
+  const caseStudy = variant === "case"; // case pages: the section above gives no top spacing, so start our own
   const cards = rows(data?.cards).filter((c) => c.label || c.value);
   if (!data?.heading && cards.length === 0) return null;
   // subtitle: short_text (Page Builder) or sub_heading (Page Builder ICP Page); card.note renders inside KpiCard
@@ -125,7 +126,7 @@ export default function HomeKpi({ data, lang = DEFAULT_LANG, variant }) {
     // Mobile (Figma "USP big numbers"): 64 top after a dark section (else the section above gives it),
     // 64 bottom — 0 before the ICP data-insight block, which brings its own 64; heading → cards 48
     // (ICP: 40, with the body 16 under the H2 and the note + CTA 40 under the cards).
-    <section className={`${AFTER_DARK.has(data?._prev) ? "pt-18 lg:pt-36 max-md:pt-16" : `lg:pt-0.5 ${data?._prev === "intro_video_section" ? "max-md:pt-16" : ""}`} ${icp && data?._next === "data_insight_section" ? "pb-12 lg:pb-[72px] max-md:pb-0" : "pb-18 lg:pb-36 max-md:pb-16"}`} style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
+    <section className={`${AFTER_DARK.has(data?._prev) || caseStudy ? "pt-18 lg:pt-36 max-md:pt-16" : `lg:pt-0.5 ${data?._prev === "intro_video_section" ? "max-md:pt-16" : ""}`} ${icp && data?._next === "data_insight_section" ? "pb-12 lg:pb-[72px] max-md:pb-0" : "pb-18 lg:pb-36 max-md:pb-16"}`} style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       <div className={`cs-container flex flex-col items-center gap-10 lg:gap-16 ${icp ? "" : "max-md:gap-12"}`}>
         {(data.heading || subtitle) && (
           <div className="flex flex-col items-center gap-4 text-center">
