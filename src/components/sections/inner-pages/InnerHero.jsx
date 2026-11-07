@@ -3,6 +3,7 @@
 // ("One platform / One partner / One login") pinned near the top, heading block pinned to the
 // bottom, HomeHero type scale (up to 112/104) and the Medium 24/28 short text.
 // Fields: sub_heading (italic eyebrow above the heading), heading, short_text, cta_text + cta_url (yellow button), bg_image,
+// bg_video (optional ACF file; when set it replaces the image as the background and bg_image becomes its poster),
 // background_color (used when there is no image), hero_height (25–100, % of the viewport), enable_overlay (button group "enable"/"disable"; dark overlay over bg_image).
 
 "use client";
@@ -21,6 +22,7 @@ export default function InnerHero({ data, lang = DEFAULT_LANG }) {
   const bgY = useTransform(scrollYProgress, [0, 1], ["-2%", "0%"]);
 
   const bgImage = data?.bg_image?.url || "";
+  const bgVideo = data?.bg_video?.url || "";
   // enable_overlay: ACF Button Group, may arrive as "enable" or { value: "enable" }
   const overlayField = data?.enable_overlay;
   const overlay = (overlayField?.value ?? overlayField) === "enable";
@@ -42,13 +44,27 @@ export default function InnerHero({ data, lang = DEFAULT_LANG }) {
       style={{ backgroundColor: data?.background_color || "var(--color-black)", ...(full ? {} : { minHeight: `${height}vh` }) }}
     >
       {/* BG IMAGE — overlay on: the parallax lifts the image up to 2%, which would leave an image-less strip at the bottom under the static overlay (a grey band), so the image box is extended 3% below the section */}
-      {bgImage && (
+      {(bgVideo || bgImage) && (
         <motion.div className="absolute hero-bg inset-0 -z-10" style={overlay ? { y: bgY, bottom: "-3%" } : { y: bgY }}>
-          <Image src={bgImage} alt="" fill priority className="object-cover object-top" />
+          {bgVideo ? (
+            // bg_video (same as HomeHero): muted looping autoplay; bg_image doubles as the poster
+            <video
+              src={bgVideo}
+              poster={bgImage || undefined}
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              className="h-full w-full object-cover object-top"
+            />
+          ) : (
+            <Image src={bgImage} alt="" fill priority className="object-cover object-top" />
+          )}
         </motion.div>
       )}
       {/* OVERLAY — static, so it covers the whole section while the image parallaxes */}
-      {bgImage && overlay && <div className="absolute inset-0 -z-10 bg-black/60" aria-hidden="true" />}
+      {(bgVideo || bgImage) && overlay && <div className="absolute inset-0 -z-10 bg-black/60" aria-hidden="true" />}
 
       {/* HERO CONTENT — USP row pinned near the top, heading block pinned to the bottom */}
       <div

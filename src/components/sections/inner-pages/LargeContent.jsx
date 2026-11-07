@@ -1,6 +1,11 @@
 // src/components/sections/Overview.jsx
+// ACF layout: large_content_section. Optional fields:
+//   bg_image (image array) / bg_color (color) -> section background via sectionBackground(); nothing is applied when both are empty.
+//   heading (textarea) -> rendered through toHtml() so line breaks survive.
 
 "use client";
+
+import { sectionBackground, toHtml } from "@/lib/content";
 
 export default function LargeContent({ data }) {
   if (!data) return null;
@@ -11,6 +16,7 @@ export default function LargeContent({ data }) {
       <section
         id="next"
         className="about-section py-15 md:py-30 web-width px-6"
+        style={sectionBackground(data)}
       >
         {/* SUB HEADING WITH DOT */}
         {sub_heading && (
@@ -22,7 +28,7 @@ export default function LargeContent({ data }) {
         {heading && (
           <h2
             className="cs-h3 max-w-3xl m-auto cs-highlight cs-rich text-(--color-heading) max-md:text-(--color-black) mb-6 md:mb-14"
-            dangerouslySetInnerHTML={{ __html: heading }}
+            dangerouslySetInnerHTML={{ __html: toHtml(heading) }}
           />
         )}
         {content_section && (

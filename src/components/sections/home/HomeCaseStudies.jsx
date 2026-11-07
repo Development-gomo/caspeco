@@ -3,6 +3,8 @@
 // CTA button, and the latest 3 case studies (newest first, same language) as listing cards
 // (ui/CaseCard) in a Swiper slider. Desktop (lg+) shows all 3 side by side at the listing grid's
 // card width, so the arrows/progress rail only appear on smaller screens where cards peek.
+// Optional: bg_image (decorative image layer), bg_color (section background colour via sectionBackground();
+// the section keeps its light-grey class when empty).
 
 "use client";
 
@@ -18,7 +20,7 @@ import "swiper/css/navigation";
 import { DEFAULT_LANG } from "@/config";
 import CtaButton from "@/components/ui/CtaButton";
 import CaseCard from "@/components/ui/CaseCard";
-import { toHtml } from "@/lib/content";
+import { sectionBackground, toHtml } from "@/lib/content";
 import { postStrings } from "@/lib/postStrings";
 
 const AUTOPLAY_DELAY = 5000;
@@ -38,6 +40,8 @@ export default function HomeCaseStudies({ data, lang = DEFAULT_LANG, prefetchedC
   const [snapCount, setSnapCount] = React.useState(cases.length);
 
   const bgImage = data?.bg_image?.url || "";
+  // colour only: the image keeps its own positioned layer below
+  const bgStyle = sectionBackground({ bg_color: data?.bg_color });
   const { sub_heading, heading, short_text, cta_text, cta_url, read_more_text } =
     data || {};
   const readMore = read_more_text || postStrings(lang).readFullCase;
@@ -53,7 +57,7 @@ export default function HomeCaseStudies({ data, lang = DEFAULT_LANG, prefetchedC
   return (
     <>
       <div id="next"></div>
-      <section id="case-section" className="py-15 md:py-30 relative overflow-hidden bg-(--color-light-grey)">
+      <section id="case-section" className="py-15 md:py-30 relative overflow-hidden bg-(--color-light-grey)" style={bgStyle}>
         {bgImage ? (
           <div className="absolute inset-0 -z-2" style={{ backgroundImage: `url(${bgImage})`, backgroundPosition: '65% 0%', backgroundRepeat: 'no-repeat', backgroundSize: 'auto' }} suppressHydrationWarning />
         ) : null}

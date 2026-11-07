@@ -133,7 +133,7 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
               width={image?.width || 1216}
               height={image?.height || 684}
               sizes="(min-width: 1024px) 608px, 100vw"
-              className={`ml-auto h-auto w-full rounded-[8px]${fitImage ? " lg:absolute lg:inset-0 lg:h-full lg:object-contain lg:object-right" : ""}`}
+              className={`ml-auto h-auto w-full rounded-[8px]${fitImage ? ` lg:absolute lg:inset-0 lg:h-full lg:object-contain ${data?.image_postion === "left" ? "lg:object-left" : "lg:object-right"}` : ""}`}
             />
           </Reveal>
         )}

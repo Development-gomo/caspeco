@@ -2,7 +2,7 @@
 // ACF layout: news_listing — all posts (news/articles) as Insights cards, 9 per page.
 // The first page is rendered on the server (PageBuilder → getPostsPage); "Load more"
 // fetches the next page in the browser via the /api/content proxy and appends it.
-// Section fields (all optional): heading, short_text, read_more_text, read_time_suffix,
+// Section fields (all optional): sub_heading (eyebrow above the heading), heading, short_text, read_more_text, read_time_suffix,
 //   load_more_text.
 
 "use client";
@@ -24,7 +24,7 @@ export default function NewsListing({ data, lang = DEFAULT_LANG, initial }) {
   const [loading, setLoading] = React.useState(false);
   const [failed, setFailed] = React.useState(false);
 
-  const { heading, short_text, read_time_suffix } = data || {};
+  const { sub_heading, heading, short_text, read_time_suffix } = data || {};
   if (!heading && posts.length === 0) return null;
 
   const loadMore = async () => {
@@ -53,8 +53,14 @@ export default function NewsListing({ data, lang = DEFAULT_LANG, initial }) {
   return (
     <section className="py-18 lg:py-36" style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       <div className="cs-container flex flex-col gap-10 lg:gap-16">
-        {(heading || short_text) && (
+        {(sub_heading || heading || short_text) && (
           <div className="flex flex-col items-start gap-6">
+            {sub_heading && (
+              <div className="flex items-center gap-2 -mb-4 md:-mb-2">
+                <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
+                <span className="subheading-label">{sub_heading}</span>
+              </div>
+            )}
             {heading && <h2 className="cs-h2 cs-highlight max-w-[985px] text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
             {short_text && <div className="cs-p1 cs-rich max-w-[680px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
           </div>

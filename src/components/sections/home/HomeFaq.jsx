@@ -80,7 +80,7 @@ export default function HomeFaq({ data, lang = DEFAULT_LANG, prevLayout }) {
             >
               {/* No negative margin here: the overflow-hidden wrapper would clip the first line */}
               <div
-                className="cs-rich px-6 pb-[25px] max-w-[596px] font-light text-[16px] lg:text-[18px] leading-[22px] tracking-[-0.36px] text-(--color-heading) max-md:max-w-[307px] max-md:px-4 max-md:pb-4 max-md:font-normal max-md:text-[14px] max-md:leading-[18px] max-md:tracking-[-0.28px]"
+                className="cs-rich px-6 pb-[25px] max-w-[596px] font-light text-[16px] lg:text-[18px] leading-[22px] tracking-[-0.36px] text-(--color-heading) max-md:max-w-[307px] max-md:px-4 max-md:pb-4 max-md:font-normal max-md:text-[14px] max-md:leading-[18px] max-md:tracking-[-0.28px] [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-2 [&_li]:pl-1 [&_li+li]:mt-1 [&_li]:marker:text-(--color-heading)"
                 dangerouslySetInnerHTML={{ __html: toHtml(faq.answer) }}
               />
             </motion.div>
