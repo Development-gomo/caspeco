@@ -43,6 +43,7 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
   if (!heading && rolling.length === 0 && !text && !mediaUrl(image)) return null;
 
   const icpMobile = !data?.listStyle; // ICP intro (content_section keeps its own look)
+  const fitImage = !!data?.listStyle; // content_section images are capped to the text height on desktop
   const variant = data?.cta_variant === "outline" ? "outline-dark" : "yellow";
   // mobile (Figma "USP's"): heading #151411 (desktop stays #000)
   const headingClass = "cs-h3 cs-highlight cs-rich text-(--color-heading) max-md:text-(--color-black)";
@@ -124,14 +125,15 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
 
         {mediaUrl(image) && (
           // Figma: 608×342 (Opening soon) / 369×369 (Levelling up), radius 8, no shadow
-          <Reveal x={40} y={0} delay={0.15} className={`w-full lg:flex-none ${rolling.length ? "lg:w-[369px]" : "lg:w-[608px]"}`}>
+          // content_section (desktop): tall images are fitted inside the text column height instead of growing taller
+          <Reveal x={40} y={0} delay={0.15} className={`w-full lg:flex-none ${rolling.length ? "lg:w-[369px]" : "lg:w-[608px]"}${fitImage ? " lg:relative lg:self-stretch lg:min-h-[342px]" : ""}`}>
             <Image
               src={mediaUrl(image)}
               alt={image?.alt || ""}
               width={image?.width || 1216}
               height={image?.height || 684}
               sizes="(min-width: 1024px) 608px, 100vw"
-              className="ml-auto h-auto w-full rounded-[8px]"
+              className={`ml-auto h-auto w-full rounded-[8px]${fitImage ? " lg:absolute lg:inset-0 lg:h-full lg:object-contain lg:object-right" : ""}`}
             />
           </Reveal>
         )}
