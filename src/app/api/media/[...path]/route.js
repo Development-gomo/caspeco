@@ -24,6 +24,12 @@ const ALLOWED_PATH = /^(?:wp-content\/(?:uploads|themes|plugins)|wp-includes\/(?
 const ALLOWED_EXT =
   /\.(?:avif|webp|png|jpe?g|gif|svg|ico|bmp|tiff?|mp4|webm|ogv|mov|m4v|mp3|m4a|ogg|oga|wav|pdf|woff2?|ttf|otf|eot|vtt|json|lottie)$/i;
 
+// Server fetches otherwise go out as "node", which bot filters flag on sight. Send a descriptive
+// agent instead; WP_MEDIA_USER_AGENT overrides it (e.g. a value agreed with the host for allowlisting).
+const USER_AGENT =
+  process.env.WP_MEDIA_USER_AGENT ||
+  `Mozilla/5.0 (compatible; CaspecoMediaProxy/1.0; +${process.env.SITE_URL || "https://caspeco.vercel.app"})`;
+
 // Request headers worth forwarding (range = video seeking, conditionals = cheap 304s)
 const FORWARD_REQ = ["range", "if-none-match", "if-modified-since", "accept"];
 // Response headers worth keeping (no Server / X-Powered-By / Link that name the CMS)
@@ -57,7 +63,7 @@ async function handle(req, { params }) {
     return new Response(null, { status: 307, headers: { location: direct, "cache-control": CACHE_FALLBACK } });
   };
 
-  const headers = {};
+  const headers = { "user-agent": USER_AGENT, accept: "image/avif,image/webp,image/*,video/*,*/*;q=0.8" };
   for (const h of FORWARD_REQ) {
     const v = req.headers.get(h);
     if (v) headers[h] = v;
