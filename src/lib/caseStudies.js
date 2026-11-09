@@ -15,6 +15,8 @@
 //   banner_image      Image (ID), optional wide photo (≥ 2400px) for full-width backgrounds
 //                     (testimonial slider); the featured image is a 426×700 card crop
 
+import { maskWpString } from "@/lib/wpMask";
+
 const decode = (s) =>
   String(s || "")
     .replace(/&#0?38;|&amp;/g, "&")
@@ -49,7 +51,7 @@ function videoUrl(value) {
   if (!v) return "";
   if (/^https?:\/\//i.test(v)) return v;
   if (v.startsWith("//")) return `https:${v}`;
-  if (v.startsWith("/")) return WP_ORIGIN ? `${new URL(WP_ORIGIN).origin}${v}` : "";
+  if (v.startsWith("/")) return WP_ORIGIN ? maskWpString(`${new URL(WP_ORIGIN).origin}${v}`) : "";
   if (/^(?:www\.)?[\w-]+(?:\.[\w-]+)+\//i.test(v)) return `https://${v}`;
   return "";
 }

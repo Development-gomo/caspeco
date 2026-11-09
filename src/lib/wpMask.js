@@ -1,7 +1,7 @@
 // src/lib/wpMask.js
 // Hides the WordPress backend from the browser (server-side only).
 // Every string in WP responses is rewritten before it reaches a page or client:
-//   https://cms-host/caspeco/wp-content/…  → unchanged for now (was /assets/…, see maskWpString)
+//   https://cms-host/caspeco/wp-content/…  → /assets/…        (src/app/api/media, set WP_MEDIA_MASK=off to disable)
 //   https://cms-host/caspeco/wp-json/…     → /api/content/…  (src/app/api/content)
 //   https://cms-host/caspeco/en/page/      → /en/page/       (permalinks become site paths)
 // Works on plain and JSON-escaped ("https:\/\/…") URLs, e.g. inside Yoast's yoast_head.
@@ -25,16 +25,19 @@ const SITE_RE = site
   ? new RegExp(String.raw`https?:${SLASH}${SLASH}(?:www\.)?${escape(HOST)}${PATH}(?:(${SLASH})(wp-content|wp-json|wp-includes|wp-admin)(?=${SLASH}))?(?![\w.-])`, "gi")
   : null;
 
+// Media masking can be switched off (WP_MEDIA_MASK=off) to serve files straight from the CMS
+// host again without a code change. Server-only env var, read at runtime.
+const MASK_MEDIA = String(process.env.WP_MEDIA_MASK || "").toLowerCase() !== "off";
+
 export function maskWpString(value) {
   if (!SITE_RE || typeof value !== "string" || !value.includes(HOST)) return value;
   return value.replace(SITE_RE, (match, sep, kind, offset, whole) => {
-    // Media stays on the CMS host for now: proxying it through /assets made Vercel's servers
-    // fetch every file from SiteGround, whose anti-bot answers them with a CAPTCHA (202 HTML)
-    // instead of the image. Browsers fetching directly are not challenged. Restore
-    // `${sep}assets` once SiteGround allowlists Vercel or media moves to a CDN domain.
-    if (kind === "wp-content") return match;
+    // /assets is served by src/app/api/media, which checks every upstream answer: if SiteGround's
+    // anti-bot challenges Vercel (CAPTCHA, 202 HTML) the browser is redirected to the file on the
+    // CMS host instead, so images never break (the reason media masking was switched off before).
+    if (kind === "wp-content") return MASK_MEDIA ? `${sep}assets` : match;
     if (kind === "wp-json") return `${sep}api${sep}content`;
-    if (kind === "wp-includes") return `${sep}static`; // core media icons, proxied in next.config.mjs
+    if (kind === "wp-includes") return MASK_MEDIA ? `${sep}static` : match; // core media icons, same proxy
     if (kind === "wp-admin") return `${sep}admin`; // never linked publicly; just don't name it
     // permalink: keep the path that follows ("/en/page/"); bare site URL → "/"
     const next = whole[offset + match.length];

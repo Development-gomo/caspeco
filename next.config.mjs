@@ -2,15 +2,13 @@
 import { SUPPORTED_LANGS, DEFAULT_LANG } from "./src/config/index.js";
 
 const wpHostname = new URL(process.env.NEXT_PUBLIC_WP_BASE).hostname;
-// WP site URL without /wp-json — media is served from it under /assets (see src/lib/wpMask.js)
-const wpSite = process.env.NEXT_PUBLIC_WP_BASE.replace(/\/wp-json\/?$/, "").replace(/\/$/, "");
 const nonDefaultLangs = SUPPORTED_LANGS.filter((l) => l !== DEFAULT_LANG);
 
 const nextConfig = {
   reactStrictMode: true,
 
   images: {
-    // Serve CMS images as-is (via /assets) instead of through Vercel Image Optimization —
+    // Serve CMS images as-is (via /assets, src/app/api/media) instead of through Vercel Image Optimization —
     // the account's optimization quota returns 402 once exceeded and every image breaks.
     // WP already generates resized sizes; set to false again on a plan with quota.
     unoptimized: true,
@@ -54,9 +52,10 @@ const nextConfig = {
 
   async rewrites() {
     return [
-      // CMS media/files under our own domain: /assets/uploads/… → WP wp-content (proxied, host hidden)
-      { source: "/assets/:path*", destination: `${wpSite}/wp-content/:path*` },
-      { source: "/static/:path*", destination: `${wpSite}/wp-includes/:path*` },
+      // CMS media under our own domain, via the checked proxy in src/app/api/media (not a plain
+      // external rewrite: that passed SiteGround's CAPTCHA page through as the "image")
+      { source: "/assets/:path*", destination: "/api/media/wp-content/:path*" },
+      { source: "/static/:path*", destination: "/api/media/wp-includes/:path*" },
       // API routes (incl. dynamic /api/content/…) must not fall into the default-language rewrite
       { source: "/api/:path*", destination: "/api/:path*" },
       // Pass-throughs for each non-default language (prevents catch-all rewrite below from grabbing them)
