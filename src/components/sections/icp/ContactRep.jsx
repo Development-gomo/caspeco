@@ -59,14 +59,14 @@ export default function ContactRep({ data, lang = DEFAULT_LANG, rep, form, tone 
           )}
           {/* mobile: compact glass pill (Figma "Group 1810"): #FDFDFD@8%, 1px #FDFDFD@14%, avatar 52, rule 2×37 */}
           {photo && (
-            <figure className="flex items-center gap-4 rounded-[8px] border border-[rgba(253,253,253,0.14)] bg-[rgba(253,253,253,0.08)] px-4 py-[8.5px] md:hidden">
+            <figure className={`flex items-center gap-4 rounded-[8px] border px-4 py-[8.5px] md:hidden ${light && (rep_name || rep_role) ? "border-[#E2E8F0] bg-[#FBFAF9]" : "border-[rgba(253,253,253,0.14)] bg-[rgba(253,253,253,0.08)]"}`}>
               <span className="relative size-[52px] shrink-0 overflow-hidden rounded-full">
                 <Image src={photo} alt={rep?.alt || rep_name || ""} fill sizes="52px" className="object-cover" />
               </span>
               <span className="h-[37px] w-0.5 shrink-0 rounded-[1.4px] bg-(--color-yellow)" aria-hidden />
               <figcaption className="flex min-w-0 flex-col gap-px">
-                {rep_name && <span className="font-bold text-[15px] leading-[21px] text-(--color-light-grey)">{rep_name}</span>}
-                {rep_role && <span className="text-[12px] leading-[14px] text-[#BFC3C5]">{rep_role}</span>}
+                {rep_name && <span className={`font-bold text-[15px] leading-[21px] ${light ? "text-(--color-black)" : "text-(--color-light-grey)"}`}>{rep_name}</span>}
+                {rep_role && <span className={`text-[12px] leading-[14px] ${light ? "text-(--color-grey-dark)" : "text-[#BFC3C5]"}`}>{rep_role}</span>}
               </figcaption>
             </figure>
           )}

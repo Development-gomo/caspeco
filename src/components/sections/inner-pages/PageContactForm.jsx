@@ -4,6 +4,8 @@
 // in its light tone: sub heading as the italic eyebrow, heading, text and the Section Image in
 // the photo frame on the left; the form card on the right; plain light background.
 // Form: the HubSpot embed pasted in Form Shortcode, else the first CF7 form in Select Form.
+// Optional `person` prop: contact person from the `kontakt` CPT, shown when contact_person is
+// enabled. When set, it replaces the section-image rep (name, role, photo, alt from the CPT).
 
 import ContactRep from "../icp/ContactRep";
 import ContactForm from "../contact-form/ContactForm";
@@ -17,7 +19,7 @@ const firstId = (v) => {
   return x && typeof x === "object" ? x.ID || x.id : x;
 };
 
-export default function PageContactForm({ data, lang = DEFAULT_LANG }) {
+export default function PageContactForm({ data, lang = DEFAULT_LANG, person }) {
   if (!data?.heading) return null;
   const hubspot = parseHubspotEmbed(data.form_shortcode) ? data.form_shortcode : "";
   const cf7 = !hubspot && firstId(data.select_form);
@@ -32,7 +34,18 @@ export default function PageContactForm({ data, lang = DEFAULT_LANG }) {
     <ContactRep
       data={{ ...data, eyebrow: data.sub_heading }}
       lang={lang}
-      rep={photo ? { photo, alt: data.section_image?.alt || "" } : undefined}
+      rep={
+        person
+          ? {
+              name: person.name,
+              role: person.role,
+              photo: person.photo?.url || photo,
+              alt: person.photo?.alt || person.name,
+            }
+          : photo
+            ? { photo, alt: data.section_image?.alt || "" }
+            : undefined
+      }
       form={form || undefined}
       tone="light"
     />

@@ -16,8 +16,10 @@ import {
   getPostsPage,
   getPartnerCategories,
   getAllPartners,
+  getKontaktByIds,
 } from "@/lib/api";
 import { mapTwinCases, twinMediaIds } from "@/lib/caseStudies";
+import { contactPersonId, toPerson } from "@/lib/kontakt";
 
 const Hero = dynamic(() => import("../sections/home/HomeHero"));
 const AboutUs = dynamic(() => import("../sections/home/HomeAbout"));
@@ -128,8 +130,13 @@ async function prefetchSectionData(sections, lang) {
     partners: false,
   };
   const pickedPostIds = [];
+  const memberIds = [];
 
   for (const block of sections) {
+    if (block._layout === "contact_form_section") {
+      const id = contactPersonId(block);
+      if (id) memberIds.push(id);
+    }
     if (block._layout === "casestudies_section") needs.cases = true;
     if (block._layout === "case_study_listing") needs.cases = true;
     if (block._layout === "integrations_listing") needs.partners = true;
@@ -166,6 +173,7 @@ async function prefetchSectionData(sections, lang) {
     newsPage,
     partnerCategories,
     partners,
+    members,
   ] = await Promise.all([
     needs.cases ? getCaseStudies(lang) : null,
     needs.posts ? getAllPosts(lang) : null,
@@ -177,6 +185,7 @@ async function prefetchSectionData(sections, lang) {
     needs.newsPage ? getPostsPage(lang, 1) : null, // NewsListing: first 9 + totals
     needs.partners ? getPartnerCategories(lang) : null,
     needs.partners ? getAllPartners(lang) : null,
+    memberIds.length ? getKontaktByIds(memberIds, lang) : null,
   ]);
 
   // Business Twin: resolve logo/clip media IDs, then reduce to small objects for the client
@@ -214,6 +223,7 @@ async function prefetchSectionData(sections, lang) {
     newsPage,
     partnerCategories,
     partners,
+    people: new Map((members || []).map((m) => [m.id, toPerson(m)])),
   };
 }
 
@@ -306,7 +316,14 @@ export default async function PageBuilder({
 
           // Contact us / Kontakt / Careers: Figma "Let's talk" card style, HubSpot or CF7 form
           case "contact_form_section":
-            return <PageContactForm key={i} data={block} lang={lang} />;
+            return (
+              <PageContactForm
+                key={i}
+                data={block}
+                lang={lang}
+                person={prefetched.people?.get(contactPersonId(block))}
+              />
+            );
 
           // Heading or rolling words, text, CTA and an image left/right — the Figma ICP intro design
           case "content_section":

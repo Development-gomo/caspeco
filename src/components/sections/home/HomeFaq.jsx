@@ -22,7 +22,7 @@ export default function HomeFaq({ data, lang = DEFAULT_LANG, prevLayout }) {
   const faqs = rows(data?.faqs)
     .map((f) => ({ question: f.question, answer: f.answer || f.answers }))
     .filter((f) => f.question);
-  const [open, setOpen] = React.useState(0); // first item open, as in Figma
+  const [open, setOpen] = React.useState(null); // all items closed by default
   const { heading, short_text, cta_text, cta_url } = data || {};
   // ACF faq_layout: "two" = heading on top, FAQs in two columns on desktop; "one"/empty/anything else = current layout
   const twoCols = String(data?.faq_layout ?? "").trim().toLowerCase() === "two" || String(data?.faq_layout ?? "").trim() === "2";
