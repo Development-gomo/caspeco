@@ -20,6 +20,7 @@ import {
 } from "@/lib/api";
 import { mapTwinCases, twinMediaIds } from "@/lib/caseStudies";
 import { contactPersonId, toPerson } from "@/lib/kontakt";
+import { withSpacing } from "@/components/ui/SectionSpacing";
 
 const Hero = dynamic(() => import("../sections/home/HomeHero"));
 const AboutUs = dynamic(() => import("../sections/home/HomeAbout"));
@@ -243,9 +244,7 @@ export default async function PageBuilder({
 
   const prefetched = await prefetchSectionData(sections, lang);
 
-  return (
-    <>
-      {sections.map((block, i) => {
+  const renderBlock = (block, i) => {
         switch (block._layout) {
           case "home_hero":
             return <Hero key={i} data={block} lang={lang} />;
@@ -537,7 +536,11 @@ export default async function PageBuilder({
           default:
             return null;
         }
-      })}
+  };
+
+  return (
+    <>
+      {sections.map((block, i) => withSpacing(block, renderBlock(block, i), i))}
     </>
   );
 }

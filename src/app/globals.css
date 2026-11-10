@@ -687,6 +687,22 @@ span.subheading-label.text-\[var\(--color-accent\)\],
 
 .privacy-text a { color: var(--color-dark-petrol); font-weight: 500; text-decoration: underline; text-underline-offset: 2px; word-break: break-word; }
 .privacy-text a:hover { color: var(--color-petrol); }
+/* Legacy Enfold buttons inside the text: same pill as CtaButton "yellow" (Figma Button Desktop / Mobile) */
+.privacy-text .avia-button,
+.privacy-text a.avia-button {
+  display: inline-flex; align-items: center; justify-content: center;
+  margin: 8px 0; padding: 16px 38px; border: 0; border-radius: 9999px;
+  background: var(--color-yellow); color: var(--color-grey-dark);
+  font-size: 18px; line-height: 22px; font-weight: 700; text-decoration: none; white-space: nowrap;
+  cursor: pointer; transition: background-color 0.6s ease-out, color 0.6s ease-out;
+}
+.privacy-text .avia-button:hover,
+.privacy-text a.avia-button:hover { background: var(--color-gold); color: #fff; }
+.privacy-text .avia-button .avia_iconbox_title,
+.privacy-text .avia-button span { color: inherit; font: inherit; text-decoration: none; }
+@media (max-width: 767px) {
+  .privacy-text .avia-button, .privacy-text a.avia-button { display: flex; width: 100%; min-height: 48px; padding: 0 32px; font-size: 16px; line-height: 20px; }
+}
 .privacy-text hr { margin: 40px 0; border: 0; border-top: 1px solid #e2e8f0; }
 .privacy-text blockquote { margin: 0 0 16px; padding-left: 20px; border-left: 3px solid var(--color-yellow); font-style: italic; }
 
@@ -1017,6 +1033,18 @@ span.subheading-label.text-\[var\(--color-accent\)\],
 /* top: half the line box minus half the 8px dot, so it centres on the first line at every breakpoint (lh = line-height) */
 .cs-list li::before { content: ""; position: absolute; left: 0; top: calc(0.5lh - 4px); width: 8px; height: 8px; border-radius: 9999px; background: var(--color-yellow); }
 .cs-list li a { text-decoration: underline; text-underline-offset: 2px; }
+/* Headings typed into the rich text (h2 / h3): site heading scale instead of the bare global h tag */
+.cs-list :is(h2, h3, h4) { font-family: var(--font-primary); text-transform: none; color: inherit; margin: 24px 0 8px; }
+.cs-list :is(h2, h3, h4):first-child { margin-top: 0; }
+.cs-list h2 { font-weight: 800; font-size: 22px; line-height: 26px; letter-spacing: -0.44px; }
+.cs-list h3 { font-weight: 700; font-size: 18px; line-height: 22px; letter-spacing: -0.36px; }
+.cs-list h4 { font-weight: 700; font-size: 16px; line-height: 20px; letter-spacing: -0.32px; }
+@media (min-width: 1024px) {
+  .cs-list h2 { font-size: 26px; line-height: 28px; letter-spacing: -0.52px; }
+  .cs-list h3 { font-size: 20px; line-height: 24px; letter-spacing: -0.4px; }
+  .cs-list h4 { font-size: 18px; line-height: 22px; letter-spacing: -0.36px; }
+}
+.cs-list :is(h2, h3, h4) :is(strong, b) { font-weight: inherit; }
 .cs-highlight strong,
 .cs-highlight b {
   color: var(--color-yellow);
@@ -1205,3 +1233,18 @@ span.subheading-label.text-\[var\(--color-accent\)\],
   padding-top: 0 !important;
 }
 }
+
+/* ==========================================
+   SECTION SPACING: ACF "Spacing" tab (padding_top / padding_bottom = "disable").
+   withSpacing() (components/ui/SectionSpacing.jsx) wraps a section ONLY when a side is
+   disabled, so enabled sections are unchanged. The wrapper has no box; !important beats
+   Tailwind utilities, the mobile .cs-sec padding and section#case-section.
+   "> div > section": home_tab_section with ICP tab styling (two divs, one section each).
+   Note: a Tailwind "!" padding utility on a section root would beat this rule.
+========================================== */
+[data-sec-pt="off"],
+[data-sec-pb="off"] { display: contents; }
+[data-sec-pt="off"] > section,
+[data-sec-pt="off"] > div > section { padding-top: 0 !important; }
+[data-sec-pb="off"] > section,
+[data-sec-pb="off"] > div > section { padding-bottom: 0 !important; }

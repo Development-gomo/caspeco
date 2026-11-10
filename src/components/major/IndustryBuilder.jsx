@@ -9,6 +9,7 @@ import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
 import ProductBuilder from "./ProductBuilder";
 import Reveal from "@/components/ui/Reveal";
+import { withSpacing } from "@/components/ui/SectionSpacing";
 import { getAllIndustries, getTwinCaseStudies, getMediaByIds } from "@/lib/api";
 import { mapTwinCases, twinMediaIds } from "@/lib/caseStudies";
 
@@ -49,12 +50,12 @@ export default async function IndustryBuilder({ sections: rawSections, lang = DE
           case "industry_slider_section":
             return (
               <Reveal key={i} y={40}>
-                <HomeIndustrySlider data={block} lang={lang} prefetchedIndustries={otherIndustries} />
+                {withSpacing(block, <HomeIndustrySlider data={block} lang={lang} prefetchedIndustries={otherIndustries} />)}
               </Reveal>
             );
 
           case "data_section":
-            return <HomeConnectedData key={i} data={block} lang={lang} />;
+            return withSpacing(block, <HomeConnectedData key={i} data={block} lang={lang} />, i);
 
           default:
             return <ProductBuilder key={i} sections={[block]} lang={lang} />;

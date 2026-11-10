@@ -11,6 +11,7 @@ import dynamic from "next/dynamic";
 import { withNeighbours, rows } from "@/lib/content";
 import { DEFAULT_LANG } from "@/config";
 import ProductBuilder from "./ProductBuilder";
+import { withSpacing } from "@/components/ui/SectionSpacing";
 import { getTwinCaseStudies, getMediaByIds } from "@/lib/api";
 import { mapTwinCases, twinMediaIds } from "@/lib/caseStudies";
 
@@ -61,7 +62,7 @@ export default async function CasePageBuilder({ sections: rawSections, lang = DE
 
           // KPI cards on a case page: own top spacing (variant "case")
           case "home_kpi_section":
-            return <HomeKpi key={i} data={block} lang={lang} variant="case" />;
+            return withSpacing(block, <HomeKpi key={i} data={block} lang={lang} variant="case" />, i);
 
           default:
             return <ProductBuilder key={i} sections={[block]} lang={lang} />;

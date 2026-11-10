@@ -15,6 +15,7 @@ import dynamic from "next/dynamic";
 import { DEFAULT_LANG, entryHref, langHref } from "@/config";
 import { withNeighbours } from "@/lib/content";
 import ProductBuilder from "./ProductBuilder";
+import { withSpacing } from "@/components/ui/SectionSpacing";
 import { getAllIcps, getKontaktByIds, getMediaByIds, getThemeOptions, getTwinCaseStudies } from "@/lib/api";
 import { mapTwinCases, twinMediaIds } from "@/lib/caseStudies";
 import { parseHubspotEmbed } from "@/lib/hubspot";
@@ -170,22 +171,22 @@ export default async function IcpBuilder({ sections: rawSections, lang = DEFAULT
           // link_text / link_url)
           case "usp_accordion":
           case "usp_accordion_section":
-            return <ProductUspAccordion key={i} data={block} lang={lang} variant="icp" />;
+            return withSpacing(block, <ProductUspAccordion key={i} data={block} lang={lang} variant="icp" />, i);
 
           // Figma "Comparison block" (Reduce / Improve): same design and fields as the products
           // layout results_section (heading, short_text, columns, bottom_note, bg_image)
           case "result_section":
           case "results_section":
-            return <ProductResults key={i} data={block} lang={lang} variant="icp" />;
+            return withSpacing(block, <ProductResults key={i} data={block} lang={lang} variant="icp" />, i);
 
           case "home_kpi_section":
-            return <HomeKpi key={i} data={block} lang={lang} variant="icp" />;
+            return withSpacing(block, <HomeKpi key={i} data={block} lang={lang} variant="icp" />, i);
 
           case "data_insight_section":
-            return <HomeDataInsight key={i} data={block} lang={lang} variant="icp" />;
+            return withSpacing(block, <HomeDataInsight key={i} data={block} lang={lang} variant="icp" />, i);
 
           case "data_section":
-            return <HomeConnectedData key={i} data={block} lang={lang} />;
+            return withSpacing(block, <HomeConnectedData key={i} data={block} lang={lang} />, i);
 
           case "testimonial_slider_section": {
             if (block.slider_type === "fullwidth") {
@@ -238,7 +239,8 @@ export default async function IcpBuilder({ sections: rawSections, lang = DEFAULT
             if (!withContactPerson(block)) {
               // page HubSpot code → the language's global "Get a call" HubSpot form → the page's CF7 form
               const quickForm = hubspot || globalQuickForm;
-              return (
+              return withSpacing(
+                block,
                 <QuickContact
                   key={i}
                   lang={lang}
@@ -251,19 +253,22 @@ export default async function IcpBuilder({ sections: rawSections, lang = DEFAULT
                     form_shortcode: quickForm ? "" : String(postId(block.select_form) || ""),
                   }}
                   form={quickForm ? <HubspotEmbed code={quickForm} /> : undefined}
-                />
+                />,
+                i
               );
             }
             const rep = people.get(firstId(block.team_member));
             // Figma form (ContactRepForm) sending to the selected CF7 form; a pasted HubSpot form replaces it
-            return (
+            return withSpacing(
+              block,
               <ContactRep
                 key={i}
                 data={repFormData(block, rep, privacyHref)}
                 lang={lang}
                 rep={rep ? { name: rep.name, role: rep.role, photo: rep.photo?.url } : undefined}
                 form={hubspot ? <HubspotEmbed code={hubspot} variant="rep" /> : undefined}
-              />
+              />,
+              i
             );
           }
 

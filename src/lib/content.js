@@ -151,3 +151,18 @@ export function countSegmentChars(segments) {
   if (!Array.isArray(segments)) return 0;
   return segments.reduce((sum, seg) => sum + (typeof seg?.text === "string" ? seg.text.length : 0), 0);
 }
+
+/** ACF button group "enable"/"disable" (string, {value,label} or [value]). Anything except "disable" (missing, "", null, false) is enabled. */
+export function isEnabled(field) {
+  const v = Array.isArray(field) ? field[0] : field;
+  const raw = v && typeof v === "object" ? v.value ?? v.label : v;
+  return String(raw ?? "").trim().toLowerCase() !== "disable";
+}
+
+/** Spacing tab (padding_top / padding_bottom) -> data attributes, only for the sides that are disabled. */
+export function spacingAttrs(block) {
+  const attrs = {};
+  if (!isEnabled(block?.padding_top)) attrs["data-sec-pt"] = "off";
+  if (!isEnabled(block?.padding_bottom)) attrs["data-sec-pb"] = "off";
+  return attrs;
+}

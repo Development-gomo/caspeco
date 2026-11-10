@@ -10,6 +10,7 @@ import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
 import PageBuilder from "./PageBuilder";
 import Reveal from "@/components/ui/Reveal";
+import { withSpacing } from "@/components/ui/SectionSpacing";
 import { getTwinCaseStudies, getMediaByIds, getLogoGalleries } from "@/lib/api";
 import { mapTwinCases, twinMediaIds } from "@/lib/caseStudies";
 
@@ -65,12 +66,12 @@ export default async function ProductBuilder({ sections: rawSections, lang = DEF
           case "product_cards_section":
             return (
               <Reveal key={i} y={40}>
-                <HomeProductCards data={{ ...block, bg_color: block.bg_color || CARDS_GRADIENT }} lang={lang} />
+                {withSpacing(block, <HomeProductCards data={{ ...block, bg_color: block.bg_color || CARDS_GRADIENT }} lang={lang} />)}
               </Reveal>
             );
 
           case "usp_accordion_section":
-            return <ProductUspAccordion key={i} data={block} lang={lang} />;
+            return withSpacing(block, <ProductUspAccordion key={i} data={block} lang={lang} />, i);
 
           case "testimonial_slider_section":
             return <TestimonialSlider key={i} data={block} lang={lang} cases={prefetched.twinCases || []} defaultType="fullwidth" />;
@@ -79,7 +80,7 @@ export default async function ProductBuilder({ sections: rawSections, lang = DEF
             return <ProductFeatureSlider key={i} data={block} lang={lang} />;
 
           case "results_section":
-            return <ProductResults key={i} data={block} lang={lang} />;
+            return withSpacing(block, <ProductResults key={i} data={block} lang={lang} />, i);
 
           case "product_demo_section":
             return <ProductDemo key={i} data={block} lang={lang} />;
@@ -97,7 +98,7 @@ export default async function ProductBuilder({ sections: rawSections, lang = DEF
           case "faq_section":
             return (
               <Reveal key={i} y={40}>
-                <HomeFaq data={block} lang={lang} />
+                {withSpacing(block, <HomeFaq data={block} lang={lang} />)}
               </Reveal>
             );
 
