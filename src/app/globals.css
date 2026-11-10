@@ -648,7 +648,7 @@ span.subheading-label.text-\[var\(--color-accent\)\],
    Cookie policy, GDPR …). Clear H2–H6 scale on the site's type ramp,
    paragraph rhythm, real list bullets/numbers, links and tables.
    --------------------------------------------------------------------- */
-.privacy-text { color: var(--color-grey-dark); font-size: 16px; line-height: 26px; }
+.privacy-text { overflow:hidden; color: var(--color-grey-dark); font-size: 16px; line-height: 26px; }
 .privacy-text > :first-child { margin-top: 0 !important; }
 .privacy-text > :last-child { margin-bottom: 0 !important; }
 
@@ -711,6 +711,29 @@ span.subheading-label.text-\[var\(--color-accent\)\],
 .privacy-text :is(th, td) { padding: 10px 14px; border: 1px solid #e2e8f0; text-align: left; vertical-align: top; min-width: 120px; }
 .privacy-text th { background: #f1f1f1; color: var(--color-black); font-weight: 700; }
 .privacy-text tbody tr:nth-child(even) td { background: #fbfaf9; }
+
+/* WP classic-editor images ([caption] figures, img.alignleft/right/center) in Large Content rich text.
+   A run of adjacent figure.wp-caption.alignleft (e.g. Sunmi "Accessories") = 2-up float grid. */
+.privacy-text { display: flow-root; } /* contain floats so section bg/padding wrap them */
+.privacy-text :is(.wp-caption, img.alignleft, img.alignright, img.aligncenter) { max-width: 100%; height: auto; }
+.privacy-text .wp-caption { margin: 0 0 24px; }
+.privacy-text .wp-caption img { width: 100%; height: auto; }
+.privacy-text .wp-caption-text { margin-top: 8px; text-align: center; font-size: 20px; line-height: 28px; font-weight: 700; }
+.privacy-text .alignleft { float: left; margin: 0 24px 24px 0; max-width: calc(50% - 12px); }
+.privacy-text .alignright { float: right; margin: 0 0 24px 24px; max-width: calc(50% - 12px); }
+.privacy-text .aligncenter { display: block; float: none; margin: 0 auto 24px; }
+.privacy-text :is(h1, h2, h3, h4, h5, h6, hr, table, blockquote) { clear: both; }
+/* gallery run: equal columns (overrides WP inline width), odd items start a row so unequal heights can't snag */
+.privacy-text .wp-caption.alignleft:is(:has(+ .wp-caption.alignleft), .wp-caption.alignleft + .wp-caption.alignleft) { width: calc(50% - 12px) !important; max-width: none; }
+.privacy-text .wp-caption.alignleft:is(:has(+ .wp-caption.alignleft), .wp-caption.alignleft + .wp-caption.alignleft):nth-of-type(2n+1) { clear: left; }
+.privacy-text .wp-caption.alignleft:is(:has(+ .wp-caption.alignleft), .wp-caption.alignleft + .wp-caption.alignleft):nth-of-type(2n) { margin-right: 0; }
+@media (max-width: 767px) {
+  /* single floated image beside text: stack, centred, full width */
+  .privacy-text :is(.alignleft, .alignright) { float: none; max-width: 100%; margin: 0 auto 24px; }
+  /* gallery runs stay 2-up with a 16px gutter */
+  .privacy-text .wp-caption.alignleft:is(:has(+ .wp-caption.alignleft), .wp-caption.alignleft + .wp-caption.alignleft) { float: left; width: calc(50% - 8px) !important; margin: 0 16px 16px 0; }
+  .privacy-text .wp-caption.alignleft:is(:has(+ .wp-caption.alignleft), .wp-caption.alignleft + .wp-caption.alignleft):nth-of-type(2n) { margin-right: 0; }
+}
 
 .result-number:nth-child(1) .suffix-text {
   font-size: 70px;

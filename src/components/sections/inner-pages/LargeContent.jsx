@@ -15,9 +15,11 @@ export default function LargeContent({ data }) {
     <>
       <section
         id="next"
-        className="about-section py-15 md:py-30 web-width px-6"
+        className="about-section py-15 md:py-30"
         style={sectionBackground(data)}
       >
+        {/* inner wrapper keeps the original content width; the section itself stays full-bleed for the background */}
+        <div className="web-width px-6">
         {/* SUB HEADING WITH DOT */}
         {sub_heading && (
           <div className="flex items-center gap-2 mb-2 md:mb-4">
@@ -37,6 +39,7 @@ export default function LargeContent({ data }) {
             dangerouslySetInnerHTML={{ __html: content_section }}
           />
         )}
+        </div>
       </section>
     </>
   );
