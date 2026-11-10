@@ -3,6 +3,7 @@
 //   bg_image (decorative image layer), bg_color (section background colour via sectionBackground()).
 //   short_text (textarea) -> intro paragraph under the heading, only when non-empty.
 //   heading (textarea) -> rendered through toHtml() so line breaks survive.
+//   select_casestudy (post objects) -> when set, only those case studies are shown (no Load More); otherwise all, 9 at a time.
 "use client";
 
 import { useState } from "react";
@@ -20,11 +21,13 @@ export default function CaseStudyListing({
   data,
   lang = DEFAULT_LANG,
   prefetchedCases,
+  selectedCases,
 }) {
-  const cases = prefetchedCases || [];
+  const picked = Array.isArray(selectedCases) && selectedCases.length > 0;
+  const cases = picked ? selectedCases : prefetchedCases || [];
   const [visibleCount, setVisibleCount] = useState(INITIAL_COUNT);
-  const visibleCases = cases.slice(0, visibleCount);
-  const hasMore = visibleCount < cases.length;
+  const visibleCases = picked ? cases : cases.slice(0, visibleCount);
+  const hasMore = !picked && visibleCount < cases.length;
   const bgImage = data?.bg_image?.url || "";
   const {
     sub_heading,

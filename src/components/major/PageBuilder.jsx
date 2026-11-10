@@ -115,6 +115,13 @@ const PeopleCards = dynamic(() => import("../sections/icp/PeopleCards"));
 const StageCards = dynamic(() => import("../sections/icp/StageCards"));
 const ContactRep = dynamic(() => import("../sections/icp/ContactRep"));
 
+// select_casestudy (IDs or post objects) -> matching items of the prefetched case list, in selected order
+function pickCases(value, cases) {
+  const list = Array.isArray(value) ? value : value ? [value] : [];
+  const ids = list.map((p) => Number(p && typeof p === "object" ? p.ID || p.id : p)).filter(Boolean);
+  return ids.map((id) => (cases || []).find((c) => c.id === id)).filter(Boolean);
+}
+
 // Detect which data the page needs and fetch it all in parallel (server-side)
 async function prefetchSectionData(sections, lang) {
   if (!sections) return {};
@@ -266,6 +273,7 @@ export default async function PageBuilder({
                 data={block}
                 lang={lang}
                 prefetchedCases={prefetched.cases}
+                selectedCases={pickCases(block.select_casestudy, prefetched.cases)}
               />
             );
 
