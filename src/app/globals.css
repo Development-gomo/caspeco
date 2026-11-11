@@ -49,6 +49,12 @@
   --color-bg: var(--color-black);
 }
 
+/* #hash links (e.g. content_section anchor_link) scroll smoothly */
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
 /* Notes us this class
   bg-(--color-accent)
   bg-(--color-brand)

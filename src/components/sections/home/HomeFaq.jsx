@@ -93,7 +93,7 @@ export default function HomeFaq({ data, lang = DEFAULT_LANG, prevLayout }) {
   return (
     // Mobile (Figma Home "iPhone 16 - 5" 601:9439): 64 top and bottom; 0 below when the next section brings its own 64.
     // Title → 16 → intro (Regular 18/22) → 40 → list → 24 → button (the button moves below the list on mobile)
-    <section className={`${HALF_BEFORE.has(data?._next) ? "pb-12 max-md:pb-0 lg:pb-[72px]" : "pb-18 max-md:pb-16 lg:pb-36"} ${FLUSH_AFTER.has(prevLayout ?? data?._prev) ? "" : "pt-18 max-md:pt-16 lg:pt-36"}`} style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
+    <section id="faq-section" className={`${HALF_BEFORE.has(data?._next) ? "pb-12 max-md:pb-0 lg:pb-[72px]" : "pb-18 max-md:pb-16 lg:pb-36"} ${FLUSH_AFTER.has(prevLayout ?? data?._prev) ? "" : "pt-18 max-md:pt-16 lg:pt-36"}`} style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       <div className={twoCols ? "cs-container grid grid-cols-1 gap-10 lg:gap-12" : "cs-container grid grid-cols-1 gap-10 lg:grid-cols-[549px_minmax(0,1fr)] lg:gap-[50px]"}>
         <div className="flex flex-col items-start gap-5 max-md:gap-4">
           {heading && <h2 className="cs-h2 cs-highlight text-(--color-heading) max-md:text-(--color-black)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}

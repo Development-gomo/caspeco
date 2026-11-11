@@ -3,6 +3,7 @@
 // "Inro section" on Levelling up): heading, text, optional CTA and an image on the right.
 // rolling_headings (optional) replaces the heading with questions that rotate in place
 // ("Chasing staff to fill shifts?" …). If a video is set, the CTA opens it in a popup.
+// anchor_link (ACF, content_section) → section id so #hash links scroll to it (header offset via scroll-mt).
 
 "use client";
 
@@ -56,10 +57,12 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
     data?._prev === "content_section" &&
     ((!prevBottomGrey && !topGrey) || (prevGradient === "full" && gradient === "full"));
 
+  const anchorId = String(data?.anchor_link || "").trim().replace(/^#+/, "").replace(/\s+/g, "-");
+
   return (
     // Figma section-gap rule: before the light tabs section the intro keeps 72 below (72 + 72)
     // Mobile (Figma "USP's"): 64 top/bottom, text block → image 40, heading → text 16
-    <section className={`cs-sec overflow-hidden ${stackedAfterContent ? "pt-0" : "pt-18 lg:pt-36"} ${GRADIENT_CLASSES[data?.bg_gradient] || GRADIENT_CLASSES.top} ${icpMobile && !GRADIENT_CLASSES[data?.bg_gradient] ? "bg-icp-intro-m" : ""} ${data?._next === "tab_section" ? "pb-12 lg:pb-[72px]" : "pb-18 lg:pb-36"}`} style={sectionBackground(data)}>
+    <section id={anchorId || undefined} className={`cs-sec scroll-mt-[72px] lg:scroll-mt-[84px] overflow-hidden ${stackedAfterContent ? "pt-0" : "pt-18 lg:pt-36"} ${GRADIENT_CLASSES[data?.bg_gradient] || GRADIENT_CLASSES.top} ${icpMobile && !GRADIENT_CLASSES[data?.bg_gradient] ? "bg-icp-intro-m" : ""} ${data?._next === "tab_section" ? "pb-12 lg:pb-[72px]" : "pb-18 lg:pb-36"}`} style={sectionBackground(data)}>
       {/* image_postion "left" (Page Builder content_section): image first on desktop */}
       <div className={`cs-container flex flex-col gap-12 max-md:gap-10 lg:items-center lg:justify-between lg:gap-16 ${data?.image_postion === "left" ? "lg:flex-row-reverse" : "lg:flex-row"}`}>
         {/* Opening soon: text 600 wide, centred on the image; Levelling up: rotating heading 850 wide, text 474 */}
@@ -133,7 +136,7 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
               width={image?.width || 1216}
               height={image?.height || 684}
               sizes="(min-width: 1024px) 608px, 100vw"
-              className={`ml-auto h-auto w-full rounded-[8px]${fitImage ? ` lg:absolute lg:inset-0 lg:h-full lg:object-contain ${data?.image_postion === "left" ? "lg:object-left" : "lg:object-right"}` : ""}`}
+              className="rounded-lg object-cover lg:rounded-none lg:object-contain"
             />
           </Reveal>
         )}
