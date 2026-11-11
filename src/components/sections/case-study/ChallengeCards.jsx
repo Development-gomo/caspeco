@@ -11,9 +11,10 @@ import { GLASS_CLASS, GLASS_STYLE } from "@/components/ui/glass";
 import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
 const pad = (n) => String(n).padStart(2, "0");
+const FALLBACK_ICONS = ["/svgbank/charts-goal-icon.svg", "/svgbank/charts-trend-up-icon.svg", "/svgbank/editing-circle-success-icon.svg"];
 
 function Card({ item, index }) {
-  const icon = mediaUrl(item.icon);
+  const icon = mediaUrl(item.icon) || FALLBACK_ICONS[index] || "";
   return (
     <Reveal
       delay={0.1 + index * 0.08}
@@ -29,9 +30,9 @@ function Card({ item, index }) {
                 <Image src={icon} alt="" width={18} height={18} className="size-[18px] object-contain brightness-0" />
               </span>
             )}
-            {item.label && <h3 className="text-[14px] font-bold uppercase leading-4 tracking-[0.6px] text-(--color-yellow)">{item.label}</h3>}
+            {item.label && <h3 className="text-[26px] font-bold leading-8 tracking-[0.6px] text-(--color-yellow)">{item.label}</h3>}
           </span>
-          <span className="text-[14px] font-medium leading-5 tracking-[0.1px] text-(--color-grey-medium)" aria-hidden>
+          <span className="text-[20px] font-medium leading-5 tracking-[0.1px] text-(--color-grey-medium)" aria-hidden>
             {pad(index + 1)}
           </span>
         </header>
