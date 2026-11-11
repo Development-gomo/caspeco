@@ -5,7 +5,7 @@
 // integrations, insights …) is rendered by PageBuilder. Reused sections get a
 // scroll reveal here so the homepage itself is unchanged.
 
-import { withNeighbours } from "@/lib/content";
+import { withNeighbours, rows } from "@/lib/content";
 import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
 import PageBuilder from "./PageBuilder";
@@ -17,6 +17,7 @@ import { mapTwinCases, twinMediaIds } from "@/lib/caseStudies";
 const ProductHero = dynamic(() => import("../sections/product/ProductHero"));
 const ProductUspAccordion = dynamic(() => import("../sections/product/ProductUspAccordion"));
 const TestimonialSlider = dynamic(() => import("../sections/TestimonialSlider"));
+const ClientQuoteSlider = dynamic(() => import("../sections/product/ClientQuoteSlider"));
 const ProductFeatureSlider = dynamic(() => import("../sections/product/ProductFeatureSlider"));
 const ProductResults = dynamic(() => import("../sections/product/ProductResults"));
 const ProductDemo = dynamic(() => import("../sections/product/ProductDemo"));
@@ -36,12 +37,26 @@ async function prefetchSectionData(sections, lang) {
   // case studies feed the Business Twin and the testimonial slider
   const needsTwin = sections.some((b) => b._layout === "business_twin_section" || b._layout === "testimonial_slider_section");
   const needsLogos = sections.some((b) => b._layout === "logos_section" || b._layout === "home_partners_section");
-  const [twinPosts, logos] = await Promise.all([
+  // testimonial bg_image sometimes arrives as a bare attachment ID instead of { url }
+  const isAttachmentId = (v) => Number.isInteger(Number(v)) && Number(v) > 0 && typeof v !== "object";
+  const bgIds = [
+    ...new Set([
+      ...sections
+        .filter((b) => b._layout === "testimonial_slider_section" && isAttachmentId(b.bg_image))
+        .map((b) => Number(b.bg_image)),
+      ...sections
+        .filter((b) => b._layout === "client_quote_slider_section")
+        .flatMap((b) => rows(b.slider_type).map((r) => r.image).filter(isAttachmentId).map(Number)),
+    ]),
+  ];
+  const [twinPosts, logos, bgMedia] = await Promise.all([
     needsTwin ? getTwinCaseStudies(lang) : null,
     needsLogos ? getLogoGalleries(lang) : null,
+    bgIds.length ? getMediaByIds(bgIds) : null,
   ]);
   const twinCases = twinPosts ? mapTwinCases(twinPosts, await getMediaByIds(twinMediaIds(twinPosts))) : null;
-  return { twinCases, logos };
+  const bgById = bgMedia ? Object.fromEntries(bgMedia.map((m) => [m.id, { url: m.source_url, alt: m.alt_text || "" }])) : {};
+  return { twinCases, logos, bgById };
 }
 
 export default async function ProductBuilder({ sections: rawSections, lang = DEFAULT_LANG }) {
@@ -74,7 +89,12 @@ export default async function ProductBuilder({ sections: rawSections, lang = DEF
             return withSpacing(block, <ProductUspAccordion key={i} data={block} lang={lang} />, i);
 
           case "testimonial_slider_section":
-            return <TestimonialSlider key={i} data={block} lang={lang} cases={prefetched.twinCases || []} defaultType="fullwidth" />;
+            return <TestimonialSlider key={i} data={prefetched.bgById[Number(block.bg_image)] ? { ...block, bg_image: prefetched.bgById[Number(block.bg_image)] } : block} lang={lang} cases={prefetched.twinCases || []} defaultType="fullwidth" />;
+
+          case "client_quote_slider_section": {
+            const resolved = { ...block, slider_type: rows(block.slider_type).map((r) => (prefetched.bgById[Number(r.image)] ? { ...r, image: prefetched.bgById[Number(r.image)] } : r)) };
+            return <ClientQuoteSlider key={i} data={resolved} lang={lang} />;
+          }
 
           case "feature_slider_section":
             return <ProductFeatureSlider key={i} data={block} lang={lang} />;
