@@ -5,6 +5,7 @@
 // Fields: sub_heading (italic eyebrow above the heading), heading, short_text, cta_text + cta_url (yellow button), bg_image,
 // bg_video (optional ACF file; when set it replaces the image as the background and bg_image becomes its poster),
 // background_color (used when there is no image), hero_height (25–100, % of the viewport), enable_overlay (button group "enable"/"disable"; dark overlay over bg_image).
+// short_text lists (ul) use the brand yellow bullets (.cs-list).
 
 "use client";
 
@@ -101,7 +102,7 @@ export default function InnerHero({ data, lang = DEFAULT_LANG }) {
               initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.2 }}
-              className="cs-rich font-medium text-base leading-[22px] lg:max-w-[850px] lg:text-[24px] lg:leading-7 lg:tracking-[-0.48px]"
+              className="cs-rich cs-list font-medium text-base leading-[22px] lg:max-w-[850px] lg:text-[24px] lg:leading-7 lg:tracking-[-0.48px]"
               dangerouslySetInnerHTML={{ __html: toHtml(shortText) }}
             />
           )}
