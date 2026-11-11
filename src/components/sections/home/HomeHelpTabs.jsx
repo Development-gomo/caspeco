@@ -1,6 +1,7 @@
 // src/components/sections/home/HomeHelpTabs.jsx
 // ACF layout: home_tab_section — "How can we help you?" pill tabs, each with an
 // image collage, title, text, checklist and CTA.
+// short_text (ACF, optional) → centred intro text under the heading.
 
 "use client";
 
@@ -172,11 +173,21 @@ export default function HomeHelpTabs({ data, lang = DEFAULT_LANG }) {
       style={sectionBackground(data, { background: "var(--color-light-grey)" })}
     >
       <div className="cs-container flex flex-col items-center gap-8 max-md:gap-12 lg:gap-[41px]">
-        {data.heading && (
-          <h2
-            className="cs-h2 cs-highlight cs-rich text-center text-(--color-heading) max-md:text-(--color-black)"
-            dangerouslySetInnerHTML={{ __html: toHtml(data.heading) }}
-          />
+        {(data.heading || data.short_text) && (
+          <div className="flex flex-col items-center gap-4 lg:gap-6">
+            {data.heading && (
+              <h2
+                className="cs-h2 cs-highlight cs-rich text-center text-(--color-heading) max-md:text-(--color-black)"
+                dangerouslySetInnerHTML={{ __html: toHtml(data.heading) }}
+              />
+            )}
+            {data.short_text && (
+              <div
+                className="cs-p2 cs-rich max-w-[680px] text-center text-(--color-grey-dark) max-md:text-(--color-black)"
+                dangerouslySetInnerHTML={{ __html: toHtml(data.short_text) }}
+              />
+            )}
+          </div>
         )}
 
         {tabs.length > 0 && (

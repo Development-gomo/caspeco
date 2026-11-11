@@ -168,7 +168,8 @@ export default function HomeCasperAI({ data, lang = DEFAULT_LANG }) {
         </div>
       )}
 
-      <div className="cs-container relative flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between">
+      {/* desktop (lg+): the text column and the media box are vertically centred against each other */}
+      <div className="cs-container relative flex flex-col gap-12 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col items-start text-(--color-light-grey) lg:max-w-[507px]">
           {sub_heading && <p className="italic text-[18px] lg:text-[20px] leading-[26px] tracking-[-0.8px] text-[#fbfaf9] max-md:tracking-[-0.72px]">{sub_heading}</p>}
           <h2 className="cs-h3 cs-highlight mt-0 max-md:mt-2 max-md:font-extrabold! max-md:text-[36px]! max-md:leading-9! max-md:tracking-[-1.44px]!" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
@@ -189,7 +190,7 @@ export default function HomeCasperAI({ data, lang = DEFAULT_LANG }) {
 
         {hasAnimation ? (
           // the animated chat sits in the same glass chat box as the static card, with the input bar underneath; the chat is not scaled
-          <div className="w-full lg:w-[570px] shrink-0 lg:mt-[26px]">
+          <div className="w-full lg:w-[570px] shrink-0">
             <div
               className="relative overflow-hidden rounded-[8px] border border-white/10 p-4 shadow-[0px_5.333px_16px_0px_rgba(0,0,0,0.16)] backdrop-blur-md sm:px-7 sm:pt-[30px] sm:pb-[29px] max-md:px-6 max-md:pt-[30px] max-md:pb-[29px]"
               style={{ backgroundImage: CHAT_GLASS_BG }}
