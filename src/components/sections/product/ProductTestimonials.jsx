@@ -25,6 +25,7 @@ import { curlyQuote, mediaUrl, toHtml } from "@/lib/content";
 
 const pad = (n) => String(n).padStart(2, "0");
 const MAX_CASES = 6;
+const SWIPE_PX = 50;
 
 // case study → slide. Background: the wide banner_image when set — the featured image is a
 // 426×700 card crop and looks soft when stretched full width.
@@ -42,11 +43,18 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
   const { heading, cta_text, cta_url } = data || {};
   if (slides.length === 0) return null;
 
+  const onPanEnd = (_e, info) => {
+    if (slides.length < 2) return;
+    const { x, y } = info.offset;
+    if (Math.abs(x) < SWIPE_PX || Math.abs(x) < Math.abs(y)) return;
+    setIndex((i) => (x < 0 ? Math.min(i + 1, slides.length - 1) : Math.max(i - 1, 0)));
+  };
+
   const bg = slides[index].bg || mediaUrl(data?.bg_image);
   const hasCta = cta_text && cta_url;
 
   return (
-    <section className="relative isolate overflow-hidden bg-black" style={data?.bg_color ? { background: data.bg_color } : undefined}>
+    <motion.section className="relative isolate overflow-hidden bg-black touch-pan-y" style={data?.bg_color ? { background: data.bg_color } : undefined} onPanEnd={onPanEnd}>
       <AnimatePresence initial={false}>
         {bg && (
           <motion.div
@@ -86,7 +94,7 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
                     <Image src={slide.logo.url} alt={slide.logo.alt || slide.name || ""} width={slide.logo.width || 155} height={slide.logo.height || 48} className="h-10 w-auto max-w-[155px] object-contain object-left lg:h-12" />
                   )}
                   <blockquote
-                    className="font-bold text-[28px] leading-9 max-md:text-[26px] max-md:leading-7 max-md:text-[#FFFFFF] md:text-[36px] md:leading-[46px] xl:text-[42px] xl:leading-[52px]"
+                    className="font-medium italic text-[28px] leading-9 max-md:text-[26px] max-md:leading-7 max-md:text-[#FFFFFF] md:text-[36px] md:leading-[46px] xl:text-[42px] xl:leading-[52px]"
                     dangerouslySetInnerHTML={{ __html: toHtml(curlyQuote(slide.quote)) }}
                   />
                   {(slide.name || slide.company) && (
@@ -132,6 +140,6 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
           )}
         </Reveal>
       </div>
-    </section>
+    </motion.section>
   );
 }

@@ -23,6 +23,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Mousewheel } from "swiper/modules";
 import "swiper/css";
 import ArrowLink from "@/components/ui/ArrowLink";
 import CtaButton from "@/components/ui/CtaButton";
@@ -34,6 +35,10 @@ import { curlyQuote, mediaUrl, toHtml } from "@/lib/content";
 import { postStrings } from "@/lib/postStrings";
 
 const pad = (n) => String(n).padStart(2, "0");
+
+// Trackpad / wheel swipe (Swiper Mousewheel module); forceToAxis keeps vertical page scroll intact
+const SWIPER_MODULES = [Mousewheel];
+const WHEEL = { forceToAxis: true };
 
 // Figma "Slider points" (mobile): active 12.6px, then 10.1px, then 7.6px, 11.4px apart
 const DOT_SIZE = [12.6, 10.1, 7.6];
@@ -55,18 +60,18 @@ function QuoteCard({ card, lang, accent, readMore }) {
       style={GLASS_STYLE}
     >
       {logo ? (
-        <Image src={logo} alt={card.logo?.alt || card.company || ""} width={card.logo?.width || 155} height={card.logo?.height || 48} className="h-10 w-auto max-w-[155px] object-contain object-left lg:h-12 max-md:h-[35.6px] max-md:max-w-[115px]" />
+        <Image src={logo} alt={card.logo?.alt || card.company || ""} width={card.logo?.width || 155} height={card.logo?.height || 48} draggable={false} className="h-10 w-auto max-w-[155px] object-contain object-left lg:h-12 max-md:h-[35.6px] max-md:max-w-[115px]" />
       ) : (
         <span className="h-10 lg:h-12 max-md:h-[35.6px]" aria-hidden />
       )}
-      <div className="mt-auto flex flex-col gap-6 max-md:mt-0 max-md:flex-1 max-md:gap-[17.8px]">
+      <div className="flex flex-1 flex-col gap-6 max-md:gap-[17.8px]">
       {card.quote && (
         <blockquote
-          className="font-bold text-[26px] leading-8 tracking-[-0.52px] max-md:font-normal max-md:text-[20px] max-md:italic max-md:leading-[18px] max-md:tracking-[-0.4px] max-md:text-[#FDFDFD] lg:text-[32px] lg:leading-8 lg:tracking-[-0.64px]"
+          className="font-medium italic text-[26px] leading-8 tracking-[-0.52px] max-md:text-[20px] max-md:leading-[18px] max-md:tracking-[-0.4px] max-md:text-[#FDFDFD] lg:text-[32px] lg:leading-8 lg:tracking-[-0.64px]"
           dangerouslySetInnerHTML={{ __html: toHtml(curlyQuote(card.quote)) }}
         />
       )}
-      <figcaption className={`flex items-end justify-between gap-4 max-md:mt-auto ${card.quote ? "" : "mt-auto"}`}>
+      <figcaption className="mt-auto flex items-end justify-between gap-4">
         {(card.name || card.company) && (
           <span className="flex items-center gap-3 max-md:gap-[8.9px]">
             <span className="h-12 w-[3px] shrink-0 rounded-[10px] max-md:h-[35.6px] max-md:w-[2.2px] max-md:rounded-[7.4px]" style={{ background: accent || ACCENTS[0] }} aria-hidden />
@@ -85,7 +90,7 @@ function QuoteCard({ card, lang, accent, readMore }) {
       </div>
       {card.slug && (
         // mobile only: text link + 16px arrow, bottom-right (17.81 from the edges)
-        <Link href={entryHref("casestudy", card.slug, lang)} className="absolute right-[17.81px] bottom-[17.81px] hidden items-center gap-2 text-[16px] leading-5 font-medium tracking-[-0.32px] text-[#FDFDFD] max-md:flex">
+        <Link href={entryHref("casestudy", card.slug, lang)} draggable={false} className="absolute right-[17.81px] bottom-[17.81px] hidden items-center gap-2 text-[16px] leading-5 font-medium tracking-[-0.32px] text-[#FDFDFD] max-md:flex">
           <span className="underline decoration-1 underline-offset-2">{readMore}</span>
           <svg width="16" height="10" viewBox="0 0 16 10" fill="none" aria-hidden className="shrink-0">
             <path d="M0 5h15M11 1l4 4-4 4" stroke="#FDFDFD" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -161,6 +166,8 @@ export default function IndustryTestimonials({ data, lang = DEFAULT_LANG, cases 
               onSlideChange={(s) => setIndex(s.realIndex % cards.length)}
               loop={loop}
               slidesPerView="auto"
+              modules={SWIPER_MODULES}
+              mousewheel={WHEEL}
               spaceBetween={mobile ? 24 : 16}
               breakpoints={{ 1024: { spaceBetween: 32 } }}
               className="w-full !py-2 !-my-2"
