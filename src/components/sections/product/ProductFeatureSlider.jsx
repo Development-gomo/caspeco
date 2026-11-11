@@ -12,6 +12,7 @@
 //     with dash indicators 10 below it on the right (3px, 8 apart, active 34 yellow, others 23 #8F8D88)
 //   → full-width outline CTA (2px #3F3E3C, Bold 16, 48 tall; label may wrap).
 // The CTA is rendered twice (desktop one inside the text column, mobile one after the controls).
+// anchor_link (ACF) → section id so #hash links scroll to it (header offset via scroll-mt).
 
 "use client";
 
@@ -46,9 +47,10 @@ export default function ProductFeatureSlider({ data, lang = DEFAULT_LANG }) {
   const customBg = data?.bg_color || mediaUrl(data?.bg_image);
   const hasCta = slide.cta_text && slide.cta_url;
   const ctaHref = hasCta ? langHref(slide.cta_url.trim(), lang) : "";
+  const anchorId = String(data?.anchor_link || "").trim().replace(/^#+/, "").replace(/\s+/g, "-");
 
   return (
-    <section ref={sectionRef} className={`overflow-hidden py-18 lg:py-36 max-md:py-16 ${customBg ? "" : "max-md:bg-none! max-md:bg-[#F4F5F5]!"}`} style={sectionBackground(data, { backgroundImage: GRADIENT })}>
+    <section id={anchorId || undefined} ref={sectionRef} className={`scroll-mt-[72px] lg:scroll-mt-[84px] overflow-hidden py-18 lg:py-36 max-md:py-16 ${customBg ? "" : "max-md:bg-none! max-md:bg-[#F4F5F5]!"}`} style={sectionBackground(data, { backgroundImage: GRADIENT })}>
       <Reveal className="cs-container flex flex-col items-center gap-12 lg:gap-16">
         <AnimatePresence mode="wait">
           <motion.div

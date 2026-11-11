@@ -3,7 +3,8 @@
 // Right-hand media box, in precedence order:
 //   1. chat_exchanges / chat_suggestions with any text: the coded animated Casper chat (CasperChatAnimation), driven by
 //      chat_exchanges (question, answer, progress_percent, progress_label), chat_suggestions (text), casper_label,
-//      chat_speed, chat_loop and chat_end_hold.
+//      chat_speed, chat_loop and chat_end_hold. The animation sits inside the glass chat box (CHAT_GLASS_BG, same look as
+//      the static card) with an input bar whose text is input_placeholder, falling back to cta_text.
 //   2. Else the static chat card, built from text fields (chat_question / chat_answer / input_placeholder) so it is
 //      translated per language.
 //   3. Else section_image: an image, or a video file (muted, loops, plays while in view).
@@ -80,16 +81,34 @@ function RobotGlyph({ size }) {
   );
 }
 
+const CHAT_GLASS_BG =
+  "radial-gradient(ellipse 100% 100% at 0% 0%, rgba(1,2,2,0.4) 0%, rgba(255,255,255,0.2) 49%, rgba(11,35,49,0.4) 100%)";
+
+// The input pill under the chat. Margins are passed in by the caller (className).
+function ChatInputBar({ placeholder, href, className = "" }) {
+  return (
+    <Link
+      href={href || "#"}
+      aria-label={placeholder || undefined}
+      className={`${className} flex h-[54px] items-center gap-[11px] rounded-[33.5px] bg-[#2b373e] pl-[6px] pr-4 transition hover:bg-[#33424a] max-md:pr-[14px]`.trim()}
+    >
+      <span className="relative size-[42px] shrink-0">
+        <Image src={AvatarLarge} alt="" width={42} height={42} />
+        <RobotGlyph size={20} />
+      </span>
+      <span className="flex-1 truncate text-[18px] sm:text-[20px] tracking-[-0.8px] text-[rgba(251,250,249,0.66)] max-md:text-[20px]">{placeholder}</span>
+      <Image src={SendIcon} alt="" width={26} height={26} className="shrink-0" />
+    </Link>
+  );
+}
+
 // Mobile (Figma Home "Component 4" in 2517:5005): 343×347 card, 24px sides, 30 top / 29 bottom;
 // question bubble full width (8px top/bottom), answer bubble 256 wide 33 below it, input pill 47 below
 function ChatCard({ question, answer, placeholder, href }) {
   return (
     <div
       className="relative w-full max-w-[570px] rounded-[8px] p-4 sm:px-7 sm:pt-[30px] sm:pb-[29px] max-md:mx-px max-md:w-auto max-md:px-6! max-md:pt-[30px]! max-md:pb-[29px]! shadow-[0px_5.333px_16px_0px_rgba(0,0,0,0.16)] backdrop-blur-md border border-white/10"
-      style={{
-        backgroundImage:
-          "radial-gradient(ellipse 100% 100% at 0% 0%, rgba(1,2,2,0.4) 0%, rgba(255,255,255,0.2) 49%, rgba(11,35,49,0.4) 100%)",
-      }}
+      style={{ backgroundImage: CHAT_GLASS_BG }}
     >
       {question && (
         <motion.p
@@ -122,18 +141,7 @@ function ChatCard({ question, answer, placeholder, href }) {
         </motion.div>
       )}
 
-      <Link
-        href={href || "#"}
-        aria-label={placeholder || undefined}
-        className="mt-[55px] flex h-[54px] items-center gap-[11px] rounded-[33.5px] bg-[#2b373e] pl-[6px] pr-4 transition hover:bg-[#33424a] max-md:mt-[47px] max-md:pr-[14px]"
-      >
-        <span className="relative size-[42px] shrink-0">
-          <Image src={AvatarLarge} alt="" width={42} height={42} />
-          <RobotGlyph size={20} />
-        </span>
-        <span className="flex-1 truncate text-[18px] sm:text-[20px] tracking-[-0.8px] text-[rgba(251,250,249,0.66)] max-md:text-[20px]">{placeholder}</span>
-        <Image src={SendIcon} alt="" width={26} height={26} className="shrink-0" />
-      </Link>
+      <ChatInputBar placeholder={placeholder} href={href} className="mt-[55px] max-md:mt-[47px]" />
     </div>
   );
 }
@@ -180,16 +188,17 @@ export default function HomeCasperAI({ data, lang = DEFAULT_LANG }) {
         </div>
 
         {hasAnimation ? (
-          // same box as the video (desktop ratio 570/347, mobile 347 tall); the chat is not scaled
-          <div className="relative w-full lg:w-[570px] aspect-[570/347] h-[347px] lg:h-auto shrink-0 lg:mt-[26px] max-md:overflow-hidden max-md:rounded-lg max-md:border max-md:border-white/10">
-            <CasperChatAnimation
-              exchanges={data.chat_exchanges}
-              suggestions={data.chat_suggestions}
-              casperLabel={data.casper_label}
-              speed={data.chat_speed}
-              loop={data.chat_loop}
-              endHold={data.chat_end_hold}
-            />
+          // the animated chat sits in the same glass chat box as the static card, with the input bar underneath; the chat is not scaled
+          <div className="w-full lg:w-[570px] shrink-0 lg:mt-[26px]">
+            <div
+              className="relative overflow-hidden rounded-[8px] border border-white/10 p-4 shadow-[0px_5.333px_16px_0px_rgba(0,0,0,0.16)] backdrop-blur-md sm:px-7 sm:pt-[30px] sm:pb-[29px] max-md:px-6 max-md:pt-[30px] max-md:pb-[29px]"
+              style={{ backgroundImage: CHAT_GLASS_BG }}
+            >
+              <div className="relative h-[347px] w-full">
+                <CasperChatAnimation exchanges={data.chat_exchanges} suggestions={data.chat_suggestions} casperLabel={data.casper_label} speed={data.chat_speed} loop={data.chat_loop} endHold={data.chat_end_hold} />
+              </div>
+              <ChatInputBar placeholder={input_placeholder || cta_text} href={href} className="mt-6 max-md:mt-5" />
+            </div>
           </div>
         ) : hasChat ? (
           <div className="w-full lg:mt-[26px] lg:w-[570px] shrink-0">
