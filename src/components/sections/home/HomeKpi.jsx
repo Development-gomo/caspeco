@@ -13,7 +13,7 @@ import { motion } from "framer-motion";
 import KpiArrow from "../../../../public/icons/home/kpi-arrow.svg";
 import CircleInfo from "../../../../public/icons/home/circle-info.svg";
 import CheckYellow from "../../../../public/icons/home/check-yellow.svg";
-import { highlightHtml, rows, sectionBackground, toHtml } from "@/lib/content";
+import { highlightHtml, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 import CtaButton from "@/components/ui/CtaButton";
 import { DEFAULT_LANG, langHref } from "@/config";
 import CountUp from "@/components/ui/CountUp";
@@ -38,10 +38,12 @@ function InfoLine({ children, className = "" }) {
   );
 }
 
-function KpiCard({ card, hint }) {
+function KpiCard({ card, hint, index = 0 }) {
   const [flipped, setFlipped] = React.useState(false);
   const backItems = rows(card.back_items).map((r) => r.text).filter(Boolean);
   const canFlip = backItems.length > 0;
+  // CMS bg_image wins; otherwise fall back to the local /public/kpiimages/card1-4.jpg by card position
+  const bgImage = mediaUrl(card.bg_image) || (index < 4 ? `/kpiimages/card${index + 1}.jpg` : "");
 
   // Front and back sit side by side in a strip; "flipping" slides the strip left
   const face = "relative block h-full w-1/2 shrink-0 max-md:flex max-md:min-h-[124px] max-md:flex-col max-md:p-4 max-md:pr-[68px]";
@@ -60,6 +62,13 @@ function KpiCard({ card, hint }) {
       >
         {/* FRONT */}
         <span className={`${face} max-md:justify-between`} aria-hidden={flipped || undefined}>
+          {/* optional ACF cards → bg_image: cover image on the front face only, under a dark overlay */}
+          {bgImage && (
+            <>
+              <Image src={bgImage} alt="" fill sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw" className="object-cover" />
+              <span aria-hidden className="absolute inset-0 bg-(--color-dark-petrol)/60" />
+            </>
+          )}
           <span className="absolute left-6 top-6 max-w-[150px] max-md:static max-md:order-2 max-md:max-w-[200px] text-[20px] leading-6 tracking-[-0.4px] max-md:text-[16px] max-md:leading-5 max-md:tracking-[-0.32px]">{card.label}</span>
           <span className="absolute left-6 top-[84px] max-md:static font-bold text-[64px] leading-16 tracking-[-1.28px] md:text-[80px] md:tracking-[-1.6px] max-md:font-extrabold">
             {/* Figma: digits Tenon Bold, a trailing "%" Tenon Regular */}
@@ -72,7 +81,6 @@ function KpiCard({ card, hint }) {
               <CountUp value={card.value} />
             )}
           </span>
-          {canFlip && <Image src={KpiArrow} alt="" width={36} height={36} className="absolute right-4 top-24 max-md:top-4" />}
           {/* Bottom-left info block (Figma "Circle-Info" + label: icon x22, text x42, last line ends
               5px above the card edge). Optional note (e.g. "*per month per venue") stacks above the hint;
               right edge stops before the slide dashes. */}
@@ -95,10 +103,21 @@ function KpiCard({ card, hint }) {
                 </span>
               ))}
             </span>
-            <Image src={KpiArrow} alt="" width={36} height={36} className="absolute right-4 top-24 max-md:top-4" />
           </span>
         )}
       </motion.span>
+
+      {/* arrow stays put while the panels move; it rotates 180deg when flipped */}
+      {canFlip && (
+        <motion.span
+          aria-hidden
+          className="absolute right-4 top-24 size-9 max-md:top-4"
+          animate={{ rotate: flipped ? 180 : 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <Image src={KpiArrow} alt="" width={36} height={36} className="block" />
+        </motion.span>
+      )}
 
       {/* slide indicator stays put while the panels move */}
       {canFlip && <Dashes flipped={flipped} />}
@@ -142,7 +161,7 @@ export default function HomeKpi({ data, lang = DEFAULT_LANG, variant }) {
         {cards.length > 0 && (
           <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-md:grid-cols-1">
             {cards.map((card, i) => (
-              <KpiCard key={i} card={card} hint={data.flip_hint_text} />
+              <KpiCard key={i} card={card} index={i} hint={data.flip_hint_text} />
             ))}
           </div>
         )}

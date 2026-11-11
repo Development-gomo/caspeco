@@ -275,14 +275,14 @@ export default function Header({
                 navItems.map((item) => {
                   const hasDropdown = item.columns.length > 0;
                   return (
-                    <li key={item.id} className="relative group">
+                    <li key={item.id} className="relative group cs-nav-draw">
                       <NavLink
                         url={item.url}
                         lang={lang}
                         onClick={(e) => handleNavClick(e, item.url)}
-                        className="text-(--color-light-grey) hover:opacity-70 focus-visible:opacity-70 relative z-9 text-[16px] xl:text-[18px] font-bold transition-opacity duration-300 ease-out leading-[18px] flex items-center gap-2 whitespace-nowrap"
+                        className="text-(--color-light-grey) relative z-9 text-[16px] xl:text-[18px] font-bold transition-opacity duration-300 ease-out leading-[18px] flex items-center gap-2 whitespace-nowrap"
                       >
-                        {item.title}
+                        <span className="cs-link-draw -mb-0.5">{item.title}</span>
                         {hasDropdown && (
                           <span className="transition-transform duration-300 group-hover:rotate-180" aria-hidden>
                             <Image src={DownSvg} alt="" width={10} height={10} />

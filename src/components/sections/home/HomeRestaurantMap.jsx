@@ -103,9 +103,14 @@ export default function HomeRestaurantMap({ data, lang = DEFAULT_LANG }) {
       ref={sectionRef}
       // cs-sec: 64px top/bottom on mobile only
       className="cs-sec relative overflow-hidden pt-12 pb-12 lg:pt-[72px] max-md:[--sec-pb:41px]"
-      style={sectionBackground(data, {
-        backgroundImage: "linear-gradient(180deg, #000 0%, rgba(0,0,0,0) 100%), linear-gradient(90deg, #0b2533 0%, #0b2533 100%)",
-      })}
+      style={
+        mediaUrl(data?.bg_image)
+          ? sectionBackground(data)
+          : {
+              backgroundColor: data?.bg_color || "#0b2533",
+              backgroundImage: "linear-gradient(180deg, #000 0%, rgba(0,0,0,0) 100%)",
+            }
+      }
     >
       {data.heading && (
         <div className="cs-container">

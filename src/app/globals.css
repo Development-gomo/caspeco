@@ -1117,6 +1117,8 @@ span.subheading-label.text-\[var\(--color-accent\)\],
 .cs-link-draw:focus-visible,
 .cs-links-draw a:hover,
 .cs-links-draw a:focus-visible,
+.cs-nav-draw:hover .cs-link-draw,
+.cs-nav-draw:focus-within .cs-link-draw,
 :is(a, button):hover .cs-link-draw,
 :is(a, button):focus-visible .cs-link-draw {
   background-size: 100% 1px;
