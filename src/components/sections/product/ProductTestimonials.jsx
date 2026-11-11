@@ -11,6 +11,8 @@
 // Mobile (< 768, Figma Product "Customer testimonial — Mobile"): padding 160 top / 48 bottom,
 // gradient black → black 50%, quote Bold Italic 26/28 white, name 20/24, company Medium 16/20,
 // one controls row (arrows 30 apart left, counter + dashes right).
+// Optional props: `slides` (prebuilt { bg, quote, name, company, logo } list, used by ClientQuoteSlider)
+// and `compact` (smaller desktop top/bottom padding, lg:py-20); both default to the case-study behaviour.
 
 "use client";
 
@@ -37,8 +39,8 @@ const caseToSlide = (c) => ({
   logo: c.logo,
 });
 
-export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases = [] }) {
-  const slides = (Array.isArray(cases) ? cases : []).filter((c) => c.quote).slice(0, MAX_CASES).map(caseToSlide);
+export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases = [], slides: slidesProp, compact = false }) {
+  const slides = Array.isArray(slidesProp) ? slidesProp.filter((s) => s.quote).slice(0, MAX_CASES) : (Array.isArray(cases) ? cases : []).filter((c) => c.quote).slice(0, MAX_CASES).map(caseToSlide);
   const [index, setIndex] = React.useState(0);
   const { heading, cta_text, cta_url } = data || {};
   if (slides.length === 0) return null;
@@ -71,7 +73,7 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
       </AnimatePresence>
       <div className="absolute inset-0 -z-10 bg-linear-to-r from-black to-transparent max-md:to-black/50" aria-hidden />
 
-      <div className="cs-container py-16 lg:py-36 max-md:pt-40 max-md:pb-12">
+      <div className={`cs-container py-16 ${compact ? "lg:py-20" : "lg:py-36"} max-md:pt-40 max-md:pb-12`}>
         <Reveal className="flex flex-col items-start gap-12 lg:gap-16">
           {heading && (
             <h2 className="cs-h3 cs-title cs-highlight cs-rich max-w-[660px] font-extrabold text-(--color-light-grey)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
