@@ -304,9 +304,9 @@ export default function Header({
                                           url={link.url}
                                           lang={lang}
                                           onClick={(e) => handleNavClick(e, link.url)}
-                                          className="block whitespace-nowrap px-4 py-3 text-sm text-white transition hover:text-white/70"
+                                          className="block whitespace-nowrap px-4 py-3 text-sm text-white"
                                         >
-                                          {link.label}
+                                          <span className="cs-link-draw">{link.label}</span>
                                         </NavLink>
                                       </li>
                                     ))}
