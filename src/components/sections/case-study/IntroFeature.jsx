@@ -48,9 +48,9 @@ export default function IntroFeature({ data, lang = DEFAULT_LANG }) {
                 return (
                   <div
                     key={i}
-                    className="grid grid-cols-1 gap-2 border-t border-white/15 py-5 first:border-t-0 first:pt-0 last:pb-0 sm:grid-cols-[35%_1fr] sm:items-center sm:gap-6"
+                    className={`grid grid-cols-1 gap-2 border-t border-white/15 py-5 first:border-t-0 first:pt-0 last:pb-0 sm:grid-cols-[35%_1fr] ${asPills ? "sm:items-start" : "sm:items-center"} sm:gap-6`}
                   >
-                    <dt className="text-[16px] leading-5 tracking-[-0.32px] text-(--color-grey-medium)">{card.title}</dt>
+                    <dt className={`text-[16px] leading-5 tracking-[-0.32px] text-(--color-grey-medium)${asPills ? " sm:pt-1.5" : ""}`}>{card.title}</dt>
                     <dd className="m-0">
                       {asPills ? (
                         <ul className="flex flex-wrap gap-2">
@@ -61,7 +61,7 @@ export default function IntroFeature({ data, lang = DEFAULT_LANG }) {
                           ))}
                         </ul>
                       ) : (
-                        card.text && <div className="cs-rich text-[18px] font-medium leading-6 tracking-[-0.36px] lg:text-[20px]" dangerouslySetInnerHTML={{ __html: toHtml(card.text) }} />
+                        card.text && <div className={`cs-rich text-[18px] ${i === 0 ? "font-bold" : "font-medium"} leading-6 tracking-[-0.36px] lg:text-[20px]`} dangerouslySetInnerHTML={{ __html: toHtml(card.text) }} />
                       )}
                     </dd>
                   </div>

@@ -15,12 +15,18 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { FreeMode, Mousewheel } from "swiper/modules";
 import "swiper/css";
+import "swiper/css/free-mode";
 import DefaultIcon from "../../../../public/icons/home/industry-icon.svg";
 import ArrowLink from "@/components/ui/ArrowLink";
 import SliderArrows from "@/components/ui/SliderArrows";
 import { DEFAULT_LANG, entryHref, langHref } from "@/config";
 import { mediaUrl, sectionBackground, toHtml } from "@/lib/content";
+
+const SWIPER_MODULES = [FreeMode, Mousewheel];
+const FREE_MODE = { enabled: true, sticky: true };
+const WHEEL = { forceToAxis: true };
 
 // CPT entry → card data
 function toCard(post) {
@@ -42,11 +48,12 @@ function IndustryCard({ card, lang }) {
     <Wrapper
       {...(href ? { href } : {})}
       className="group relative block h-[394px] w-full overflow-hidden rounded-[8px] bg-white shadow-[0px_2px_9px_0px_rgba(0,0,0,0.1)]"
+      draggable={false}
     >
       {/* Figma "Sector card" hover (Smart Animate 100 ms ease-out): the #151411 overlay goes
           30% → 100% (card turns dark), the glow 30% → 20%, icon + label grow ~1.11× */}
       {mediaUrl(card.image) && (
-        <Image src={mediaUrl(card.image)} alt={card.image?.alt || ""} fill sizes="276px" className="object-cover" />
+        <Image src={mediaUrl(card.image)} alt={card.image?.alt || ""} fill sizes="276px" className="object-cover" draggable={false} />
       )}
       <span className="absolute inset-0 bg-[#151411] opacity-30 transition-opacity duration-100 ease-out group-hover:opacity-100 group-focus-visible:opacity-100" />
       <span
@@ -54,7 +61,7 @@ function IndustryCard({ card, lang }) {
         style={{ backgroundImage: "linear-gradient(145deg, rgba(253,253,253,0.3) 0%, rgba(253,253,253,0) 99.5%)" }}
       />
       <span className="absolute inset-x-6 top-[139px] flex origin-center flex-col items-center gap-[7px] text-center transition-transform duration-100 ease-out group-hover:scale-[1.11] group-focus-visible:scale-[1.11]">
-        <Image src={mediaUrl(card.icon) || DefaultIcon} alt="" width={64} height={64} className="size-16" />
+        <Image src={mediaUrl(card.icon) || DefaultIcon} alt="" width={64} height={64} className="size-16" draggable={false} />
         {card.title && (
           <span
             className="font-bold text-[26px] leading-[1.1] tracking-[-0.52px] uppercase text-(--color-light-grey)"
@@ -150,7 +157,10 @@ export default function HomeIndustrySlider({ data, lang = DEFAULT_LANG, prefetch
                 syncPages(s);
               }}
               onSnapGridLengthChange={syncPages}
-              onSlideChange={(s) => setActive(s.snapIndex)}
+              onSnapIndexChange={(s) => setActive(s.snapIndex)}
+              modules={SWIPER_MODULES}
+              freeMode={FREE_MODE}
+              mousewheel={WHEEL}
               slidesPerView="auto"
               spaceBetween={32}
               breakpoints={{ 768: { spaceBetween: 24 }, 1024: { spaceBetween: 48 } }}

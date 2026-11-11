@@ -43,7 +43,7 @@ export default function ChallengesAndSolutionSection({ data }) {
           <div className="bg-[#f4f4f5] p-12 rounded-tl-lg rounded-tr-lg ">
             {content_heading && (
               <div
-                className="text-[40px] leading-[1.2] mb-6"
+                className="text-[44px] leading-[1.2] mb-6"
                 dangerouslySetInnerHTML={{ __html: content_heading }}
               />
             )}
