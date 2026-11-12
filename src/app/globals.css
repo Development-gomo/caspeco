@@ -242,6 +242,13 @@ em {
   z-index: 0;
 }
 
+h1.normal-case small {
+    display: block;
+    font-size: 22px;
+    letter-spacing: 0px;
+    line-height: 24px;
+}
+
 /* ==========================================
    HOME CASE STUDIES — carousel
 ========================================== */
