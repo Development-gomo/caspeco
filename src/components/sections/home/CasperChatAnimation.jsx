@@ -1,7 +1,7 @@
 // src/components/sections/home/CasperChatAnimation.jsx
 // Coded Casper AI chat for the home_ai_section media box: a rebuild of docs/Casper-overlay-black.mp4 driven by ACF
 // text (chat_exchanges / chat_suggestions etc., see docs/ARCHITECTURE.md). Scene A: each question is typed into a user
-// bubble, Casper's answer card fades in word by word, an optional progress bar fills and counts up. Scene B: suggestion
+// bubble, a thinking-dots bubble runs, Casper's answer card fades in word by word, an optional progress bar fills and counts up. Scene B: suggestion
 // bubbles. Then it loops.
 // One requestAnimationFrame clock runs only while the box is >= 35% in view and the tab is visible. Everything on screen
 // is a pure function of that clock time, so pausing just stops the clock. Text is rendered as React text nodes only.
@@ -45,6 +45,11 @@ const TIMING = {
   afterBar: 0.23, // bar end 5.70 → next bubble 5.93
   afterAnswer: 1.2, // not in the film (only its last card has no bar): reading pause before the next question
   afterQuestion: 1.0, // not in the film: a question with no answer
+  // Thinking dots (not in the film): shown from the caret's removal until the answer card fades in
+  think: 1.2, // extra pause added before each answer card while the dots run
+  thinkFade: 0.2, // dots fade in at thinkStart / fade out from card.start
+  dotPeriod: 1.2, // one pulse cycle per dot
+  dotStagger: 0.15, // dot 2 / dot 3 lag
   // Scene change
   convoHold: 1.55, // last word 9.50 → conversation fade-out 11.05
   outStagger: 0.04, // fade-out starts 11.05 / 11.07 / 11.10 / 11.17, top to bottom
@@ -68,6 +73,7 @@ const PAD_BOTTOM = 12; // space kept under the newest box when a long conversati
 const SHIFT = { bubbleX: 8, bubbleY: 8.5, cardY: 6.5, suggY: 9, outY: 13, suggOutY: 2.5 };
 const BLUR = { bubble: 2, card: 1.5, word: 2, sugg: 2, out: 2.5 };
 const BAR_ROW = 24.2; // gap + bar row: how much a card grows when its bar appears (37 video px)
+const DOT_LIFT = 3; // px a dot rises at the top of its pulse
 const TRACK_W = 180; // bar track (276 video px)
 const LABEL_GAP = 17; // track → % label (26 video px)
 const FILL_EASE = cubicBezier(0.62, 0.08, 0.36, 0.94); // least-squares fit to the film's 14 fill samples (S-curve, slow tail)
@@ -222,7 +228,9 @@ function buildTimeline({ exchanges, suggestions }, { rate, loop, endHold }) {
     }
     if (ex.words) {
       const gaps = ex.words.count - 1;
-      const card = { index: steps.length, start: cursor, wordsStart: cursor + T.wordDelay };
+      const thinkStart = turn.bubble ? turn.bubble.caretOff : cursor;
+      cursor += T.think;
+      const card = { index: steps.length, start: cursor, wordsStart: cursor + T.wordDelay, thinkStart };
       card.stagger = gaps > 0 ? Math.min(T.wordStaggerMax, (T.wordSpreadBase + T.wordGap * gaps) / gaps) : 0;
       card.wordsEnd = card.wordsStart + gaps * card.stagger + T.wordFade;
       let end = card.wordsEnd;
@@ -327,6 +335,21 @@ function wordStyle(step, i, t) {
   return motionStyle({ opacity: easeOut(p), blur: BLUR.word * (1 - p) });
 }
 
+// Thinking dots: bubble opacity plus three dots, each a half-sine bump (rise + brighten) in the first half of its period
+function thinkFrame(card, t) {
+  const T = TIMING;
+  if (card.thinkStart === undefined) return null;
+  const opacity = easeOut(prog(t, card.thinkStart, T.thinkFade)) * (1 - easeInOut(prog(t, card.start, T.thinkFade)));
+  if (opacity <= 0.001) return null;
+  const dots = [0, 1, 2].map((i) => {
+    const local = t - card.thinkStart - i * T.dotStagger;
+    const ph = local > 0 ? (local % T.dotPeriod) / T.dotPeriod : 1;
+    const bump = ph < 0.5 ? Math.sin((ph / 0.5) * Math.PI) : 0;
+    return motionStyle({ opacity: 0.35 + 0.65 * bump, y: -DOT_LIFT * bump });
+  });
+  return { style: motionStyle({ opacity }), dots };
+}
+
 function chipStyle(step, t) {
   const T = TIMING;
   const d = t - step.start;
@@ -346,7 +369,7 @@ function scrollAt(t, steps, layout) {
   let off = 0;
   let prev = 0;
   for (const step of steps) {
-    const p = easeInOut(prog(t, step.start - 0.1, 0.5));
+    const p = easeInOut(prog(t, (step.thinkStart ?? step.start) - 0.1, 0.5));
     if (p <= 0) break;
     const target = scrollTarget(layout, step);
     off = prev + (target - prev) * p;
@@ -490,6 +513,26 @@ function Card({ step, ex, t, width }) {
   );
 }
 
+// Zero-height slot right above the answer card: the negative margin cancels the 9.5px turn gap, so the overlay's
+// top-left sits exactly on the card's top-left and nothing in the layout moves
+function Thinking({ card, t }) {
+  const f = thinkFrame(card, t);
+  return (
+    <div className="relative -mb-[9.5px] h-0 self-start">
+      {f && (
+        <div
+          className="absolute top-0 left-0 flex h-[28px] w-max items-center gap-[4.5px] rounded-[14px] rounded-bl-[4px] bg-[#1c2c3a] px-[12px]"
+          style={f.style}
+        >
+          {f.dots.map((s, i) => (
+            <span key={i} className="size-[5.5px] rounded-full bg-[#c9ced2]" style={s} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /**
  * Props: exchanges = ACF chat_exchanges rows ({ question, answer, progress_percent, progress_label }),
  * suggestions = chat_suggestions rows ({ text }), casperLabel, speed (chat_speed), loop (chat_loop),
@@ -609,6 +652,7 @@ export default function CasperChatAnimation({ exchanges, suggestions, casperLabe
                 return (
                   <div key={i} className="flex flex-col gap-[9.5px]">
                     {turn.bubble && <Bubble step={turn.bubble} segments={ex.question} t={t} width={fit(`q${turn.bubble.index}`)} />}
+                    {turn.card && <Thinking card={turn.card} t={t} />}
                     {turn.card && <Card step={turn.card} ex={ex} t={t} width={fit(`a${turn.card.index}`)} />}
                   </div>
                 );
