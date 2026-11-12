@@ -68,6 +68,10 @@ export default function RealtedCase({ data, lang = DEFAULT_LANG, prefetchedCases
           slidesPerView={1.5}
           spaceBetween={32}
           centeredSlides={true}
+          grabCursor={true}
+          allowTouchMove={true}
+          simulateTouch={true}
+          threshold={5}
           breakpoints={{
             280: { slidesPerView: 1.1 },
             510: { slidesPerView: 1.1 },
@@ -96,6 +100,7 @@ export default function RealtedCase({ data, lang = DEFAULT_LANG, prefetchedCases
                     <CtaButton
                       href={entryHref("casestudy", item.slug, lang)}
                       className="mt-8 mb-15"
+                      draggable={false}
                     >
                       {read_more_text}
                     </CtaButton>
@@ -118,6 +123,7 @@ export default function RealtedCase({ data, lang = DEFAULT_LANG, prefetchedCases
                                       width={9}
                                       height={8}
                                       alt="no-follow"
+                                      draggable={false}
                                     />
                                   </span>
                                   <span className="text-[14px]">
@@ -141,6 +147,7 @@ export default function RealtedCase({ data, lang = DEFAULT_LANG, prefetchedCases
                         fill
                         alt={title}
                         className="object-cover"
+                        draggable={false}
                       />
                     )}
 
@@ -152,6 +159,7 @@ export default function RealtedCase({ data, lang = DEFAULT_LANG, prefetchedCases
                           alt="client logo"
                           width={100}
                           height={35}
+                          draggable={false}
                         />
                       </div>
                     )}

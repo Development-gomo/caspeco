@@ -5,17 +5,21 @@
 //   fullwidth → ProductTestimonials: one quote at a time over the case's full-width photo
 //   card      → IndustryTestimonials: frosted quote cards in a carousel over the section bg
 // `defaultType` is the layout's ACF default, used when the field is empty (older rows).
+// select_case set -> only that case; empty -> default list.
 
 import dynamic from "next/dynamic";
+import { casesForSlider } from "@/lib/caseStudies";
 
 const ProductTestimonials = dynamic(() => import("./product/ProductTestimonials"));
 const IndustryTestimonials = dynamic(() => import("./industry/IndustryTestimonials"));
 
 export default function TestimonialSlider({ data, lang, cases = [], defaultType = "fullwidth" }) {
+  const { select_case, ...rest } = data || {};
+  const list = casesForSlider(cases, select_case);
   const type = data?.slider_type === "card" || data?.slider_type === "fullwidth" ? data.slider_type : defaultType;
   return type === "card" ? (
-    <IndustryTestimonials data={data} lang={lang} cases={cases} variant="industry" />
+    <IndustryTestimonials data={rest} lang={lang} cases={list} variant="industry" />
   ) : (
-    <ProductTestimonials data={data} lang={lang} cases={cases} />
+    <ProductTestimonials data={rest} lang={lang} cases={list} />
   );
 }

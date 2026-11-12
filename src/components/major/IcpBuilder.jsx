@@ -6,7 +6,7 @@
 // ProductBuilder, which falls back to PageBuilder.
 //
 // Data resolved server-side:
-//  - testimonial_slider_section → latest case studies; slider_type "card" = glass card carousel,
+//  - testimonial_slider_section → latest case studies (select_case set -> only that case; empty -> default list); slider_type "card" = glass card carousel,
 //    "fullwidth" = full-width photo slider. A bg_image saved as a media ID is resolved too.
 //  - team_section / contact_form_section → "kontakt" posts (name + featured photo)
 //  - related_icp → the other ICP pages (title, excerpt, featured image, link)
@@ -17,7 +17,7 @@ import { withNeighbours } from "@/lib/content";
 import ProductBuilder from "./ProductBuilder";
 import { withSpacing } from "@/components/ui/SectionSpacing";
 import { getAllIcps, getKontaktByIds, getMediaByIds, getThemeOptions, getTwinCaseStudies } from "@/lib/api";
-import { mapTwinCases, twinMediaIds } from "@/lib/caseStudies";
+import { casesForSlider, mapTwinCases, twinMediaIds } from "@/lib/caseStudies";
 import { parseHubspotEmbed } from "@/lib/hubspot";
 import { SWITCH_GRADIENT } from "@/components/sections/icp/SwitchSteps";
 
@@ -189,14 +189,17 @@ export default async function IcpBuilder({ sections: rawSections, lang = DEFAULT
             return withSpacing(block, <HomeConnectedData key={i} data={block} lang={lang} />, i);
 
           case "testimonial_slider_section": {
+            const picked = casesForSlider(cases, block.select_case);
+            // select_case (WP_Post) stays server-side; only the resolved cases go to the client
+            const { select_case, ...rest } = block;
             if (block.slider_type === "fullwidth") {
-              const slides = cases
+              const slides = picked
                 .filter((c) => c.quote)
                 .slice(0, 4)
                 .map((c) => ({ quote: c.quote, name: c.personName, company: c.designation, bg_image: c.image }));
-              return <ProductTestimonials key={i} data={{ ...block, slides }} lang={lang} />;
+              return <ProductTestimonials key={i} data={{ ...rest, slides }} lang={lang} />;
             }
-            return <IndustryTestimonials key={i} data={block} lang={lang} cases={cases} />;
+            return <IndustryTestimonials key={i} data={rest} lang={lang} cases={picked} />;
           }
 
           case "switch_steps_section":

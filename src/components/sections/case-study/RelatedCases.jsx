@@ -10,6 +10,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Mousewheel } from "swiper/modules";
 import "swiper/css";
 import Reveal from "@/components/ui/Reveal";
 import SliderArrows from "@/components/ui/SliderArrows";
@@ -19,6 +20,8 @@ import { postStrings } from "@/lib/postStrings";
 import ArrowLight from "../../../../public/icons/home/arrow-light.svg";
 
 const MAX_CASES = 12;
+const SWIPER_MODULES = [Mousewheel];
+const WHEEL = { forceToAxis: true };
 
 export default function RelatedCases({ data, lang = DEFAULT_LANG, cases = [] }) {
   const list = (Array.isArray(cases) ? cases : []).filter((c) => c.slug && (c.image?.url || c.bannerImage?.url)).slice(0, MAX_CASES);
@@ -50,6 +53,9 @@ export default function RelatedCases({ data, lang = DEFAULT_LANG, cases = [] }) 
         {/* Slides bleed to the right edge of the screen; the left side is clipped at the container edge */}
         <div className="[clip-path:inset(-24px_-100vw_-24px_0)]">
           <Swiper
+            modules={SWIPER_MODULES}
+            mousewheel={WHEEL}
+            longSwipesRatio={0.15}
             onSwiper={(s) => {
               swiperRef.current = s;
               sync(s);
@@ -58,6 +64,10 @@ export default function RelatedCases({ data, lang = DEFAULT_LANG, cases = [] }) 
             onReachEnd={sync}
             onResize={sync}
             onBreakpoint={sync}
+            grabCursor={true}
+            allowTouchMove={true}
+            simulateTouch={true}
+            threshold={5}
             slidesPerView={1.15}
             spaceBetween={24}
             breakpoints={{
@@ -73,8 +83,9 @@ export default function RelatedCases({ data, lang = DEFAULT_LANG, cases = [] }) 
                   <Link
                     href={entryHref("casestudy", c.slug, lang)}
                     className="group relative flex h-[480px] flex-col justify-end overflow-hidden rounded-[16px] bg-(--color-black) p-6 text-(--color-white) shadow-[0px_4px_12px_rgba(0,0,0,0.16)] lg:h-[540px] lg:p-8 max-md:h-[460px]"
+                    draggable={false}
                   >
-                    <Image src={image.url} alt={image.alt || ""} fill sizes="(min-width: 1280px) 403px, (min-width: 768px) 45vw, 85vw" className="object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
+                    <Image src={image.url} alt={image.alt || ""} fill sizes="(min-width: 1280px) 403px, (min-width: 768px) 45vw, 85vw" className="object-cover transition-transform duration-700 ease-out group-hover:scale-105" draggable={false} />
                     <span className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0, 0, 0, 0) 19.8%, #000 100%)" }} aria-hidden />
                     {c.logo?.url && (
                       <Image
@@ -84,6 +95,7 @@ export default function RelatedCases({ data, lang = DEFAULT_LANG, cases = [] }) 
                         height={48}
                         unoptimized={/\.svg(\?|$)/i.test(c.logo.url)}
                         className="absolute left-6 top-6 h-9 w-auto max-w-[134px] object-contain object-left lg:left-8 lg:top-8 lg:h-12"
+                        draggable={false}
                       />
                     )}
                     <div className="relative flex flex-col gap-6">
@@ -100,7 +112,7 @@ export default function RelatedCases({ data, lang = DEFAULT_LANG, cases = [] }) 
                       {/* the whole card is the link, so this is styled like ArrowLink but is not an anchor */}
                       <span className="inline-flex items-center gap-2 self-end text-[16px] font-medium leading-5 tracking-[-0.32px] text-(--color-light-grey)">
                         <span className="underline decoration-1 underline-offset-2">{readMore}</span>
-                        <Image src={ArrowLight} alt="" width={17.5} height={11} className="transition-transform duration-300 group-hover:translate-x-1" />
+                        <Image src={ArrowLight} alt="" width={17.5} height={11} className="transition-transform duration-300 group-hover:translate-x-1" draggable={false} />
                       </span>
                     </div>
                   </Link>

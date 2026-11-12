@@ -106,3 +106,25 @@ export function twinOptions(cases) {
     venues: [...venues].sort((a, b) => leadingNumber(a) - leadingNumber(b)).map((v) => ({ value: v, label: v })),
   };
 }
+
+/** select_case value (number, or ACF post object with ID / id / post_name) -> positive numeric id, else null. */
+export function selectedCaseId(v) {
+  const n = Number(v && typeof v === "object" ? (v.ID || v.id) : v);
+  return n > 0 ? n : null;
+}
+
+/**
+ * select_case override: empty / unpublished / other language / no testimonial content -> default list (newest cases).
+ * Returns [hit] when the selected case exists in `cases` and has testimonial content, otherwise `cases` unchanged.
+ */
+export function casesForSlider(cases, selectCase) {
+  const list = Array.isArray(cases) ? cases : [];
+  const id = selectedCaseId(selectCase);
+  if (!id) return cases;
+  const hit =
+    list.find((c) => c.id === id) ||
+    (selectCase && typeof selectCase === "object" && selectCase.post_name
+      ? list.find((c) => c.slug === selectCase.post_name)
+      : null);
+  return hit && (hit.quote || hit.personName || hit.logo) ? [hit] : cases;
+}
