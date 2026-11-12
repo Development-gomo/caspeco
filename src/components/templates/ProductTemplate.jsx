@@ -15,7 +15,7 @@ export default function ProductTemplate({ product, lang, slug, themeOptions }) {
   }
 
   // A page-level quick contact section replaces the global one from Theme Options
-  const hasQuickContact = sections.some((b) => b._layout === "quick_contact_section");
+  const hasQuickContact = sections.some((b) => b._layout === "quick_contact_section" || b._layout === "contact_form_section");
 
   return (
     <Shell
@@ -27,7 +27,7 @@ export default function ProductTemplate({ product, lang, slug, themeOptions }) {
       themeOptions={themeOptions}
       hideQuickContact={hasQuickContact}
     >
-      <ProductBuilder sections={sections} lang={lang} />
+      <ProductBuilder sections={sections} lang={lang} icpContactForm />
     </Shell>
   );
 }

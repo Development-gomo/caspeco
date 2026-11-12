@@ -12,14 +12,14 @@
 //  - related_icp → the other ICP pages (title, excerpt, featured image, link)
 
 import dynamic from "next/dynamic";
-import { DEFAULT_LANG, entryHref, langHref } from "@/config";
+import { DEFAULT_LANG, entryHref } from "@/config";
 import { withNeighbours } from "@/lib/content";
 import ProductBuilder from "./ProductBuilder";
 import { withSpacing } from "@/components/ui/SectionSpacing";
 import { getAllIcps, getKontaktByIds, getMediaByIds, getThemeOptions, getTwinCaseStudies } from "@/lib/api";
 import { casesForSlider, mapTwinCases, twinMediaIds } from "@/lib/caseStudies";
-import { parseHubspotEmbed } from "@/lib/hubspot";
 import { SWITCH_GRADIENT } from "@/components/sections/icp/SwitchSteps";
+import IcpContactFormSection, { contactFormOptions, peopleById } from "@/components/sections/contact-form/IcpContactFormSection";
 
 // Figma ICP "Hero": image + linear black 70% → 30%, left → right
 const HERO_OVERLAY = "linear-gradient(90deg, rgba(0, 0, 0, 0.7) 2.8%, rgba(0, 0, 0, 0.3) 103%)";
@@ -29,36 +29,6 @@ const SystemCheck = dynamic(() => import("../sections/icp/SystemCheck"));
 const SwitchSteps = dynamic(() => import("../sections/icp/SwitchSteps"));
 const PeopleCards = dynamic(() => import("../sections/icp/PeopleCards"));
 const StageCards = dynamic(() => import("../sections/icp/StageCards"));
-const ContactRep = dynamic(() => import("../sections/icp/ContactRep"));
-
-// Figma 324:7454 "Contact form" copy (labels / placeholders); the rep's first name is filled in.
-// The CF7 form picked in "Select Form" must use these field names: full_name, company,
-// contact_method (call | email), email, phone, message, consent, newsletter
-function repFormData(block, rep, privacyHref) {
-  const first = (rep?.name || "").split(" ")[0] || "us";
-  const privacy = privacyHref ? `<a href="${privacyHref}">privacy policy.</a>` : "privacy policy.";
-  return {
-    ...block,
-    form_provider: "cf7",
-    form_shortcode: String(postId(block.select_form) || ""),
-    name_label: "Full name",
-    name_placeholder: "Anna Lindqvist",
-    company_label: "Restaurant or company",
-    company_placeholder: "Bistro Norr",
-    method_label: `How should ${first} reach you?`,
-    email_label: "Email",
-    email_placeholder: "anna@bistronorr.se",
-    phone_label: "Phone",
-    phone_placeholder: "+46 70 123 45 67",
-    message_label: "Anything we should know? (optional)",
-    message_placeholder: "E.g. number of venues, opening date, current system",
-    consent_text: `I agree that Caspeco stores my details to contact me, as described in the ${privacy}`,
-    consent_field_name: "consent",
-    newsletter_text: "Send me occasional tips and news for restaurants. (optional)",
-    newsletter_field_name: "newsletter",
-    cta_text: rep?.name ? `Send to ${first}` : block.cta_text || "Send",
-  };
-}
 const ProductSalesChannels = dynamic(() => import("../sections/product/ProductSalesChannels"));
 const ProductUspAccordion = dynamic(() => import("../sections/product/ProductUspAccordion"));
 const ProductResults = dynamic(() => import("../sections/product/ProductResults"));
@@ -68,8 +38,6 @@ const HomeConnectedData = dynamic(() => import("../sections/home/HomeConnectedDa
 const ProductHero = dynamic(() => import("../sections/product/ProductHero"));
 const ProductTestimonials = dynamic(() => import("../sections/product/ProductTestimonials"));
 const IndustryTestimonials = dynamic(() => import("../sections/industry/IndustryTestimonials"));
-const QuickContact = dynamic(() => import("../sections/contact-form/QuickContact"));
-const HubspotEmbed = dynamic(() => import("../ui/HubspotEmbed"));
 
 const decode = (s) =>
   String(s || "")
@@ -89,17 +57,6 @@ const featured = (post) => {
   const m = post?._embedded?.["wp:featuredmedia"]?.[0];
   return m?.source_url ? { url: m.source_url, alt: m.alt_text || "" } : null;
 };
-
-// kontakt post → { name, role, tag, photo } (role = ACF "titel", location from its ACF when exposed to REST)
-function toPerson(post) {
-  const acf = post?.acf && !Array.isArray(post.acf) ? post.acf : {};
-  return {
-    name: decode(post?.title?.rendered),
-    role: acf.titel || "",
-    tag: acf.location || acf.office || acf.city || acf.tag || "",
-    photo: featured(post),
-  };
-}
 
 async function prefetch(sections, lang) {
   const memberIds = [];
@@ -122,18 +79,15 @@ async function prefetch(sections, lang) {
   ]);
 
   const cases = casePosts?.length ? mapTwinCases(casePosts, await getMediaByIds(twinMediaIds(casePosts))) : [];
-  const people = new Map((members || []).map((m) => [m.id, toPerson(m)]));
+  const people = peopleById(members);
   const mediaById = new Map((media || []).map((m) => [m.id, { url: m.source_url, alt: m.alt_text || "" }]));
-  // privacy link for the contact-person form consent (Theme options > Footer > privacy links)
-  const privacy = (options?.privacy_links?.privacy_links || []).find((l) => /privacy|integritet|personvern|privacidad|vie priv/i.test(l?.title || "") && l.link && l.link !== "#");
   return {
     cases,
     icps: icps || [],
     people,
     mediaById,
-    privacyHref: privacy ? langHref(privacy.link, lang) : "",
-    // global HubSpot "Get a call" form for this language (Theme options > Footer > Form Shortcode)
-    globalQuickForm: parseHubspotEmbed(options?.form_shortcode) ? options.form_shortcode : "",
+    // contact-person consent privacy link + the language's global HubSpot "Get a call" form
+    ...contactFormOptions(options, lang),
   };
 }
 
@@ -233,47 +187,13 @@ export default async function IcpBuilder({ sections: rawSections, lang = DEFAULT
             return <StageCards key={i} data={{ ...block, cards }} lang={lang} />;
           }
 
-          case "contact_form_section": {
-            // HubSpot form pasted on the page (Shortcode) wins over everything else
-            const hubspot = parseHubspotEmbed(block.shortcode) ? block.shortcode : "";
-            // Two Figma designs share this layout: contact_person "enable" → "Let's talk bigger
-            // picture" with the selected team member (Figma 324:7454); otherwise the "Quick
-            // contact" block (eyebrow, heading, text and the form card).
-            if (!withContactPerson(block)) {
-              // page HubSpot code → the language's global "Get a call" HubSpot form → the page's CF7 form
-              const quickForm = hubspot || globalQuickForm;
-              return withSpacing(
-                block,
-                <QuickContact
-                  key={i}
-                  lang={lang}
-                  variant="icp"
-                  data={{
-                    ...block,
-                    sub_heading: block.eyebrow,
-                    short_description: block.short_text,
-                    background_colour: block.bg_color,
-                    form_shortcode: quickForm ? "" : String(postId(block.select_form) || ""),
-                  }}
-                  form={quickForm ? <HubspotEmbed code={quickForm} /> : undefined}
-                />,
-                i
-              );
-            }
-            const rep = people.get(firstId(block.team_member));
-            // Figma form (ContactRepForm) sending to the selected CF7 form; a pasted HubSpot form replaces it
+          // Quick contact / contact person ("Let's talk bigger picture"), shared with Products
+          case "contact_form_section":
             return withSpacing(
               block,
-              <ContactRep
-                key={i}
-                data={repFormData(block, rep, privacyHref)}
-                lang={lang}
-                rep={rep ? { name: rep.name, role: rep.role, photo: rep.photo?.url } : undefined}
-                form={hubspot ? <HubspotEmbed code={hubspot} variant="rep" /> : undefined}
-              />,
+              <IcpContactFormSection key={i} block={block} lang={lang} people={people} privacyHref={privacyHref} globalQuickForm={globalQuickForm} />,
               i
             );
-          }
 
           default:
             return <ProductBuilder key={i} sections={[block]} lang={lang} />;

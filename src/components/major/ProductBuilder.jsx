@@ -11,6 +11,7 @@ import { DEFAULT_LANG } from "@/config";
 import PageBuilder from "./PageBuilder";
 import Reveal from "@/components/ui/Reveal";
 import { withSpacing } from "@/components/ui/SectionSpacing";
+import IcpContactFormSection from "@/components/sections/contact-form/IcpContactFormSection";
 import { getTwinCaseStudies, getMediaByIds, getLogoGalleries } from "@/lib/api";
 import { mapTwinCases, twinMediaIds } from "@/lib/caseStudies";
 
@@ -59,7 +60,7 @@ async function prefetchSectionData(sections, lang) {
   return { twinCases, logos, bgById };
 }
 
-export default async function ProductBuilder({ sections: rawSections, lang = DEFAULT_LANG }) {
+export default async function ProductBuilder({ sections: rawSections, lang = DEFAULT_LANG, icpContactForm = false }) {
   const sections = withNeighbours(rawSections); // _prev/_next per block (Figma section-gap rule)
   if (!Array.isArray(sections) || sections.length === 0) return null;
 
@@ -124,6 +125,15 @@ export default async function ProductBuilder({ sections: rawSections, lang = DEF
 
           case "quick_contact_section":
             return <QuickContact key={i} data={block} lang={lang} />;
+
+          case "contact_form_section":
+            // ICP pages only (icpContactForm); every other page keeps the default PageBuilder path below
+            if (icpContactForm) return withSpacing(block, <IcpContactFormSection key={i} block={block} lang={lang} />, i);
+            return (
+              <Reveal key={i} y={40}>
+                <PageBuilder sections={[block]} lang={lang} />
+              </Reveal>
+            );
 
           default:
             // Homepage / inner-page layouts (fetches are deduped across blocks by fetchWP),
