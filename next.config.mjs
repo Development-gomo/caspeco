@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-import { SUPPORTED_LANGS, DEFAULT_LANG } from "./src/config/index.js";
+import { SUPPORTED_LANGS, DEFAULT_LANG, legacyBaseRedirects } from "./src/config/index.js";
 
 const wpHostname = new URL(process.env.NEXT_PUBLIC_WP_BASE).hostname;
 // WP site URL without /wp-json — media is served from it under /assets (see src/lib/wpMask.js)
@@ -45,11 +45,15 @@ const nextConfig = {
   },
 
   async redirects() {
-    return SUPPORTED_LANGS.map((lang) => ({
-      source: lang === DEFAULT_LANG ? "/frontpage" : `/${lang}/frontpage`,
-      destination: lang === DEFAULT_LANG ? "/" : `/${lang}`,
-      permanent: true,
-    }));
+    return [
+      ...SUPPORTED_LANGS.map((lang) => ({
+        source: lang === DEFAULT_LANG ? "/frontpage" : `/${lang}/frontpage`,
+        destination: lang === DEFAULT_LANG ? "/" : `/${lang}`,
+        permanent: true,
+      })),
+      // old content-type URL bases (e.g. /en/icp/x → /en/solutions/x), see ROUTE_TYPES.legacyBase
+      ...legacyBaseRedirects(),
+    ];
   },
 
   async rewrites() {

@@ -1,6 +1,6 @@
 //src/components/major/PageBuilder.jsx
 
-import { rows, withNeighbours } from "@/lib/content";
+import { rows, withNeighbours, anchorId } from "@/lib/content";
 import { Fragment } from "react";
 import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
@@ -115,6 +115,9 @@ const SwitchSteps = dynamic(() => import("../sections/icp/SwitchSteps"));
 const PeopleCards = dynamic(() => import("../sections/icp/PeopleCards"));
 const StageCards = dynamic(() => import("../sections/icp/StageCards"));
 const ContactRep = dynamic(() => import("../sections/icp/ContactRep"));
+
+// Layouts whose component puts anchor_link on its own <section> (IcpIntro, ProductFeatureSlider) — no marker
+const SELF_ANCHORED = new Set(["content_section", "icp_intro_section", "feature_slider_section"]);
 
 // select_casestudy (IDs or post objects) -> matching items of the prefetched case list, in selected order
 function pickCases(value, cases) {
@@ -538,9 +541,25 @@ export default async function PageBuilder({
         }
   };
 
+  // anchor_link (ACF, every Page Builder layout) → zero-height marker with that id just before the
+  // section, so #hash links scroll to it (fixed-header offset via scroll-mt). First use of an id wins.
+  const usedAnchors = new Set();
+  const withAnchor = (block, node, i) => {
+    const id = anchorId(block);
+    if (!node || !id || usedAnchors.has(id)) return node;
+    usedAnchors.add(id);
+    if (SELF_ANCHORED.has(block._layout)) return node;
+    return (
+      <Fragment key={i}>
+        <span id={id} aria-hidden="true" className="block h-0 scroll-mt-[72px] lg:scroll-mt-[84px]" />
+        {node}
+      </Fragment>
+    );
+  };
+
   return (
     <>
-      {sections.map((block, i) => withSpacing(block, renderBlock(block, i), i))}
+      {sections.map((block, i) => withAnchor(block, withSpacing(block, renderBlock(block, i), i), i))}
     </>
   );
 }

@@ -1,5 +1,5 @@
 // src/components/templates/IcpTemplate.jsx
-// Single ICP page (CPT "icp", e.g. /en/icp/opening-soon/): renders the ACF flexible field
+// Single ICP page (CPT "icp", e.g. /en/solutions/opening-soon): renders the ACF flexible field
 // "page_builder_icp" (field group "Page Builder ICP Page"). Entries without it fall back to
 // the generic EntryTemplate.
 

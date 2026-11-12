@@ -72,8 +72,9 @@ export const ROUTE_TYPES = {
   product: { rest: "products", base: { ...allLangs("produkt"), en: "product" } },
   industry: { rest: "industries", base: { ...allLangs("bransch"), en: "industry", no: "bransje" } },
   partner: { rest: "partner", base: allLangs("partner") },
-  // ICP pages (Opening soon, Levelling up …) — WP permalink /{lang}/icp/{slug}/
-  icp: { rest: "icp", base: allLangs("icp") },
+  // ICP pages (Opening soon, Levelling up …) — WP CPT "icp" (REST /wp/v2/icp), public URL /{lang}/solutions/{slug}.
+  // legacyBase: earlier public base, 301-redirected to `base` (legacyBaseRedirects → next.config.mjs)
+  icp: { rest: "icp", base: allLangs("solutions"), legacyBase: allLangs("icp") },
   partnerCategory: { rest: "partner_category", taxonomy: true, base: allLangs("partner-category") },
 };
 
@@ -128,6 +129,19 @@ export function langHref(url, lang) {
 /** Home path for a given language */
 export function langHome(lang) {
   return lang === DEFAULT_LANG ? "/" : `/${lang}`;
+}
+
+/** 301s from a type's earlier URL base (ROUTE_TYPES[type].legacyBase) to its current base, for next.config redirects() */
+export function legacyBaseRedirects() {
+  return Object.values(ROUTE_TYPES).flatMap(({ base, legacyBase }) =>
+    !legacyBase ? [] : SUPPORTED_LANGS
+      .filter((lang) => legacyBase[lang] && base[lang] && legacyBase[lang] !== base[lang])
+      .map((lang) => ({
+        source: langHref(`/${legacyBase[lang]}/:slug`, lang),
+        destination: langHref(`/${base[lang]}/:slug`, lang),
+        statusCode: 301,
+      }))
+  );
 }
 
 /** Get the other language(s) for the language switcher, in WPML order (LANGUAGES key order) */

@@ -166,3 +166,9 @@ export function spacingAttrs(block) {
   if (!isEnabled(block?.padding_bottom)) attrs["data-sec-pb"] = "off";
   return attrs;
 }
+
+/** ACF anchor_link ("pricing", "#pricing", " Our prices ") -> element id ("pricing", "Our-prices"); "" when empty.
+ *  Same rule as IcpIntro / ProductFeatureSlider, so #hash links match. */
+export function anchorId(block) {
+  return String(block?.anchor_link || "").trim().replace(/^#+/, "").replace(/\s+/g, "-");
+}

@@ -18,6 +18,7 @@ const POST_TYPE_ROUTE = {
   products:    "product",
   industries:  "industry",
   partner:     "partner",
+  icp:         "icp",
 };
 
 export async function POST(req) {
