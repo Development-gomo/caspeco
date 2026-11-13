@@ -9,10 +9,15 @@
 // All quotes share one grid cell, so the section keeps the height of the longest one
 // instead of jumping between slides.
 // Mobile (< 768, Figma Product "Customer testimonial — Mobile"): padding 160 top / 48 bottom,
-// gradient black → black 50%, quote Bold Italic 26/28 white, name 20/24, company Medium 16/20,
+// gradient black → black 50%, quote Regular Italic 20/24 white, name 20/24, company Medium 16/20,
 // one controls row (arrows 30 apart left, counter + dashes right).
 // Optional props: `slides` (prebuilt { bg, quote, name, company, logo } list, used by ClientQuoteSlider)
 // and `compact` (smaller desktop top/bottom padding, lg:py-20); both default to the case-study behaviour.
+// `mobileGrid` (default false): below md the slider (quote stack + arrows/counter/dashes) is hidden
+// via max-md:hidden and swipeable glass quote cards (ui/MobileSlider scroll-snap track + SliderPoints
+// dots, no logo) are shown instead; swiping the section is disabled on mobile so the single
+// background (slides[0]) stays put. >= md is unchanged.
+// `variant` ("default" | "case"): "case" (CasePageBuilder) sets mobile padding 48/48 (Figma Case Study Mobile); >= md unchanged.
 
 "use client";
 
@@ -24,6 +29,8 @@ import SliderArrows from "@/components/ui/SliderArrows";
 import Reveal from "@/components/ui/Reveal";
 import { DEFAULT_LANG, langHref } from "@/config";
 import { curlyQuote, mediaUrl, toHtml } from "@/lib/content";
+import { GLASS_CLASS, GLASS_STYLE } from "@/components/ui/glass";
+import { MOBILE_SLIDE, MOBILE_TRACK, SliderPoints } from "@/components/ui/MobileSlider";
 
 const pad = (n) => String(n).padStart(2, "0");
 const MAX_CASES = 6;
@@ -39,14 +46,18 @@ const caseToSlide = (c) => ({
   logo: c.logo,
 });
 
-export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases = [], slides: slidesProp, compact = false }) {
+export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases = [], slides: slidesProp, compact = false, mobileGrid = false, variant = "default" }) {
+  const isCase = variant === "case";
   const slides = Array.isArray(slidesProp) ? slidesProp.filter((s) => s.quote).slice(0, MAX_CASES) : (Array.isArray(cases) ? cases : []).filter((c) => c.quote).slice(0, MAX_CASES).map(caseToSlide);
   const [index, setIndex] = React.useState(0);
+  const trackRef = React.useRef(null);
   const { heading, cta_text, cta_url } = data || {};
   if (slides.length === 0) return null;
 
   const onPanEnd = (_e, info) => {
     if (slides.length < 2) return;
+    // mobileGrid: below md the quotes are a static grid, so swiping must not change slide / background
+    if (mobileGrid && window.matchMedia("(max-width: 767.98px)").matches) return;
     const { x, y } = info.offset;
     if (Math.abs(x) < SWIPE_PX || Math.abs(x) < Math.abs(y)) return;
     setIndex((i) => (x < 0 ? Math.min(i + 1, slides.length - 1) : Math.max(i - 1, 0)));
@@ -73,14 +84,42 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
       </AnimatePresence>
       <div className="absolute inset-0 -z-10 bg-linear-to-r from-black to-transparent max-md:to-black/50" aria-hidden />
 
-      <div className={`cs-container py-16 ${compact ? "lg:py-20" : "lg:py-36"} max-md:pt-40 max-md:pb-12`}>
+      <div className={`cs-container py-16 ${compact ? "lg:py-20" : "lg:py-36"} ${isCase ? "max-md:pt-12" : "max-md:pt-40"} max-md:pb-12`}>
         <Reveal className="flex flex-col items-start gap-12 lg:gap-16">
           {heading && (
             <h2 className="cs-h3 cs-title cs-highlight cs-rich max-w-[660px] font-extrabold text-(--color-light-grey)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
           )}
 
+          {/* mobileGrid: below md, swipeable glass quote cards replace the slider. Glass sits on the figure itself:
+              no opacity/filter/clip-path on the ul/li or the backdrop blur breaks */}
+          {mobileGrid && (
+            <div className="flex w-full flex-col gap-8 md:hidden">
+              <ul ref={trackRef} className={`${MOBILE_TRACK} -mx-6 w-[calc(100%+48px)] gap-4 px-6 py-3 -my-3 scroll-px-6`}>
+                {slides.map((slide, i) => (
+                  <li key={i} className={`${MOBILE_SLIDE} w-[calc(100vw-80px)] max-w-[340px]`}>
+                    <figure className={`${GLASS_CLASS} relative flex h-full min-h-[240px] flex-col rounded-[8px] p-6 text-white`} style={GLASS_STYLE}>
+                        <div className="flex flex-1 items-center">
+                          <blockquote className="font-normal italic text-[20px] leading-6" dangerouslySetInnerHTML={{ __html: toHtml(curlyQuote(slide.quote)) }} />
+                        </div>
+                        {(slide.name || slide.company) && (
+                          <figcaption className="mt-6 flex items-center gap-3">
+                            <span className="h-12 w-[3px] shrink-0 rounded-[8px] bg-(--color-yellow)" aria-hidden />
+                            <span className="flex flex-col gap-1">
+                              {slide.name && <span className="font-bold text-[20px] leading-6 tracking-[-0.4px]">{slide.name}</span>}
+                              {slide.company && <span className="font-medium text-[16px] leading-5 tracking-normal">{slide.company}</span>}
+                            </span>
+                          </figcaption>
+                        )}
+                    </figure>
+                  </li>
+                ))}
+              </ul>
+              {slides.length > 1 && <SliderPoints trackRef={trackRef} count={slides.length} />}
+            </div>
+          )}
+
           {/* every quote is rendered in the same cell; only the active one is visible */}
-          <div className="grid w-full max-w-[750px]">
+          <div className={`grid w-full max-w-[750px]${mobileGrid ? " max-md:hidden" : ""}`}>
             {slides.map((slide, i) => {
               const active = i === index;
               return (
@@ -96,7 +135,7 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
                     <Image src={slide.logo.url} alt={slide.logo.alt || slide.name || ""} width={slide.logo.width || 155} height={slide.logo.height || 48} className="h-10 w-auto max-w-[155px] object-contain object-left lg:h-12" />
                   )}
                   <blockquote
-                    className="font-medium italic text-[28px] leading-9 max-md:text-[26px] max-md:leading-7 max-md:text-[#FFFFFF] md:text-[36px] md:leading-[46px] xl:text-[42px] xl:leading-[52px]"
+                    className="font-medium italic text-[28px] leading-9 max-md:font-normal max-md:text-[20px] max-md:leading-6 max-md:text-[#FFFFFF] md:text-[36px] md:leading-[46px] xl:text-[42px] xl:leading-[52px]"
                     dangerouslySetInnerHTML={{ __html: toHtml(curlyQuote(slide.quote)) }}
                   />
                   {(slide.name || slide.company) && (
@@ -114,9 +153,9 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
           </div>
 
           {(slides.length > 1 || hasCta) && (
-            <div className="flex w-full flex-wrap items-center justify-between gap-8">
+            <div className={`flex w-full flex-wrap items-center justify-between gap-8${mobileGrid && !hasCta ? " max-md:hidden" : ""}`}>
               {slides.length > 1 && (
-                <div className="flex flex-wrap items-center gap-8 lg:gap-12 max-md:w-full max-md:justify-between max-md:gap-x-0">
+                <div className={`flex flex-wrap items-center gap-8 lg:gap-12 max-md:w-full max-md:justify-between max-md:gap-x-0${mobileGrid ? " max-md:hidden" : ""}`}>
                   <SliderArrows index={index} count={slides.length} onChange={setIndex} className="max-md:gap-[30px]" />
                   <div className="flex items-center gap-4 text-[14px] font-semibold leading-5 tracking-[0.1px] text-(--color-light-grey) max-md:flex-col max-md:items-start max-md:gap-[10px]">
                     <span aria-live="polite">

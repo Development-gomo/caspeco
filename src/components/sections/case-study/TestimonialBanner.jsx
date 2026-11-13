@@ -46,7 +46,7 @@ export default function TestimonialBanner({ data }) {
           {/* TESTIMONIAL */}
           <div className="max-w-[700px]">
             {testimonial && (
-              <blockquote className="text-white cs-h4 mb-8">
+              <blockquote className="text-white cs-h4 mb-8 max-md:font-normal! max-md:italic max-md:text-[20px]! max-md:leading-6! max-md:tracking-normal!">
                 “{testimonial}”
               </blockquote>
             )}

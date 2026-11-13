@@ -52,6 +52,7 @@ export default async function CasePageBuilder({ sections: rawSections, lang = DE
               <ProductTestimonials
                 key={i}
                 lang={lang}
+                variant="case"
                 data={block}
                 cases={rows(block.testimonial).map((t) => ({ quote: t.testimonial_text, personName: t.person_name, designation: t.designation, logo: logo?.url ? { url: logo.url, alt: logo.alt || "" } : null }))}
               />

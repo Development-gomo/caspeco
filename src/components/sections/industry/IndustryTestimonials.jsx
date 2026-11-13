@@ -11,7 +11,7 @@
 // full-width 345 card (no peek, 24 apart, no loop) → 40 → graded slider dots (centred) → 23.4 → yellow
 // "All cases" text link; 64 above, 20.6 below (Product frame: 19.4 / 24.6). No outline button, arrows or counter. The card is the
 // desktop card scaled to 345 (radius 5.9, padding 17.8, 40 logo → quote). Mobile card (QA + Figma): the
-// quote is top-aligned 40 under the logo (Tenon Regular Italic 20/18, -2%, #FDFDFD; not centred), the
+// quote is top-aligned 40 under the logo (Tenon Regular Italic 20/24, -2%, #FDFDFD; not centred), the
 // name/venue footer is pinned to the card bottom, and a "Read full case" text link with arrow (Tenon
 // Medium 16/20, -2%, underlined, #FDFDFD, 16px arrow 8 right) sits bottom-right, 17.81 from the edges,
 // bottom-aligned with the footer. The link only renders with a case slug (md:hidden).
@@ -67,7 +67,7 @@ function QuoteCard({ card, lang, accent, readMore }) {
       <div className="flex flex-1 flex-col gap-6 max-md:gap-[17.8px]">
       {card.quote && (
         <blockquote
-          className="font-medium italic text-[26px] leading-8 tracking-[-0.52px] max-md:text-[20px] max-md:leading-[18px] max-md:tracking-[-0.4px] max-md:text-[#FDFDFD] lg:text-[32px] lg:leading-8 lg:tracking-[-0.64px]"
+          className="font-medium italic text-[26px] leading-8 tracking-[-0.52px] max-md:font-normal max-md:text-[20px] max-md:leading-[24px] max-md:tracking-[-0.4px] max-md:text-[#FDFDFD] lg:text-[32px] lg:leading-8 lg:tracking-[-0.64px]"
           dangerouslySetInnerHTML={{ __html: toHtml(curlyQuote(card.quote)) }}
         />
       )}
