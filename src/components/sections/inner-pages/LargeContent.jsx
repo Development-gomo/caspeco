@@ -26,14 +26,13 @@ export default function LargeContent({ data }) {
         <div className="web-width px-6">
         {/* SUB HEADING WITH DOT */}
         {sub_heading && (
-          <div className="flex items-center gap-2 mb-2 md:mb-4">
-            <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
-            <span className="subheading-label uppercase">{sub_heading}</span>
+          <div className={`body-text${narrow}`}>
+            <span className="subheading-label">{sub_heading}</span>
           </div>
         )}
         {heading && (
           <h2
-            className={`cs-h3${narrow} cs-highlight cs-rich text-(--color-heading) max-md:text-(--color-black) mb-6 md:mb-14`}
+            className={`cs-h3${narrow} cs-highlight cs-rich text-(--color-heading) max-md:text-black mb-6 md:mb-10`}
             dangerouslySetInnerHTML={{ __html: toHtml(heading) }}
           />
         )}

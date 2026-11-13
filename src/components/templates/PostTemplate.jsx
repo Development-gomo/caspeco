@@ -74,7 +74,7 @@ export default async function PostTemplate({ post, lang, slug, themeOptions }) {
 
       {/* RELATED ARTICLES — same cards as the Insights section / news listing */}
       {related.length > 0 && (
-        <section className="pt-14 pb-18 lg:pt-24 lg:pb-36 bg-(--color-light-grey)">
+        <section className="pt-0 pb-18 lg:pb-36 bg-(--color-light-grey)">
           <div className="cs-container flex flex-col gap-10 lg:gap-16">
             <h2 className="cs-h3 text-black">{strings.relatedHeading}</h2>
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">

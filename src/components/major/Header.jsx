@@ -284,8 +284,8 @@ export default function Header({
                       >
                         <span className="cs-link-draw -mb-0.5">{item.title}</span>
                         {hasDropdown && (
-                          <span className="transition-transform duration-300 group-hover:rotate-180" aria-hidden>
-                            <Image src={DownSvg} alt="" width={10} height={10} />
+                          <span className="flex size-[10px] shrink-0 items-center justify-center transition-transform duration-300 group-hover:rotate-180" aria-hidden>
+                            <Image src={DownSvg} alt="" width={10} height={6} className="h-[6px] w-[10px] max-w-none shrink-0" />
                           </span>
                         )}
                       </NavLink>
