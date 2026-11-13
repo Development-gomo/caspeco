@@ -27,7 +27,7 @@ export default function ProductTemplate({ product, lang, slug, themeOptions }) {
       themeOptions={themeOptions}
       hideQuickContact={hasQuickContact}
     >
-      <ProductBuilder sections={sections} lang={lang} icpContactForm />
+      <ProductBuilder sections={sections} lang={lang} icpContactForm currentId={product?.id} />
     </Shell>
   );
 }

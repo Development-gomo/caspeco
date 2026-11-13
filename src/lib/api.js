@@ -311,6 +311,12 @@ export async function getProductById(id, lang) {
   return await getEntryById("products", id, lang);
 }
 
+export async function getProductsByIds(ids, lang = DEFAULT_LANG) {
+  if (!Array.isArray(ids) || ids.length === 0) return [];
+  const products = await fetchWP(`/wp/v2/products?include=${ids.join(",")}&orderby=include&per_page=${ids.length}&_embed&lang=${lang}`);
+  return Array.isArray(products) ? products : [];
+}
+
 export async function getAllProducts(lang = DEFAULT_LANG) {
   return await fetchWP(`/wp/v2/products?lang=${lang}&per_page=100&_embed`);
 }
