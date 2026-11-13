@@ -98,9 +98,11 @@ export default function Header({
   logoUrl = "",
 }) {
   const [options, setOptions] = useState(prefetchedOptions);
-  const altLangs = otherLangs(lang);
+  // languages with no WPML translation of the current entry are hidden from the switcher
+  const [missingLangs, setMissingLangs] = useState([]);
+  const altLangs = otherLangs(lang).filter((l) => !missingLangs.includes(l));
   const [altLangUrls, setAltLangUrls] = useState(
-    Object.fromEntries(altLangs.map((l) => [l, langHome(l)]))
+    Object.fromEntries(otherLangs(lang).map((l) => [l, langHome(l)]))
   );
   const isLoading = !options;
   const [scrolled, setScrolled] = useState(false);
@@ -183,8 +185,9 @@ export default function Header({
 
       // Homepage never passes currentSlug — the translated homepage always
       // lives at that language's root, regardless of its WP slug.
-      if (!currentSlug) {
+      if (!currentSlug && !entryId) {
         setAltLangUrls(fallback);
+        setMissingLangs([]);
         return;
       }
 
@@ -198,7 +201,7 @@ export default function Header({
             const translatedSlug = translations?.[altLang]?.slug;
             if (!translatedSlug) continue;
             // "frontpage" is the WP homepage slug — map it to the lang root
-            if (translatedSlug === "frontpage") {
+            if (!currentSlug || translatedSlug === "frontpage") {
               urls[altLang] = langHome(altLang);
               continue;
             }
@@ -211,9 +214,11 @@ export default function Header({
             urls[altLang] = `${langPrefix}${prefix}/${translatedSlug}`;
           }
           setAltLangUrls(urls);
+          setMissingLangs(altLangList.filter((l) => !translations?.[l]?.slug));
           return;
         } catch (error) {
           setAltLangUrls(fallback);
+          setMissingLangs([]);
           return;
         }
       }
