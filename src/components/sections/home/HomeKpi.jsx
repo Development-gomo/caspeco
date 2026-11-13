@@ -56,7 +56,7 @@ function KpiCard({ card, hint, index = 0 }) {
       className={`relative h-[228px] max-md:h-auto max-md:min-h-[124px] w-full overflow-hidden rounded-[8px] bg-(--color-dark-petrol) text-left text-(--color-light-grey) shadow-[0px_4px_6px_0px_rgba(0,0,0,0.16)] max-md:shadow-[0px_4px_12px_0px_rgba(0,0,0,0.16)] ${canFlip ? "cursor-pointer" : "cursor-default"}`}
     >
       <motion.span
-        className="absolute inset-y-0 left-0 flex w-[200%] max-md:relative max-md:inset-auto"
+        className="absolute inset-y-0 left-0 flex w-[200%] max-md:relative max-md:inset-auto max-md:min-h-[inherit]"
         animate={{ x: flipped ? "-50%" : "0%" }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
@@ -65,12 +65,12 @@ function KpiCard({ card, hint, index = 0 }) {
           {/* optional ACF cards → bg_image: cover image on the front face only, under a dark overlay */}
           {bgImage && (
             <>
-              <Image src={bgImage} alt="" fill sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw" className="object-cover" />
+              <Image src={bgImage} alt="" fill sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw" className="object-cover object-center" />
               <span aria-hidden className="absolute inset-0 bg-(--color-dark-petrol)/60" />
             </>
           )}
-          <span className="absolute left-6 top-6 max-w-[150px] max-md:static max-md:order-2 max-md:max-w-[200px] text-[20px] leading-6 tracking-[-0.4px] max-md:text-[16px] max-md:leading-5 max-md:tracking-[-0.32px]">{card.label}</span>
-          <span className="absolute left-6 top-[84px] max-md:static font-bold text-[64px] leading-16 tracking-[-1.28px] md:text-[80px] md:tracking-[-1.6px] max-md:font-extrabold">
+          <span className="absolute left-6 top-6 max-w-[150px] max-md:left-auto max-md:top-auto max-md:relative max-md:z-10 max-md:order-2 max-md:max-w-[200px] text-[20px] leading-6 tracking-[-0.4px] max-md:text-[16px] max-md:leading-5 max-md:tracking-[-0.32px]">{card.label}</span>
+          <span className="absolute left-6 top-[84px] max-md:relative max-md:z-10 max-md:top-auto max-md:left-auto font-bold text-[64px] leading-16 tracking-[-1.28px] md:text-[80px] md:tracking-[-1.6px] max-md:font-extrabold">
             {/* Figma: digits Tenon Bold, a trailing "%" Tenon Regular */}
             {String(card.value ?? "").trim().endsWith("%") ? (
               <>
