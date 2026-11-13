@@ -4,6 +4,7 @@
 // Play / pause: "Watch Video" and the yellow circle toggle files, YouTube and Vimeo (postMessage APIs); Loom only starts.
 // testimonial_ui ("enable"): testimonial look — video left on lg+, quote icon, sub_heading = quote,
 // short_text = name (bold) + role, teal bar above them. Default "disable" = unchanged.
+// centered_content ("enable"): one centred column — heading, rolling words, text, button, then the video below.
 
 "use client";
 
@@ -24,8 +25,9 @@ export default function HomeIntroVideo({ data }) {
   const embed = videoSrc ? embedUrl(videoSrc) : null; // null → direct file, plays in <video>
   const poster = videoUrl(data?.poster_image) || youtubePoster(videoSrc);
   const { heading, sub_heading, short_text, cta_text } = data || {};
-  const label = cta_text || "Watch Video";
+  const label = cta_text;
   const testimonial = data?.testimonial_ui === "enable";
+  const centered = data?.centered_content === "enable";
   // Players we can pause / resume; Loom and other embeds have no API here (null) and only start on click
   const player = !embed
     ? "file"
@@ -143,9 +145,9 @@ export default function HomeIntroVideo({ data }) {
         backgroundImage: "linear-gradient(180deg, rgba(218,220,221,0.8) 0.94%, rgba(255,255,255,0.5) 100.94%)",
       })}
     >
-      <div className="cs-container flex flex-col lg:flex-row lg:items-center lg:justify-between gap-12">
+      <div className={`cs-container flex flex-col gap-12 ${centered ? "items-center" : "lg:flex-row lg:items-center lg:justify-between"}`}>
         {/* first:mt-0 — without heading / rolling words the column starts flush */}
-        <div className="flex flex-col items-start lg:max-w-[700px] xl:max-w-[780px]">
+        <div className={`flex flex-col lg:max-w-[700px] xl:max-w-[780px] ${centered ? "items-center text-center" : "items-start"}`}>
           {heading && (
             <h2 className="cs-h2 text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
           )}
