@@ -14,7 +14,7 @@
 // quote is top-aligned 40 under the logo (Tenon Regular Italic 20/24, -2%, #FDFDFD; not centred), the
 // name/venue footer is pinned to the card bottom, and a "Read full case" text link with arrow (Tenon
 // Medium 16/20, -2%, underlined, #FDFDFD, 16px arrow 8 right) sits bottom-right, 17.81 from the edges,
-// bottom-aligned with the footer. The link only renders with a case slug (md:hidden).
+// bottom-aligned with the footer. Desktop (>= 768, client request 2026-11-13, no Figma): the same link sits bottom-right in the name/company row. Both only render with a case slug.
 // variant "industry": 30px between the arrows (Industry mockup); ICP mockups use 24.
 
 "use client";
@@ -48,6 +48,13 @@ const MAX_CASES = 4;
 
 // Figma: the accent bar next to the name cycles #FFC120 → #FF8D6A → #1F8690 (3×48, radius 10)
 const ACCENTS = ["#FFC120", "#FF8D6A", "#1F8690"];
+
+// 16px arrow used by the "Read full case" links
+const CaseArrow = ({ className = "" }) => (
+  <svg width="16" height="10" viewBox="0 0 16 10" fill="none" aria-hidden className={`shrink-0 ${className}`}>
+    <path d="M0 5h15M11 1l4 4-4 4" stroke="#FDFDFD" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
 
 function QuoteCard({ card, lang, accent, readMore }) {
   const logo = mediaUrl(card.logo);
@@ -86,15 +93,20 @@ function QuoteCard({ card, lang, accent, readMore }) {
             {card.link_text}
           </ArrowLink>
         )}
+        {card.slug && (
+          // desktop (>= 768): same text link, bottom-right in the name/company row (mobile: the absolute link below)
+          <Link href={entryHref("casestudy", card.slug, lang)} draggable={false} className="group flex shrink-0 items-center gap-2 whitespace-nowrap text-[16px] leading-5 font-medium tracking-[-0.32px] text-[#FDFDFD] max-md:hidden">
+            <span className="underline decoration-1 underline-offset-2">{readMore}</span>
+            <CaseArrow className="transition-transform duration-300 group-hover:translate-x-1" />
+          </Link>
+        )}
       </figcaption>
       </div>
       {card.slug && (
         // mobile only: text link + 16px arrow, bottom-right (17.81 from the edges)
         <Link href={entryHref("casestudy", card.slug, lang)} draggable={false} className="absolute right-[17.81px] bottom-[17.81px] hidden items-center gap-2 text-[16px] leading-5 font-medium tracking-[-0.32px] text-[#FDFDFD] max-md:flex">
           <span className="underline decoration-1 underline-offset-2">{readMore}</span>
-          <svg width="16" height="10" viewBox="0 0 16 10" fill="none" aria-hidden className="shrink-0">
-            <path d="M0 5h15M11 1l4 4-4 4" stroke="#FDFDFD" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <CaseArrow />
         </Link>
       )}
     </figure>
