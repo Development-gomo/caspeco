@@ -57,7 +57,7 @@ export default async function PostTemplate({ post, lang, slug, themeOptions }) {
       </section>
 
       {/* ARTICLE — body in the reading column (title is in the hero) */}
-      <article className="cs-container py-14 lg:pt-20 lg:pb-24">
+      <article className="cs-container py-14 lg:pt-36 lg:pb-36">
         <div className="mx-auto w-full max-w-[730px]">
           {!hasBuilder && contentHtml && <div className="cs-article" dangerouslySetInnerHTML={{ __html: contentHtml }} />}
 
