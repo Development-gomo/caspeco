@@ -13,7 +13,7 @@ export default function PartnerCategoryTemplate({ term, partners, lang, slug, th
     // no entryId: term translations aren't exposed, so the switcher uses each language's homepage
     <Shell lang={lang} slug={slug} entryType="partner_category" themeOptions={themeOptions}>
       <div className="h-28 w-full bg-black"></div>
-      <section className="cs-container py-15 md:py-30">
+      <section className="cs-container py-15 md:py-30 lg:py-36">
         <h1 className="cs-h2 mb-6" dangerouslySetInnerHTML={{ __html: term.name }} />
         {term.description && <div className="cs-p2 cs-rich mb-12 max-w-3xl" dangerouslySetInnerHTML={{ __html: term.description }} />}
 
