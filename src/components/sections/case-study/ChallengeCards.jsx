@@ -23,8 +23,8 @@ function Card({ item, index }) {
       className="h-full"
     >
       <article className={`flex h-full flex-col gap-6 rounded-[8px] p-6 text-(--color-light-grey) lg:p-8 max-md:gap-4 ${GLASS_CLASS}`} style={GLASS_STYLE}>
-        <header className="flex items-center justify-between gap-4">
-          <span className="flex items-center gap-3">
+        <header className="flex items-start justify-between gap-4">
+          <span className="flex items-start gap-3">
             {icon && (
               <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-(--color-yellow)">
                 <Image src={icon} alt="" width={18} height={18} className="size-[18px] object-contain brightness-0" />
