@@ -10,14 +10,10 @@
 // 17.55px padding) with the title kept at 26/28. NewsListing / related posts don't pass it.
 
 import Image from "next/image";
-import { Inter } from "next/font/google";
 import ArrowLink from "@/components/ui/ArrowLink";
 import { DEFAULT_LANG, entryHref } from "@/config";
 import { readingMinutes } from "@/lib/content";
 import { postStrings } from "@/lib/postStrings";
-
-// Figma uses Inter for the small card meta (category + read time)
-const inter = Inter({ subsets: ["latin"], weight: ["400", "700"], display: "swap" });
 
 // Mobile-only (max-md:) classes per element for the `slide` variant
 const SLIDE = {
@@ -55,7 +51,7 @@ export default function PostCard({ post, readMore, readSuffix, lang = DEFAULT_LA
         )}
         <span className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_40%,rgba(0,0,0,0.7)_100%)]" />
         {category?.name && (
-          <span className={`${inter.className} relative text-[12px] font-bold uppercase tracking-[1px] text-(--color-light-grey) ${m.meta} ${m.category}`}>
+          <span className={`relative text-[12px] font-bold uppercase tracking-[1px] text-(--color-light-grey) ${m.meta} ${m.category}`}>
             {category.name}
           </span>
         )}
@@ -66,7 +62,7 @@ export default function PostCard({ post, readMore, readSuffix, lang = DEFAULT_LA
           className={`font-bold text-[22px] lg:text-[26px] leading-7 tracking-[-0.52px] normal-case text-black ${m.title}`}
           dangerouslySetInnerHTML={{ __html: title }}
         />
-        <p className={`${inter.className} text-[12px] text-(--color-grey-medium-dark) ${m.meta}`}>
+        <p className={`text-[12px] text-(--color-grey-medium-dark) ${m.meta}`}>
           {readingMinutes(post?.content?.rendered)} {readSuffixText}
         </p>
         <ArrowLink href={href} className={`mt-auto after:absolute after:inset-0 ${m.link}`}>
