@@ -58,7 +58,7 @@ export default async function PartnerTemplate({ entry, lang, slug, themeOptions 
       </section>
 
       {/* BODY */}
-      <article className="cs-container py-14 lg:py-20">
+      <article className="cs-container py-14 md:py-30 lg:py-36">
         <div className="mx-auto w-full max-w-[730px]">
           {!hasBuilder && body && <div className="cs-article" dangerouslySetInnerHTML={{ __html: body }} />}
         </div>
@@ -67,7 +67,7 @@ export default async function PartnerTemplate({ entry, lang, slug, themeOptions 
 
       {/* OTHER PARTNERS */}
       {others.length > 0 && (
-        <section className="bg-(--color-light-grey) py-14 lg:py-24">
+        <section className="bg-(--color-light-grey) py-14 md:py-30 lg:py-36">
           <div className="cs-container flex flex-col gap-10">
             <h2 className="cs-h3 text-black">{strings.otherPartners}</h2>
             <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
