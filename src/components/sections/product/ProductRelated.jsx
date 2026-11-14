@@ -42,5 +42,5 @@ export default async function ProductRelated({ data, lang = DEFAULT_LANG, curren
   });
 
   if (!cards.length) return null;
-  return <HomeProductCards data={{ ...data, tagline: "", cards }} lang={lang} />;
+  return <HomeProductCards data={{ ...data, tagline: "", cards }} lang={lang} mobileBleed />;
 }

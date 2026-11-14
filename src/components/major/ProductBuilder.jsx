@@ -83,7 +83,7 @@ export default async function ProductBuilder({ sections: rawSections, lang = DEF
           case "product_cards_section":
             return (
               <Reveal key={i} y={40}>
-                {withSpacing(block, <HomeProductCards data={{ ...block, bg_color: block.bg_color || CARDS_GRADIENT }} lang={lang} />)}
+                {withSpacing(block, <HomeProductCards data={{ ...block, bg_color: block.bg_color || CARDS_GRADIENT }} lang={lang} mobileBleed />)}
               </Reveal>
             );
 

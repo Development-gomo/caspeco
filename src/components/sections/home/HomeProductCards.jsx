@@ -4,6 +4,7 @@
 // Mobile (< 768, Figma "Frame 8934172"): swipe slider clipped at the container, 296×394 cards
 // 32 apart, 12px clip inset for the shadow, graded dots 40 below; section padding 64 / 64
 // (Product page: 0 below the dots, the USP section that follows brings its own 64).
+// mobileBleed (product pages, client QA slide 43): the track runs to the screen edges (-mx-6 / px-6 / scroll-px-6), so cards are not clipped 24px in from the sides; resting position unchanged. Homepage keeps the container clip.
 // Mobile background (Figma): white base + linear-gradient(180deg, #DADCDD 80% -> #FFF 50%). Applied as
 // Tailwind classes (max-md:), so only when no bg_color/bg_image is set; with a custom background (ProductBuilder
 // always passes one) the inline style from sectionBackground() is used as before. md+ keeps light grey.
@@ -60,7 +61,7 @@ function ProductCard({ card, lang, zoom = false }) {
   );
 }
 
-export default function HomeProductCards({ data, lang = DEFAULT_LANG }) {
+export default function HomeProductCards({ data, lang = DEFAULT_LANG, mobileBleed = false }) {
   const cards = rows(data?.cards).filter((c) => c.title);
   const { heading, short_text, tagline } = data || {};
   const trackRef = React.useRef(null);
@@ -84,7 +85,7 @@ export default function HomeProductCards({ data, lang = DEFAULT_LANG }) {
         {cards.length > 0 && (
           <div
             ref={trackRef}
-            className={`grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(220px,1fr))] lg:gap-[29px] ${MOBILE_TRACK} max-md:gap-8 max-md:py-3`}
+            className={`grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(220px,1fr))] lg:gap-[29px] ${MOBILE_TRACK} max-md:gap-8 max-md:py-3 ${mobileBleed ? "max-md:-mx-6 max-md:px-6 max-md:scroll-px-6" : ""}`}
           >
             {cards.map((card, i) => (
               <ProductCard key={i} card={card} lang={lang} zoom={i < 2} />
