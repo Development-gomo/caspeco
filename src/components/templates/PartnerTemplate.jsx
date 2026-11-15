@@ -44,10 +44,10 @@ export default async function PartnerTemplate({ entry, lang, slug, themeOptions 
   return (
     <Shell lang={lang} slug={slug} entryType="partner" routeType="partner" entryId={entry?.id} themeOptions={themeOptions}>
       {/* HERO */}
-      <section className="bg-(--color-black) pt-28 text-white">
+      <section className="bg-black pt-28 text-white">
         <div className="cs-container flex flex-col items-start gap-6 pb-12 lg:gap-8 lg:pb-20">
           {logo?.source_url && (
-            <div className="relative h-20 w-56 rounded-[8px] bg-white lg:h-24 lg:w-64">
+            <div className="relative h-20 w-56 rounded-lg bg-white lg:h-24 lg:w-64">
               <Image src={logo.source_url} alt={logo.alt_text || ""} fill sizes="256px" className="object-contain p-4" priority unoptimized={/\.svg(\?|$)/i.test(logo.source_url)} />
             </div>
           )}
@@ -77,7 +77,7 @@ export default async function PartnerTemplate({ entry, lang, slug, themeOptions 
                   <li key={partner.id}>
                     <Link
                       href={entryHref("partner", partner.slug, lang)}
-                      className="group flex h-full flex-col overflow-hidden rounded-[8px] bg-white shadow-[0px_2px_9px_0px_rgba(0,0,0,0.1)] transition-shadow hover:shadow-[0px_4px_16px_0px_rgba(0,0,0,0.16)]"
+                      className="group flex h-full flex-col overflow-hidden rounded-lg bg-white shadow-[0px_2px_9px_0px_rgba(0,0,0,0.1)] transition-shadow hover:shadow-[0px_4px_16px_0px_rgba(0,0,0,0.16)]"
                     >
                       <div className="relative aspect-[495/400] w-full bg-(--color-light-grey)">
                         {img?.source_url && (

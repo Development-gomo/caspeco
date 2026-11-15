@@ -63,7 +63,7 @@ function QuoteCard({ card, lang, accent, readMore }) {
     // 24px gap, name Bold 24/28 -2% + designation Medium 18/24 0.15px next to a 3×48 accent bar.
     // No ancestor may use opacity < 1, filter or clip-path, or the backdrop blur sees nothing.
     <figure
-      className={`relative flex h-full min-h-[286px] flex-col gap-[54px] rounded-[8px] p-6 text-(--color-white) transition-[translate] duration-300 hover:-translate-y-1 max-md:min-h-0 max-md:gap-10 max-md:rounded-[5.94px] max-md:p-[17.8px] max-md:shadow-[0px_3.96px_11.87px_0px_rgba(0,0,0,0.16)]! ${GLASS_CLASS}`}
+      className={`relative flex h-full min-h-[286px] flex-col gap-[54px] rounded-lg p-6 text-white transition-[translate] duration-300 hover:-translate-y-1 max-md:min-h-0 max-md:gap-10 max-md:rounded-[5.94px] max-md:p-[17.8px] max-md:shadow-[0px_3.96px_11.87px_0px_rgba(0,0,0,0.16)]! ${GLASS_CLASS}`}
       style={GLASS_STYLE}
     >
       {logo ? (
@@ -152,7 +152,7 @@ export default function IndustryTestimonials({ data, lang = DEFAULT_LANG, cases 
   const bg = mediaUrl(data?.bg_image);
 
   return (
-    <section className="relative isolate overflow-hidden bg-(--color-black) py-18 lg:py-36 max-md:pt-16 max-md:pb-[20.6px]" style={data?.bg_color ? { background: data.bg_color } : undefined}>
+    <section className="relative isolate overflow-hidden bg-black py-18 lg:py-36 max-md:pt-16 max-md:pb-[20.6px]" style={data?.bg_color ? { background: data.bg_color } : undefined}>
       {bg && (
         // Figma: photo with 24.8px layer blur (scaled so the soft edge stays outside the section)
         <Reveal y={0} scale={1.08} duration={1.6} className="absolute inset-0 -z-10">
@@ -165,7 +165,7 @@ export default function IndustryTestimonials({ data, lang = DEFAULT_LANG, cases 
       <div className="cs-container flex flex-col gap-10 lg:gap-16">
         {heading && (
           // Figma mobile H2: X-Bold 36/36, -4%
-          <Reveal as="h2" className="cs-h3 cs-title cs-highlight cs-rich max-w-[660px] text-(--color-white) max-md:leading-9! max-md:tracking-[-1.44px]!" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
+          <Reveal as="h2" className="cs-h3 cs-title cs-highlight cs-rich max-w-[660px] text-white max-md:leading-9! max-md:tracking-[-1.44px]!" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
         )}
         {cards.length > 0 && (
           // The slider runs from the container's left edge to the viewport's right edge and clips
@@ -235,13 +235,13 @@ export default function IndustryTestimonials({ data, lang = DEFAULT_LANG, cases 
               onChange={(i) => (i < index ? swiperRef.current?.slidePrev() : swiperRef.current?.slideNext())}
             />
             {cards.length > 1 && (
-              <div className="flex items-center gap-[19px] text-[14px] font-semibold leading-5 tracking-[0.1px] text-(--color-white) max-md:flex-col max-md:items-start max-md:gap-[10px]">
+              <div className="flex items-center gap-[19px] text-[14px] font-semibold leading-5 tracking-[0.1px] text-white max-md:flex-col max-md:items-start max-md:gap-[10px]">
                 <span aria-live="polite">
                   {pad(index + 1)} / {pad(cards.length)}
                 </span>
                 <div className="flex items-center gap-2" aria-hidden>
                   {cards.map((_, i) => (
-                    <span key={i} className={`h-[3px] rounded-[2px] transition-all duration-300 ${i === index ? "w-9 bg-(--color-yellow) max-md:w-[34px]" : "w-6 bg-(--color-light-grey) max-md:w-[23px]"}`} />
+                    <span key={i} className={`h-[3px] rounded-xs transition-all duration-300 ${i === index ? "w-9 bg-(--color-yellow) max-md:w-[34px]" : "w-6 bg-(--color-light-grey) max-md:w-[23px]"}`} />
                   ))}
                 </div>
               </div>

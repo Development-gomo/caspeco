@@ -25,7 +25,7 @@ export default function PartnerCategoryTemplate({ term, partners, lang, slug, th
                 <li key={partner.id}>
                   <Link
                     href={entryHref("partner", partner.slug, lang)}
-                    className="group flex h-full flex-col overflow-hidden rounded-[8px] bg-white shadow-[0px_2px_9px_0px_rgba(0,0,0,0.1)] transition-shadow hover:shadow-[0px_4px_16px_0px_rgba(0,0,0,0.16)]"
+                    className="group flex h-full flex-col overflow-hidden rounded-lg bg-white shadow-[0px_2px_9px_0px_rgba(0,0,0,0.1)] transition-shadow hover:shadow-[0px_4px_16px_0px_rgba(0,0,0,0.16)]"
                   >
                     <div className="relative aspect-[495/400] w-full bg-(--color-light-grey)">
                       {logo?.source_url && (

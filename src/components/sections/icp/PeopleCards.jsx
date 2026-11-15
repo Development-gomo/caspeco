@@ -34,7 +34,7 @@ export default function PeopleCards({ data, joined = false }) {
             {people.map((person, i) => {
               const photo = mediaUrl(person.photo);
               return (
-                <div key={i} className={`overflow-hidden rounded-[8px] bg-(--color-light-grey) ${MOBILE_SLIDE} max-md:w-[340px]`}>
+                <div key={i} className={`overflow-hidden rounded-lg bg-(--color-light-grey) ${MOBILE_SLIDE} max-md:w-[340px]`}>
                   <div className="relative aspect-[303/172] overflow-hidden bg-(--color-grey-medium) max-md:aspect-auto max-md:h-[172px]">
                     {photo && (
                       <Image

@@ -22,7 +22,7 @@ function Card({ item, index }) {
       // only animates once in view; the glass class sits on the inner element)
       className="h-full"
     >
-      <article className={`flex h-full flex-col gap-6 rounded-[8px] p-6 text-(--color-light-grey) lg:p-8 max-md:gap-4 ${GLASS_CLASS}`} style={GLASS_STYLE}>
+      <article className={`flex h-full flex-col gap-6 rounded-lg p-6 text-(--color-light-grey) lg:p-8 max-md:gap-4 ${GLASS_CLASS}`} style={GLASS_STYLE}>
         <header className="flex items-start justify-between gap-4">
           <span className="flex items-start gap-3">
             {icon && (

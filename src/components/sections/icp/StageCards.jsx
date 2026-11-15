@@ -35,7 +35,7 @@ export default function StageCards({ data, lang = DEFAULT_LANG }) {
       <div className="cs-container flex flex-col gap-10 max-md:gap-12 lg:gap-16">
         {(heading || short_text) && (
           <Reveal className="flex flex-col gap-6">
-            {heading && <h2 className="cs-h2 cs-highlight cs-rich max-w-[985px] text-(--color-heading) max-md:text-(--color-black)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+            {heading && <h2 className="cs-h2 cs-highlight cs-rich max-w-[985px] text-(--color-heading) max-md:text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
             {short_text && <div className="cs-p1 cs-rich max-w-[680px] text-(--color-grey-dark) max-md:font-normal!" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
           </Reveal>
         )}
@@ -51,7 +51,7 @@ export default function StageCards({ data, lang = DEFAULT_LANG }) {
                 <Reveal key={i} delay={0.1 + i * 0.1} className={`${MOBILE_SLIDE} max-md:w-[295px] max-md:opacity-100! max-md:transform-none!`}>
                   <Wrapper
                     {...(href ? { href } : {})}
-                    className="group relative flex h-[380px] flex-col justify-end overflow-hidden rounded-[16px] bg-(--color-black) p-6 text-(--color-white) shadow-[0px_4px_12px_rgba(0,0,0,0.16)] lg:h-[422px] lg:p-8 max-md:h-[330px]"
+                    className="group relative flex h-[380px] flex-col justify-end overflow-hidden rounded-[16px] bg-black p-6 text-white shadow-[0px_4px_12px_rgba(0,0,0,0.16)] lg:h-[422px] lg:p-8 max-md:h-[330px]"
                   >
                     {image && (
                       <Image

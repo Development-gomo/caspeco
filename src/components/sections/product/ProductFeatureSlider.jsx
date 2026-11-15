@@ -111,7 +111,7 @@ export default function ProductFeatureSlider({ data, lang = DEFAULT_LANG }) {
               </span>
               <div className="flex items-center gap-2" aria-hidden>
                 {slides.map((_, i) => (
-                  <span key={i} className={`h-[3px] rounded-[2px] transition-all duration-300 ${i === index ? "w-[34px] bg-(--color-yellow)" : "w-[23px] bg-[#8F8D88]"}`} />
+                  <span key={i} className={`h-[3px] rounded-xs transition-all duration-300 ${i === index ? "w-[34px] bg-(--color-yellow)" : "w-[23px] bg-[#8F8D88]"}`} />
                 ))}
               </div>
             </div>

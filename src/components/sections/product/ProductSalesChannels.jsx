@@ -68,8 +68,8 @@ export default function ProductSalesChannels({ data, lang = DEFAULT_LANG, defaul
       <div className={`cs-container flex flex-col items-center gap-10 lg:gap-14 ${icp && !panel ? "" : "max-md:gap-12"}`}>
         {(data.heading || data.sub_heading) && (
           <Reveal className="flex max-w-[905px] flex-col items-center gap-5 text-center max-md:gap-4">
-            {data.heading && <h2 className={`cs-h3 cs-title cs-highlight cs-rich ${icp ? "font-extrabold! text-(--color-black)" : "font-extrabold text-black max-md:text-(--color-black)"}`} dangerouslySetInnerHTML={{ __html: toHtml(data.heading) }} />}
-            {data.sub_heading && <p className={`cs-card-title font-bold text-[22px] lg:text-[32px] leading-8 tracking-[-0.64px] ${icp ? "text-(--color-black)" : "text-black"}`}>{data.sub_heading}</p>}
+            {data.heading && <h2 className={`cs-h3 cs-title cs-highlight cs-rich ${icp ? "font-extrabold! text-black" : "font-extrabold text-black max-md:text-black"}`} dangerouslySetInnerHTML={{ __html: toHtml(data.heading) }} />}
+            {data.sub_heading && <p className={`cs-card-title font-bold text-[22px] lg:text-[32px] leading-8 tracking-[-0.64px] ${icp ? "text-black" : "text-black"}`}>{data.sub_heading}</p>}
           </Reveal>
         )}
 
@@ -138,7 +138,7 @@ export default function ProductSalesChannels({ data, lang = DEFAULT_LANG, defaul
                   // a 413×300 image (radius 6.6) centred in the same box, so the panel height is unchanged
                   // mobile: full-bleed 393×285, no radius (Figma "New image"), also for image_size "small"
                   <motion.div variants={side(-1, reduce)} className={`relative aspect-[500/363] w-full max-w-[500px] shrink-0 lg:ml-16 ${panel ? "max-md:absolute max-md:inset-0 max-md:z-0 max-md:ml-0 max-md:h-full max-md:w-full max-md:max-w-none max-md:aspect-auto" : "max-md:-mx-6 max-md:w-[calc(100%+48px)] max-md:max-w-none max-md:aspect-[393/285]"}`}>
-                    <div className={`absolute overflow-hidden max-md:inset-0 max-md:rounded-none ${data.image_size === "small" ? "inset-[8.7%] rounded-[6.6px]" : "inset-0 rounded-[8px]"}`}>
+                    <div className={`absolute overflow-hidden max-md:inset-0 max-md:rounded-none ${data.image_size === "small" ? "inset-[8.7%] rounded-[6.6px]" : "inset-0 rounded-lg"}`}>
                       <Image src={image} alt={imageField?.alt || ""} fill sizes="(min-width: 1024px) 500px, 100vw" className={`object-cover ${panel ? "max-md:brightness-[0.32]" : ""}`} />
                     </div>
                   </motion.div>
@@ -152,7 +152,7 @@ export default function ProductSalesChannels({ data, lang = DEFAULT_LANG, defaul
                   {/* mobile: title ICP Bold 26/28 (cs-h4) / Product X-Bold 36 (cs-title); body ICP Regular / Product Light 18/22;
                       benefits 12 apart, X-Bold 18/22 (ICP -2% #3F3E3C, Product 0 #171717) */}
                   <div className="flex flex-col gap-5 max-md:gap-4">
-                    {tab.title && <h3 className={`cs-h4 ${icp ? "text-(--color-black)" : "cs-title text-black max-md:text-(--color-black)"} ${panel ? "max-md:text-(--color-light-grey)" : ""}`} dangerouslySetInnerHTML={{ __html: mobilePanel ? titleHtml(tab.title) : toHtml(tab.title) }} />}
+                    {tab.title && <h3 className={`cs-h4 ${icp ? "text-black" : "cs-title text-black max-md:text-black"} ${panel ? "max-md:text-(--color-light-grey)" : ""}`} dangerouslySetInnerHTML={{ __html: mobilePanel ? titleHtml(tab.title) : toHtml(tab.title) }} />}
                     {tab.text && <div className={`cs-p2 cs-rich text-(--color-grey-dark) ${icp ? "" : "max-md:font-light"} ${panel ? "max-md:text-(--color-light-grey)" : ""}`} dangerouslySetInnerHTML={{ __html: toHtml(tab.text) }} />}
                     <CheckList
                       items={tab.checklist}

@@ -155,7 +155,7 @@ export default function HomeCaseStudies({ data, lang = DEFAULT_LANG, prefetchedC
                 >
                   <span
                     key={i === activeIndex ? `${i}-active` : i}
-                    className="case-progress-fill block h-full bg-(--color-black)"
+                    className="case-progress-fill block h-full bg-black"
                     style={{
                       width: i < activeIndex ? "100%" : i === activeIndex ? undefined : "0%",
                       animation:

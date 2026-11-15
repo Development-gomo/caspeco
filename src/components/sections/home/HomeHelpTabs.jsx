@@ -124,7 +124,7 @@ function Collage({ images }) {
         return (
           <motion.div
             key={f}
-            className={`absolute overflow-hidden rounded-[8px] bg-[#d9d9d9] shadow-[0px_8px_40px_8px_rgba(0,0,0,0.16)] ${
+            className={`absolute overflow-hidden rounded-lg bg-[#d9d9d9] shadow-[0px_8px_40px_8px_rgba(0,0,0,0.16)] ${
               f === layout.order[0] ? "max-md:top-0! max-md:left-0! max-md:h-full! max-md:w-full! max-md:rounded-none max-md:shadow-none" : "max-md:hidden"
             }`}
             style={{ zIndex: s.z }}
@@ -177,13 +177,13 @@ export default function HomeHelpTabs({ data, lang = DEFAULT_LANG }) {
           <div className="flex flex-col items-center gap-4 lg:gap-6">
             {data.heading && (
               <h2
-                className="cs-h2 cs-highlight cs-rich text-center text-(--color-heading) max-md:text-(--color-black)"
+                className="cs-h2 cs-highlight cs-rich text-center text-(--color-heading) max-md:text-black"
                 dangerouslySetInnerHTML={{ __html: toHtml(data.heading) }}
               />
             )}
             {data.short_text && (
               <div
-                className="cs-p2 cs-rich max-w-[680px] text-center text-(--color-grey-dark) max-md:text-(--color-black)"
+                className="cs-p2 cs-rich max-w-[680px] text-center text-(--color-grey-dark) max-md:text-black"
                 dangerouslySetInnerHTML={{ __html: toHtml(data.short_text) }}
               />
             )}

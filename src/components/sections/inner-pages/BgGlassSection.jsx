@@ -29,7 +29,7 @@ export default function BgGlassSection({ data }) {
 
       <div className={`cs-container flex ${data?.card_position === "left" ? "md:justify-start" : "md:justify-end"}`}>
         {/* backdrop-blur sits on the Reveal itself: on a child of the opacity-animating wrapper the blur breaks */}
-        <Reveal y={40} className="flex w-full flex-col gap-8 rounded-[8px] border border-white/40 bg-[rgba(21,20,17,0.35)] px-6 py-10 shadow-[0px_4px_4px_rgba(0,0,0,0.25)] backdrop-blur-[40px] md:max-w-[572px] md:gap-10 md:rounded-[12px] md:p-14">
+        <Reveal y={40} className="flex w-full flex-col gap-8 rounded-lg border border-white/40 bg-[rgba(21,20,17,0.35)] px-6 py-10 shadow-[0px_4px_4px_rgba(0,0,0,0.25)] backdrop-blur-[40px] md:max-w-[572px] md:gap-10 md:rounded-[12px] md:p-14">
           <div className="flex flex-col gap-4 text-(--color-light-grey)">
             {heading && <h2 className="cs-highlight font-bold text-[32px] leading-[36px] tracking-[-0.64px] md:text-[40px] md:leading-[44px] md:tracking-[-0.8px]" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
             {short_text && <div className="cs-rich cs-list font-medium text-[16px] leading-5 tracking-[-0.32px]" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}

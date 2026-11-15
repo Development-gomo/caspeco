@@ -67,7 +67,7 @@ export default function AboutUs({ data }) {
           {/* HEADING */}
           {heading && (
             <motion.div
-              className="about-panel-heading text-(--color-black) max-w-[420px] mb-4"
+              className="about-panel-heading text-black max-w-[420px] mb-4"
               dangerouslySetInnerHTML={{ __html: heading }}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}

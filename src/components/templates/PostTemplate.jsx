@@ -32,7 +32,7 @@ export default async function PostTemplate({ post, lang, slug, themeOptions }) {
   return (
     <Shell lang={lang} slug={slug} entryType="post" routeType="post" entryId={post?.id} themeOptions={themeOptions}>
       {/* HERO — at least 70% of the screen height (grows for long titles; pt clears the fixed header) */}
-      <section className="relative flex min-h-[max(70vh,420px)] items-end overflow-hidden bg-(--color-black) pt-28">
+      <section className="relative flex min-h-[max(70vh,420px)] items-end overflow-hidden bg-black pt-28">
         {heroImage && (
           <Image src={heroImage} alt="" fill priority sizes="100vw" className="object-cover" />
         )}

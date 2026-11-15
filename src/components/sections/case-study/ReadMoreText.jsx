@@ -39,7 +39,7 @@ export default function ReadMoreText({ html, className = "", lang = DEFAULT_LANG
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
-          className="group inline-flex cursor-pointer items-center gap-2 text-[16px] leading-5 tracking-[-0.32px] max-md:font-medium max-md:text-(--color-petrol) md:font-bold md:text-(--color-black) md:hover:text-(--color-gold)"
+          className="group inline-flex cursor-pointer items-center gap-2 text-[16px] leading-5 tracking-[-0.32px] max-md:font-medium max-md:text-(--color-petrol) md:font-bold md:text-black md:hover:text-(--color-gold)"
         >
           <span className="underline max-md:decoration-1 max-md:underline-offset-2 md:decoration-(--color-yellow) md:decoration-2 md:underline-offset-4">
             {open ? lessLabel || t.showLess : moreLabel || t.showMore}

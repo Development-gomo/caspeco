@@ -50,7 +50,7 @@ export default function SystemCheck({ data, lang = DEFAULT_LANG }) {
   const bg = mediaUrl(data?.bg_image);
 
   return (
-    <section className="cs-sec relative isolate overflow-hidden bg-(--color-black) py-18 max-md:[--sec-pt:48px] max-md:[--sec-pb:48px] lg:pt-20 lg:pb-[90px]" style={data?.bg_color ? { background: data.bg_color } : undefined}>
+    <section className="cs-sec relative isolate overflow-hidden bg-black py-18 max-md:[--sec-pt:48px] max-md:[--sec-pb:48px] lg:pt-20 lg:pb-[90px]" style={data?.bg_color ? { background: data.bg_color } : undefined}>
       {/* photo with Figma layer blur (scaled so the blurred edge stays outside the section); mobile: sharp, unscaled */}
       {bg && <Image src={bg} alt="" fill sizes="100vw" className="-z-10 scale-110 object-cover blur-[24.8px] max-md:scale-100 max-md:filter-none" />}
       <div className="absolute inset-0 -z-10 max-md:hidden" style={{ background: "linear-gradient(90deg, #000 -0.9%, rgba(0, 0, 0, 0.4) 100.9%)" }} aria-hidden />
@@ -58,7 +58,7 @@ export default function SystemCheck({ data, lang = DEFAULT_LANG }) {
 
       <div className="cs-container flex flex-col gap-12 max-md:gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
         <Reveal className="flex flex-col items-start gap-10 max-md:gap-6 lg:max-w-[507px]">
-          <div className="flex flex-col gap-5 max-md:gap-4 text-(--color-white)">
+          <div className="flex flex-col gap-5 max-md:gap-4 text-white">
             <div className="flex flex-col max-md:gap-2">
               {eyebrow && <p className="italic font-normal text-[18px] lg:text-[20px] leading-[26px] tracking-[-0.8px] max-md:tracking-[-0.72px] text-(--color-yellow)">{eyebrow}</p>}
               {heading && <h2 className="cs-h3 cs-title cs-highlight cs-rich" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
@@ -81,7 +81,7 @@ export default function SystemCheck({ data, lang = DEFAULT_LANG }) {
             x={40}
             y={0}
             delay={0.15}
-            className={`w-full rounded-[8px] p-6 text-(--color-white) sm:p-8 max-md:px-6! max-md:pt-6! max-md:pb-7! lg:w-[701px] lg:flex-none ${GLASS_CLASS} max-md:backdrop-blur-[66.67px]`}
+            className={`w-full rounded-lg p-6 text-white sm:p-8 max-md:px-6! max-md:pt-6! max-md:pb-7! lg:w-[701px] lg:flex-none ${GLASS_CLASS} max-md:backdrop-blur-[66.67px]`}
             style={GLASS_STYLE}
           >
             {card_title && (
@@ -90,7 +90,7 @@ export default function SystemCheck({ data, lang = DEFAULT_LANG }) {
                 <Underline />
               </p>
             )}
-            {card_subtitle && <p className="mt-5 italic font-light max-md:font-normal text-[16px] leading-[34px] tracking-[-0.32px] text-(--color-white)/80">{card_subtitle}</p>}
+            {card_subtitle && <p className="mt-5 italic font-light max-md:font-normal text-[16px] leading-[34px] tracking-[-0.32px] text-white/80">{card_subtitle}</p>}
             {items.length > 0 && (
               <ul className="mt-2 flex flex-col gap-2.5">
                 {items.map((item, i) => (

@@ -97,13 +97,13 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
               <ul ref={trackRef} className={`${MOBILE_TRACK} -mx-6 w-[calc(100%+48px)] gap-4 px-6 py-3 -my-3 scroll-px-6`}>
                 {slides.map((slide, i) => (
                   <li key={i} className={`${MOBILE_SLIDE} w-[calc(100vw-80px)] max-w-[340px]`}>
-                    <figure className={`${GLASS_CLASS} relative flex h-full min-h-[240px] flex-col rounded-[8px] p-6 text-white`} style={GLASS_STYLE}>
+                    <figure className={`${GLASS_CLASS} relative flex h-full min-h-[240px] flex-col rounded-lg p-6 text-white`} style={GLASS_STYLE}>
                         <div className="flex flex-1 items-center">
                           <blockquote className="font-normal italic text-[20px] leading-6" dangerouslySetInnerHTML={{ __html: toHtml(curlyQuote(slide.quote)) }} />
                         </div>
                         {(slide.name || slide.company) && (
                           <figcaption className="mt-6 flex items-center gap-3">
-                            <span className="h-12 w-[3px] shrink-0 rounded-[8px] bg-(--color-yellow)" aria-hidden />
+                            <span className="h-12 w-[3px] shrink-0 rounded-lg bg-(--color-yellow)" aria-hidden />
                             <span className="flex flex-col gap-1">
                               {slide.name && <span className="font-bold text-[20px] leading-6 tracking-[-0.4px]">{slide.name}</span>}
                               {slide.company && <span className="font-medium text-[16px] leading-5 tracking-normal">{slide.company}</span>}
@@ -140,7 +140,7 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
                   />
                   {(slide.name || slide.company) && (
                     <figcaption className="flex items-center gap-3">
-                      <span className="h-12 w-[3px] shrink-0 rounded-[10px] bg-(--color-yellow) max-md:rounded-[8px]" aria-hidden />
+                      <span className="h-12 w-[3px] shrink-0 rounded-[10px] bg-(--color-yellow) max-md:rounded-lg" aria-hidden />
                       <span className="flex flex-col gap-1">
                         {slide.name && <span className="font-bold text-[20px] lg:text-[24px] leading-7 tracking-[-0.48px] max-md:leading-6 max-md:tracking-[-0.4px]">{slide.name}</span>}
                         {slide.company && <span className="font-medium text-[16px] lg:text-[18px] leading-6 tracking-[0.15px] max-md:leading-5 max-md:tracking-normal">{slide.company}</span>}
@@ -165,7 +165,7 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
                       {slides.map((_, i) => (
                         <span
                           key={i}
-                          className={`h-[3px] rounded-[2px] transition-all duration-300 ${i === index ? "w-9 bg-(--color-yellow) max-md:w-[34px]" : "w-6 bg-(--color-light-grey) max-md:w-[23px]"}`}
+                          className={`h-[3px] rounded-xs transition-all duration-300 ${i === index ? "w-9 bg-(--color-yellow) max-md:w-[34px]" : "w-6 bg-(--color-light-grey) max-md:w-[23px]"}`}
                         />
                       ))}
                     </div>

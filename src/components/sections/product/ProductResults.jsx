@@ -77,7 +77,7 @@ export default function ProductResults({ data, variant }) {
       <div className="absolute inset-0 -z-10 bg-black/40" aria-hidden />
 
       <div className="cs-container flex justify-center">
-        <Reveal y={40} className={`flex w-full ${icp ? "max-w-[1048px]" : "max-w-[1040px]"} flex-col items-center gap-12 rounded-[8px] bg-[rgba(21,20,17,0.3)] px-6 py-12 shadow-[0px_4px_4px_rgba(0,0,0,0.25)] backdrop-blur-[20px] sm:px-10 lg:gap-16 lg:p-20 max-md:items-stretch max-md:rounded-[4px] max-md:border max-md:border-white/12 max-md:p-[31px]! max-md:shadow-[0px_8px_30px_rgba(0,0,0,0.6),0px_4px_4px_rgba(0,0,0,0.25)] ${icp ? "max-md:gap-6" : ""}`}>
+        <Reveal y={40} className={`flex w-full ${icp ? "max-w-[1048px]" : "max-w-[1040px]"} flex-col items-center gap-12 rounded-lg bg-[rgba(21,20,17,0.3)] px-6 py-12 shadow-[0px_4px_4px_rgba(0,0,0,0.25)] backdrop-blur-[20px] sm:px-10 lg:gap-16 lg:p-20 max-md:items-stretch max-md:rounded-sm max-md:border max-md:border-white/12 max-md:p-[31px]! max-md:shadow-[0px_8px_30px_rgba(0,0,0,0.6),0px_4px_4px_rgba(0,0,0,0.25)] ${icp ? "max-md:gap-6" : ""}`}>
           <div className={`flex flex-col items-center gap-4 text-center text-(--color-light-grey) max-md:items-start max-md:text-left ${icp ? "max-w-[826px]" : "max-w-[754px]"}`}>
             {heading && <h2 className={`cs-h3 cs-title cs-highlight ${icp ? "font-extrabold!" : "font-extrabold"}`} dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
             {short_text && (
