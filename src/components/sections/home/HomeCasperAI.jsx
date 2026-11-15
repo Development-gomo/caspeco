@@ -107,7 +107,7 @@ function ChatInputBar({ placeholder, href, className = "" }) {
 function ChatCard({ question, answer, placeholder, href }) {
   return (
     <div
-      className="relative w-full max-w-[570px] rounded-[8px] p-4 sm:px-7 sm:pt-[30px] sm:pb-[29px] max-md:mx-px max-md:w-auto max-md:px-6! max-md:pt-[30px]! max-md:pb-[29px]! shadow-[0px_5.333px_16px_0px_rgba(0,0,0,0.16)] backdrop-blur-md border border-white/10"
+      className="relative w-full max-w-[570px] rounded-lg p-4 sm:px-7 sm:pt-[30px] sm:pb-[29px] max-md:mx-px max-md:w-auto max-md:px-6! max-md:pt-[30px]! max-md:pb-[29px]! shadow-[0px_5.333px_16px_0px_rgba(0,0,0,0.16)] backdrop-blur-md border border-white/10"
       style={{ backgroundImage: CHAT_GLASS_BG }}
     >
       {question && (
@@ -116,7 +116,7 @@ function ChatCard({ question, answer, placeholder, href }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.4 }}
-          className="w-fit max-w-[336px] rounded-[4px] bg-[rgba(0,0,0,0.39)] px-4 py-[13px] text-[15px] sm:text-[16px] leading-5 tracking-[-0.64px] text-white max-md:w-full max-md:max-w-none max-md:py-2 max-md:text-[16px]"
+          className="w-fit max-w-[336px] rounded-sm bg-[rgba(0,0,0,0.39)] px-4 py-[13px] text-[15px] sm:text-[16px] leading-5 tracking-[-0.64px] text-white max-md:w-full max-md:max-w-none max-md:py-2 max-md:text-[16px]"
         >
           {question}
         </motion.p>
@@ -135,7 +135,7 @@ function ChatCard({ question, answer, placeholder, href }) {
             <RobotGlyph size={10} />
           </span>
           <div
-            className="cs-rich rounded-[4px] bg-[#29363d] px-[11px] pt-[13px] pb-4 text-[15px] sm:text-[16px] leading-5 tracking-[-0.64px] text-white max-md:px-4 max-md:py-2 max-md:text-[16px]"
+            className="cs-rich rounded-sm bg-[#29363d] px-[11px] pt-[13px] pb-4 text-[15px] sm:text-[16px] leading-5 tracking-[-0.64px] text-white max-md:px-4 max-md:py-2 max-md:text-[16px]"
             dangerouslySetInnerHTML={{ __html: toHtml(answer) }}
           />
         </motion.div>
@@ -192,7 +192,7 @@ export default function HomeCasperAI({ data, lang = DEFAULT_LANG }) {
           // the animated chat sits in the same glass chat box as the static card, with the input bar underneath; the chat is not scaled
           <div className="w-full lg:w-[570px] shrink-0">
             <div
-              className="relative overflow-hidden rounded-[8px] border border-white/10 p-4 shadow-[0px_5.333px_16px_0px_rgba(0,0,0,0.16)] backdrop-blur-md sm:px-7 sm:pt-[30px] sm:pb-[29px] max-md:px-6 max-md:pt-[30px] max-md:pb-[29px]"
+              className="relative overflow-hidden rounded-lg border border-white/10 p-4 shadow-[0px_5.333px_16px_0px_rgba(0,0,0,0.16)] backdrop-blur-md sm:px-7 sm:pt-[30px] sm:pb-[29px] max-md:px-6 max-md:pt-[30px] max-md:pb-[29px]"
               style={{ backgroundImage: CHAT_GLASS_BG }}
             >
               <div className="relative h-[347px] w-full">

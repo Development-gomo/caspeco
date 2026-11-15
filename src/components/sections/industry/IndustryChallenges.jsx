@@ -30,7 +30,7 @@ function ChallengeCard({ item, index }) {
   return (
     <Reveal
       delay={0.15 + index * 0.08}
-      className="group relative isolate flex min-h-[228px] flex-col justify-between gap-8 overflow-hidden max-md:min-h-0 max-md:justify-start max-md:gap-0 rounded-[8px] bg-(--color-dark-petrol) p-6 text-(--color-light-grey) shadow-[0px_4px_6px_rgba(0,0,0,0.16)] transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0px_10px_24px_rgba(0,0,0,0.25)] lg:p-8 max-md:shadow-none"
+      className="group relative isolate flex min-h-[228px] flex-col justify-between gap-8 overflow-hidden max-md:min-h-0 max-md:justify-start max-md:gap-0 rounded-lg bg-(--color-dark-petrol) p-6 text-(--color-light-grey) shadow-[0px_4px_6px_rgba(0,0,0,0.16)] transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0px_10px_24px_rgba(0,0,0,0.25)] lg:p-8 max-md:shadow-none"
     >
       {photo && (
         <Image
@@ -74,7 +74,7 @@ export default function IndustryChallenges({ data, lang = DEFAULT_LANG }) {
 
         <div className="grid grid-cols-1 gap-6 max-md:gap-4 lg:grid-cols-[461fr_787fr]">
           {hasFeature && (
-            <Reveal className="flex min-h-[400px] flex-col items-start justify-end gap-10 rounded-[8px] bg-(--color-dark-petrol) p-8 max-md:min-h-0 max-md:gap-6 max-md:px-6 max-md:pt-12 max-md:pb-6 text-(--color-light-grey) shadow-[0px_4px_6px_rgba(0,0,0,0.16)] lg:min-h-[480px] lg:p-10">
+            <Reveal className="flex min-h-[400px] flex-col items-start justify-end gap-10 rounded-lg bg-(--color-dark-petrol) p-8 max-md:min-h-0 max-md:gap-6 max-md:px-6 max-md:pt-12 max-md:pb-6 text-(--color-light-grey) shadow-[0px_4px_6px_rgba(0,0,0,0.16)] lg:min-h-[480px] lg:p-10">
               <div className="flex flex-col gap-5 max-md:gap-3">
                 {feature_value && (
                   <p className="font-bold text-[72px] leading-none tracking-[-5.76px] text-(--color-yellow) max-md:text-[80px] max-md:tracking-[-8px] lg:text-[100px] lg:tracking-[-8px]">

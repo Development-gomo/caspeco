@@ -226,7 +226,7 @@ export default function HomeIntroVideo({ data }) {
         </div>
 
         {videoSrc && (
-          <div className="group relative w-full lg:w-[568px] aspect-[568/320] shrink-0 overflow-hidden rounded-[4.675px] max-md:rounded-[8px] bg-(--color-dark-petrol)">
+          <div className="group relative w-full lg:w-[568px] aspect-[568/320] shrink-0 overflow-hidden rounded-[4.675px] max-md:rounded-lg bg-(--color-dark-petrol)">
             {embed ? (
               playing ? (
                 <iframe

@@ -30,7 +30,7 @@ const valueText = (v) => { const t = String(v ?? "").trim(); return /^-?\d+(?:[.
 function Chart({ title, rows: chartRows, rowGap = "gap-[30px]" }) {
   return (
     <div
-      className="w-full xl:w-[614px] shrink-0 rounded-[8px] border border-white/10 px-6 pt-6 pb-8 lg:px-9 lg:pt-[33px] lg:pb-[28px] max-md:px-[19px] max-md:pt-[23px] max-md:pb-[23px] shadow-[0px_5.333px_16px_0px_rgba(0,0,0,0.16)] backdrop-blur-sm"
+      className="w-full xl:w-[614px] shrink-0 rounded-lg border border-white/10 px-6 pt-6 pb-8 lg:px-9 lg:pt-[33px] lg:pb-[28px] max-md:px-[19px] max-md:pt-[23px] max-md:pb-[23px] shadow-[0px_5.333px_16px_0px_rgba(0,0,0,0.16)] backdrop-blur-sm"
       style={{
         backgroundImage:
           "radial-gradient(ellipse 100% 100% at 0% 0%, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.2) 49%, rgba(218,220,221,0.2) 100%)",
@@ -81,7 +81,7 @@ export default function HomeDataInsight({ data, variant }) {
     >
       <div className={`cs-container flex flex-col items-center gap-10 lg:gap-16 ${icp ? "max-md:gap-8" : ""}`}>
         {heading && (
-          <h2 className="cs-h2 cs-highlight cs-rich text-center text-(--color-heading) max-md:text-(--color-black)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
+          <h2 className="cs-h2 cs-highlight cs-rich text-center text-(--color-heading) max-md:text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
         )}
 
         <div

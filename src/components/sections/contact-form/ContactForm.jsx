@@ -19,7 +19,7 @@ export const INPUT_CLASSES =
 // fields → 32 → consent → 24 → button 48 tall, Bold 16/20
 export const QUICK_M = {
   label: "max-md:text-[14px] max-md:tracking-normal max-md:text-[#3E3D3B]",
-  input: "max-md:h-12 max-md:rounded-[8px] max-md:px-4 max-md:py-0 max-md:leading-5 max-md:placeholder:text-[#92908C]",
+  input: "max-md:h-12 max-md:rounded-lg max-md:px-4 max-md:py-0 max-md:leading-5 max-md:placeholder:text-[#92908C]",
   border: "max-md:border-[#DCE3EC]",
   consent: "max-md:order-1 max-md:mt-2",
   button: "max-md:order-2 max-md:h-12 max-md:py-0 max-md:text-[16px] max-md:leading-5",

@@ -91,8 +91,8 @@ export default function RealtedCase({ data, lang = DEFAULT_LANG, prefetchedCases
 
             return (
               <SwiperSlide key={item.id}>
-                <div className="grid grid-cols-1 lg:grid-cols-2 rounded-lg overflow-hidden bg-(--color-black)">
-                  <div className=" bg-(--color-black) md:w-[600px] text-white z-20 p-6 lg:p-12 flex flex-col justify-center">
+                <div className="grid grid-cols-1 lg:grid-cols-2 rounded-lg overflow-hidden bg-black">
+                  <div className=" bg-black md:w-[600px] text-white z-20 p-6 lg:p-12 flex flex-col justify-center">
                     <h3
                       className="text-[24px] leading-8 md:text-[32px] lg:leading-10"
                       dangerouslySetInnerHTML={{ __html: title }}
@@ -115,7 +115,7 @@ export default function RealtedCase({ data, lang = DEFAULT_LANG, prefetchedCases
                               key={i}
                               className="inline-block mb-4 [&:nth-child(2)]:mb-0"
                             >
-                              <span className="flex text-xs items-center justify- border border-white rounded-[4px]">
+                              <span className="flex text-xs items-center justify- border border-white rounded-sm">
                                 <span className="flex items-center p-2 gap-2 min-w-[175px]">
                                   <span className="h-6 w-6 bg-[#ffffff40] flex items-center justify-center rounded-full">
                                     <Image

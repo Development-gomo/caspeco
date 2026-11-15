@@ -82,7 +82,7 @@ export default function RelatedCases({ data, lang = DEFAULT_LANG, cases = [] }) 
                 <SwiperSlide key={c.id} className="!h-auto">
                   <Link
                     href={entryHref("casestudy", c.slug, lang)}
-                    className="group relative flex h-[480px] flex-col justify-end overflow-hidden rounded-[16px] bg-(--color-black) p-6 text-(--color-white) shadow-[0px_4px_12px_rgba(0,0,0,0.16)] lg:h-[540px] lg:p-8 max-md:h-[460px]"
+                    className="group relative flex h-[480px] flex-col justify-end overflow-hidden rounded-[16px] bg-black p-6 text-white shadow-[0px_4px_12px_rgba(0,0,0,0.16)] lg:h-[540px] lg:p-8 max-md:h-[460px]"
                     draggable={false}
                   >
                     <Image src={image.url} alt={image.alt || ""} fill sizes="(min-width: 1280px) 403px, (min-width: 768px) 45vw, 85vw" className="object-cover transition-transform duration-700 ease-out group-hover:scale-105" draggable={false} />

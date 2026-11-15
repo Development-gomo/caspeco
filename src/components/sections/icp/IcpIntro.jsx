@@ -47,7 +47,7 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
   const fitImage = !!data?.listStyle; // content_section images are capped to the text height on desktop
   const variant = data?.cta_variant === "outline" ? "outline-dark" : "yellow";
   // mobile (Figma "USP's"): heading #151411 (desktop stays #000)
-  const headingClass = "cs-h3 cs-highlight cs-rich text-(--color-heading) max-md:text-(--color-black)";
+  const headingClass = "cs-h3 cs-highlight cs-rich text-(--color-heading) max-md:text-black";
   // stacked content_sections: drop the top padding only when the edge between them is the same background
   const gradient = data?.bg_gradient || "top";
   const prevGradient = data?._prevGradient || "top";
@@ -76,7 +76,7 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
                   <motion.span
                     key={index}
                     // Figma: #000 (mobile #151411) — important, because the global ".cs-h2 span" rule turns spans yellow
-                    className="col-start-1 row-start-1 text-(--color-heading)! max-md:text-(--color-black)!"
+                    className="col-start-1 row-start-1 text-(--color-heading)! max-md:text-black!"
                     initial={{ opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -24 }}

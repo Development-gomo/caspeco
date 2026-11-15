@@ -106,7 +106,7 @@ export default function VideoModal({ open, url, title = "", onClose }) {
             >
               ×
             </button>
-            <div className="aspect-video w-full overflow-hidden rounded-[8px] bg-black">
+            <div className="aspect-video w-full overflow-hidden rounded-lg bg-black">
               {embed ? (
                 <iframe src={embed} title={title} className="h-full w-full" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowFullScreen />
               ) : (

@@ -140,7 +140,7 @@ export default async function Footer({ lang = DEFAULT_LANG, hideQuickContact = f
                   <div className="flex flex-col gap-3 max-md:gap-4 text-[18px] font-medium leading-[1.1] tracking-[-0.36px] text-(--color-grey-medium)">
                     {contactRows.map(([icon, value, href]) =>
                       href ? (
-                        <a key={icon} href={href} className="group flex items-center gap-2 max-md:gap-3 transition-colors hover:text-(--color-white)">
+                        <a key={icon} href={href} className="group flex items-center gap-2 max-md:gap-3 transition-colors hover:text-white">
                           <span className="shrink-0 max-md:flex max-md:w-6 max-md:justify-center transition-transform duration-300 group-hover:-translate-y-0.5">{CONTACT_ICONS[icon]}</span>
                           <span className="cs-link-draw max-md:pb-0!">{value}</span>
                         </a>

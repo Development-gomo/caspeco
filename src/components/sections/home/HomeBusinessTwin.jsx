@@ -99,7 +99,7 @@ function CaseCard({ match, lang, clipText, readMoreText }) {
   return (
     // Figma result state: card stretches to the left column's height (self-stretch / h-full).
     // Mobile (Figma 601:9259): content-height card, radius 8, padding 32, sharp image + 60% black, no shadow.
-    <div className="relative flex w-full max-w-[560px] min-h-[540px] lg:h-full flex-col justify-between gap-10 overflow-hidden rounded-[16px] bg-white/10 p-6 sm:p-8 shadow-[0px_-68px_100px_-28px_rgba(255,243,208,0.2),2px_4px_12px_8px_rgba(0,0,0,0.1)] max-md:min-h-0 max-md:justify-start max-md:gap-12 max-md:rounded-[8px] max-md:p-8 max-md:shadow-none">
+    <div className="relative flex w-full max-w-[560px] min-h-[540px] lg:h-full flex-col justify-between gap-10 overflow-hidden rounded-[16px] bg-white/10 p-6 sm:p-8 shadow-[0px_-68px_100px_-28px_rgba(255,243,208,0.2),2px_4px_12px_8px_rgba(0,0,0,0.1)] max-md:min-h-0 max-md:justify-start max-md:gap-12 max-md:rounded-lg max-md:p-8 max-md:shadow-none">
       {match.image?.url && (
         <div className="absolute -inset-14 max-md:inset-0" aria-hidden>
           <Image src={match.image.url} alt="" fill sizes="(max-width: 767px) 100vw, 560px" className="object-cover blur-[8px] max-md:blur-none" />
@@ -141,7 +141,7 @@ function CaseCard({ match, lang, clipText, readMoreText }) {
               // mobile tile (Figma 129×114): #FFF 27%, radius 4, padding 12, glass blur 67 (≈ CSS blur 33.5), no gradient/shadow
               <div
                 key={i}
-                className="flex flex-col gap-6 sm:gap-10 rounded-[8px] p-4 sm:p-6 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.16)] max-md:min-h-[114px] max-md:justify-between max-md:gap-6! max-md:rounded-[4px] max-md:bg-[rgba(255,255,255,0.27)] max-md:bg-none! max-md:p-3! max-md:shadow-none max-md:backdrop-blur-[33.5px]"
+                className="flex flex-col gap-6 sm:gap-10 rounded-lg p-4 sm:p-6 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.16)] max-md:min-h-[114px] max-md:justify-between max-md:gap-6! max-md:rounded-sm max-md:bg-[rgba(255,255,255,0.27)] max-md:bg-none! max-md:p-3! max-md:shadow-none max-md:backdrop-blur-[33.5px]"
                 style={{ backgroundImage: "radial-gradient(ellipse 100% 100% at 0% 0%, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.2) 49%, rgba(218,220,221,0.2) 100%)" }}
               >
                 <span className="font-bold text-[40px] sm:text-[64px] leading-none tracking-[-1.28px] text-(--color-yellow) whitespace-nowrap max-md:font-extrabold max-md:text-[32px]! max-md:leading-[25.6px] max-md:tracking-[-0.64px]"><StatValue value={s.value} /></span>
@@ -203,7 +203,7 @@ export default function HomeBusinessTwin({ data, lang = DEFAULT_LANG, cases: all
             <form
               onSubmit={onSubmit}
               // mobile: no white card — the dropdowns and button sit straight on the section background
-              className="flex w-full max-w-[554px] flex-col gap-10 rounded-[8px] bg-[#fbfaf9] px-5 pt-8 pb-6 sm:px-8 sm:pt-10 sm:pb-8 shadow-[0px_2px_9px_0px_rgba(0,0,0,0.1)] max-md:rounded-none max-md:bg-transparent max-md:p-0! max-md:shadow-none"
+              className="flex w-full max-w-[554px] flex-col gap-10 rounded-lg bg-[#fbfaf9] px-5 pt-8 pb-6 sm:px-8 sm:pt-10 sm:pb-8 shadow-[0px_2px_9px_0px_rgba(0,0,0,0.1)] max-md:rounded-none max-md:bg-transparent max-md:p-0! max-md:shadow-none"
             >
               <div className="flex flex-col gap-6">
                 {hasForm && (
@@ -269,7 +269,7 @@ export default function HomeBusinessTwin({ data, lang = DEFAULT_LANG, cases: all
                         return (
                           <div
                             key={i}
-                            className="absolute overflow-hidden rounded-[4px] shadow-[0px_2px_2px_0px_rgba(0,0,0,0.25),1px_2px_6px_4px_rgba(0,0,0,0.1)]"
+                            className="absolute overflow-hidden rounded-sm shadow-[0px_2px_2px_0px_rgba(0,0,0,0.25),1px_2px_6px_4px_rgba(0,0,0,0.1)]"
                             style={{ left: pct(s.left, 560), top: pct(s.top, 472), width: pct(s.w, 560), height: pct(s.h, 472), zIndex: s.z }}
                           >
                             <Image src={img.url} alt={img.alt || ""} fill sizes="(min-width: 1024px) 404px, 70vw" className="object-cover" />

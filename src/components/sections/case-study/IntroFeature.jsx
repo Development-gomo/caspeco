@@ -41,7 +41,7 @@ export default function IntroFeature({ data, lang = DEFAULT_LANG }) {
         </Reveal>
 
         {cards.length > 0 && (
-          <Reveal delay={0.15} className="rounded-[8px] bg-(--color-dark-petrol) p-6 text-(--color-white) shadow-[0px_4px_6px_rgba(0,0,0,0.16)] lg:w-1/2 lg:p-8">
+          <Reveal delay={0.15} className="rounded-lg bg-(--color-dark-petrol) p-6 text-white shadow-[0px_4px_6px_rgba(0,0,0,0.16)] lg:w-1/2 lg:p-8">
             <dl>
               {cards.map((card, i) => {
                 const asPills = card.make_it_button_style === "enable";
@@ -55,7 +55,7 @@ export default function IntroFeature({ data, lang = DEFAULT_LANG }) {
                       {asPills ? (
                         <ul className="flex flex-wrap gap-2">
                           {pills(card.text).map((p, j) => (
-                            <li key={j} className="rounded-full bg-(--color-yellow) px-4 py-1.5 text-[16px] font-bold leading-5 tracking-[-0.32px] text-(--color-black)">
+                            <li key={j} className="rounded-full bg-(--color-yellow) px-4 py-1.5 text-[16px] font-bold leading-5 tracking-[-0.32px] text-black">
                               {p}
                             </li>
                           ))}

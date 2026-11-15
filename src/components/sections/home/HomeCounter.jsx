@@ -119,7 +119,7 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
             <motion.div
               key={i}
               className="lg:max-w-[312px] p-4
-                lg:px-8 lg:py-10 rounded-sm bg-(--color-black)
+                lg:px-8 lg:py-10 rounded-sm bg-black
                 shadow-lg
               "
               initial={{ opacity: 0, y: 24 }}

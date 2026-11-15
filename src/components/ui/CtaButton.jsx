@@ -23,7 +23,7 @@ const VARIANTS = {
   "outline-light-yellow":
     "border-2 border-(--color-white) text-white hover:bg-(--color-white) hover:text-(--color-grey-dark) duration-400 px-[36px] py-[14px]",
   "outline-light-gold":
-    "border-2 border-(--color-white) text-(--color-white) hover:bg-(--color-white) hover:text-(--color-grey-dark) duration-100 px-[36px] py-[14px]",
+    "border-2 border-(--color-white) text-white hover:bg-(--color-white) hover:text-(--color-grey-dark) duration-100 px-[36px] py-[14px]",
   "outline-soft-yellow":
     "border-2 border-[#F1F1F1] text-[#F1F1F1] hover:bg-[#F1F1F1] hover:text-(--color-grey-dark) duration-400 px-[36px] py-[14px]",
 };

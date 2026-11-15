@@ -106,7 +106,7 @@ export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
             {methods.map(([value, label]) => (
               <label
                 key={value}
-                className={`cursor-pointer rounded-[8px] py-[11px] text-center text-[16px] font-bold leading-5 tracking-[-0.32px] text-(--color-grey-dark) transition-[background-color,box-shadow] duration-200 has-focus-visible:outline-2 has-focus-visible:outline-(--color-yellow) ${
+                className={`cursor-pointer rounded-lg py-[11px] text-center text-[16px] font-bold leading-5 tracking-[-0.32px] text-(--color-grey-dark) transition-[background-color,box-shadow] duration-200 has-focus-visible:outline-2 has-focus-visible:outline-(--color-yellow) ${
                   values.contact_method === value ? "bg-white shadow-[0px_2px_3px_rgba(0,0,0,0.09)]" : ""
                 }`}
               >

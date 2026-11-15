@@ -44,7 +44,7 @@ export default function CaseCard({ item, lang = DEFAULT_LANG, readMore, index = 
 
   return (
     <motion.div
-      className={`group relative isolate flex min-h-[460px] md:min-h-[530px] flex-col overflow-hidden rounded-lg bg-(--color-black) p-6 lg:p-8 text-white ${className}`}
+      className={`group relative isolate flex min-h-[460px] md:min-h-[530px] flex-col overflow-hidden rounded-lg bg-black p-6 lg:p-8 text-white ${className}`}
       {...motionProps}
     >
       {/* BACKGROUND IMAGE + GRADIENT */}

@@ -16,7 +16,7 @@ function PartnerCard({ partner, lang }) {
   return (
     <Link
       href={entryHref("partner", partner.slug, lang)}
-      className="group flex h-full flex-col overflow-hidden rounded-[8px] bg-white shadow-[0px_2px_9px_0px_rgba(0,0,0,0.1)] transition-shadow hover:shadow-[0px_4px_16px_0px_rgba(0,0,0,0.16)]"
+      className="group flex h-full flex-col overflow-hidden rounded-lg bg-white shadow-[0px_2px_9px_0px_rgba(0,0,0,0.1)] transition-shadow hover:shadow-[0px_4px_16px_0px_rgba(0,0,0,0.16)]"
     >
       <div className="relative aspect-[495/400] w-full bg-(--color-light-grey)">
         {logo?.source_url && (
@@ -73,7 +73,7 @@ export default function IntegrationsListing({ data, lang = DEFAULT_LANG, categor
                   <li key={cat.id}>
                     <a
                       href={`#partner-cat-${cat.slug}`}
-                      className="inline-block rounded-full border border-(--color-grey-medium) px-3 py-1 text-[16px] font-medium leading-[22px] text-(--color-grey-dark) transition-colors hover:border-(--color-black) hover:text-(--color-black) md:rounded-none md:border-0 md:p-0 md:text-[18px]"
+                      className="inline-block rounded-full border border-(--color-grey-medium) px-3 py-1 text-[16px] font-medium leading-[22px] text-(--color-grey-dark) transition-colors hover:border-(--color-black) hover:text-black md:rounded-none md:border-0 md:p-0 md:text-[18px]"
                     >
                       <span className="cs-link-draw" dangerouslySetInnerHTML={{ __html: cat.name }} />
                     </a>

@@ -135,7 +135,7 @@ export default function Header({
   const headerClasses = "fixed top-0 w-full z-50 text-white";
   const headerBarClasses = `absolute inset-0 -z-10 transition-[background-color,backdrop-filter] duration-300 ${
     // mobile (< 768px, Figma "Top menu"): solid Casp black #151411 once scrolled, no blur
-    scrolled ? "backdrop-blur-[8px] bg-black/40 max-md:backdrop-blur-none max-md:bg-(--color-black)" : "bg-transparent"
+    scrolled ? "backdrop-blur-[8px] bg-black/40 max-md:backdrop-blur-none max-md:bg-black" : "bg-transparent"
   }`;
 
   // Mobile menu state
@@ -289,7 +289,7 @@ export default function Header({
                       >
                         <span className="cs-link-draw -mb-0.5">{item.title}</span>
                         {hasDropdown && (
-                          <span className="flex size-[10px] shrink-0 items-center justify-center transition-transform duration-300 group-hover:rotate-180" aria-hidden>
+                          <span className="flex size-2.5 shrink-0 items-center justify-center transition-transform duration-300 group-hover:rotate-180" aria-hidden>
                             <Image src={DownSvg} alt="" width={10} height={6} className="h-[6px] w-[10px] max-w-none shrink-0" />
                           </span>
                         )}
@@ -480,7 +480,7 @@ export default function Header({
         {/* MOBILE SLIDE-IN MENU */}
         {mobileOpen && (
           <div className="fixed h-screen inset-0 z-60 bg-black/60 backdrop-blur-sm lg:hidden" onClick={() => { setMobileOpen(false); setOpenSubmenu(null); }}>
-            <div className="absolute right-0 top-0 h-full w-72 bg-(--color-black) shadow-xl flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="absolute right-0 top-0 h-full w-72 bg-black shadow-xl flex flex-col" onClick={(e) => e.stopPropagation()}>
               {/* HEADER */}
               <div className="p-6 flex items-center justify-between">
                 <span className="text-white font-semibold">Menu</span>

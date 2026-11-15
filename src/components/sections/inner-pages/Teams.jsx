@@ -68,7 +68,7 @@ export default function TeamSection({ data, lang, prefetchedTeam }) {
           <select
             value={activeFilter}
             onChange={(e) => setActiveFilter(e.target.value)}
-            className="team-filter min-w-[307px] rounded-sm bg-(--color-black) border border-(--color-grey-medium) px-6 py-2 text-white h-[48px] capitalize"
+            className="team-filter min-w-[307px] rounded-sm bg-black border border-(--color-grey-medium) px-6 py-2 text-white h-[48px] capitalize"
           >
             {filters.map((f) => (
               <option key={f.slug} value={f.slug}>

@@ -47,7 +47,7 @@ function IndustryCard({ card, lang }) {
   return (
     <Wrapper
       {...(href ? { href } : {})}
-      className="group relative block h-[394px] w-full overflow-hidden rounded-[8px] bg-white shadow-[0px_2px_9px_0px_rgba(0,0,0,0.1)]"
+      className="group relative block h-[394px] w-full overflow-hidden rounded-lg bg-white shadow-[0px_2px_9px_0px_rgba(0,0,0,0.1)]"
       draggable={false}
     >
       {/* Figma "Sector card" hover (Smart Animate 100 ms ease-out): the #151411 overlay goes

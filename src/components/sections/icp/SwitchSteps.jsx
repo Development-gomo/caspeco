@@ -33,8 +33,8 @@ export default function SwitchSteps({ data, lang = DEFAULT_LANG, joined = false 
             {eyebrow && <p className="italic font-normal text-[18px] lg:text-[20px] leading-[26px] tracking-[-0.8px] text-(--color-dark-petrol) max-md:leading-[22px] max-md:tracking-[-0.36px] max-md:text-(--color-grey-dark)">{eyebrow}</p>}
             {(heading || heading_highlight) && (
               <h2 className="cs-h2 cs-rich text-(--color-heading)">
-                {heading && <span className="block text-(--color-heading)! max-md:text-(--color-black)!" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
-                {heading_highlight && <span className="block text-(--color-yellow) max-md:text-(--color-black)!" dangerouslySetInnerHTML={{ __html: toHtml(heading_highlight) }} />}
+                {heading && <span className="block text-(--color-heading)! max-md:text-black!" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+                {heading_highlight && <span className="block text-(--color-yellow) max-md:text-black!" dangerouslySetInnerHTML={{ __html: toHtml(heading_highlight) }} />}
               </h2>
             )}
           </Reveal>
@@ -60,7 +60,7 @@ export default function SwitchSteps({ data, lang = DEFAULT_LANG, joined = false 
               <Reveal
                 key={i}
                 delay={0.1 + i * 0.1}
-                className="flex min-h-[230px] flex-col justify-between gap-10 rounded-[8px] bg-(--color-dark-petrol) p-6 text-(--color-white) shadow-[0px_14px_32px_rgba(16,39,51,0.13)] transition-[translate] duration-300 hover:-translate-y-1 max-md:min-h-[270px] lg:min-h-[266px]"
+                className="flex min-h-[230px] flex-col justify-between gap-10 rounded-lg bg-(--color-dark-petrol) p-6 text-white shadow-[0px_14px_32px_rgba(16,39,51,0.13)] transition-[translate] duration-300 hover:-translate-y-1 max-md:min-h-[270px] lg:min-h-[266px]"
               >
                 {step.label && <p className="text-[18px] max-md:text-[20px] lg:text-[20px] leading-5 tracking-[-0.4px]">{step.label}</p>}
                 <div className="flex flex-col gap-5">
@@ -78,12 +78,12 @@ export default function SwitchSteps({ data, lang = DEFAULT_LANG, joined = false 
 
         {/* mobile: one timeline card (Figma "switch-steps-card") */}
         {steps.length > 0 && (
-          <div className="rounded-[8px] bg-[#13222F] px-5 pt-[29px] pb-8 text-(--color-light-grey) md:hidden">
+          <div className="rounded-lg bg-[#13222F] px-5 pt-[29px] pb-8 text-(--color-light-grey) md:hidden">
             <p className="font-bold text-[14px] leading-[17px] text-(--color-yellow) uppercase">{data?.steps_heading || "How the switch works"}</p>
             <ol className="mt-[22px] flex flex-col gap-12">
               {steps.map((step, i) => (
                 <li key={i} className="relative flex items-start gap-4">
-                  <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-(--color-yellow) font-bold text-[14px] text-(--color-black)">{step.number}</span>
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-(--color-yellow) font-bold text-[14px] text-black">{step.number}</span>
                   {i < steps.length - 1 && <span className="absolute top-11 -bottom-11 left-[19px] w-0.5 bg-[#2A3B48]" aria-hidden />}
                   <span className="flex min-w-0 flex-col gap-1">
                     {step.label && <span className="text-[12px] leading-[14px] text-[#BFC3C5]">{step.label}</span>}

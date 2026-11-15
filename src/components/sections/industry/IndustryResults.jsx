@@ -36,7 +36,7 @@ export default function IndustryResults({ data }) {
                 <Reveal
                   key={i}
                   delay={0.1 + i * 0.08}
-                  className="group relative isolate flex min-h-[256px] flex-col justify-between gap-8 overflow-hidden rounded-[8px] bg-(--color-black) p-6 text-(--color-light-grey) shadow-[0px_4px_6px_0px_rgba(0,0,0,0.16)] max-md:min-h-[156px] max-md:justify-start max-md:gap-0 max-md:px-6 max-md:pt-3 max-md:pb-4 max-md:shadow-none transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0px_10px_24px_0px_rgba(0,0,0,0.25)]"
+                  className="group relative isolate flex min-h-[256px] flex-col justify-between gap-8 overflow-hidden rounded-lg bg-black p-6 text-(--color-light-grey) shadow-[0px_4px_6px_0px_rgba(0,0,0,0.16)] max-md:min-h-[156px] max-md:justify-start max-md:gap-0 max-md:px-6 max-md:pt-3 max-md:pb-4 max-md:shadow-none transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0px_10px_24px_0px_rgba(0,0,0,0.25)]"
                 >
                   {image && (
                     <Image

@@ -35,7 +35,7 @@ function AccordionItem({ item, index, isOpen, onToggle, lang, variant }) {
   const icon = mediaUrl(item.icon) || FALLBACK_ICONS[index % FALLBACK_ICONS.length];
   return (
     <div
-      className={`rounded-[8px] pl-5 pr-6 lg:pr-8 max-md:pr-5 transition-colors duration-300 ${
+      className={`rounded-lg pl-5 pr-6 lg:pr-8 max-md:pr-5 transition-colors duration-300 ${
         isOpen
           ? "bg-(--color-dark-petrol) max-md:shadow-[-1px_0px_5px_rgba(0,0,0,0.1)]"
           : "bg-white shadow-[-1px_0px_4px_rgba(0,0,0,0.1),0px_3px_4px_rgba(0,0,0,0.1)] max-md:shadow-[-1px_0px_5px_rgba(0,0,0,0.1),-1px_0px_5px_rgba(0,0,0,0.1)]"
