@@ -5,6 +5,7 @@
 // Fields: sub_heading (italic eyebrow above the heading), heading, short_text, cta_text + cta_url (yellow button), bg_image,
 // bg_video (optional ACF file; when set it replaces the image as the background and bg_image becomes its poster),
 // background_color (used when there is no image), hero_height (25–100, % of the viewport), enable_overlay (button group "enable"/"disable"; dark overlay over bg_image).
+// mobile_bg_image / mobile_bg_video (optional, < md only): replace bg_image / bg_video on mobile, each falling back to the default; neither set → the original render.
 // short_text lists (ul) use the brand yellow bullets (.cs-list).
 
 "use client";
@@ -14,6 +15,7 @@ import React from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import CtaButton from "@/components/ui/CtaButton";
 import HeroLabels from "@/components/ui/HeroLabels";
+import HeroBgMedia from "@/components/ui/HeroBgMedia";
 import { DEFAULT_LANG } from "@/config";
 import { toHtml } from "@/lib/content";
 
@@ -24,6 +26,12 @@ export default function InnerHero({ data, lang = DEFAULT_LANG }) {
 
   const bgImage = data?.bg_image?.url || "";
   const bgVideo = data?.bg_video?.url || "";
+  const hasDefaultMedia = Boolean(bgVideo || bgImage);
+  // Mobile (< md): mobile_bg_video / mobile_bg_image when set, otherwise bg_video / bg_image (same rule as HomeHero).
+  // Neither set — or the fields missing from the layout (undefined / false) — → exactly the original render below.
+  const mobileVideo = data?.mobile_bg_video?.url || "";
+  const mobileImage = data?.mobile_bg_image?.url || "";
+  const hasMobileMedia = Boolean(mobileVideo || mobileImage);
   // enable_overlay: ACF Button Group, may arrive as "enable" or { value: "enable" }
   const overlayField = data?.enable_overlay;
   const overlay = (overlayField?.value ?? overlayField) === "enable";
@@ -45,9 +53,21 @@ export default function InnerHero({ data, lang = DEFAULT_LANG }) {
       style={{ backgroundColor: data?.background_color || "var(--color-black)", ...(full ? {} : { minHeight: `${height}vh` }) }}
     >
       {/* BG IMAGE — overlay on: the parallax lifts the image up to 2%, which would leave an image-less strip at the bottom under the static overlay (a grey band), so the image box is extended 3% below the section */}
-      {(bgVideo || bgImage) && (
+      {(hasDefaultMedia || hasMobileMedia) && (
         <motion.div className="absolute hero-bg inset-0 -z-10" style={overlay ? { y: bgY, bottom: "-3%" } : { y: bgY }}>
-          {bgVideo ? (
+          {hasMobileMedia ? (
+            // mobile_bg_* set: <picture> picks the still per viewport (bg_image stays the backdrop/poster under
+            // bg_video on desktop, as before); the video mounts after hydration only on the viewport that plays it
+            <HeroBgMedia
+              mobileStill={mobileImage || bgImage}
+              desktopStill={bgImage}
+              mobileVideo={mobileVideo || bgVideo}
+              desktopVideo={bgVideo}
+              imgClassName="object-cover object-top"
+              videoClassName="absolute inset-0 h-full w-full object-cover object-top"
+              preload="auto"
+            />
+          ) : bgVideo ? (
             // bg_video (same as HomeHero): muted looping autoplay; bg_image doubles as the poster
             <video
               src={bgVideo}
@@ -65,7 +85,10 @@ export default function InnerHero({ data, lang = DEFAULT_LANG }) {
         </motion.div>
       )}
       {/* OVERLAY — static, so it covers the whole section while the image parallaxes */}
-      {(bgVideo || bgImage) && overlay && <div className="absolute inset-0 -z-10 bg-black/60" aria-hidden="true" />}
+      {/* mobile-only media: overlay on mobile only (desktop keeps the plain background_color, as before) */}
+      {(hasDefaultMedia || hasMobileMedia) && overlay && (
+        <div className={`absolute inset-0 -z-10 bg-black/60${hasDefaultMedia ? "" : " md:hidden"}`} aria-hidden="true" />
+      )}
 
       {/* HERO CONTENT — USP row pinned near the top, heading block pinned to the bottom */}
       <div

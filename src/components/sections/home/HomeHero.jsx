@@ -1,11 +1,23 @@
 "use client";
 
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import React from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import CtaButton from "@/components/ui/CtaButton";
 import HeroLabels from "@/components/ui/HeroLabels";
 import { DEFAULT_LANG } from "@/config";
+
+// Mobile = below Tailwind md (768px) — same query as HomeHelpTabs / ProductTestimonials
+const MOBILE_MQ = "(max-width: 767.98px)";
+const subscribeMobile = (onChange) => {
+  const mq = window.matchMedia(MOBILE_MQ);
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+};
+const isMobileViewport = () => window.matchMedia(MOBILE_MQ).matches;
+const viewportUnknown = () => null; // server + hydration render: viewport not known yet
+// 1×1 transparent GIF for a <picture> slot whose viewport shows no image, so no file is fetched there
+const BLANK_IMG = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 export default function HomeHero({ data, lang = DEFAULT_LANG }) {
   const sectionRef = React.useRef(null);
@@ -17,6 +29,15 @@ export default function HomeHero({ data, lang = DEFAULT_LANG }) {
 
   const bgImage = data?.bg_image?.url || "";
   const bgVideo = data?.bg_video?.url || "";
+  // Mobile (< md): mobile_bg_video / mobile_bg_image when set, otherwise the default bg_video / bg_image.
+  // Neither mobile field set → the default media renders exactly as before on every viewport.
+  const mobileVideo = data?.mobile_bg_video?.url || "";
+  const mobileImage = data?.mobile_bg_image?.url || "";
+  const hasMobileMedia = Boolean(mobileVideo || mobileImage);
+  const mobileStill = mobileImage || bgImage; // also the backdrop under a mobile video (poster / autoplay blocked)
+  const desktopStill = bgVideo ? "" : bgImage; // desktop as before: no image under bg_video
+  const isMobile = React.useSyncExternalStore(subscribeMobile, isMobileViewport, viewportUnknown);
+  const activeVideo = isMobile === null ? "" : isMobile ? mobileVideo || bgVideo : bgVideo;
   // enable_overlay: ACF Button Group ("enable" / "disable"), may arrive as "enable" or { value: "enable" };
   // adds a dark overlay over the background image / video (off by default)
   const overlayField = data?.enable_overlay;
@@ -38,7 +59,39 @@ export default function HomeHero({ data, lang = DEFAULT_LANG }) {
       {/* BG IMAGE/VIDEO */}
       {/* overlay on: the parallax lifts the image up to 2%, which would leave an image-less strip at the bottom under the static overlay (a grey band) — extend the image box so it always covers */}
       <motion.div className="absolute hero-bg inset-0 -z-10" style={overlay ? { y: bgY, bottom: "-3%" } : { y: bgY }}>
-        {bgVideo ? (
+        {hasMobileMedia ? (
+          <>
+            {/* mobile_bg_* set: one <picture> picks the still per viewport (only that file downloads); the video
+                mounts after hydration on the viewport that plays it, so the other viewport's file is never fetched */}
+            {(mobileStill || desktopStill) && (
+              <picture>
+                <source media={MOBILE_MQ} srcSet={mobileStill || BLANK_IMG} />
+                <img
+                  {...getImageProps({
+                    src: desktopStill || BLANK_IMG,
+                    alt: "",
+                    fill: true,
+                    priority: true,
+                    className: "object-cover object-top -top-[123px]",
+                  }).props}
+                  alt=""
+                  fetchPriority="high"
+                />
+              </picture>
+            )}
+            {activeVideo && (
+              <video
+                key={activeVideo}
+                src={activeVideo}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            )}
+          </>
+        ) : bgVideo ? (
           <video
             src={bgVideo}
             autoPlay
