@@ -147,7 +147,7 @@ export default function HomeIntroVideo({ data }) {
     >
       <div className={`cs-container flex flex-col gap-12 ${centered ? "items-center" : "lg:flex-row lg:items-center lg:justify-between"}`}>
         {/* first:mt-0 — without heading / rolling words the column starts flush */}
-        <div className={`flex flex-col lg:max-w-[700px] xl:max-w-[780px] ${centered ? "items-center text-center" : "items-start"}`}>
+        <div className={`flex flex-col ${centered ? "items-center text-center min-[1024px]:max-w-[700px] min-[1137px]:w-full min-[1137px]:max-w-none" : "lg:max-w-[700px] xl:max-w-[780px] items-start"}`}>
           {heading && (
             <h2 className="cs-h2 text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
           )}
@@ -210,7 +210,7 @@ export default function HomeIntroVideo({ data }) {
               className={
                 testimonial
                   ? "cs-rich mt-5 max-w-[474px] text-[14px] leading-[18px] text-(--color-grey-dark) [&_strong]:text-[18px] [&_strong]:leading-[22px] [&_strong]:font-bold [&_strong]:text-black first:mt-0"
-                  : "cs-p2 cs-text-sm cs-rich mt-8 xl:mt-12 max-w-[474px] text-(--color-grey-dark) max-md:mt-6 first:mt-0"
+                  : `cs-p2 cs-text-sm cs-rich mt-8 xl:mt-12 max-w-[474px] ${centered ? "min-[1137px]:max-w-none" : ""} text-(--color-grey-dark) max-md:mt-6 first:mt-0`
               }
               dangerouslySetInnerHTML={{ __html: toHtml(short_text) }}
             />
