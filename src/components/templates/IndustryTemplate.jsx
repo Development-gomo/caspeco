@@ -14,8 +14,8 @@ export default function IndustryTemplate({ industry, lang, slug, themeOptions })
     return <EntryTemplate entry={industry} entryType="industries" routeType="industry" lang={lang} slug={slug} themeOptions={themeOptions} />;
   }
 
-  // A page-level quick contact section replaces the global one from Theme Options
-  const hasQuickContact = sections.some((b) => b._layout === "quick_contact_section");
+  // A page-level quick contact / contact form section replaces the global one from Theme Options
+  const hasQuickContact = sections.some((b) => b._layout === "quick_contact_section" || b._layout === "contact_form_section");
 
   return (
     <Shell

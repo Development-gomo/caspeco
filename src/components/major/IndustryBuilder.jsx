@@ -3,6 +3,7 @@
 // (Figma "Industry_Page"). Only the three industry-specific sections live here; every
 // other layout (hero, logos, product cards, FAQ, quick contact, help tabs, restaurant
 // map, insights …) is rendered by ProductBuilder, which falls back to PageBuilder.
+// (contact_form_section is rendered here with IcpContactFormSection, as on Products.)
 
 import { withNeighbours } from "@/lib/content";
 import dynamic from "next/dynamic";
@@ -18,6 +19,7 @@ const IndustryResults = dynamic(() => import("../sections/industry/IndustryResul
 const TestimonialSlider = dynamic(() => import("../sections/TestimonialSlider"));
 const HomeIndustrySlider = dynamic(() => import("../sections/home/HomeIndustrySlider"));
 const HomeConnectedData = dynamic(() => import("../sections/home/HomeConnectedData"));
+const IcpContactFormSection = dynamic(() => import("../sections/contact-form/IcpContactFormSection"));
 
 export default async function IndustryBuilder({ sections: rawSections, lang = DEFAULT_LANG, currentId }) {
   const sections = withNeighbours(rawSections); // _prev/_next per block (Figma section-gap rule)
@@ -56,6 +58,10 @@ export default async function IndustryBuilder({ sections: rawSections, lang = DE
 
           case "data_section":
             return withSpacing(block, <HomeConnectedData key={i} data={block} lang={lang} />, i);
+
+          // Contact Form Section: same design as the Products / ICP pages (contact person or quick-contact card, HubSpot shortcode first)
+          case "contact_form_section":
+            return withSpacing(block, <IcpContactFormSection key={i} block={block} lang={lang} />, i);
 
           default:
             return <ProductBuilder key={i} sections={[block]} lang={lang} />;
