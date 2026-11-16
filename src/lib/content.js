@@ -27,8 +27,8 @@ export function toHtml(value) {
  */
 export function breakAfterPeriods(html) {
   if (!html || typeof html !== "string") return "";
-  // "." (optionally followed by closing tags such as </strong>) + spaces + more text, not already followed by a <br>
-  return html.replace(/\.((?:<\/[a-z0-9]+>)*)[ 	]+(?!<br)(?=\S)/gi, ".$1<br />");
+  // "." (optionally followed by closing tags such as </strong>) + whitespace (space or newline) + more text, not already followed by a <br>
+  return html.replace(/\.((?:<\/[a-z0-9]+>)*)\s+(?!<br)(?=\S)/gi, ".$1<br />");
 }
 
 /**
