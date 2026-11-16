@@ -17,12 +17,17 @@
 // via max-md:hidden and swipeable glass quote cards (ui/MobileSlider scroll-snap track + SliderPoints
 // dots, no logo) are shown instead; swiping the section is disabled on mobile so the single
 // background (slides[0]) stays put. >= md is unchanged.
+// `slides` entries may also carry `caseLogo` ({ url, alt, width, height }) and `caseCta` ({ text, href }),
+// set by ClientQuoteSlider and rendered ONLY in those mobile glass cards: caseLogo above the quote (cards
+// without one get a same-height spacer so the quotes line up), caseCta as a text link at the bottom right of
+// the name row. Not the `logo` key (desktop, case pages). No caseLogo/caseCta on any slide → cards as before.
 // `variant` ("default" | "case"): "case" (CasePageBuilder) sets mobile padding 48/48 (Figma Case Study Mobile); >= md unchanged.
 
 "use client";
 
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import CtaButton from "@/components/ui/CtaButton";
 import SliderArrows from "@/components/ui/SliderArrows";
@@ -35,6 +40,13 @@ import { MOBILE_SLIDE, MOBILE_TRACK, SliderPoints } from "@/components/ui/Mobile
 const pad = (n) => String(n).padStart(2, "0");
 const MAX_CASES = 6;
 const SWIPE_PX = 50;
+
+// right arrow for the mobile case link (caseCta)
+const CaseArrow = () => (
+  <svg width="16" height="10" viewBox="0 0 16 10" fill="none" aria-hidden className="shrink-0">
+    <path d="M0 5h15M11 1l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
 
 // case study → slide. Background: the wide banner_image when set — the featured image is a
 // 426×700 card crop and looks soft when stretched full width.
@@ -65,6 +77,8 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
 
   const bg = slides[index].bg || mediaUrl(data?.bg_image);
   const hasCta = cta_text && cta_url;
+  // mobileGrid cards: when any slide has a case logo, the others get a spacer so the quotes align
+  const anyCaseLogo = slides.some((s) => s.caseLogo?.url);
 
   return (
     <motion.section className="relative isolate overflow-hidden bg-black touch-pan-y" style={data?.bg_color ? { background: data.bg_color } : undefined} onPanEnd={onPanEnd}>
@@ -98,16 +112,31 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
                 {slides.map((slide, i) => (
                   <li key={i} className={`${MOBILE_SLIDE} w-[calc(100vw-80px)] max-w-[340px]`}>
                     <figure className={`${GLASS_CLASS} relative flex h-full min-h-[240px] flex-col rounded-lg p-6 text-white`} style={GLASS_STYLE}>
+                        {slide.caseLogo?.url ? (
+                          <Image src={slide.caseLogo.url} alt={slide.caseLogo.alt || slide.name || ""} width={slide.caseLogo.width || 115} height={slide.caseLogo.height || 36} className="mb-6 h-[35.6px] w-auto max-w-[115px] shrink-0 self-start object-contain object-left" />
+                        ) : (
+                          anyCaseLogo && <span className="mb-6 block h-[35.6px] shrink-0" aria-hidden />
+                        )}
                         <div className="flex flex-1 items-center">
                           <blockquote className="font-normal italic text-[20px] leading-6" dangerouslySetInnerHTML={{ __html: toHtml(curlyQuote(slide.quote)) }} />
                         </div>
-                        {(slide.name || slide.company) && (
+                        {(slide.name || slide.company || slide.caseCta) && (
                           <figcaption className="mt-6 flex items-center gap-3">
-                            <span className="h-12 w-[3px] shrink-0 rounded-lg bg-(--color-yellow)" aria-hidden />
-                            <span className="flex flex-col gap-1">
-                              {slide.name && <span className="font-bold text-[20px] leading-6 tracking-[-0.4px]">{slide.name}</span>}
-                              {slide.company && <span className="font-medium text-[16px] leading-5 tracking-normal">{slide.company}</span>}
-                            </span>
+                            {(slide.name || slide.company) && (
+                              <>
+                                <span className="h-12 w-[3px] shrink-0 rounded-lg bg-(--color-yellow)" aria-hidden />
+                                <span className="flex flex-col gap-1">
+                                  {slide.name && <span className="font-bold text-[20px] leading-6 tracking-[-0.4px]">{slide.name}</span>}
+                                  {slide.company && <span className="font-medium text-[16px] leading-5 tracking-normal">{slide.company}</span>}
+                                </span>
+                              </>
+                            )}
+                            {slide.caseCta && (
+                              <Link href={slide.caseCta.href} className="group ml-auto flex shrink-0 items-center gap-2 self-end whitespace-nowrap text-[16px] leading-5 font-medium tracking-[-0.32px] text-[#FDFDFD]">
+                                <span className="underline underline-offset-4">{slide.caseCta.text}</span>
+                                <CaseArrow />
+                              </Link>
+                            )}
                           </figcaption>
                         )}
                     </figure>
