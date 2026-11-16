@@ -6,6 +6,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import CtaButton from "@/components/ui/CtaButton";
 import HeroLabels from "@/components/ui/HeroLabels";
 import { DEFAULT_LANG } from "@/config";
+import { breakAfterPeriods } from "@/lib/content";
 
 // Mobile = below Tailwind md (768px) — same query as HomeHelpTabs / ProductTestimonials
 const MOBILE_MQ = "(max-width: 767.98px)";
@@ -137,7 +138,7 @@ export default function HomeHero({ data, lang = DEFAULT_LANG }) {
                 lg:text-[72px] lg:leading-[72px] lg:tracking-[-2.8px]
                 xl:text-[96px] xl:leading-[92px] xl:tracking-[-3.84px]
                 min-[90rem]:text-[112px] min-[90rem]:leading-[104px] min-[90rem]:tracking-[-4.48px]"
-              dangerouslySetInnerHTML={{ __html: heading }}
+              dangerouslySetInnerHTML={{ __html: breakAfterPeriods(heading) }}
             />
 
             {shortHeading && (

@@ -22,6 +22,16 @@ export function toHtml(value) {
 }
 
 /**
+ * Hero H1: line break after each sentence-ending period ("One platform. One partner." -> two lines).
+ * A period at the very end, one not followed by a space (3.5), or one already followed by a <br> is left alone.
+ */
+export function breakAfterPeriods(html) {
+  if (!html || typeof html !== "string") return "";
+  // "." (optionally followed by closing tags such as </strong>) + spaces + more text, not already followed by a <br>
+  return html.replace(/\.((?:<\/[a-z0-9]+>)*)[ 	]+(?!<br)(?=\S)/gi, ".$1<br />");
+}
+
+/**
  * Default yellow highlight for headings typed as plain text (no markup):
  *  - "lastLine":   last line of a multi-line heading ("Best-performing customers\nlast month")
  *  - "firstToken": a leading token containing a digit ("100+ integrations")
