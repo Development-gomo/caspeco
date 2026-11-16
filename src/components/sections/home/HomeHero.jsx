@@ -30,15 +30,15 @@ export default function HomeHero({ data, lang = DEFAULT_LANG }) {
 
   const bgImage = data?.bg_image?.url || "";
   const bgVideo = data?.bg_video?.url || "";
-  // Mobile (< md): mobile_bg_video / mobile_bg_image when set, otherwise the default bg_video / bg_image.
-  // Neither mobile field set → the default media renders exactly as before on every viewport.
-  const mobileVideo = data?.mobile_bg_video?.url || "";
+  // Mobile (< md): NO video is loaded or played (QA: video disabled on mobile). The hero shows the still image:
+  // mobile_bg_image when set, otherwise bg_image. Desktop is unchanged (bg_video plays, else bg_image).
+  // Neither a video nor a mobile image set → the default image renders exactly as before on every viewport.
   const mobileImage = data?.mobile_bg_image?.url || "";
-  const hasMobileMedia = Boolean(mobileVideo || mobileImage);
-  const mobileStill = mobileImage || bgImage; // also the backdrop under a mobile video (poster / autoplay blocked)
+  const hasMobileMedia = Boolean(bgVideo || mobileImage);
+  const mobileStill = mobileImage || bgImage;
   const desktopStill = bgVideo ? "" : bgImage; // desktop as before: no image under bg_video
   const isMobile = React.useSyncExternalStore(subscribeMobile, isMobileViewport, viewportUnknown);
-  const activeVideo = isMobile === null ? "" : isMobile ? mobileVideo || bgVideo : bgVideo;
+  const activeVideo = isMobile === null || isMobile ? "" : bgVideo; // desktop only, mounted after hydration
   // enable_overlay: ACF Button Group ("enable" / "disable"), may arrive as "enable" or { value: "enable" };
   // adds a dark overlay over the background image / video (off by default)
   const overlayField = data?.enable_overlay;
@@ -62,8 +62,8 @@ export default function HomeHero({ data, lang = DEFAULT_LANG }) {
       <motion.div className="absolute hero-bg inset-0 -z-10" style={overlay ? { y: bgY, bottom: "-3%" } : { y: bgY }}>
         {hasMobileMedia ? (
           <>
-            {/* mobile_bg_* set: one <picture> picks the still per viewport (only that file downloads); the video
-                mounts after hydration on the viewport that plays it, so the other viewport's file is never fetched */}
+            {/* one <picture> picks the still per viewport (only that file downloads); the desktop video mounts
+                after hydration on desktop only, so mobile never fetches it */}
             {(mobileStill || desktopStill) && (
               <picture>
                 <source media={MOBILE_MQ} srcSet={mobileStill || BLANK_IMG} />
