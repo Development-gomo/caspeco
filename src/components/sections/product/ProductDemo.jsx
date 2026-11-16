@@ -5,8 +5,8 @@
 // "Try it out!" annotation as one transparent image).
 // Figma "Online order device group" Default → Variant2: hovering (desktop) or tapping
 // the devices swaps to hover_image (the "order ready" notification state).
-// Mobile (< 768, Figma Product "GOMO company size mobile" 2517:6727): padding 64, device image
-// 300×229 centred first, heading → text → USP rows 16 apart, rows 12 apart (3×33 bar, 12 gap,
+// Mobile (< 768, Figma Product "GOMO company size mobile" 2517:6727): padding 64, device image first
+// (QA: full screen width, edge to edge and flush with the right screen edge, 696:532 proportions), heading → text → USP rows 16 apart, rows 12 apart (3×33 bar, 12 gap,
 // title → text 2), full-width CTA 24 below.
 
 "use client";
@@ -63,7 +63,7 @@ export default function ProductDemo({ data, lang = DEFAULT_LANG }) {
           // Figma "Online order device group": a 696×532 box 745px from the content edge
           // (x 865 at 1512), top-aligned with the content and bleeding past the viewport
           // (section clips it); the text column is centred against it (xl:min-h-[532px]).
-          <div className="flex w-full justify-center max-md:order-first lg:absolute lg:left-[745px] lg:top-0 lg:w-[696px]">
+          <div className="flex w-full justify-center max-md:order-first max-md:-mx-6 max-md:w-[calc(100%+48px)] max-md:justify-end lg:absolute lg:left-[745px] lg:top-0 lg:w-[696px]">
             <Reveal
               x={60}
               y={0}
@@ -79,7 +79,7 @@ export default function ProductDemo({ data, lang = DEFAULT_LANG }) {
                 onPointerUp: (e) => e.pointerType !== "mouse" && setActive((v) => !v),
                 onKeyDown: (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), setActive((v) => !v)),
               })}
-              className={`relative aspect-[696/532] w-full max-w-[696px] max-md:w-[300px] drop-shadow-[0px_2.3px_5.2px_rgba(0,0,0,0.1)] max-md:drop-shadow-[0px_1px_4.5px_rgba(0,0,0,0.1)] outline-none ${hover ? "cursor-pointer" : ""}`}
+              className={`relative aspect-[696/532] w-full max-w-[696px] max-md:max-w-none drop-shadow-[0px_2.3px_5.2px_rgba(0,0,0,0.1)] max-md:drop-shadow-[0px_1px_4.5px_rgba(0,0,0,0.1)] outline-none ${hover ? "cursor-pointer" : ""}`}
             >
               <Image
                 src={mediaUrl(image)}
