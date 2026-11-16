@@ -15,6 +15,7 @@ import { mediaUrl, toHtml, rows } from "@/lib/content";
 import { cf7FormId } from "@/lib/forms";
 import { parseHubspotEmbed } from "@/lib/hubspot";
 import HubspotEmbed from "@/components/ui/HubspotEmbed";
+import HeadingRule from "@/components/ui/HeadingRule";
 import RuleLine from "../../../../public/icons/quick-contact-rule.svg";
 
 // Form card: 493 wide, content 445 (Figma "phone-contact-form", 864 → 1309).
@@ -43,10 +44,15 @@ export default function QuickContact({ data, lang = DEFAULT_LANG, id, form, vari
   if (!heading && !hasAcfForm && !cf7Id && !form) return null;
   const bgImage = mediaUrl(data?.bg_image);
 
+  // Desktop row = 120 + 476 (text) + 184 (gap) + 493 (card) + 120 = 1393px. Below that (1024–1392)
+  // the side padding (min 24) and gap (min 48) shrink together so the row always fills the width
+  // exactly (pad = 29.2683% − 287.707px, gap = content − 969px); below 1065 both are at their minimum
+  // and the text column narrows instead (content − 541px) with the heading scaled to it in cqw
+  // (80/78/−3.2 of 476). From 1393px up every value resolves to the fixed Figma size.
   return (
     <section
       id={id}
-      className="relative isolate overflow-hidden flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-[184px] px-6 lg:px-[120px] py-12 max-md:py-16 lg:py-[72px]"
+      className="relative isolate overflow-hidden flex flex-col lg:flex-row items-center justify-center gap-12 min-[1024px]:gap-[clamp(48px,calc(100%-969px),184px)] px-6 min-[1024px]:px-[clamp(24px,calc(29.2683%-287.707px),120px)] py-12 max-md:py-16 lg:py-[72px]"
       style={{ backgroundColor: background_colour || "#0b2533" }}
     >
       {bgImage && (
@@ -57,21 +63,22 @@ export default function QuickContact({ data, lang = DEFAULT_LANG, id, form, vari
       )}
       {/* Mobile: one card around the text and the form (display: contents from md up — no layout box) */}
       <div className={MOBILE_CARD}>
-      <div className="flex flex-col gap-4 items-start w-full lg:w-[476px] shrink-0">
+      <div className="flex flex-col gap-4 items-start w-full min-[1024px]:w-[min(476px,calc(100%-541px))] min-[1024px]:@container shrink-0">
         {/* Figma mobile: Light Italic 18/22, -2%, #3F3E3C */}
         {sub_heading && <p className="italic text-[24px] leading-7 tracking-[-0.48px] text-white max-md:text-[18px] max-md:leading-[22px] max-md:tracking-[-0.36px] max-md:font-light max-md:text-[#3F3E3C]">{sub_heading}</p>}
 
         {heading && (
           <h2
-            className="cs-title cs-highlight text-[40px] lg:text-[80px] leading-tight lg:leading-[78px] tracking-[-3.2px] font-extrabold text-[#fff] max-md:text-[#151411] normal-case"
+            className="cs-title cs-highlight text-[40px] min-[1024px]:text-[min(80px,16.807cqw)] leading-tight min-[1024px]:leading-[min(78px,16.387cqw)] tracking-[-3.2px] min-[1024px]:tracking-[max(-3.2px,-0.6723cqw)] font-extrabold text-[#fff] max-md:text-[#151411] normal-case"
             dangerouslySetInnerHTML={{ __html: toHtml(heading) }}
           />
         )}
 
         {/* Figma "Vector 875": hand-drawn curved stroke (4px, round caps). The SVG has 2px of
-            padding around the stroke, so the negative margins keep it in a 4px slot at full width. */}
+            padding around the stroke, so the negative margins keep it in a 4px slot. Full width by
+            default; from 1024 up HeadingRule sets --rule-w to the heading's last line + 4px. */}
         {(sub_heading || heading) && (
-          <Image src={RuleLine} alt="" aria-hidden className="-mx-0.5 -my-0.5 h-2 w-[calc(100%+4px)] max-w-none max-md:hidden" />
+          <HeadingRule src={RuleLine} className="-mx-0.5 -my-0.5 h-2 w-[calc(100%+4px)] min-[1024px]:w-[var(--rule-w,calc(100%+4px))] max-w-none max-md:hidden" />
         )}
 
         {short_description && (
