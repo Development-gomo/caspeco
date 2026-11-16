@@ -52,7 +52,7 @@ export default function SystemCheck({ data, lang = DEFAULT_LANG }) {
   return (
     <section className="cs-sec relative isolate overflow-hidden bg-black py-18 max-md:[--sec-pt:48px] max-md:[--sec-pb:48px] lg:pt-20 lg:pb-[90px]" style={data?.bg_color ? { background: data.bg_color } : undefined}>
       {/* photo with Figma layer blur (scaled so the blurred edge stays outside the section); mobile: sharp, unscaled */}
-      {bg && <Image src={bg} alt="" fill sizes="100vw" className="-z-10 scale-110 object-cover blur-[24.8px] max-md:scale-100 max-md:filter-none" />}
+      {bg && <Image src={bg} alt="" fill sizes="100vw" className="-z-10 scale-110 object-cover" />}
       <div className="absolute inset-0 -z-10 max-md:hidden" style={{ background: "linear-gradient(90deg, #000 -0.9%, rgba(0, 0, 0, 0.4) 100.9%)" }} aria-hidden />
       <div className="absolute inset-0 -z-10 bg-[rgba(0,0,0,0.4)] md:hidden" aria-hidden />
 

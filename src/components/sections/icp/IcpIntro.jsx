@@ -129,7 +129,7 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
         {mediaUrl(image) && (
           // Figma: 608×342 (Opening soon) / 369×369 (Levelling up), radius 8, no shadow
           // content_section (desktop): tall images are fitted inside the text column height instead of growing taller
-          <Reveal x={40} y={0} delay={0.15} className={`w-full lg:flex-none ${rolling.length ? "lg:w-[369px]" : "lg:w-[608px]"}${fitImage ? " lg:relative lg:self-stretch lg:min-h-[342px]" : ""}`}>
+          <Reveal x={40} y={0} delay={0.15} className={`w-full lg:flex-none ${rolling.length ? "lg:w-[369px]" : "lg:w-[608px]"}${fitImage ? " lg:relative lg:min-h-[342px]" : ""}`}>
             <Image
               src={mediaUrl(image)}
               alt={image?.alt || ""}
