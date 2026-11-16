@@ -51,6 +51,9 @@ export const LANGUAGES = {
   },
 };
 
+// "Language" as written in each language (mobile menu language switcher trigger)
+export const LANGUAGE_LABEL = { sv: "Språk", en: "Language", no: "Språk", fr: "Langue", frbg: "Langue", nl: "Taal" };
+
 /** Name of language `code` as written in language `inLang` (falls back to its own name, then the code) */
 export function langName(code, inLang = code) {
   const names = LANGUAGES[code]?.names || {};

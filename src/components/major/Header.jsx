@@ -7,7 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import DownSvg from "../../../public/down-arrow.svg";
 import { getThemeOptions, getEntryTranslations } from "@/lib/api";
-import { DEFAULT_LANG, SUPPORTED_LANGS, LANGUAGES, LOCALE_MAP, langHref, langHome, entryHref, langName, altLangs as otherLangs } from "@/config";
+import { DEFAULT_LANG, SUPPORTED_LANGS, LANGUAGES, LANGUAGE_LABEL, LOCALE_MAP, langHref, langHome, entryHref, langName, altLangs as otherLangs } from "@/config";
 
 // WPML-style flag for a language code (files in /public/flags)
 function LangFlag({ code, className = "" }) {
@@ -501,8 +501,96 @@ export default function Header({
                 </button>
               </div>
 
-              {/* CONTENT (SLIDING PANELS) */}
-              <div className="relative flex-1 overflow-hidden px-6">
+              {/* MOBILE (< 768px) CONTENT: accordion — the whole row toggles its dropdown, one open at a time */}
+              <div className="md:hidden flex-1 min-h-0 overflow-y-auto">
+                {navItems.map((item) => {
+                  const hasChildren = item.links.length > 0;
+                  if (!hasChildren) {
+                    return (
+                      <NavLink
+                        key={item.id}
+                        url={item.url}
+                        lang={lang}
+                        className="block w-full px-6 py-2.5 text-white text-lg"
+                        onClick={(e) => handleNavClick(e, item.url, true)}
+                      >
+                        {item.title}
+                      </NavLink>
+                    );
+                  }
+                  const open = openSubmenu === item.id;
+                  const panelId = `mobile-submenu-${item.id}`;
+                  return (
+                    <div key={item.id}>
+                      <button
+                        type="button"
+                        aria-expanded={open}
+                        aria-controls={panelId}
+                        onClick={() => setOpenSubmenu(open ? null : item.id)}
+                        className="flex w-full cursor-pointer items-center justify-between px-6 py-2.5 text-left text-white text-lg"
+                      >
+                        {item.title}
+                        <Image
+                          src={DownSvg}
+                          alt=""
+                          width={16}
+                          height={16}
+                          className={`shrink-0 transition-transform duration-300 ${open ? "rotate-0" : "-rotate-90"}`}
+                        />
+                      </button>
+                      <div
+                        id={panelId}
+                        inert={!open}
+                        className={`grid transition-[grid-template-rows] duration-300 ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+                      >
+                        <div className="overflow-hidden">
+                          <div className="flex flex-col gap-4 px-6 pt-2 pb-2.5">
+                            {/* Parent's own page first (the row itself only toggles) */}
+                            {item.url && (
+                              <NavLink
+                                url={item.url}
+                                lang={lang}
+                                className="text-white/80 text-base hover:text-white transition"
+                                onClick={(e) => handleNavClick(e, item.url, true)}
+                              >
+                                {item.title}
+                              </NavLink>
+                            )}
+                            {item.links.map((link, li) => (
+                              <NavLink
+                                key={li}
+                                url={link.url}
+                                lang={lang}
+                                className="text-white/80 text-base hover:text-white transition"
+                                onClick={(e) => handleNavClick(e, link.url, true)}
+                              >
+                                {link.label}
+                              </NavLink>
+                            ))}
+                            {item.card?.button && (
+                              <NavLink
+                                url={item.card.button.url}
+                                lang={lang}
+                                target={item.card.button.target}
+                                className="text-base font-bold text-(--color-yellow)"
+                                onClick={() => {
+                                  setMobileOpen(false);
+                                  setOpenSubmenu(null);
+                                }}
+                              >
+                                {item.card.button.title || item.card.title}
+                              </NavLink>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* CONTENT (SLIDING PANELS) — tablet (768–1023px) only */}
+              <div className="relative flex-1 overflow-hidden px-6 max-md:hidden">
                 {/* MAIN MENU PANEL */}
                 <div
                   className={`absolute inset-0 flex flex-col gap-5 transition-transform duration-300 ${
@@ -623,8 +711,69 @@ export default function Header({
 
               {/* FOOTER (STATIC) */}
               <div className="p-6 border-t border-white/10 flex flex-col gap-4">
-                {/* Language Switcher */}
-                <div className="flex flex-col gap-3 mb-2">
+                {/* Language Switcher — mobile (< 768px): one row that toggles a dropdown (shares openSubmenu) */}
+                <div className="md:hidden -mt-2.5">
+                  <button
+                    type="button"
+                    aria-expanded={openSubmenu === "lang"}
+                    aria-controls="mobile-lang-panel"
+                    onClick={() => setOpenSubmenu(openSubmenu === "lang" ? null : "lang")}
+                    className="flex w-full cursor-pointer items-center justify-between gap-2 py-2.5 text-left text-white text-lg"
+                  >
+                    <span className="flex min-w-0 items-center gap-2">
+                      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" className="shrink-0">
+                        <path
+                          fill="currentColor"
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M10.27 14.1a6.5 6.5 0 0 0 3.67-3.45q-1.24.21-2.7.34-.31 1.830-.97 3.1M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.48-1.52a7 7 0 0 1-.96 0H7.5a4 4 0 0 1-.84-1.32q-.38-.89-.63-2.08a40 40 0 0 0 3.920 0q-.25 1.2-.63 2.08a4 4 0 0 1-.84 1.31zm2.94-4.76q1.66-.15 2.95-.43a7 7 0 0 0 0-2.58q-1.3-.27-2.95-.43a18 18 0 0 1 0 3.44m-1.27-3.54a17 17 0 0 1 0 3.64 39 39 0 0 1-4.3 0 17 17 0 0 1 0-3.64 39 39 0 0 1 4.3 0m1.1-1.17q1.45.13 2.69.34a6.5 6.5 0 0 0-3.67-3.44q.65 1.26.98 3.1M8.48 1.5l.01.02q.41.37.84 1.31.38.89.63 2.08a40 40 0 0 0-3.92 0q.25-1.2.63-2.08a4 4 0 0 1 .85-1.32 7 7 0 0 1 .96 0m-2.75.4a6.5 6.5 0 0 0-3.67 3.44 29 29 0 0 1 2.7-.34q.31-1.83.97-3.1M4.58 6.28q-1.66.16-2.95.43a7 7 0 0 0 0 2.580q1.3.27 2.95.43a18 18 0 0 1 0-3.44m.17 4.71q-1.45-.12-2.69-.34a6.5 6.5 0 0 0 3.670 3.440q-.65-1.27-.98-3.1"
+                        />
+                      </svg>
+                      <span>
+                        {LANGUAGE_LABEL[lang] || LANGUAGE_LABEL.en} · {langName(lang, lang)}
+                      </span>
+                    </span>
+                    <Image
+                      src={DownSvg}
+                      alt=""
+                      width={16}
+                      height={16}
+                      className={`shrink-0 transition-transform duration-300 ${openSubmenu === "lang" ? "rotate-0" : "-rotate-90"}`}
+                    />
+                  </button>
+                  <div
+                    id="mobile-lang-panel"
+                    inert={openSubmenu !== "lang"}
+                    className={`grid transition-[grid-template-rows] duration-300 ${openSubmenu === "lang" ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+                  >
+                    <div className="overflow-hidden">
+                      <div className="flex flex-col gap-3 pt-2 pb-2.5">
+                        <span className="flex items-center gap-2 text-white font-semibold">
+                          <LangFlag code={lang} />
+                          {langName(lang)}
+                        </span>
+                        {altLangs.map((altLang) => (
+                          <Link
+                            key={altLang}
+                            href={altLangUrls[altLang] || langHome(altLang)}
+                            hrefLang={LOCALE_MAP[altLang]?.replace("_", "-")}
+                            className="flex items-center gap-2 text-white/80 hover:text-white transition"
+                            onClick={() => {
+                              setMobileOpen(false);
+                              setOpenSubmenu(null);
+                            }}
+                          >
+                            <LangFlag code={altLang} />
+                            {langName(altLang, lang)}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Language Switcher — tablet (768–1023px): always-visible list */}
+                <div className="flex flex-col gap-3 mb-2 max-md:hidden">
                   <span className="flex items-center gap-2 text-white font-semibold">
                     <LangFlag code={lang} />
                     {langName(lang)}
