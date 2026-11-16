@@ -148,7 +148,7 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
           )}
 
           {/* every quote is rendered in the same cell; only the active one is visible */}
-          <div className={`grid w-full max-w-[750px]${mobileGrid ? " max-md:hidden" : ""}`}>
+          <div className={`grid w-full max-w-[700px] ${mobileGrid ? "max-md:hidden" : ""}`}>
             {slides.map((slide, i) => {
               const active = i === index;
               return (
