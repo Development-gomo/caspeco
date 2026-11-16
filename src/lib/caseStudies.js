@@ -114,17 +114,21 @@ export function selectedCaseId(v) {
 }
 
 /**
- * select_case override: empty / unpublished / other language / no testimonial content -> default list (newest cases).
- * Returns [hit] when the selected case exists in `cases` and has testimonial content, otherwise `cases` unchanged.
+ * select_case override (ACF post object field, single or multiple): empty / unpublished / other language / no testimonial
+ * content -> default list (newest cases).
+ * Returns the selected cases that exist in `cases` and have testimonial content, in the selected order (a single value
+ * gives one case); when none qualifies, `cases` unchanged.
  */
 export function casesForSlider(cases, selectCase) {
   const list = Array.isArray(cases) ? cases : [];
-  const id = selectedCaseId(selectCase);
-  if (!id) return cases;
-  const hit =
-    list.find((c) => c.id === id) ||
-    (selectCase && typeof selectCase === "object" && selectCase.post_name
-      ? list.find((c) => c.slug === selectCase.post_name)
-      : null);
-  return hit && (hit.quote || hit.personName || hit.logo) ? [hit] : cases;
+  const picks = Array.isArray(selectCase) ? selectCase : selectCase ? [selectCase] : [];
+  const hits = [];
+  for (const pick of picks) {
+    const id = selectedCaseId(pick);
+    const hit =
+      (id && list.find((c) => c.id === id)) ||
+      (pick && typeof pick === "object" && pick.post_name ? list.find((c) => c.slug === pick.post_name) : null);
+    if (hit && (hit.quote || hit.personName || hit.logo) && !hits.includes(hit)) hits.push(hit);
+  }
+  return hits.length ? hits : cases;
 }

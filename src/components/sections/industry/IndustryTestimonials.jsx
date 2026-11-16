@@ -142,8 +142,9 @@ export default function IndustryTestimonials({ data, lang = DEFAULT_LANG, cases 
   // twice; index / counter / dashes always refer to the real card (realIndex % count).
   const loop = cards.length > 1 && !mobile;
   const slides = loop && cards.length < 8 ? [...cards, ...cards] : cards;
-  const { heading, link_text, link_url, cta_text, cta_url, read_more_text } = data || {};
-  const readMore = read_more_text || postStrings(lang).readFullCase;
+  const { heading, link_text, link_url, cta_text, cta_url, read_more_text, read_case_cta_text } = data || {};
+  // card link text: ACF "Read case CTA text" (read_case_cta_text), else read_more_text, else the per-language default
+  const readMore = read_case_cta_text || read_more_text || postStrings(lang).readFullCase;
   // mobile shows one text link ("All cases"): the section's link, else its button
   const mobileLinkText = link_text && link_url ? link_text : cta_text;
   const mobileLinkUrl = link_text && link_url ? link_url : cta_url;

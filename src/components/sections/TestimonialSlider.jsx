@@ -5,7 +5,7 @@
 //   fullwidth → ProductTestimonials: one quote at a time over the case's full-width photo
 //   card      → IndustryTestimonials: frosted quote cards in a carousel over the section bg
 // `defaultType` is the layout's ACF default, used when the field is empty (older rows).
-// select_case set -> only that case; empty -> default list.
+// select_case set (one or several cases) -> only those cases, in the selected order; empty -> default list.
 
 import dynamic from "next/dynamic";
 import { casesForSlider } from "@/lib/caseStudies";
