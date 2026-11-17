@@ -342,10 +342,6 @@ h1.normal-case small {
   color: var(--color-teracotta);
 }
 
-.about-section {
-  /* border-top: 1px solid var(--color-warm-stand); */
-}
-
 .hero-panel-subtext span {
   background-image: linear-gradient(var(--color-mint), var(--color-mint));
   background-repeat: no-repeat;
@@ -735,6 +731,11 @@ span.subheading-label.text-\[var\(--color-accent\)\],
 .privacy-text .alignleft { float: left; margin: 0 24px 24px 0; max-width: calc(50% - 12px); }
 .privacy-text .alignright { float: right; margin: 0 0 24px 24px; max-width: calc(50% - 12px); }
 .privacy-text .aligncenter { display: block; float: none; margin: 0 auto 24px; }
+/* Device-specific images in the editor: class "max-md:hidden" (desktop/tablet only) / "md:hidden" (mobile only).
+   Needed because the unlayered display:block above beats Tailwind's layered hidden utilities, and Tailwind
+   doesn't scan CMS HTML. Placed after .aligncenter so it wins at equal specificity. */
+@media (max-width: 767.98px) { .privacy-text .max-md\:hidden { display: none; } }
+@media (min-width: 768px) { .privacy-text .md\:hidden { display: none; } }
 .privacy-text :is(h1, h2, h3, h4, h5, h6, hr, table, blockquote) { clear: both; }
 /* gallery run: equal columns (overrides WP inline width), odd items start a row so unequal heights can't snag */
 .privacy-text .wp-caption.alignleft:is(:has(+ .wp-caption.alignleft), .wp-caption.alignleft + .wp-caption.alignleft) { width: calc(50% - 12px) !important; max-width: none; }
