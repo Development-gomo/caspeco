@@ -66,14 +66,18 @@ function Select({ placeholder, options, value, onChange }) {
   );
 }
 
-// Exact industry + venues match first, then loosen; newest case wins each tier
+// Exact industry + venues match first, then loosen to the right industry with other venues
+// (QA: a wrong venue count is fine, a wrong industry is not); within a tier a case that has its own
+// KPIs wins over one without, newest first. With a selection but no match nothing is swapped in
+// (no unrelated case with unrelated numbers); with no selection the latest case is used.
 function findMatch(cases, industry, venues) {
-  const by = (fn) => cases.find(fn);
+  const ranked = [...cases].sort((a, b) => (b.stats?.length > 0) - (a.stats?.length > 0));
+  const by = (fn) => ranked.find(fn);
+  if (!industry && !venues) return ranked[0] || null;
   return (
     (industry && venues && by((c) => c.industry === industry && c.venues === venues)) ||
     (industry && by((c) => c.industry === industry)) ||
-    (venues && by((c) => c.venues === venues)) ||
-    cases[0] ||
+    (!industry && venues && by((c) => c.venues === venues)) ||
     null
   );
 }
@@ -167,21 +171,15 @@ export default function HomeBusinessTwin({ data, lang = DEFAULT_LANG, cases: all
   const [venues, setVenues] = React.useState("");
   const [result, setResult] = React.useState(null);
 
-  // Industry options from all cases; venue options narrow to the chosen industry
-  const { industries } = twinOptions(cases);
-  const { venues: venueOptions } = twinOptions(industry ? cases.filter((c) => c.industry === industry) : cases);
+  // Industry and venue options both come from all cases, so every venue range (1, 2-4, 5+) stays
+  // selectable even when the chosen industry has no case for it
+  const { industries, venues: venueOptions } = twinOptions(cases);
   const images = cases.filter((c) => c.image?.url).slice(0, 2).map((c) => c.image);
 
   const { heading, short_text, cta_text, note_text } = data || {};
   if (!heading) return null;
 
   const hasForm = industries.length > 0 || venueOptions.length > 0;
-
-  const onIndustryChange = (value) => {
-    setIndustry(value);
-    // drop a venue choice that no longer exists for this industry
-    if (venues && value && !cases.some((c) => c.industry === value && c.venues === venues)) setVenues("");
-  };
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -209,7 +207,7 @@ export default function HomeBusinessTwin({ data, lang = DEFAULT_LANG, cases: all
                 {hasForm && (
                   <div className="flex flex-col gap-4 max-md:gap-2">
                     {industries.length > 0 && (
-                      <Select placeholder={text(data, "industry_placeholder")} options={industries} value={industry} onChange={onIndustryChange} />
+                      <Select placeholder={text(data, "industry_placeholder")} options={industries} value={industry} onChange={setIndustry} />
                     )}
                     {venueOptions.length > 0 && (
                       <Select placeholder={text(data, "venues_placeholder")} options={venueOptions} value={venues} onChange={setVenues} />
