@@ -790,6 +790,11 @@ span.subheading-label.text-\[var\(--color-accent\)\],
   /* height: 33px; */
 }
 
+.partner .cs-article h4, .partner .cs-article h5
+{
+  font-size: 26px;
+  line-height: 36px;
+}
 .body-text.max-w-\[500px\] p {
   margin-bottom: 15px;
 }
