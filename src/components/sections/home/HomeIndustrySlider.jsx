@@ -40,7 +40,23 @@ function toCard(post) {
   };
 }
 
+// Local glyphs in /public/industries-icons, matched on the industry's slug + title keywords (all languages).
+// An ACF `icon` on the CPT still wins; an industry with no match keeps the default icon.
+const INDUSTRY_ICONS = [
+  { src: "/industries-icons/cafe.png", w: 38, h: 25, re: /caf[eé]|kaffe|koffie/i },
+  { src: "/industries-icons/Bar-nightclub.png", w: 34, h: 24, re: /nightclub|nattklubb|natklub|bar-|bars?/i },
+  { src: "/industries-icons/fastfood.png", w: 32, h: 29, re: /fast[\s-]?food|take[\s-]?away|snabbmat|avhämtning|avhent|emporter|afhaal/i },
+  { src: "/industries-icons/Hotel.png", w: 35, h: 24, re: /hotel|hôtel|hotell/i },
+  { src: "/industries-icons/Arenas.png", w: 32, h: 32, re: /amusement|arena|n[öo]jesp|fornøj|attraction|pret/i },
+  { src: "/industries-icons/Season.png", w: 29, h: 29, re: /season|s[äa]song|sesong|saison|seizoen|summer/i },
+  { src: "/industries-icons/Restaurant.png", w: 24, h: 32, re: /restaurant|restaurang/i },
+];
+// The PNGs are 1x (24–38px); shown smaller than their file size they stay crisper on high-DPI screens
+const ICON_SCALE = 0.75;
+const industryIcon = (card) => INDUSTRY_ICONS.find((i) => i.re.test(`${card.slug} ${card.title}`));
+
 function IndustryCard({ card, lang }) {
+  const localIcon = card.icon ? null : industryIcon(card);
   const href = card.slug ? entryHref("industry", card.slug, lang) : "";
   const Wrapper = href ? Link : "div";
 
@@ -61,7 +77,22 @@ function IndustryCard({ card, lang }) {
         style={{ backgroundImage: "linear-gradient(145deg, rgba(253,253,253,0.3) 0%, rgba(253,253,253,0) 99.5%)" }}
       />
       <span className="absolute inset-x-6 top-[139px] flex origin-center flex-col items-center gap-[7px] text-center transition-transform duration-100 ease-out group-hover:scale-[1.11] group-focus-visible:scale-[1.11]">
-        <Image src={mediaUrl(card.icon) || DefaultIcon} alt="" width={64} height={64} className="size-16" draggable={false} />
+        {localIcon ? (
+          <span className="relative size-16 rounded-full border-[3px] border-[#FDFDFD]">
+            {/* native pixel size, placed on whole pixels (flex centring lands on half pixels and blurs the PNG) */}
+            <Image
+              src={localIcon.src}
+              alt=""
+              width={Math.round(localIcon.w * ICON_SCALE)}
+              height={Math.round(localIcon.h * ICON_SCALE)}
+              draggable={false}
+              className="absolute max-w-none"
+              style={{ left: Math.floor((58 - Math.round(localIcon.w * ICON_SCALE)) / 2), top: Math.floor((58 - Math.round(localIcon.h * ICON_SCALE)) / 2) }}
+            />
+          </span>
+        ) : (
+          <Image src={mediaUrl(card.icon) || DefaultIcon} alt="" width={64} height={64} className="size-16" draggable={false} />
+        )}
         {card.title && (
           <span
             className="font-bold text-[26px] leading-[1.1] tracking-[-0.52px] uppercase text-(--color-light-grey)"
