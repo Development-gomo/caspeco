@@ -191,7 +191,7 @@ export default function HomeBusinessTwin({ data, lang = DEFAULT_LANG, cases: all
 
   return (
     // cs-sec: 64px top/bottom below 768px (globals.css); 48px between the form and the case card (gap-12)
-    <section className="cs-sec py-18 lg:py-36" style={sectionBackground({ bg_color: data?.bg_color }, { background: "var(--color-dark-petrol)" })}>
+    <section className="cs-sec py-18 md:py-36" style={sectionBackground({ bg_color: data?.bg_color }, { background: "var(--color-dark-petrol)" })}>
       <div className="cs-container flex flex-col gap-12 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col items-start gap-10 lg:gap-[60px] lg:max-w-[631px] lg:pr-6 max-md:gap-6">
           <div className="flex flex-col gap-5 text-(--color-light-grey) max-md:gap-4">

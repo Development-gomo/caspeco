@@ -169,7 +169,7 @@ export default function HomeHelpTabs({ data, lang = DEFAULT_LANG }) {
     <section
       // after another light section (industry challenges) the 144px gap is shared: 72 + 72
       // cs-sec: 64px top/bottom on mobile only
-      className={`cs-sec pb-12 lg:pb-[72px] max-md:[--sec-pb:0px] ${data?._prev === "industry_challenges_section" ? "pt-12 lg:pt-[72px]" : "pt-18 lg:pt-36"}`}
+      className={`cs-sec pb-12 md:pb-36 max-md:[--sec-pb:0px] ${data?._prev === "industry_challenges_section" ? "pt-12 md:pt-[72px]" : "pt-18 md:pt-36"}`}
       style={sectionBackground(data, { background: "var(--color-light-grey)" })}
     >
       <div className="cs-container flex flex-col items-center gap-8 max-md:gap-12 lg:gap-[41px]">

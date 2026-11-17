@@ -70,7 +70,7 @@ export default function HomeProductCards({ data, lang = DEFAULT_LANG, mobileBlee
 
   return (
     <section
-      className={`cs-sec ${customBg ? "" : MOBILE_BG} pt-18 lg:pt-36 ${data?._next === "industry_results_section" ? "pb-18 lg:pb-36" : "pb-12 lg:pb-[144px]"} ${data?._next === "usp_accordion_section" ? "max-md:[--sec-pb:0px]" : ""}`} style={customBg ? sectionBackground(data) : undefined}>
+      className={`cs-sec ${customBg ? "" : MOBILE_BG} pt-18 md:pt-36 ${data?._next === "industry_results_section" ? "pb-18 md:pb-36" : "pb-12 md:pb-[144px]"} ${data?._next === "usp_accordion_section" ? "max-md:[--sec-pb:0px]" : ""}`} style={customBg ? sectionBackground(data) : undefined}>
       <div className="cs-container flex flex-col gap-10 lg:gap-16">
         <div className="flex flex-col gap-4">
           {heading && <h2 className="cs-h2 cs-highlight text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}

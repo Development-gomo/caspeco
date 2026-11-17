@@ -101,7 +101,7 @@ export default function UspAccordion({ data, lang = DEFAULT_LANG, variant }) {
   if (!heading && items.length === 0) return null;
 
   return (
-    <section className="py-18 lg:py-36 max-md:py-16 max-md:overflow-x-clip" style={sectionBackground(data, { background: data?.enable_gradient ? GRADIENT : "var(--color-light-grey)" })}>
+    <section className="py-18 md:py-36 max-md:py-16 max-md:overflow-x-clip" style={sectionBackground(data, { background: data?.enable_gradient ? GRADIENT : "var(--color-light-grey)" })}>
       <div className="cs-container flex flex-col gap-12 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
         <Reveal className="flex flex-col items-start gap-10 max-md:gap-6 lg:max-w-[507px]">
           <div className="flex flex-col gap-4">

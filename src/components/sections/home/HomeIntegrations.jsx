@@ -74,7 +74,7 @@ export default function HomeIntegrations({ data, logos: themeLogos, lang = DEFAU
   // button -> logo wall 42 (Figma 398 - 356), rows 24 apart, edge fade 17%
   return (
     <section
-      className="cs-sec overflow-hidden pt-18 pb-18 lg:pt-36 lg:pb-36"
+      className="cs-sec overflow-hidden pt-18 pb-18 md:pt-36 md:pb-36"
       style={sectionBackground(data, {
         backgroundImage: "linear-gradient(180deg, #000 17.34%, rgba(0,0,0,0) 100%), linear-gradient(90deg, #0b2533 0%, #0b2533 100%)",
       })}

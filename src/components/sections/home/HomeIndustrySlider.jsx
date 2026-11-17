@@ -135,7 +135,7 @@ export default function HomeIndustrySlider({ data, lang = DEFAULT_LANG, prefetch
 
   return (
     <section
-      className={`cs-sec overflow-hidden pt-12 pb-18 lg:pt-[72px] lg:pb-36 ${customBg ? "" : "max-md:bg-[#F7F7F5] md:bg-[linear-gradient(180deg,rgba(255,255,255,0.5)_0.94%,#dadcdd_80.71%)]"}`}
+      className={`cs-sec overflow-hidden pt-12 pb-18 md:pt-[72px] md:pb-36 ${customBg ? "" : "max-md:bg-[#F7F7F5] md:bg-[linear-gradient(180deg,rgba(255,255,255,0.5)_0.94%,#dadcdd_80.71%)]"}`}
       style={customBg ? sectionBackground(data) : undefined}
     >
       <div className="cs-container flex flex-col gap-10 lg:gap-16 max-md:gap-6">

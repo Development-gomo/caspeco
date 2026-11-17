@@ -140,7 +140,7 @@ export default function HomeIntroVideo({ data }) {
     // Mobile (Figma Home "USP's" 2517:4794): 64px top and bottom (cs-sec), H2 → sub 8, sub → body 24,
     // body Regular 16/20 #3F3E3C, body → button 24, button → video 48, video r8
     <section
-      className={`cs-sec py-18 lg:py-36 ${data?._next === "home_kpi_section" ? "max-md:[--sec-pb:0px]" : ""}`}
+      className={`cs-sec py-18 md:py-36 ${data?._next === "home_kpi_section" ? "max-md:[--sec-pb:0px]" : ""}`}
       style={sectionBackground(data, {
         backgroundImage: "linear-gradient(180deg, rgba(218,220,221,0.8) 0.94%, rgba(255,255,255,0.5) 100.94%)",
       })}

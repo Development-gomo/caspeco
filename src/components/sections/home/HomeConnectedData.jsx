@@ -148,11 +148,11 @@ export default function HomeConnectedData({ data, lang = DEFAULT_LANG }) {
 
   const primaryHref = cta_text && cta_url?.trim() ? langHref(cta_url.trim(), lang) : "";
   const secondaryHref = secondary_cta_text && secondary_cta_url?.trim() ? langHref(secondary_cta_url.trim(), lang) : "";
-  const top = HALF_GAP_BEFORE.has(data?._prev) ? "pt-12 lg:pt-[120px]" : "pt-18 lg:pt-36";
+  const top = HALF_GAP_BEFORE.has(data?._prev) ? "pt-12 lg:pt-[120px]" : "pt-18 md:pt-36";
 
   return (
     <section
-      className={`cs-sec relative isolate overflow-hidden ${top} pb-18 lg:pb-36`}
+      className={`cs-sec relative isolate overflow-hidden ${top} pb-18 md:pb-36`}
       style={{ background: data?.bg_color || "var(--color-light-grey)" }}
     >
       {/* Mockup curve: bg_image fills a large circle hanging off the right edge (centre ≈ 85% across,

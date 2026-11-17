@@ -25,7 +25,7 @@ export default function HomeInsights({ data, lang = DEFAULT_LANG, prefetchedPost
   if (!heading && posts.length === 0) return null;
 
   return (
-    <section className="cs-sec py-18 lg:py-36" style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
+    <section className="cs-sec py-18 md:py-36" style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       <div className="cs-container flex flex-col gap-10 lg:gap-16">
         <div className="flex flex-col items-start gap-6">
           {heading && <h2 className="cs-h2 cs-highlight max-w-[985px] text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
