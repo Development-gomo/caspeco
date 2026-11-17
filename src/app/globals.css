@@ -1269,9 +1269,14 @@ span.subheading-label.text-\[var\(--color-accent\)\],
 .cs-hubspot--rep .hs_submit { margin-top: 24px; }
 
 @media (min-width: 1023px) {
-.home #data-insights {
-  padding-top: 0 !important;
-}
+  .home #data-insights {
+    padding-top: 0 !important;
+  }
+  
+  .home section#next.about-section h2 {
+    font-size: 80px;
+    line-height: 84px;
+  }
 }
 
 /* ==========================================
@@ -1288,3 +1293,5 @@ span.subheading-label.text-\[var\(--color-accent\)\],
 [data-sec-pt="off"] > div > section { padding-top: 0 !important; }
 [data-sec-pb="off"] > section,
 [data-sec-pb="off"] > div > section { padding-bottom: 0 !important; }
+
+

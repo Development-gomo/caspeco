@@ -7,9 +7,17 @@ import { POSTS_PER_PAGE, postsPageQuery } from "@/lib/postsQuery";
 // Deduped fetch: React.cache ensures identical calls within the same
 // server render are only executed once (works across page + generateMetadata).
 // Responses are masked so no CMS URL reaches the browser (see lib/wpMask.js).
+// Staging/dev: set WP_REVALIDATE_SECONDS=0 in the Vercel env to bypass the ISR cache for every WP fetch,
+// so content and deploys show up immediately without the client clearing their cache. Leave it unset in production.
+const REVALIDATE_OVERRIDE = process.env.WP_REVALIDATE_SECONDS;
+const revalidateFor = (seconds) => {
+  const n = REVALIDATE_OVERRIDE === undefined || REVALIDATE_OVERRIDE === "" ? NaN : Number(REVALIDATE_OVERRIDE);
+  return Number.isFinite(n) && n >= 0 ? n : seconds;
+};
+
 const _fetchWP = cache(async function _fetchWP(url, revalidate) {
   try {
-    const res = await fetch(url, { next: { revalidate } });
+    const res = await fetch(url, { next: { revalidate: revalidateFor(revalidate) } });
     return maskWp(await res.json());
   } catch {
     return null;
@@ -284,7 +292,7 @@ export async function getCategoriesByIds(ids, lang = DEFAULT_LANG) {
 // One page of posts plus WP's totals (X-WP-Total / X-WP-TotalPages) for "Load more"
 export async function getPostsPage(lang = DEFAULT_LANG, page = 1, perPage = POSTS_PER_PAGE) {
   try {
-    const res = await fetch(`${WP_BASE}${postsPageQuery(lang, page, perPage)}`, { next: { revalidate: 60 } });
+    const res = await fetch(`${WP_BASE}${postsPageQuery(lang, page, perPage)}`, { next: { revalidate: revalidateFor(60) } });
     if (!res.ok) return { posts: [], total: 0, totalPages: 0 };
     const posts = maskWp(await res.json());
     return {
