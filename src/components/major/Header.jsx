@@ -511,7 +511,7 @@ export default function Header({
                         key={item.id}
                         url={item.url}
                         lang={lang}
-                        className="block w-full px-6 py-2.5 text-white text-lg"
+                        className="block w-full px-6 py-2.5 text-white text-lg font-medium"
                         onClick={(e) => handleNavClick(e, item.url, true)}
                       >
                         {item.title}
@@ -527,7 +527,7 @@ export default function Header({
                         aria-expanded={open}
                         aria-controls={panelId}
                         onClick={() => setOpenSubmenu(open ? null : item.id)}
-                        className="flex w-full cursor-pointer items-center justify-between px-6 py-2.5 text-left text-white text-lg"
+                        className="flex w-full cursor-pointer items-center justify-between px-6 py-2.5 text-left text-white text-lg font-medium"
                       >
                         {item.title}
                         <Image
@@ -718,7 +718,7 @@ export default function Header({
                     aria-expanded={openSubmenu === "lang"}
                     aria-controls="mobile-lang-panel"
                     onClick={() => setOpenSubmenu(openSubmenu === "lang" ? null : "lang")}
-                    className="flex w-full cursor-pointer items-center justify-between gap-2 py-2.5 text-left text-white text-lg"
+                    className="flex w-full cursor-pointer items-center justify-between gap-2 py-2.5 text-left text-white text-lg font-medium"
                   >
                     <span className="flex min-w-0 items-center gap-2">
                       <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" className="shrink-0">

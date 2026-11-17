@@ -1284,6 +1284,13 @@ span.subheading-label.text-\[var\(--color-accent\)\],
   }
 }
 
+/* Client QA slide 74: mobile only — the homepage "same view" large-content copy is left-aligned (desktop stays as set in the CMS) */
+@media (max-width: 767.98px) {
+  .home section#next.about-section h2,
+  .home section#next.about-section .privacy-text,
+  .home section#next.about-section .body-text { text-align: left; }
+}
+
 /* ==========================================
    SECTION SPACING: ACF "Spacing" tab (padding_top / padding_bottom = "disable").
    withSpacing() (components/ui/SectionSpacing.jsx) wraps a section ONLY when a side is

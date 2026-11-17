@@ -55,7 +55,9 @@ const INDUSTRY_ICONS = [
 const ICON_SCALE = 0.75;
 const industryIcon = (card) => INDUSTRY_ICONS.find((i) => i.re.test(`${card.slug} ${card.title}`));
 
-function IndustryCard({ card, lang }) {
+// memo: the slider re-renders on every snap change while swiping (active dot); the cards themselves never change,
+// so they skip re-rendering (client QA slide 75: mobile scroll felt laggy)
+const IndustryCard = React.memo(function IndustryCard({ card, lang }) {
   const localIcon = card.icon ? null : industryIcon(card);
   const href = card.slug ? entryHref("industry", card.slug, lang) : "";
   const Wrapper = href ? Link : "div";
@@ -69,7 +71,7 @@ function IndustryCard({ card, lang }) {
       {/* Figma "Sector card" hover (Smart Animate 100 ms ease-out): the #151411 overlay goes
           30% → 100% (card turns dark), the glow 30% → 20%, icon + label grow ~1.11× */}
       {mediaUrl(card.image) && (
-        <Image src={mediaUrl(card.image)} alt={card.image?.alt || ""} fill sizes="276px" className="object-cover" draggable={false} />
+        <Image src={mediaUrl(card.image)} alt={card.image?.alt || ""} fill sizes="276px" className="object-cover" draggable={false} decoding="async" />
       )}
       <span className="absolute inset-0 bg-[#151411] opacity-30 transition-opacity duration-100 ease-out group-hover:opacity-100 group-focus-visible:opacity-100" />
       <span
@@ -102,7 +104,7 @@ function IndustryCard({ card, lang }) {
       </span>
     </Wrapper>
   );
-}
+});
 
 function Dots({ pages, active, onSelect, className = "" }) {
   return (

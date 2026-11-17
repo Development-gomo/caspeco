@@ -66,7 +66,7 @@ function KpiCard({ card, hint, index = 0 }) {
           {bgImage && (
             <>
               <Image src={bgImage} alt="" fill sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw" className="object-cover object-center" />
-              <span aria-hidden className="absolute inset-0 bg-(--color-dark-petrol)/60" />
+              <span aria-hidden className="absolute inset-0 bg-black/60" />
             </>
           )}
           <span className="absolute left-6 top-6 max-w-[150px] max-md:left-auto max-md:top-auto max-md:relative max-md:z-10 max-md:order-2 max-md:max-w-[200px] text-[20px] leading-6 tracking-[-0.4px] max-md:text-[16px] max-md:leading-5 max-md:tracking-[-0.32px]">{card.label}</span>
