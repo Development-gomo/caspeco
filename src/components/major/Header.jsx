@@ -404,7 +404,7 @@ export default function Header({
               <NavLink
                 url={options.log_in_url}
                 lang={lang}
-                className="block py-4 px-1 xl:px-2 whitespace-nowrap text-[16px] xl:text-[18px] font-bold text-(--color-yellow) hover:text-(--color-yellow)/80 transition"
+                className="inline-flex items-center justify-center select-none rounded-full bg-white px-6 xl:px-8 py-3 whitespace-nowrap text-[14px] font-extrabold text-black hover:bg-white/85 transition"
               >
                 {options.log_in_text}
               </NavLink>
@@ -801,7 +801,7 @@ export default function Header({
                     <NavLink
                       url={options.log_in_url}
                       lang={lang}
-                      className="text-[16px] font-bold text-(--color-yellow) hover:text-(--color-yellow)/80 transition"
+                      className="inline-flex items-center justify-center select-none w-fit rounded-full bg-white px-8 py-3 text-[14px] font-extrabold text-black hover:bg-white/85 transition"
                       onClick={() => {
                         setMobileOpen(false);
                         setOpenSubmenu(null);
