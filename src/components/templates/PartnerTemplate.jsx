@@ -45,7 +45,7 @@ export default async function PartnerTemplate({ entry, lang, slug, themeOptions 
     <Shell lang={lang} slug={slug} entryType="partner" routeType="partner" entryId={entry?.id} themeOptions={themeOptions}>
       {/* HERO */}
       <section className="bg-black pt-28 text-white">
-        <div className="cs-container flex flex-col items-start gap-6 pb-12 lg:gap-8 lg:pb-20">
+        <div className="cs-container flex flex-col items-start gap-6 pb-12 lg:gap-8 lg:pb-36">
           {logo?.source_url && (
             <div className="relative h-20 w-56 rounded-lg bg-white lg:h-24 lg:w-64">
               <Image src={logo.source_url} alt={logo.alt_text || ""} fill sizes="256px" className="object-contain p-4" priority unoptimized={/\.svg(\?|$)/i.test(logo.source_url)} />
