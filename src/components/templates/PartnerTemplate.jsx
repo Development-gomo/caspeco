@@ -67,7 +67,7 @@ export default async function PartnerTemplate({ entry, lang, slug, themeOptions 
 
       {/* OTHER PARTNERS */}
       {others.length > 0 && (
-        <section className="bg-(--color-light-grey) py-14 md:py-30 lg:py-36">
+        <section className="bg-(--color-light-grey) pb-14 md:pb-30 lg:pb-36">
           <div className="cs-container flex flex-col gap-10">
             <h2 className="cs-h3 text-black">{strings.otherPartners}</h2>
             <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
