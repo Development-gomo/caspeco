@@ -3,6 +3,7 @@
 //   bg_image (image array) / bg_color (color) -> section background via sectionBackground(); nothing is applied when both are empty.
 //   heading (textarea) -> rendered through toHtml() so line breaks survive.
 //   container_width (button group "default" | "full") -> "full" drops the 768px (max-w-3xl) cap on heading + content so they span the site container (web-width, 1272px). Empty/"default"/missing = original narrow layout.
+//   section_alignment (button group "left" | "right" | "center") -> block position (default width) / text alignment (full width); empty = original layout. See the combination table below.
 
 "use client";
 
@@ -10,10 +11,17 @@ import { sectionBackground, toHtml } from "@/lib/content";
 
 export default function LargeContent({ data }) {
   if (!data) return null;
-  const { sub_heading, heading, content_section, container_width } = data;
+  const { sub_heading, heading, content_section, container_width, section_alignment } = data;
   // string on pages; {value,label} under acf_format=standard (products/cases/industries/icp)
   const isFull = (container_width?.value ?? container_width) === "full";
-  const narrow = isFull ? "" : " max-w-3xl m-auto";
+  const align = section_alignment?.value ?? section_alignment; // "left" | "right" | "center" | empty
+  // container_width x section_alignment:
+  //   default (768px cap): left -> block flush left, right -> block flush right, center -> block centred + centred text
+  //   full (site container): block spans the container, alignment sets the text alignment
+  // empty alignment = original layout (centred 768px block, left-aligned text)
+  const textAlign = { left: " text-left", right: " text-right", center: " text-center" }[align] || "";
+  const place = isFull ? "" : { left: " mr-auto", right: " ml-auto", center: " m-auto" }[align] || " m-auto";
+  const narrow = (isFull ? "" : " max-w-3xl") + place + textAlign;
 
   return (
     <>
