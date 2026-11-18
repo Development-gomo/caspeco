@@ -1,12 +1,13 @@
 // src/app/[lang]/[slug]/page.jsx
 
-import { getPageBySlug, fetchWP, getThemeOptions } from "@/lib/api";
+import { getPageBySlug, fetchWP, getThemeOptions, getTranslationMap } from "@/lib/api";
 import { resolveParams } from "@/lib/params";
 import PageBuilder from "@/components/major/PageBuilder";
 import Header from "@/components/major/Header";
 import Footer from "@/components/major/Footer";
 import { buildMetadataFromYoast } from "@/lib/seo";
 import { notFound } from "next/navigation";
+import { altLangUrls } from "@/lib/translations";
 import { DEFAULT_LANG, SUPPORTED_LANGS, langHref, langHome } from "@/config";
 
 export const revalidate = 300;
@@ -40,14 +41,13 @@ export default async function SinglePage({ params }) {
   // child pages only live under their parent's path ([lang]/[slug]/[...rest])
   if (!data || data.parent) notFound();
   const acf = data?.acf || {};
+  const map = await getTranslationMap(data.id, lang);
 
   return (
     <>
       <Header
         lang={lang}
-        currentSlug={slug}
-        entryType="pages"
-        entryId={data?.id}
+        altLangUrls={altLangUrls(lang, { map, linkEntry: true })}
         prefetchedOptions={themeOptions || {}}
         logoUrl={themeOptions?.logo_light?.url || ""}
       />

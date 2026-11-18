@@ -5,6 +5,8 @@ import Footer from "@/components/major/Footer";
 import { DEFAULT_LANG, langFromPath, langHome } from "@/config";
 import { headers } from "next/headers";
 import CtaButton from "@/components/ui/CtaButton";
+import { getThemeOptions } from "@/lib/api";
+import { altLangUrls } from "@/lib/translations";
 import { NOT_FOUND_MESSAGES } from "@/lib/notFoundMessages";
 
 export default async function LangScopedNotFound() {
@@ -14,12 +16,19 @@ export default async function LangScopedNotFound() {
   const pathname = h.get("x-pathname") ?? h.get("referer") ?? "";
   const lang = langFromPath(pathname);
 
+  const themeOptions = await getThemeOptions(lang);
+
   const currentMessages =
     NOT_FOUND_MESSAGES[lang] || NOT_FOUND_MESSAGES[DEFAULT_LANG] || NOT_FOUND_MESSAGES.en;
 
   return (
     <>
-      <Header lang={lang} />
+      <Header
+        lang={lang}
+        altLangUrls={altLangUrls(lang)}
+        prefetchedOptions={themeOptions || {}}
+        logoUrl={themeOptions?.logo_light?.url || ""}
+      />
       <div className="h-28 w-full bg-black"></div>
       <main className="min-h-[60vh] flex flex-col items-center justify-center gap-6 px-4 py-16 text-center">
         <p className="text-sm uppercase tracking-[0.3em] text-(--color-grey-medium-dark)">404</p>

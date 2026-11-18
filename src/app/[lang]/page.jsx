@@ -7,6 +7,7 @@ import { getPageBySlug, getThemeOptions } from "@/lib/api";
 import { buildMetadataFromYoast } from "@/lib/seo";
 import { resolveParams } from "@/lib/params";
 import { notFound } from "next/navigation";
+import { altLangUrls } from "@/lib/translations";
 import { DEFAULT_LANG, SUPPORTED_LANGS, langHome } from "@/config";
 
 export const revalidate = 300;
@@ -31,8 +32,7 @@ export default async function LangHomePage({ params }) {
     <>
       <Header
         lang={lang}
-        entryType="pages"
-        entryId={page?.id}
+        altLangUrls={altLangUrls(lang)}
         prefetchedOptions={themeOptions || {}}
         logoUrl={themeOptions?.logo_light?.url || ""}
       />

@@ -58,7 +58,7 @@ export default function FooterNavColumn({ title, links }) {
           <ul className="space-y-3 max-md:space-y-2 text-[18px] font-light leading-[1.1] tracking-[-0.36px] text-(--color-grey-medium) max-md:text-white">
             {links.map((item, i) => (
               <li key={i}>
-                <Link href={item.href} className="cs-link-draw hover:text-white">
+                <Link href={item.href} prefetch={false} className="cs-link-draw hover:text-white">
                   {item.title}
                 </Link>
               </li>

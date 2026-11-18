@@ -6,8 +6,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import DownSvg from "../../../public/down-arrow.svg";
-import { getThemeOptions, getEntryTranslations } from "@/lib/api";
-import { DEFAULT_LANG, SUPPORTED_LANGS, LANGUAGES, LANGUAGE_LABEL, LOCALE_MAP, langHref, langHome, entryHref, langName, altLangs as otherLangs } from "@/config";
+import { DEFAULT_LANG, LANGUAGES, LANGUAGE_LABEL, LOCALE_MAP, langHref, langHome, langName, altLangs as otherLangs } from "@/config";
 
 // WPML-style flag for a language code (files in /public/flags)
 function LangFlag({ code, className = "" }) {
@@ -39,7 +38,7 @@ function NavLink({ url, lang, className: baseClassName, onClick, target, childre
     );
   }
   return (
-    <Link href={langHref(href, lang)} target={target || undefined} className={className} onClick={onClick}>
+    <Link href={langHref(href, lang)} prefetch={false} target={target || undefined} className={className} onClick={onClick}>
       {children}
     </Link>
   );
@@ -88,22 +87,15 @@ function menuItems(megaMenu) {
 
 export default function Header({
   lang = DEFAULT_LANG,
-  currentSlug = "",
-  entryType = "page",
-  pathPrefix = "",
-  // ROUTE_TYPES key ("post", "casestudy", …): the switcher then uses each language's own URL base
-  routeType = null,
-  entryId = null,
+  // { [lang]: href } for the language switcher, built on the server (see lib/translations.js).
+  // A language missing from the object is hidden; null → every other language links to its homepage.
+  altLangUrls = null,
   prefetchedOptions = null,
   logoUrl = "",
 }) {
-  const [options, setOptions] = useState(prefetchedOptions);
-  // languages with no WPML translation of the current entry are hidden from the switcher
-  const [missingLangs, setMissingLangs] = useState([]);
-  const altLangs = otherLangs(lang).filter((l) => !missingLangs.includes(l));
-  const [altLangUrls, setAltLangUrls] = useState(
-    Object.fromEntries(otherLangs(lang).map((l) => [l, langHome(l)]))
-  );
+  const options = prefetchedOptions;
+  const urls = altLangUrls || Object.fromEntries(otherLangs(lang).map((l) => [l, langHome(l)]));
+  const altLangs = otherLangs(lang).filter((l) => urls[l]);
   const isLoading = !options;
   const [scrolled, setScrolled] = useState(false);
 
@@ -112,14 +104,6 @@ export default function Header({
 
   // Theme Options "Log In Submenu" rows with text
   const loginItems = (Array.isArray(options?.login_submenu) ? options.login_submenu : []).filter((row) => row?.link_text?.trim());
-
-  // Only fetch client-side if the page didn't pass Theme Options
-  useEffect(() => {
-    if (prefetchedOptions) return;
-    getThemeOptions(lang)
-      .then((themeOptions) => setOptions(themeOptions || {}))
-      .catch(() => setOptions({}));
-  }, [lang, prefetchedOptions]);
 
   // Header starts transparent; the dark blurred overlay fades in once the
   // page has scrolled.
@@ -177,60 +161,6 @@ export default function Header({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  useEffect(() => {
-    async function fetchAltLangUrls() {
-      const altLangList = SUPPORTED_LANGS.filter((l) => l !== lang);
-      const fallback = Object.fromEntries(altLangList.map((l) => [l, langHome(l)]));
-
-      // Homepage never passes currentSlug — the translated homepage always
-      // lives at that language's root, regardless of its WP slug.
-      if (!currentSlug && !entryId) {
-        setAltLangUrls(fallback);
-        setMissingLangs([]);
-        return;
-      }
-
-      // Use entryId for dynamic translation lookup if available
-      if (entryId) {
-        try {
-          const translations = await getEntryTranslations(entryId, entryType, lang);
-
-          const urls = { ...fallback };
-          for (const altLang of altLangList) {
-            const translatedSlug = translations?.[altLang]?.slug;
-            if (!translatedSlug) continue;
-            // "frontpage" is the WP homepage slug — map it to the lang root
-            if (!currentSlug || translatedSlug === "frontpage") {
-              urls[altLang] = langHome(altLang);
-              continue;
-            }
-            if (routeType) {
-              urls[altLang] = entryHref(routeType, translatedSlug, altLang);
-              continue;
-            }
-            const prefix = pathPrefix ? `/${pathPrefix}` : "";
-            const langPrefix = altLang === DEFAULT_LANG ? "" : `/${altLang}`;
-            urls[altLang] = `${langPrefix}${prefix}/${translatedSlug}`;
-          }
-          setAltLangUrls(urls);
-          setMissingLangs(altLangList.filter((l) => !translations?.[l]?.slug));
-          return;
-        } catch (error) {
-          setAltLangUrls(fallback);
-          setMissingLangs([]);
-          return;
-        }
-      }
-
-      // Fallback: if no entryId, go to homepage for each language
-      setAltLangUrls(fallback);
-    }
-
-    if (entryId || (currentSlug && currentSlug !== "/")) {
-      fetchAltLangUrls();
-    }
-  }, [lang, currentSlug, entryType, pathPrefix, routeType, entryId]);
 
   return (
     <header className={headerClasses}>
@@ -384,7 +314,7 @@ export default function Header({
                 {altLangs.map((altLang) => (
                   <li key={altLang}>
                     <Link
-                      href={altLangUrls[altLang] || langHome(altLang)}
+                      href={urls[altLang]}
                       hrefLang={LOCALE_MAP[altLang]?.replace("_", "-")}
                       onClick={() => setLangOpen(false)}
                       className="flex items-center gap-2 px-4 py-1.5 text-[16px] font-semibold text-black hover:text-black/60 transition whitespace-nowrap"
@@ -755,7 +685,7 @@ export default function Header({
                         {altLangs.map((altLang) => (
                           <Link
                             key={altLang}
-                            href={altLangUrls[altLang] || langHome(altLang)}
+                            href={urls[altLang]}
                             hrefLang={LOCALE_MAP[altLang]?.replace("_", "-")}
                             className="flex items-center gap-2 text-white/80 hover:text-white transition"
                             onClick={() => {
@@ -781,7 +711,7 @@ export default function Header({
                   {altLangs.map((altLang) => (
                     <Link
                       key={altLang}
-                      href={altLangUrls[altLang] || langHome(altLang)}
+                      href={urls[altLang]}
                       hrefLang={LOCALE_MAP[altLang]?.replace("_", "-")}
                       className="flex items-center gap-2 text-white/80 hover:text-white transition"
                       onClick={() => {

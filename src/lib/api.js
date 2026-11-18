@@ -312,17 +312,16 @@ export async function getAllIndustries(lang = DEFAULT_LANG) {
   return await fetchWP(`/wp/v2/industries?lang=${lang}&per_page=100&_embed`);
 }
 
-// Get translations for any entry type - try custom endpoint first, then fallback
-export async function getEntryTranslations(entryId, entryType = "pages", lang = DEFAULT_LANG) {
-  // Try custom endpoint first (works for all post types if WordPress endpoint supports it)
-  const customTranslations = await fetchWP(`/myroutes/v1/translations/${entryId}?lang=${lang}`);
-  if (customTranslations && Object.keys(customTranslations).length > 0) {
-    return customTranslations;
-  }
-
-  // Fallback: get the entry and extract translations
-  const entry = await fetchWP(`/wp/v2/${entryType}/${entryId}`);
-  return entry?.translations || entry?.wpml_translations || entry?.icl_translations || null;
+// WPML translation map for one entry: { "<lang>": { id, slug, title, lang } } (includes the current lang).
+// null = lookup failed / empty, so callers fall back to homepage links instead of hiding languages.
+export async function getTranslationMap(entryId, lang = DEFAULT_LANG) {
+  if (!entryId) return null;
+  // every route is dynamic (headers() in the root layout) → build-time renders are discarded; don't spend WP calls on them
+  if (process.env.NEXT_PHASE === "phase-production-build") return null;
+  const map = await fetchWP(`/myroutes/v1/translations/${entryId}?lang=${lang}`, { revalidate: 300 });
+  const ok = map && typeof map === "object" && !Array.isArray(map) && !map.code &&
+    Object.values(map).some((t) => typeof t?.slug === "string" && t.slug);
+  return ok ? map : null;
 }
 
 // Team type
