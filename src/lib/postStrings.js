@@ -1,16 +1,17 @@
 // src/lib/postStrings.js
 // UI labels for the single-post template's related cards (it has no ACF section fields),
 // plus the "Read more / Read less" toggle of long texts (showMore / showLess).
+// relatedHeading contains "\n" = a line break (the heading renders with whitespace-pre-line).
 // One entry per SUPPORTED_LANGS code; falls back to English. Add a language here when
 // adding one to src/config (see docs/ARCHITECTURE.md → "Adding a new language").
 
 export const POST_STRINGS = {
-  en: { relatedHeading: "Related articles", readMore: "Read article", readSuffix: "min read", showMore: "Read more", showLess: "Read less", contactUs: "Contact us", otherPartners: "Other partners", readFullCase: "Read full case" },
-  sv: { relatedHeading: "Relaterade artiklar", readMore: "Läs artikeln", readSuffix: "min läsning", showMore: "Läs mer", showLess: "Visa mindre", contactUs: "Kontakta oss", otherPartners: "Andra partners", readFullCase: "Läs hela caset" },
-  no: { relatedHeading: "Relaterte artikler", readMore: "Les artikkelen", readSuffix: "min lesing", showMore: "Les mer", showLess: "Vis mindre", contactUs: "Kontakt oss", otherPartners: "Andre partnere", readFullCase: "Les hele caset" },
-  fr: { relatedHeading: "Articles similaires", readMore: "Lire l’article", readSuffix: "min de lecture", showMore: "Lire la suite", showLess: "Voir moins", contactUs: "Contactez-nous", otherPartners: "Autres partenaires", readFullCase: "Lire le cas complet" },
-  frbg: { relatedHeading: "Articles similaires", readMore: "Lire l’article", readSuffix: "min de lecture", showMore: "Lire la suite", showLess: "Voir moins", contactUs: "Contactez-nous", otherPartners: "Autres partenaires", readFullCase: "Lire le cas complet" },
-  nl: { relatedHeading: "Gerelateerde artikelen", readMore: "Lees artikel", readSuffix: "min leestijd", showMore: "Lees meer", showLess: "Toon minder", contactUs: "Neem contact op", otherPartners: "Andere partners", readFullCase: "Lees de volledige case" },
+  en: { relatedHeading: "Insights for tomorrow’s\nindustry leaders", readMore: "Read article", readSuffix: "min read", showMore: "Read more", showLess: "Read less", contactUs: "Contact us", otherPartners: "Other partners", readFullCase: "Read full case" },
+  sv: { relatedHeading: "Insikter för morgondagens\nledare inom branschen", readMore: "Läs artikeln", readSuffix: "min läsning", showMore: "Läs mer", showLess: "Visa mindre", contactUs: "Kontakta oss", otherPartners: "Andra partners", readFullCase: "Läs hela caset" },
+  no: { relatedHeading: "Innsikt for morgendagens\nledere i bransjen", readMore: "Les artikkelen", readSuffix: "min lesing", showMore: "Les mer", showLess: "Vis mindre", contactUs: "Kontakt oss", otherPartners: "Andre partnere", readFullCase: "Les hele caset" },
+  fr: { relatedHeading: "Des perspectives pour les\nleaders de demain du secteur", readMore: "Lire l’article", readSuffix: "min de lecture", showMore: "Lire la suite", showLess: "Voir moins", contactUs: "Contactez-nous", otherPartners: "Autres partenaires", readFullCase: "Lire le cas complet" },
+  frbg: { relatedHeading: "Des perspectives pour les\nleaders de demain du secteur", readMore: "Lire l’article", readSuffix: "min de lecture", showMore: "Lire la suite", showLess: "Voir moins", contactUs: "Contactez-nous", otherPartners: "Autres partenaires", readFullCase: "Lire le cas complet" },
+  nl: { relatedHeading: "Inzichten voor de leiders\nvan morgen in de branche", readMore: "Lees artikel", readSuffix: "min leestijd", showMore: "Lees meer", showLess: "Toon minder", contactUs: "Neem contact op", otherPartners: "Andere partners", readFullCase: "Lees de volledige case" },
 };
 
 export const postStrings = (lang) => POST_STRINGS[lang] || POST_STRINGS.en;
