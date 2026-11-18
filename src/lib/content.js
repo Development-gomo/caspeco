@@ -180,7 +180,7 @@ export function hasText(v) {
 /** Like hasText, for WYSIWYG fields that may hold only embedded media: an <iframe>, <img>, <video> etc.
  *  with no surrounding text still counts as content (e.g. an embedded calculator or map). */
 export function hasRichContent(v) {
-  return hasText(v) || (typeof v === "string" && /<(iframe|img|video|audio|embed|object|svg|picture|canvas)\b/i.test(v));
+  return hasText(v) || (typeof v === "string" && /<(iframe|img|video|audio|embed|object|svg|picture|canvas)(?=[\s/>])/i.test(v));
 }
 
 /** Spacing tab (padding_top / padding_bottom) -> data attributes, only for the sides that are disabled. */
