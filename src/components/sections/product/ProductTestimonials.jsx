@@ -21,6 +21,8 @@
 // set by ClientQuoteSlider and rendered ONLY in those mobile glass cards: caseLogo above the quote (cards
 // without one get a same-height spacer so the quotes line up), caseCta as a text link at the bottom right of
 // the name row. Not the `logo` key (desktop, case pages). No caseLogo/caseCta on any slide → cards as before.
+// `mobileCta` ({ text, href }, only with mobileGrid, set by ClientQuoteSlider from the layout's cta_text + cta_url): a yellow
+// underlined "All cases →" link under the dots of the mobile cards, mobile only (desktop shows no CTA there).
 // `variant` ("default" | "case"): "case" (CasePageBuilder) sets mobile padding 48/48 (Figma Case Study Mobile); >= md unchanged.
 
 "use client";
@@ -58,7 +60,7 @@ const caseToSlide = (c) => ({
   logo: c.logo,
 });
 
-export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases = [], slides: slidesProp, compact = false, mobileGrid = false, variant = "default" }) {
+export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases = [], slides: slidesProp, compact = false, mobileGrid = false, mobileCta = null, variant = "default" }) {
   const isCase = variant === "case";
   const slides = Array.isArray(slidesProp) ? slidesProp.filter((s) => s.quote).slice(0, MAX_CASES) : (Array.isArray(cases) ? cases : []).filter((c) => c.quote).slice(0, MAX_CASES).map(caseToSlide);
   const [index, setIndex] = React.useState(0);
@@ -144,6 +146,13 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
                 ))}
               </ul>
               {slides.length > 1 && <SliderPoints trackRef={trackRef} count={slides.length} />}
+              {/* "All cases →": yellow underlined text link under the dots, left aligned. Mobile only (this block is md:hidden) */}
+              {mobileCta && (
+                <Link href={mobileCta.href} className="group flex items-center gap-2 self-start whitespace-nowrap text-[16px] leading-5 font-medium tracking-[-0.32px] text-(--color-yellow)">
+                  <span className="underline underline-offset-4">{mobileCta.text}</span>
+                  <CaseArrow />
+                </Link>
+              )}
             </div>
           )}
 

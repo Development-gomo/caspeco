@@ -4,6 +4,7 @@
 // On mobile (< 768px) the slider becomes swipeable glass quote cards with dots (mobileGrid prop, ui/MobileSlider); desktop is unchanged.
 // case_logo (image) shows above the quote and case_cta_text + case_link (text link, bottom right of the name row) only in those
 // mobile cards; the link needs both text and URL. Empty fields → the cards render exactly as before.
+// The layout's own cta_text + cta_url become a yellow "All cases →" link under the dots, mobile only (needs both).
 import ProductTestimonials from "./ProductTestimonials";
 import { DEFAULT_LANG, SUPPORTED_LANGS, langHref } from "@/config";
 import { hasText, mediaUrl, rows } from "@/lib/content";
@@ -43,5 +44,9 @@ export default function ClientQuoteSlider({ data, lang = DEFAULT_LANG }) {
     })
     .filter((s) => hasText(s.quote));
   if (slides.length === 0) return null;
-  return <ProductTestimonials data={{ heading: data?.heading, bg_color: data?.bg_color }} lang={lang} slides={slides} compact mobileGrid />;
+  // layout-level "All cases" link (cta_text + cta_url): shown on mobile only, under the dots; needs both text and URL
+  const allText = typeof data?.cta_text === "string" ? data.cta_text.trim() : "";
+  const allHref = caseHref(data?.cta_url, lang);
+  const mobileCta = allText && allHref ? { text: allText, href: allHref } : null;
+  return <ProductTestimonials data={{ heading: data?.heading, bg_color: data?.bg_color }} lang={lang} slides={slides} compact mobileGrid mobileCta={mobileCta} />;
 }

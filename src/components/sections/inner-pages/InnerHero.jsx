@@ -6,6 +6,7 @@
 // bg_video (optional ACF file; when set it replaces the image as the background and bg_image becomes its poster),
 // background_color (used when there is no image), hero_height (25–100, % of the viewport), enable_overlay (button group "enable"/"disable"; dark overlay over bg_image).
 // mobile_bg_image / mobile_bg_video (optional, < md only): replace bg_image / bg_video on mobile, each falling back to the default; neither set → the original render.
+// heading_tag (h1 / h2 / p, default h1) only swaps the heading's HTML tag — same type style. content_alignmenet (left / center / right) aligns the text block.
 // short_text lists (ul) use the brand yellow bullets (.cs-list).
 
 "use client";
@@ -44,6 +45,13 @@ export default function InnerHero({ data, lang = DEFAULT_LANG }) {
   // hero_height: % of the viewport (ACF default 100); full height also keeps HomeHero's xl minimum
   const height = Math.min(100, Math.max(25, Number(data?.hero_height) || 100));
   const full = height >= 100;
+  // heading_tag (h1 / h2 / p, default h1): only the HTML tag changes, the type style stays identical
+  // (font-extrabold = the 800 the global h1/h2 rule gives, so a <p> looks the same). ACF may send "h2" or { value: "h2" }.
+  const tagField = data?.heading_tag?.value ?? data?.heading_tag;
+  const HeadingTag = motion[["h1", "h2", "p"].includes(tagField) ? tagField : "h1"];
+  // content_alignmenet (sic, the ACF field name): left (default) / center / right — aligns the text block
+  const alignField = data?.content_alignmenet?.value ?? data?.content_alignmenet;
+  const align = alignField === "center" ? "items-center text-center" : alignField === "right" ? "items-end text-right" : "items-start";
 
   return (
     <section
@@ -97,7 +105,7 @@ export default function InnerHero({ data, lang = DEFAULT_LANG }) {
       >
         <HeroLabels labels={data?.label} lang={lang} className="mb-6" />
 
-        <div className="flex w-full flex-col items-start gap-6 text-white lg:gap-8">
+        <div className={`flex w-full flex-col ${align} gap-6 text-white lg:gap-8`}>
           {subHeading && (
             <motion.p
               initial={{ opacity: 0, y: 15 }}
@@ -109,11 +117,11 @@ export default function InnerHero({ data, lang = DEFAULT_LANG }) {
           )}
 
           {hasText(heading) && (
-          <motion.h1
+          <HeadingTag
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="w-full normal-case text-[40px] leading-11 tracking-[-1.6px]
+            className="w-full normal-case font-extrabold text-[40px] leading-11 tracking-[-1.6px]
               md:text-[64px] md:leading-16 md:tracking-[-2.4px]
               lg:text-[72px] lg:leading-[72px] lg:tracking-[-2.8px]
               xl:text-[96px] xl:leading-[92px] xl:tracking-[-3.84px]
