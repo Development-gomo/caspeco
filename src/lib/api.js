@@ -198,12 +198,6 @@ export async function getMediaById(id) {
   }
 }
 
-// Footer widgets
-export async function getFooterWidgets(lang = DEFAULT_LANG) {
-  const footer = await fetchWP(`/myroutes/v1/footer-widgets?lang=${lang}`, { revalidate: 300 });
-  return footer;
-}
-
 // Theme options (logo, header menu, footer, logo galleries). A language whose options
 // pages aren't translated in WPML returns [] (e.g. nl) — fall back to the default
 // language so the header/footer never render empty.
@@ -236,26 +230,6 @@ export async function getLogoGalleries(lang = DEFAULT_LANG) {
     if (!integrations.length) integrations = pick(fallback, "integrations_logo");
   }
   return { partners, integrations };
-}
-
-async function getEntryById(endpoint, id, lang = DEFAULT_LANG) {
-  if (!id) return null;
-  try {
-    return await fetchWP(`/wp/v2/${endpoint}/${id}?lang=${lang}`);
-  } catch {
-    return null;
-  }
-}
-
-// Get translated slug for other languages
-export async function getTranslations(pageId) {
-  const data = await fetchWP(`/wp/v2/pages/${pageId}`);
-  return data?.translations || null;
-}
-
-// Get a page by ID (for finding translated slugs)
-export async function getPageById(id, lang) {
-  return await getEntryById("pages", id, lang);
 }
 
 export async function getCaseStudies(lang = DEFAULT_LANG) {
@@ -311,14 +285,6 @@ export async function getPostsByIds(ids, lang) {
   return Array.isArray(posts) ? posts : [];
 }
 
-export async function getCaseStudyById(id, lang) {
-  return await getEntryById("casestudies", id, lang);
-}
-
-export async function getProductById(id, lang) {
-  return await getEntryById("products", id, lang);
-}
-
 export async function getProductsByIds(ids, lang = DEFAULT_LANG) {
   if (!Array.isArray(ids) || ids.length === 0) return [];
   const products = await fetchWP(`/wp/v2/products?include=${ids.join(",")}&orderby=include&per_page=${ids.length}&_embed&lang=${lang}`);
@@ -329,16 +295,8 @@ export async function getAllProducts(lang = DEFAULT_LANG) {
   return await fetchWP(`/wp/v2/products?lang=${lang}&per_page=100&_embed`);
 }
 
-export async function getIndustryById(id, lang) {
-  return await getEntryById("industries", id, lang);
-}
-
 export async function getAllIndustries(lang = DEFAULT_LANG) {
   return await fetchWP(`/wp/v2/industries?lang=${lang}&per_page=100&_embed`);
-}
-
-export async function getPartnerById(id, lang) {
-  return await getEntryById("partner", id, lang);
 }
 
 // Get translations for any entry type - try custom endpoint first, then fallback
@@ -352,158 +310,6 @@ export async function getEntryTranslations(entryId, entryType = "pages", lang = 
   // Fallback: get the entry and extract translations
   const entry = await fetchWP(`/wp/v2/${entryType}/${entryId}`);
   return entry?.translations || entry?.wpml_translations || entry?.icl_translations || null;
-}
-
-// Get translations for a page - try custom endpoint first, then fallback
-export async function getPageTranslations(pageId, lang) {
-  return getEntryTranslations(pageId, "pages", lang);
-}
-
-// Get translation by slug - with fallback for custom post types
-export async function getTranslationBySlug(slug, currentLang, targetLang, postType = "page") {
-  // Map postType to WordPress REST endpoint names
-  const endpointMap = {
-    page: "pages",
-    case_study: "casestudies",
-    casestudies: "casestudies",
-    product: "products",
-    industry: "industries",
-    partner: "partner",
-    posts: "posts",
-    post: "posts",
-    team: "teammembers",
-  };
-  const endpoint = endpointMap[postType] || postType;
-
-  // First try the custom endpoint (works for pages)
-  const translation = await fetchWP(`/myroutes/v1/translation-by-slug?slug=${encodeURIComponent(slug)}&lang=${currentLang}&target_lang=${targetLang}&post_type=${postType}`);
-
-  // If custom endpoint returned valid data, use it
-  if (translation?.slug && !translation?.code) {
-    return translation;
-  }
-
-  // Fallback: Fetch the current entry by slug and extract WPML translation data
-  try {
-    // Get the current entry to find its ID and translation data
-    const entries = await fetchWP(`/wp/v2/${endpoint}?slug=${encodeURIComponent(slug)}&lang=${currentLang}`);
-
-    if (!Array.isArray(entries) || entries.length === 0) {
-      return null;
-    }
-
-    const currentEntry = entries[0];
-    const entryId = currentEntry.id;
-
-    // Check for WPML translation data in various formats
-    const translations = currentEntry?.translations ||
-      currentEntry?.wpml_translations ||
-      currentEntry?.icl_translations;
-
-    if (translations && translations[targetLang]) {
-      const translatedId = typeof translations[targetLang] === 'number'
-        ? translations[targetLang]
-        : translations[targetLang]?.id || translations[targetLang]?.element_id;
-
-      if (translatedId) {
-        // Fetch the translated entry to get its slug
-        const translatedEntry = await fetchWP(`/wp/v2/${endpoint}/${translatedId}?lang=${targetLang}`);
-        if (translatedEntry?.slug) {
-          return { slug: translatedEntry.slug };
-        }
-      }
-    }
-
-    // Alternative: Query all entries in target language and find by translation group
-    const allTargetEntries = await fetchWP(`/wp/v2/${endpoint}?lang=${targetLang}&per_page=100`);
-
-    if (Array.isArray(allTargetEntries)) {
-      for (const altEntry of allTargetEntries) {
-        const altTranslations = altEntry?.translations ||
-          altEntry?.wpml_translations ||
-          altEntry?.icl_translations;
-
-        if (altTranslations && altTranslations[currentLang]) {
-          const currentId = typeof altTranslations[currentLang] === 'number'
-            ? altTranslations[currentLang]
-            : altTranslations[currentLang]?.id || altTranslations[currentLang]?.element_id;
-
-          if (currentId === entryId) {
-            return { slug: altEntry.slug };
-          }
-        }
-      }
-    }
-
-    return null;
-  } catch (err) {
-    return null;
-  }
-}
-
-// Get all entries of a type in a language (for finding translations)
-export async function getAllEntriesByType(endpoint, lang = DEFAULT_LANG) {
-  try {
-    const entries = await fetchWP(`/wp/v2/${endpoint}?lang=${lang}&per_page=100`);
-    return Array.isArray(entries) ? entries : [];
-  } catch (err) {
-    return [];
-  }
-}
-
-// Find translation by checking all entries in alternate language
-export async function findTranslationByEntry(entryId, entryType, currentLang, targetLang) {
-  try {
-    // First, try to get the entry's translation metadata
-    const entry = await fetchWP(`/wp/v2/${entryType}/${entryId}`);
-
-    // Check for translation relationships
-    const translations = entry?.translations ||
-      entry?.wpml_translations ||
-      entry?.icl_translations;
-
-    if (translations && translations[targetLang]) {
-      const translatedId = typeof translations[targetLang] === 'number'
-        ? translations[targetLang]
-        : translations[targetLang]?.id || translations[targetLang]?.element_id;
-
-      if (translatedId) {
-        const translatedEntry = await getEntryById(entryType, translatedId, targetLang);
-        if (translatedEntry) {
-          return translatedEntry;
-        }
-      }
-    }
-
-    // Fallback: query all entries in target language
-    const allEntries = await getAllEntriesByType(entryType, targetLang);
-
-    for (const altEntry of allEntries) {
-      const altTranslations = altEntry?.translations ||
-        altEntry?.wpml_translations ||
-        altEntry?.icl_translations;
-
-      if (altTranslations && altTranslations[currentLang]) {
-        const currentId = typeof altTranslations[currentLang] === 'number'
-          ? altTranslations[currentLang]
-          : altTranslations[currentLang]?.id || altTranslations[currentLang]?.element_id;
-
-        if (currentId === entryId) {
-          return altEntry;
-        }
-      }
-    }
-
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-// Alternative: Get page by slug in alternate language (if WPML uses same slug structure)
-export async function getPageBySlugInLang(slug, lang) {
-  const page = await getPageBySlug(slug, lang);
-  return page;
 }
 
 // Team type

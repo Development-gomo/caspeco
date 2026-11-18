@@ -77,9 +77,6 @@ const HomeIntegrations = dynamic(
 );
 const HomeInsights = dynamic(() => import("../sections/home/HomeInsights"));
 const HomeFaq = dynamic(() => import("../sections/home/HomeFaq"));
-const UspAccordion = dynamic(
-  () => import("../sections/home/ProductUspAccordion"),
-);
 
 // Product / industry sections, also available on normal pages (ICP pages reuse them)
 const ProductUspAccordion = dynamic(
@@ -151,7 +148,6 @@ async function prefetchSectionData(sections, lang) {
     if (block._layout === "casestudies_section") needs.cases = true;
     if (block._layout === "case_study_listing") needs.cases = true;
     if (block._layout === "integrations_listing") needs.partners = true;
-    if (block._layout === "news_section") needs.posts = true;
     if (block._layout === "news_listing") needs.newsPage = true;
     if (block._layout === "team_section") needs.team = true;
     if (block._layout === "industry_slider_section") needs.industries = true;
@@ -532,9 +528,6 @@ export default async function PageBuilder({
                 prevLayout={block._prev}
               />
             );
-          
-          case "usp_accordion_section":
-            return <UspAccordion key={i} data={block} lang={lang} />;
 
           default:
             return null;
