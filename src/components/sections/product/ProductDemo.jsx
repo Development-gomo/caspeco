@@ -6,18 +6,24 @@
 // Figma "Online order device group" Default → Variant2: hovering (desktop) or tapping
 // the devices swaps to hover_image (the "order ready" notification state).
 // Mobile (< 768, Figma Product "GOMO company size mobile" 2517:6727): padding 64, device image first
-// (QA: full screen width, edge to edge and flush with the right screen edge, 696:532 proportions), heading → text → USP rows 16 apart, rows 12 apart (3×33 bar, 12 gap,
+// (QA slide 81: the image slides in from the right as you scroll and runs off the right screen edge —
+// 120% of the screen width, left-aligned, the section clips the rest; 696:532 proportions), heading → text → USP rows 16 apart, rows 12 apart (3×33 bar, 12 gap,
 // title → text 2), full-width CTA 24 below.
 
 "use client";
 
 import React from "react";
 import Image from "next/image";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import CtaButton from "@/components/ui/CtaButton";
 import Reveal from "@/components/ui/Reveal";
 import UspLine from "../../../../public/icons/product/usp-line.svg";
 import { DEFAULT_LANG, langHref } from "@/config";
 import { hasText, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
+
+// Scroll-linked slide of the device image (client QA slide 81): it follows the scroll from the right (+SLIDE px) to its
+// place as the section moves from the bottom of the viewport to its centre, and back again when scrolling up.
+const SLIDE = 240;
 
 const GRADIENT = "linear-gradient(180deg, rgba(255,255,255,0.5) 0.94%, #dadcdd 80.71%)";
 
@@ -26,10 +32,15 @@ export default function ProductDemo({ data, lang = DEFAULT_LANG }) {
   const { heading, short_text, cta_text, cta_url, image } = data || {};
   const hover = mediaUrl(data?.hover_image); // optional, cross-fades in on hover / tap
   const [active, setActive] = React.useState(false);
+  const sectionRef = React.useRef(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "center center"] });
+  const slideX = useTransform(scrollYProgress, [0, 1], [reduce ? 0 : SLIDE, 0]);
+  const slideOpacity = useTransform(scrollYProgress, [0, 0.35], [0.2, 1]);
   if (!hasText(heading)) return null;
 
   return (
-    <section className="overflow-hidden py-18 lg:py-36 max-md:py-16" style={sectionBackground(data, { backgroundImage: GRADIENT })}>
+    <section ref={sectionRef} className="overflow-hidden py-18 lg:py-36 max-md:py-16" style={sectionBackground(data, { backgroundImage: GRADIENT })}>
       <div className="cs-container relative flex flex-col gap-12 lg:flex-row lg:items-center lg:justify-between xl:min-h-[532px]">
         <Reveal className="flex flex-col items-start gap-4 lg:max-w-[488px] lg:shrink-0">
           <div className="flex flex-col gap-5 max-md:gap-4">
@@ -63,12 +74,12 @@ export default function ProductDemo({ data, lang = DEFAULT_LANG }) {
           // Figma "Online order device group": a 696×532 box 745px from the content edge
           // (x 865 at 1512), top-aligned with the content and bleeding past the viewport
           // (section clips it); the text column is centred against it (xl:min-h-[532px]).
-          <div className="flex w-full justify-center max-md:order-first max-md:-mx-6 max-md:w-[calc(100%+48px)] max-md:justify-end lg:absolute lg:left-[745px] lg:top-0 lg:w-[696px]">
-            <Reveal
-              x={60}
-              y={0}
-              duration={0.9}
-              delay={0.15}
+          // Wider than 1512 the box moves with the viewport (left = max(745px, 50vw - 11px)) so it keeps
+          // the same 49px bleed off the right edge instead of ending inside the page (QA slide 81).
+          // On scroll it slides in from the right, tied to the scroll position (slideX).
+          <div className="flex w-full justify-center max-md:order-first max-md:-mx-6 max-md:w-[calc(100%+48px)] max-md:justify-start lg:absolute lg:left-[max(745px,calc(50vw-11px))] lg:top-0 lg:w-[696px]">
+            <motion.div
+              style={{ x: slideX, opacity: reduce ? 1 : slideOpacity }}
               {...(hover && {
                 role: "button",
                 tabIndex: 0,
@@ -79,7 +90,7 @@ export default function ProductDemo({ data, lang = DEFAULT_LANG }) {
                 onPointerUp: (e) => e.pointerType !== "mouse" && setActive((v) => !v),
                 onKeyDown: (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), setActive((v) => !v)),
               })}
-              className={`relative aspect-[696/532] w-full max-w-[696px] max-md:max-w-none drop-shadow-[0px_2.3px_5.2px_rgba(0,0,0,0.1)] max-md:drop-shadow-[0px_1px_4.5px_rgba(0,0,0,0.1)] outline-none ${hover ? "cursor-pointer" : ""}`}
+              className={`relative aspect-[696/532] w-full max-w-[696px] max-md:w-[120%] max-md:shrink-0 max-md:max-w-none drop-shadow-[0px_2.3px_5.2px_rgba(0,0,0,0.1)] max-md:drop-shadow-[0px_1px_4.5px_rgba(0,0,0,0.1)] outline-none ${hover ? "cursor-pointer" : ""}`}
             >
               <Image
                 src={mediaUrl(image)}
@@ -98,7 +109,7 @@ export default function ProductDemo({ data, lang = DEFAULT_LANG }) {
                   className={`object-contain object-left transition-[opacity,translate] duration-500 ease-out ${active ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"}`}
                 />
               )}
-            </Reveal>
+            </motion.div>
           </div>
         )}
       </div>
