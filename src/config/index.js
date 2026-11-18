@@ -123,10 +123,45 @@ export function pageTypeFromPath(pathname) {
 /** Every class pageTypeFromPath can return (to swap the body class on client navigation) */
 export const PAGE_TYPES = ["home", "page", ...Object.values(BODY_CLASS)];
 
-/** Prefix a local path with the current language (skip prefix for default lang) */
+const LANG_ALIASES = { "nl-nl": "nl" }; // WPML directory for nl
+
+/**
+ * Normalise a link to a site path. A path that already starts with a language (or alias) is
+ * never prefixed again; otherwise non-default languages get "/{lang}" (unless prefix: false).
+ * Externals, mailto/tel, "#x", "?x", "//host" and other relative strings pass through.
+ * Applies the trailing-slash rule (sitePath).
+ */
+export function siteHref(url, lang = DEFAULT_LANG, { prefix = true } = {}) {
+  if (!url) return "/";
+  if (typeof url !== "string") return url;
+  let u = url.trim();
+  if (!u) return "/";
+  if (/^(?:[a-z][a-z0-9+.-]*:|\/\/|#|\?)/i.test(u)) return u; // http(s), mailto, tel, //, #, ?
+  if (!u.startsWith("/")) { // only "en/contact"-style bare paths
+    const first = u.split(/[/?#]/)[0].toLowerCase();
+    if (!SUPPORTED_LANGS.includes(first) && !LANG_ALIASES[first]) return u; // other relative strings untouched
+    u = "/" + u;
+  }
+  const m = u.match(/^\/([^/?#]+)(.*)$/);
+  const seg = m?.[1].toLowerCase();
+  const known = seg && (LANG_ALIASES[seg] || (SUPPORTED_LANGS.includes(seg) ? seg : null));
+  if (known) { // already has a language: never add another
+    const rest = m[2];
+    u = known === DEFAULT_LANG ? (rest.startsWith("/") ? rest : "/" + rest) : `/${known}${rest}`;
+    return sitePath(u);
+  }
+  if (prefix && lang && lang !== DEFAULT_LANG) u = `/${lang}${u}`;
+  return sitePath(u);
+}
+
+/** Prefix a local path with the current language (skip prefix for default lang; never doubles an existing one) */
 export function langHref(url, lang) {
-  if (!url || !url.startsWith("/") || lang === DEFAULT_LANG) return url || "/";
-  return `/${lang}${url}`;
+  return siteHref(url, lang);
+}
+
+/** Raw CMS links rendered as authored (no language added) — normalised only */
+export function normalizeHref(url) {
+  return siteHref(url, DEFAULT_LANG, { prefix: false });
 }
 
 /** Home path for a given language */

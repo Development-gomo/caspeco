@@ -17,7 +17,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import CtaButton from "@/components/ui/CtaButton";
 import HeroLabels from "@/components/ui/HeroLabels";
 import HeroBgMedia from "@/components/ui/HeroBgMedia";
-import { DEFAULT_LANG } from "@/config";
+import { DEFAULT_LANG, normalizeHref } from "@/config";
 import { breakAfterPeriods, hasText, toHtml } from "@/lib/content";
 
 export default function InnerHero({ data, lang = DEFAULT_LANG }) {
@@ -146,7 +146,7 @@ export default function InnerHero({ data, lang = DEFAULT_LANG }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.3 }}
             >
-              <CtaButton href={ctaUrl}>{ctaText}</CtaButton>
+              <CtaButton href={normalizeHref(ctaUrl)}>{ctaText}</CtaButton>
             </motion.div>
           )}
         </div>

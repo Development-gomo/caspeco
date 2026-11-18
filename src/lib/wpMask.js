@@ -20,14 +20,15 @@ const site = WP_SITE ? new URL(WP_SITE) : null;
 const HOST = site ? site.host.replace(/^www\./, "") : "";
 const PATH = site ? site.pathname.split("/").filter(Boolean).map((p) => SLASH + escape(p)).join("") : "";
 
-// groups: 1 = separator, 2 = WP core folder (only when one follows the site URL)
+// groups: 1 = separator, 2 = WP core folder (only when one follows the site URL); 3 = separator, 4 = "nl-nl" (WPML directory → /nl)
 const SITE_RE = site
-  ? new RegExp(String.raw`https?:${SLASH}${SLASH}(?:www\.)?${escape(HOST)}${PATH}(?:(${SLASH})(wp-content|wp-json|wp-includes|wp-admin)(?=${SLASH}))?(?![\w.-])`, "gi")
+  ? new RegExp(String.raw`https?:${SLASH}${SLASH}(?:www\.)?${escape(HOST)}${PATH}(?:(${SLASH})(wp-content|wp-json|wp-includes|wp-admin)(?=${SLASH})|(${SLASH})(nl-nl)(?![\w.-]))?(?![\w.-])`, "gi")
   : null;
 
 export function maskWpString(value) {
   if (!SITE_RE || typeof value !== "string" || !value.includes(HOST)) return value;
-  return value.replace(SITE_RE, (match, sep, kind, offset, whole) => {
+  return value.replace(SITE_RE, (match, sep, kind, sep2, nl, offset, whole) => {
+    if (nl) return `${sep2}nl`; // /nl-nl/… → /nl/… (WPML directory differs from our language code)
     // Media stays on the CMS host for now: proxying it through /assets made Vercel's servers
     // fetch every file from SiteGround, whose anti-bot answers them with a CAPTCHA (202 HTML)
     // instead of the image. Browsers fetching directly are not challenged. Restore
