@@ -15,13 +15,24 @@ const revalidateFor = (seconds) => {
   return Number.isFinite(n) && n >= 0 ? n : seconds;
 };
 
+// The CMS host sometimes answers a server-side request with a 5xx / 429 / a bot-check HTML page instead of JSON.
+// That used to become null -> "page not found" and the 404 was then cached by ISR ("refresh twice" to get the page).
+// Now a failed attempt is retried (fresh, uncached) and only a still-failing request returns null.
+// null always means "the request failed"; a real "not found" is an empty list / WP error object.
+const RETRIES = 2;
 const _fetchWP = cache(async function _fetchWP(url, revalidate) {
-  try {
-    const res = await fetch(url, { next: { revalidate: revalidateFor(revalidate) } });
-    return maskWp(await res.json());
-  } catch {
-    return null;
+  for (let attempt = 0; attempt <= RETRIES; attempt++) {
+    try {
+      const res = await fetch(url, attempt === 0 ? { next: { revalidate: revalidateFor(revalidate) } } : { cache: "no-store" });
+      // other 4xx (e.g. rest_no_route) are final answers; 408 / 429 and 5xx are worth retrying
+      const final = res.ok || (res.status >= 400 && res.status < 500 && res.status !== 408 && res.status !== 429);
+      if (final) return maskWp(await res.json()); // an HTML body throws here and is retried
+    } catch {
+      // network error or non-JSON body: retry
+    }
+    if (attempt < RETRIES) await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
   }
+  return null;
 });
 
 // Generic fetch helper with ISR revalidation (60s by default).
@@ -34,22 +45,21 @@ export function fetchWP(endpoint, { revalidate = 60 } = {}) {
 async function getSingleEntry(endpoint, slug, lang = DEFAULT_LANG, query = "") {
   if (!slug) return null;
 
-  try {
-    const url = `/wp/v2/${endpoint}?slug=${encodeURIComponent(slug)}&lang=${lang}${query}`;
-    const entries = await fetchWP(url);
+  const url = `/wp/v2/${endpoint}?slug=${encodeURIComponent(slug)}&lang=${lang}${query}`;
+  const entries = await fetchWP(url);
 
-    if (!Array.isArray(entries) || entries.length === 0) {
-      return null;
-    }
+  // the request itself failed (after retries): error out (500, never cached) instead of a cached false 404
+  if (entries === null) throw new Error(`WordPress request failed: ${endpoint} / ${slug}`);
 
-    return (
-      entries.find((entry) => entry.lang === lang) ||
-      entries.find((entry) => entry.slug === slug) ||
-      entries[0]
-    );
-  } catch (err) {
+  if (!Array.isArray(entries) || entries.length === 0) {
     return null;
   }
+
+  return (
+    entries.find((entry) => entry.lang === lang) ||
+    entries.find((entry) => entry.slug === slug) ||
+    entries[0]
+  );
 }
 
 export async function getPageBySlug(slug, lang = DEFAULT_LANG) {
@@ -104,6 +114,7 @@ export async function getPageByPath(segments, lang = DEFAULT_LANG) {
   const candidates = await fetchWP(
     `/wp/v2/pages?slug=${encodeURIComponent(segments.at(-1))}&lang=${lang}`
   );
+  if (candidates === null) throw new Error(`WordPress request failed: pages / ${segments.join("/")}`);
   if (!Array.isArray(candidates)) return null;
 
   for (const page of candidates) {
@@ -111,6 +122,7 @@ export async function getPageByPath(segments, lang = DEFAULT_LANG) {
     let ok = true;
     for (let i = segments.length - 2; i >= 0; i--) {
       const parent = parentId ? await fetchWP(`/wp/v2/pages/${parentId}?lang=${lang}&_fields=id,slug,parent`) : null;
+      if (parentId && parent === null) throw new Error(`WordPress request failed: pages / ${parentId}`);
       if (!parent || parent.slug !== segments[i]) {
         ok = false;
         break;
@@ -127,6 +139,7 @@ export async function getPageByPath(segments, lang = DEFAULT_LANG) {
 export async function getPartnerCategoryBySlug(slug, lang = DEFAULT_LANG) {
   if (!slug) return null;
   const terms = await fetchWP(`/wp/v2/partner_category?slug=${encodeURIComponent(slug)}&lang=${lang}`);
+  if (terms === null) throw new Error(`WordPress request failed: partner_category / ${slug}`);
   return Array.isArray(terms) && terms.length ? terms[0] : null;
 }
 
