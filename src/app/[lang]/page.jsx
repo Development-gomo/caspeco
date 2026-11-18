@@ -7,7 +7,7 @@ import { getPageBySlug, getThemeOptions } from "@/lib/api";
 import { buildMetadataFromYoast } from "@/lib/seo";
 import { resolveParams } from "@/lib/params";
 import { notFound } from "next/navigation";
-import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
+import { DEFAULT_LANG, SUPPORTED_LANGS, langHome } from "@/config";
 
 export const revalidate = 300;
 
@@ -47,5 +47,8 @@ export default async function LangHomePage({ params }) {
 export async function generateMetadata({ params }) {
   const resolvedParams = resolveParams(await params);
   const page = await getPageBySlug("frontpage", resolvedParams.lang);
-  return buildMetadataFromYoast(page, { lang: resolvedParams.lang });
+  return buildMetadataFromYoast(page, {
+    lang: resolvedParams.lang,
+    path: page ? langHome(resolvedParams.lang) : undefined,
+  });
 }

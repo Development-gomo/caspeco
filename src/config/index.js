@@ -160,3 +160,15 @@ export function langFromPath(pathname) {
   const firstSegment = (pathname || "").split("/")[1] || "";
   return SUPPORTED_LANGS.includes(firstSegment) ? firstSegment : DEFAULT_LANG;
 }
+
+// Live caspeco.com URLs end in "/". Stays false until the trailing-slash branch (next.config will read it too).
+export const TRAILING_SLASH = false;
+
+/** Apply the site's trailing-slash rule to a local path; keeps ?query/#hash; leaves files, externals, "#x", "//x" alone. */
+export function sitePath(path) {
+  if (typeof path !== "string" || !path.startsWith("/") || path.startsWith("//")) return path;
+  const [, p0, rest] = path.match(/^([^?#]*)(.*)$/);
+  let p = p0.length > 1 ? p0.replace(/\/+$/, "") : p0;
+  if (TRAILING_SLASH && p !== "/" && !/\.[^/]+$/.test(p)) p += "/";
+  return p + rest;
+}

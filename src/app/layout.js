@@ -24,7 +24,6 @@ const tenon = localFont({
 export const metadata = {
   // Yoast URLs arrive site-relative (WP host masked), so resolve them against our domain
   ...(process.env.SITE_URL ? { metadataBase: new URL(process.env.SITE_URL) } : {}),
-  robots: { index: true, follow: true },
 };
 
 export default async function RootLayout({ children }) {

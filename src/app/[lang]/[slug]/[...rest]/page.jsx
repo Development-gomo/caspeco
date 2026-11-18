@@ -24,7 +24,7 @@ import {
 } from "@/lib/api";
 import { resolveParams } from "@/lib/params";
 import { buildMetadataFromYoast } from "@/lib/seo";
-import { DEFAULT_LANG, SUPPORTED_LANGS, ROUTE_TYPES, typeFromBase } from "@/config";
+import { DEFAULT_LANG, SUPPORTED_LANGS, ROUTE_TYPES, typeFromBase, entryHref, langHref } from "@/config";
 import PostTemplate from "@/components/templates/PostTemplate";
 import CaseStudyTemplate from "@/components/templates/CaseStudyTemplate";
 import EntryTemplate from "@/components/templates/EntryTemplate";
@@ -54,37 +54,53 @@ const resolveRoute = cache(async (lang, segments) => {
   const [base, slug] = segments;
   const type = segments.length === 2 ? typeFromBase(base, lang) : null;
 
+  // `path` = canonical local URL, built from the entry's own slug (not the requested URL)
   if (type === "post") {
     const post = await getPostBySlug(slug, lang);
-    if (post) return { type, entry: post, slug };
+    if (post) return { type, entry: post, slug, path: entryHref(type, post.slug, lang) };
   }
   if (type === "casestudy") {
     const caseStudy = await getCaseStudyBySlug(slug, lang);
-    if (caseStudy) return { type, entry: caseStudy, slug };
+    if (caseStudy) return { type, entry: caseStudy, slug, path: entryHref(type, caseStudy.slug, lang) };
   }
   if (type === "product") {
     const product = await getProductBySlug(slug, lang);
-    if (product) return { type, entry: product, slug };
+    if (product) return { type, entry: product, slug, path: entryHref(type, product.slug, lang) };
   }
   if (type === "industry") {
     const industry = await getIndustryBySlug(slug, lang);
-    if (industry) return { type, entry: industry, slug };
+    if (industry) return { type, entry: industry, slug, path: entryHref(type, industry.slug, lang) };
   }
   if (type === "icp") {
     const icp = await getIcpBySlug(slug, lang);
-    if (icp) return { type, entry: icp, slug };
+    if (icp) return { type, entry: icp, slug, path: entryHref(type, icp.slug, lang) };
   }
   if (type === "partner") {
     const partner = await getPartnerBySlug(slug, lang);
-    if (partner) return { type, entry: partner, slug };
+    if (partner) return { type, entry: partner, slug, path: entryHref(type, partner.slug, lang) };
   }
   if (type === "partnerCategory") {
     const term = await getPartnerCategoryBySlug(slug, lang);
-    if (term) return { type, entry: term, slug, partners: await getPartnersByCategory(term.id, lang) };
+    if (term) {
+      return {
+        type,
+        entry: term,
+        slug,
+        path: entryHref(type, term.slug, lang),
+        partners: await getPartnersByCategory(term.id, lang),
+      };
+    }
   }
 
   const page = await getPageByPath(segments, lang);
-  if (page) return { type: "page", entry: page, slug: segments.at(-1) };
+  if (page) {
+    return {
+      type: "page",
+      entry: page,
+      slug: segments.at(-1),
+      path: langHref("/" + [...segments.slice(0, -1), page.slug].join("/"), lang),
+    };
+  }
 
   return null;
 });
@@ -131,5 +147,6 @@ export async function generateMetadata({ params }) {
   return buildMetadataFromYoast(route?.entry, {
     fallbackTitle: route?.entry?.name || "Caspeco",
     lang,
+    path: route?.path,
   });
 }

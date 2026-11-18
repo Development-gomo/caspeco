@@ -7,7 +7,7 @@ import Header from "@/components/major/Header";
 import Footer from "@/components/major/Footer";
 import { buildMetadataFromYoast } from "@/lib/seo";
 import { notFound } from "next/navigation";
-import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
+import { DEFAULT_LANG, SUPPORTED_LANGS, langHref, langHome } from "@/config";
 
 export const revalidate = 300;
 
@@ -66,8 +66,13 @@ export async function generateMetadata({ params }) {
   const lang = parsed?.lang || DEFAULT_LANG;
   const slug = parsed?.slug;
   const data = await getPageBySlug(slug, lang);
-  return buildMetadataFromYoast(data, {
-    fallbackTitle: slug ? `${slug} | caspeco Agency` : "caspeco Agency",
+  // child pages 404 here (they live under their parent), so they get no canonical/robots
+  const indexable = data && !data.parent ? data : null;
+  return buildMetadataFromYoast(indexable, {
+    fallbackTitle: "Caspeco",
     lang,
+    path: indexable
+      ? indexable.slug === "frontpage" ? langHome(lang) : langHref(`/${indexable.slug}`, lang)
+      : undefined,
   });
 }

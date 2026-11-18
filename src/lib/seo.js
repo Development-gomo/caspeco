@@ -1,6 +1,6 @@
 // src/lib/seo.js
 
-import { DEFAULT_LANG, LOCALE_MAP } from "@/config";
+import { DEFAULT_LANG, LOCALE_MAP, sitePath } from "@/config";
 
 function stripHtml(raw) {
   if (!raw) return "";
@@ -29,6 +29,7 @@ export function buildMetadataFromYoast(entry, options = {}) {
     fallbackTitle = "Caspeco",
     fallbackDescription = undefined, // no description tag rather than a placeholder
     lang = DEFAULT_LANG,
+    path = undefined, // local site path of the canonical entry, e.g. "/en/product/x"
   } = options;
 
   if (!entry) {
@@ -52,15 +53,12 @@ export function buildMetadataFromYoast(entry, options = {}) {
   const metadata = {
     title,
     description,
-    alternates: yoast?.canonical
-      ? {
-          canonical: yoast.canonical.replace(/^https?:\/\/(www\.)?[^\/]+\/en(\/|$)/, "/"),
-        }
-      : undefined,
+    // canonical + og:url come from our own routes (relative; resolved by metadataBase), never from Yoast
+    alternates: path ? { canonical: sitePath(path) } : undefined,
     openGraph: {
       title: yoast?.og_title || title,
       description: yoast?.og_description || description,
-      url: yoast?.og_url,
+      url: path ? sitePath(path) : undefined,
       siteName: yoast?.og_site_name,
       type: yoast?.og_type || (entry?.type === "casestudies" ? "article" : "website"),
       locale: yoast?.og_locale || LOCALE_MAP[lang] || LOCALE_MAP[DEFAULT_LANG],
