@@ -7,7 +7,7 @@
 
 "use client";
 
-import { hasText, sectionBackground, toHtml } from "@/lib/content";
+import { hasRichContent, hasText, sectionBackground, toHtml } from "@/lib/content";
 
 export default function LargeContent({ data }) {
   if (!data) return null;
@@ -24,7 +24,7 @@ export default function LargeContent({ data }) {
   const narrow = (isFull ? "" : " max-w-3xl") + place + textAlign;
   const hasSub = hasText(sub_heading);
   const hasHeading = hasText(heading);
-  const hasContent = hasText(content_section);
+  const hasContent = hasRichContent(content_section); // an iframe/img-only body still renders
   // no text at all: skip the section (and its padding)
   if (!hasSub && !hasHeading && !hasContent) return null;
 
