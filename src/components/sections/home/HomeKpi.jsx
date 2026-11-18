@@ -125,13 +125,10 @@ function KpiCard({ card, hint, index = 0 }) {
   );
 }
 
-const AFTER_DARK = new Set(["testimonial_slider_section", "industry_testimonials_section", "system_check_section"]);
-
 // variant "icp" — Figma ICP Operating at scale "KPI's": note under the cards Light Italic 16/34
 // #3F3E3C; before the light data-insight block the section keeps 72 below (72 + 72)
 export default function HomeKpi({ data, lang = DEFAULT_LANG, variant }) {
   const icp = variant === "icp";
-  const caseStudy = variant === "case"; // case pages: the section above gives no top spacing, so start our own
   const cards = rows(data?.cards).filter((c) => hasText(c.label) || hasText(c.value));
   if (!hasText(data?.heading) && cards.length === 0) return null;
   // subtitle: short_text (Page Builder) or sub_heading (Page Builder ICP Page); card.note renders inside KpiCard
@@ -145,7 +142,7 @@ export default function HomeKpi({ data, lang = DEFAULT_LANG, variant }) {
     // Mobile (Figma "USP big numbers"): 64 top after a dark section (else the section above gives it),
     // 64 bottom — 0 before the ICP data-insight block, which brings its own 64; heading → cards 48
     // (ICP: 40, with the body 16 under the H2 and the note + CTA 40 under the cards).
-    <section className={`${AFTER_DARK.has(data?._prev) || caseStudy ? "pt-18 md:pt-36 max-md:pt-16" : `lg:pt-0.5 ${data?._prev === "intro_video_section" ? "max-md:pt-16" : ""}`} ${icp && data?._next === "data_insight_section" ? "pb-12 md:pb-[72px] max-md:pb-0" : "pb-18 md:pb-36 max-md:pb-16"}`} style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
+    <section className="py-18 md:py-36 max-md:py-16" style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       <div className={`cs-container flex flex-col items-center gap-10 lg:gap-16 ${icp ? "" : "max-md:gap-12"}`}>
         {(hasText(data.heading) || subtitle) && (
           <div className="flex flex-col items-center gap-4 text-center">
