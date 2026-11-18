@@ -45,7 +45,7 @@ export default function LargeContent({ data }) {
         )}
         {hasHeading && (
           <h2
-            className={`cs-h3${narrow} cs-highlight cs-rich text-(--color-heading) max-md:text-black mb-6 md:mb-10`}
+            className={`cs-h3${narrow} cs-highlight cs-rich font-extrabold! text-(--color-heading) max-md:text-black mb-6 md:mb-10`} /* 800: .cs-h3 is unlayered 700, so it needs the important flag */
             dangerouslySetInnerHTML={{ __html: toHtml(heading) }}
           />
         )}
