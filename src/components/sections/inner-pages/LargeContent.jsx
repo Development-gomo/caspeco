@@ -3,7 +3,7 @@
 //   bg_image (image array) / bg_color (color) -> section background via sectionBackground(); nothing is applied when both are empty.
 //   heading (textarea) -> rendered through toHtml() so line breaks survive.
 //   container_width (button group "default" | "full") -> "full" drops the 768px (max-w-3xl) cap on heading + content so they span the site container (web-width, 1272px). Empty/"default"/missing = original narrow layout.
-//   section_alignment (button group "left" | "right" | "center") -> block position (default width) / text alignment (full width); empty = original layout. See the combination table below.
+//   section_alignment (button group "left" | "right" | "center") -> text alignment (the default 768px block always stays centred); empty = original layout. See the combination table below.
 
 "use client";
 
@@ -16,11 +16,11 @@ export default function LargeContent({ data }) {
   const isFull = (container_width?.value ?? container_width) === "full";
   const align = section_alignment?.value ?? section_alignment; // "left" | "right" | "center" | empty
   // container_width x section_alignment:
-  //   default (768px cap): left -> block flush left, right -> block flush right, center -> block centred + centred text
+  //   default (768px cap): block always centred (margin 0 auto); alignment only sets the text alignment inside it
   //   full (site container): block spans the container, alignment sets the text alignment
   // empty alignment = original layout (centred 768px block, left-aligned text)
   const textAlign = { left: " text-left", right: " text-right", center: " text-center" }[align] || "";
-  const place = isFull ? "" : { left: " mr-auto", right: " ml-auto", center: " m-auto" }[align] || " m-auto";
+  const place = isFull ? "" : " mx-auto"; // default width: always centred, whatever the alignment
   const narrow = (isFull ? "" : " max-w-3xl") + place + textAlign;
   const hasSub = hasText(sub_heading);
   const hasHeading = hasText(heading);
