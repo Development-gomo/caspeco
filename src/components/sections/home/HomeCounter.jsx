@@ -6,6 +6,7 @@ import Image from "next/image";
 import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { DEFAULT_LANG } from "@/config";
 import CtaButton from "@/components/ui/CtaButton";
+import { hasText } from "@/lib/content";
 
 function AnimatedNumber({ value, duration = 2000 }) {
   const ref = useRef(null);
@@ -50,6 +51,12 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
     bg_image,
     counters = [],
   } = data;
+  const hasSub = hasText(sub_heading);
+  const hasHeading = hasText(heading);
+  const hasShort = hasText(short_text);
+  const hasCta = hasText(cta_text) && cta_url;
+  // nothing to show: no text, CTA or counters
+  if (!hasSub && !hasHeading && !hasShort && !hasCta && !(counters || []).length) return null;
 
   return (
     <section ref={sectionRef} id="caspecooration" className="relative w-full py-12 md:py-44 text-white overflow-hidden">
@@ -77,7 +84,7 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
         <div>
 
           {/* SUBHEADING */}
-          {sub_heading && (
+          {hasSub && (
             <motion.div
               className="flex items-center gap-2 mb-2 md:mb-4"
               initial={{ opacity: 0, y: 20 }}
@@ -91,6 +98,7 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
           )}
 
           {/* MAIN HEADING */}
+          {hasHeading && (
           <motion.div
             className="section-heading text-white mb-6"
             dangerouslySetInnerHTML={{ __html: heading }}
@@ -99,16 +107,17 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
             transition={{ duration: 0.6, delay: 0.15 }}
             viewport={{ once: true }}
           />
+          )}
 
           {/* DESCRIPTION */}
-          {short_text && (
+          {hasShort && (
             <div className="text-white max-w-[440px] mb-6"
               dangerouslySetInnerHTML={{ __html: short_text }}
             />
           )}
 
           {/* CTA BUTTON */}
-          {cta_text && cta_url && (
+          {hasCta && (
             <CtaButton href={cta_url}>{cta_text}</CtaButton>
           )}
         </div>

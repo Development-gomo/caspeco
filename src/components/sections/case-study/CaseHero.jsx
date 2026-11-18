@@ -7,6 +7,7 @@ import Overlay from "../../../../public/overlay.png";
 import { motion } from "framer-motion";
 import HeroLabels from "@/components/ui/HeroLabels";
 import { DEFAULT_LANG } from "@/config";
+import { hasText } from "@/lib/content";
 
 export default function CaseHero({ data, lang = DEFAULT_LANG }) {
   const bgImage = data?.bg_image?.url || "";
@@ -44,7 +45,7 @@ export default function CaseHero({ data, lang = DEFAULT_LANG }) {
       <div className="relative min-h-screen web-width px-6 py-16 lg:py-25 h-full flex flex-col items-start justify-end">
         <div className="md:flex items-end justify-between gap-20">
           <div className="max-w-[1046px]">
-          {sub_heading && (
+          {hasText(sub_heading) && (
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -54,15 +55,17 @@ export default function CaseHero({ data, lang = DEFAULT_LANG }) {
             />
           )}
           <h1>
+          {hasText(heading) && (
           <motion.span
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="heading-xl text-white"
             dangerouslySetInnerHTML={{
-              __html: heading.replace(/<em>(.*?)<\/em>/g, `<em>$1</em>`),
+              __html: (heading || "").replace(/<em>(.*?)<\/em>/g, `<em>$1</em>`),
             }}
           />
+          )}
             <motion.a
               onClick={(e) => {
                 e.preventDefault();

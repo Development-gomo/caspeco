@@ -6,7 +6,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import CtaButton from "@/components/ui/CtaButton";
 import HeroLabels from "@/components/ui/HeroLabels";
 import { DEFAULT_LANG } from "@/config";
-import { breakAfterPeriods } from "@/lib/content";
+import { breakAfterPeriods, hasText } from "@/lib/content";
 
 // Mobile = below Tailwind md (768px) — same query as HomeHelpTabs / ProductTestimonials
 const MOBILE_MQ = "(max-width: 767.98px)";
@@ -128,6 +128,7 @@ export default function HomeHero({ data, lang = DEFAULT_LANG }) {
         <div className="flex flex-col items-start gap-8 lg:gap-12 w-full max-md:gap-6">
           <div className="flex flex-col items-start gap-6 lg:gap-8 w-full text-white max-md:gap-4 max-md:text-(--color-light-grey)">
             {/* Heading */}
+            {hasText(heading) && (
             <motion.h1
               initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
@@ -140,6 +141,7 @@ export default function HomeHero({ data, lang = DEFAULT_LANG }) {
                 min-[90rem]:text-[112px] min-[90rem]:leading-[104px] min-[90rem]:tracking-[-4.48px]"
               dangerouslySetInnerHTML={{ __html: breakAfterPeriods(heading) }}
             />
+            )}
 
             {shortHeading && (
               <motion.div

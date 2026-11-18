@@ -1,11 +1,18 @@
 "use client";
 
 import Image from "next/image";
+import { hasText } from "@/lib/content";
 
 export default function TestimonialBanner({ data }) {
   if (!data) return null;
 
   const { bg_image, heading, testimonial, name, person_organization } = data;
+
+  const hasHeading = hasText(heading);
+  const hasQuote = hasText(testimonial);
+  const hasName = hasText(name);
+  const hasOrg = hasText(person_organization);
+  if (!hasHeading && !hasQuote && !hasName && !hasOrg && !bg_image?.url) return null;
 
   return (
     <section className="relative w-full h-[560px] md:h-[620px] overflow-hidden bg-black">
@@ -27,7 +34,7 @@ export default function TestimonialBanner({ data }) {
       <div className="relative z-10 h-full">
         <div className="web-width px-6 h-full flex flex-col justify-between py-15 md:py-16">
           {/* TOP RIGHT HEADING */}
-          {heading && (
+          {hasHeading && (
             <div className="flex justify-end">
               <div
                 className="
@@ -45,7 +52,7 @@ export default function TestimonialBanner({ data }) {
 
           {/* TESTIMONIAL */}
           <div className="max-w-[700px]">
-            {testimonial && (
+            {hasQuote && (
               <blockquote className="text-white cs-h4 mb-8 max-md:font-normal! max-md:italic max-md:text-[20px]! max-md:leading-6! max-md:tracking-normal!">
                 “{testimonial}”
               </blockquote>
@@ -53,9 +60,9 @@ export default function TestimonialBanner({ data }) {
 
             {/* AUTHOR */}
             <div className="text-white font-bold m-1">
-              {name && <p className="font-bold">{name}</p>}
+              {hasName && <p className="font-bold">{name}</p>}
             </div>
-            {person_organization && (
+            {hasOrg && (
             <div className="flex items-start gap-2">
               {/* ACCENT DOT */}
               <span className="mt-2 h-2 w-2 rounded-full bg-(--color-yellow)"></span>

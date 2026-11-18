@@ -6,12 +6,19 @@ import Image from "next/image";
 import ArrowSvg from "../../../../public/right-arrow.svg";
 import { DEFAULT_LANG, langHref } from "@/config";
 import CtaButton from "@/components/ui/CtaButton";
+import { hasText } from "@/lib/content";
 
 const STEP_COLORS = ["--color-black", "--color-petrol", "--color-yellow"];
 
 export default function HomeColumnSection({ data, lang = DEFAULT_LANG }) {
   const { sub_heading, heading, short_text, cta_text, cta_url } = data || {};
-  const columns_side = data?.columns_side || [];
+  // steps with no heading and no text are dropped (keeps numbering/cycling to real steps)
+  const columns_side = (data?.columns_side || []).filter((c) => hasText(c?.heading) || hasText(c?.short_text));
+  const hasSub = hasText(sub_heading);
+  const hasHeading = hasText(heading);
+  const hasShort = hasText(short_text);
+  const hasCta = hasText(cta_text) && cta_url;
+  const hasIntro = hasSub || hasHeading || hasShort || hasCta;
 
   const [activeIndex, setActiveIndex] = React.useState(0);
 
@@ -24,6 +31,8 @@ export default function HomeColumnSection({ data, lang = DEFAULT_LANG }) {
   }, [columns_side.length]);
 
   if (!data) return null;
+  // nothing to show: no intro text, CTA or steps
+  if (!hasIntro && columns_side.length === 0) return null;
 
   return (
     <section
@@ -33,8 +42,9 @@ export default function HomeColumnSection({ data, lang = DEFAULT_LANG }) {
       <div className="w-full px-6 web-width">
         <div className="lg:flex lg:items-start lg:gap-20">
           {/* COLUMN 1 — LABEL + HEADING + SHORT TEXT + CTA */}
+          {hasIntro && (
           <div className="lg:w-[45%] lg:shrink-0 mb-12 lg:mb-0">
-            {sub_heading && (
+            {hasSub && (
               <motion.p
                 className="subheading-label text-(--color-petrol)! mb-2 md:mb-4"
                 initial={{ opacity: 0, y: 20 }}
@@ -46,6 +56,7 @@ export default function HomeColumnSection({ data, lang = DEFAULT_LANG }) {
               </motion.p>
             )}
 
+            {hasHeading && (
             <motion.div
               className="section-heading mb-4 md:mb-6"
               dangerouslySetInnerHTML={{ __html: heading }}
@@ -54,8 +65,9 @@ export default function HomeColumnSection({ data, lang = DEFAULT_LANG }) {
               transition={{ duration: 0.6, delay: 0.15 }}
               viewport={{ once: true }}
             />
+            )}
 
-            {short_text && (
+            {hasShort && (
               <motion.div
                 className="body-text max-w-[420px]"
                 dangerouslySetInnerHTML={{ __html: short_text }}
@@ -66,7 +78,7 @@ export default function HomeColumnSection({ data, lang = DEFAULT_LANG }) {
               />
             )}
 
-            {cta_text && cta_url && (
+            {hasCta && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -82,6 +94,7 @@ export default function HomeColumnSection({ data, lang = DEFAULT_LANG }) {
               </motion.div>
             )}
           </div>
+          )}
 
           {/* COLUMN 2 — STEPS, AUTO-CYCLING PULSE */}
           {columns_side.length > 0 && (
@@ -120,7 +133,7 @@ export default function HomeColumnSection({ data, lang = DEFAULT_LANG }) {
                         {String(idx + 1).padStart(2, "0")}
                       </span>
 
-                      {col?.heading && (
+                      {hasText(col?.heading) && (
                         <h3
                           className="step-heading mb-1"
                           style={{ "--step-accent": color }}
@@ -128,7 +141,7 @@ export default function HomeColumnSection({ data, lang = DEFAULT_LANG }) {
                         />
                       )}
 
-                      {col?.short_text && (
+                      {hasText(col?.short_text) && (
                         <div
                           className="body-text"
                           dangerouslySetInnerHTML={{ __html: col.short_text }}

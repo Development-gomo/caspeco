@@ -17,7 +17,7 @@ import CtaButton from "@/components/ui/CtaButton";
 import HeroLabels from "@/components/ui/HeroLabels";
 import HeroBgMedia from "@/components/ui/HeroBgMedia";
 import { DEFAULT_LANG } from "@/config";
-import { breakAfterPeriods, toHtml } from "@/lib/content";
+import { breakAfterPeriods, hasText, toHtml } from "@/lib/content";
 
 export default function InnerHero({ data, lang = DEFAULT_LANG }) {
   const sectionRef = React.useRef(null);
@@ -108,6 +108,7 @@ export default function InnerHero({ data, lang = DEFAULT_LANG }) {
             />
           )}
 
+          {hasText(heading) && (
           <motion.h1
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
@@ -119,6 +120,7 @@ export default function InnerHero({ data, lang = DEFAULT_LANG }) {
               min-[90rem]:text-[112px] min-[90rem]:leading-[104px] min-[90rem]:tracking-[-4.48px]"
             dangerouslySetInnerHTML={{ __html: breakAfterPeriods(toHtml(heading)) }}
           />
+          )}
 
           {shortText && (
             <motion.div

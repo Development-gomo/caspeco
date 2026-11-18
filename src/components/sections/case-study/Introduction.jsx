@@ -1,6 +1,7 @@
 "use client";
 
 import CtaButton from "@/components/ui/CtaButton";
+import { hasText } from "@/lib/content";
 
 export default function CaseIntroduction({ data }) {
   if (!data) return null;
@@ -24,10 +25,23 @@ export default function CaseIntroduction({ data }) {
       .map((t) => t.trim())
       .filter(Boolean);
 
+  const hasSub = hasText(sub_heading);
+  const hasHeading = hasText(heading);
+  const hasClient = hasText(client_name);
+  const hasServices = hasText(services_offered);
+  const hasCategory = hasText(category);
+  const hasDate = hasText(date);
+  const hasContentHeading = hasText(content_heading);
+  const hasShortText = hasText(short_text);
+  const hasCta = !!(cta_text && cta_url);
+  const hasRight = hasContentHeading || hasShortText || hasCta;
+  // Whole-section guard: nothing to show
+  if (!hasSub && !hasHeading && !hasClient && !hasServices && !hasCategory && !hasDate && !hasRight) return null;
+
   return (
     <section id="next" className="pt-12 md:pt-30 web-width px-6">
       {/* SUB HEADING */}
-      {sub_heading && (
+      {hasSub && (
         <div className="flex items-center gap-2 mb-2 md:mb-4">
           <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
           <span className="subheading-label uppercase">{sub_heading}</span>
@@ -35,7 +49,7 @@ export default function CaseIntroduction({ data }) {
       )}
 
       {/* MAIN HEADING */}
-      {heading && (
+      {hasHeading && (
         <div
           className="section-heading mb-6 md:mb-14 max-w-[1040px]"
           dangerouslySetInnerHTML={{ __html: heading }}
@@ -49,7 +63,7 @@ export default function CaseIntroduction({ data }) {
         <div className="md:w-[65%] flex flex-col lg:flex-row md:gap-25">
           <div className="md:w-[24%] space-y-6 text-(--color-grey-medium-dark)">
             {/* Client */}
-            {client_name && (
+            {hasClient && (
               <div>
                 <p className="uppercase text-xs tracking-widest mb-2">Client</p>
                 <p className="text-black font-medium">{client_name}</p>
@@ -57,7 +71,7 @@ export default function CaseIntroduction({ data }) {
             )}
 
             {/* Services */}
-            {services_offered && (
+            {hasServices && (
               <div>
                 <p className="uppercase text-xs tracking-widest mb-2">
                   Services
@@ -75,7 +89,7 @@ export default function CaseIntroduction({ data }) {
             )}
 
             {/* Categories */}
-            {category && (
+            {hasCategory && (
               <div>
                 <p className="uppercase text-xs tracking-widest mb-2">
                   Categories
@@ -93,7 +107,7 @@ export default function CaseIntroduction({ data }) {
             )}
 
             {/* Date */}
-            {date && (
+            {hasDate && (
               <div>
                 <p className="uppercase text-xs tracking-widest mb-2">Date</p>
                 <p className="text-black font-medium">{date}</p>
@@ -102,14 +116,15 @@ export default function CaseIntroduction({ data }) {
           </div>
 
           {/* RIGHT CONTENT COLUMN */}
+          {hasRight && (
           <div className="md:w-[76%] mt-10 lg:mt-0">
             {/* Content Heading */}
-            {content_heading && (
+            {hasContentHeading && (
               <h3 className="cs-h4 mb-6">{content_heading}</h3>
             )}
 
             {/* Body */}
-            {short_text && (
+            {hasShortText && (
               <div
                 className="body-text max-w-[520px] mb-6"
                 dangerouslySetInnerHTML={{ __html: short_text }}
@@ -121,6 +136,7 @@ export default function CaseIntroduction({ data }) {
               <CtaButton href={cta_url}>{cta_text}</CtaButton>
             )}
           </div>
+          )}
         </div>
       </div>
     </section>

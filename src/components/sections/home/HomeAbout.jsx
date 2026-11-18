@@ -5,6 +5,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import CtaButton from "@/components/ui/CtaButton";
+import { hasText } from "@/lib/content";
 
 export default function AboutUs({ data }) {
   if (!data) return null;
@@ -18,6 +19,14 @@ export default function AboutUs({ data }) {
     cta_url,
   } = data;
   const sectionImageUrl = data?.section_image?.url || "";
+  const hasSub = hasText(sub_heading);
+  const hasHeading = hasText(heading);
+  const hasContentHeading = hasText(content_heading);
+  const hasShort = hasText(short_text);
+  const hasCta = hasText(cta_text) && cta_url;
+  const hasPanel = hasSub || hasHeading || hasContentHeading || hasShort || hasCta;
+  // nothing to show: no image and no text
+  if (!sectionImageUrl && !hasPanel) return null;
 
   return (
     <section id="about-section" className="about-section relative overflow-hidden bg-(--color-light-grey)">
@@ -49,9 +58,10 @@ export default function AboutUs({ data }) {
         )}
 
         {/* LEFT — DIAGONAL TEXT PANEL */}
+        {hasPanel && (
         <div className="about-diagonal-panel relative z-10 w-full lg:w-[52%] bg-(--color-light-grey) px-6 lg:pr-16 lg:pl-31 py-12 lg:py-0 order-2 lg:order-1 flex flex-col justify-center">
           {/* SUB HEADING */}
-            {sub_heading && (
+            {hasSub && (
             <motion.div
               className="flex items-center gap-2 mb-2 md:mb-4"
               initial={{ opacity: 0, y: 20 }}
@@ -65,7 +75,7 @@ export default function AboutUs({ data }) {
           )}
 
           {/* HEADING */}
-          {heading && (
+          {hasHeading && (
             <motion.div
               className="about-panel-heading text-black max-w-[420px] mb-4"
               dangerouslySetInnerHTML={{ __html: heading }}
@@ -77,12 +87,12 @@ export default function AboutUs({ data }) {
           )}
 
           {/* CONTENT HEADING (regular paragraph) */}
-          {content_heading && (
+          {hasContentHeading && (
             <p className="body-text max-w-[400px] mb-4">{content_heading}</p>
           )}
 
           {/* SHORT TEXT (bold paragraph) */}
-          {short_text && (
+          {hasShort && (
             <div
               className="body-text font-semibold max-w-[420px] mb-6"
               dangerouslySetInnerHTML={{ __html: short_text }}
@@ -90,10 +100,11 @@ export default function AboutUs({ data }) {
           )}
 
           {/* CTA BUTTON */}
-          {cta_text && cta_url && (
+          {hasCta && (
             <CtaButton href={cta_url}>{cta_text}</CtaButton>
           )}
         </div>
+        )}
       </div>
     </section>
   );

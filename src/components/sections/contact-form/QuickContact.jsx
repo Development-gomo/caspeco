@@ -11,7 +11,7 @@ import ContactForm from "./ContactForm";
 import QuickContactForm from "./QuickContactForm";
 import CtaButton from "@/components/ui/CtaButton";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { mediaUrl, toHtml, rows } from "@/lib/content";
+import { hasText, mediaUrl, toHtml, rows } from "@/lib/content";
 import { cf7FormId } from "@/lib/forms";
 import { parseHubspotEmbed } from "@/lib/hubspot";
 import HubspotEmbed from "@/components/ui/HubspotEmbed";
@@ -41,7 +41,10 @@ export default function QuickContact({ data, lang = DEFAULT_LANG, id, form, vari
   const hubspotCode = !form && !hasAcfForm && parseHubspotEmbed(form_shortcode) ? form_shortcode : "";
   if (hubspotCode) form = <HubspotEmbed code={hubspotCode} />;
   const cf7Id = !hasAcfForm && !hubspotCode && cf7FormId(form_shortcode);
-  if (!heading && !hasAcfForm && !cf7Id && !form) return null;
+  const hasSub = hasText(sub_heading);
+  const hasHeading = hasText(heading);
+  const hasDescription = hasText(short_description);
+  if (!hasHeading && !hasAcfForm && !cf7Id && !form) return null;
   const bgImage = mediaUrl(data?.bg_image);
 
   // Desktop row = 120 + 476 (text) + 184 (gap) + 493 (card) + 120 = 1393px. Below that (1024–1392)
@@ -63,11 +66,12 @@ export default function QuickContact({ data, lang = DEFAULT_LANG, id, form, vari
       )}
       {/* Mobile: one card around the text and the form (display: contents from md up — no layout box) */}
       <div className={MOBILE_CARD}>
+      {(hasSub || hasHeading || hasDescription) && (
       <div className="flex flex-col gap-4 items-start w-full min-[1024px]:w-[min(476px,calc(100%-541px))] min-[1024px]:@container shrink-0">
         {/* Figma mobile: Light Italic 18/22, -2%, #3F3E3C */}
-        {sub_heading && <p className="italic text-[24px] leading-7 tracking-[-0.48px] text-white max-md:text-[18px] max-md:leading-[22px] max-md:tracking-[-0.36px] max-md:font-light max-md:text-[#3F3E3C]">{sub_heading}</p>}
+        {hasSub && <p className="italic text-[24px] leading-7 tracking-[-0.48px] text-white max-md:text-[18px] max-md:leading-[22px] max-md:tracking-[-0.36px] max-md:font-light max-md:text-[#3F3E3C]">{sub_heading}</p>}
 
-        {heading && (
+        {hasHeading && (
           <h2
             className="cs-title cs-highlight text-[40px] min-[1024px]:text-[min(80px,16.807cqw)] leading-tight min-[1024px]:leading-[min(78px,16.387cqw)] tracking-[-3.2px] min-[1024px]:tracking-[max(-3.2px,-0.6723cqw)] font-extrabold text-[#fff] max-md:text-[#151411] normal-case"
             dangerouslySetInnerHTML={{ __html: toHtml(heading) }}
@@ -77,15 +81,16 @@ export default function QuickContact({ data, lang = DEFAULT_LANG, id, form, vari
         {/* Figma "Vector 875": hand-drawn curved stroke (4px, round caps). The SVG has 2px of
             padding around the stroke, so the negative margins keep it in a 4px slot. Full width by
             default; from 1024 up HeadingRule sets --rule-w to the heading's last line + 4px. */}
-        {(sub_heading || heading) && (
+        {(hasSub || hasHeading) && (
           <HeadingRule src={RuleLine} className="-mx-0.5 -my-0.5 h-2 w-[calc(100%+4px)] min-[1024px]:w-[var(--rule-w,calc(100%+4px))] max-w-none max-md:hidden" />
         )}
 
-        {short_description && (
+        {hasDescription && (
           // Figma mobile: Light 18/22 #3F3E3C, 8 under the heading
           <div className="cs-rich cs-text text-[20px] leading-6 tracking-[-0.4px] text-white max-md:-mt-2 max-md:font-light! max-md:text-[#3F3E3C]" dangerouslySetInnerHTML={{ __html: toHtml(short_description) }} />
         )}
       </div>
+      )}
 
       {form ? (
         <div className={card}>{form}</div>

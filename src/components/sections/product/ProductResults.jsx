@@ -13,7 +13,7 @@
 
 import Image from "next/image";
 import Reveal from "@/components/ui/Reveal";
-import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
 // ACF "Title Colour"; orange = Figma "Reduce" title on the ICP Comparison block (#FF8D6B)
 const TITLE_COLOR = { petrol: "text-(--color-petrol)", yellow: "text-(--color-yellow)", white: "text-(--color-light-grey)", orange: "text-[#FF8D6B]" };
@@ -68,7 +68,9 @@ export default function ProductResults({ data, variant }) {
   const icp = variant === "icp";
   const columns = rows(data?.columns).filter((c) => c.title || rows(c.items).length);
   const { heading, short_text, bottom_note } = data || {};
-  if (!heading && columns.length === 0) return null;
+  const hasHeading = hasText(heading);
+  const hasShort = hasText(short_text);
+  if (!hasHeading && columns.length === 0) return null;
   const bg = mediaUrl(data?.bg_image);
 
   return (
@@ -78,12 +80,14 @@ export default function ProductResults({ data, variant }) {
 
       <div className="cs-container flex justify-center">
         <Reveal y={40} className={`flex w-full ${icp ? "max-w-[1048px]" : "max-w-[1040px]"} flex-col items-center gap-12 rounded-lg bg-[rgba(21,20,17,0.3)] px-6 py-12 shadow-[0px_4px_4px_rgba(0,0,0,0.25)] backdrop-blur-[20px] sm:px-10 lg:gap-16 lg:p-20 max-md:items-stretch max-md:rounded-sm max-md:border max-md:border-white/12 max-md:p-[31px]! max-md:shadow-[0px_8px_30px_rgba(0,0,0,0.6),0px_4px_4px_rgba(0,0,0,0.25)] ${icp ? "max-md:gap-6" : ""}`}>
+          {(hasHeading || hasShort) && (
           <div className={`flex flex-col items-center gap-4 text-center text-(--color-light-grey) max-md:items-start max-md:text-left ${icp ? "max-w-[826px]" : "max-w-[754px]"}`}>
-            {heading && <h2 className={`cs-h3 cs-title cs-highlight ${icp ? "font-extrabold!" : "font-extrabold"}`} dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
-            {short_text && (
+            {hasHeading && <h2 className={`cs-h3 cs-title cs-highlight ${icp ? "font-extrabold!" : "font-extrabold"}`} dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+            {hasShort && (
               <div className={`cs-rich max-w-[754px] font-medium text-[16px] leading-5 tracking-[-0.32px] max-md:text-[18px] max-md:leading-[22px] max-md:tracking-[-0.36px] max-md:hidden ${icp ? "max-md:font-normal" : "max-md:font-light"}`} dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />
             )}
           </div>
+          )}
 
           {columns.length > 0 && (
             <div className={`flex w-full flex-col gap-12 md:flex-row md:justify-center lg:gap-20 ${icp ? "max-md:gap-6 lg:w-[888px]" : "max-md:gap-6"}`}>

@@ -15,7 +15,7 @@ import "swiper/css";
 import Reveal from "@/components/ui/Reveal";
 import SliderArrows from "@/components/ui/SliderArrows";
 import { DEFAULT_LANG, entryHref } from "@/config";
-import { sectionBackground, toHtml } from "@/lib/content";
+import { hasText, sectionBackground, toHtml } from "@/lib/content";
 import { postStrings } from "@/lib/postStrings";
 import ArrowLight from "../../../../public/icons/home/arrow-light.svg";
 
@@ -29,6 +29,8 @@ export default function RelatedCases({ data, lang = DEFAULT_LANG, cases = [] }) 
   const [index, setIndex] = React.useState(0);
   const [snapCount, setSnapCount] = React.useState(1);
   const { heading, short_text, read_more_text } = data || {};
+  const hasHeading = hasText(heading);
+  const hasShortText = hasText(short_text);
   const readMore = read_more_text || postStrings(lang).readFullCase;
   if (list.length === 0) return null;
 
@@ -41,14 +43,16 @@ export default function RelatedCases({ data, lang = DEFAULT_LANG, cases = [] }) 
   return (
     <section className="cs-sec overflow-hidden py-18 lg:py-36" style={sectionBackground(data, { background: "#F1F1F1" })}>
       <div className="cs-container flex flex-col gap-10 max-md:gap-8 lg:gap-16">
+        {(hasHeading || hasShortText) && (
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-          {(heading || short_text) && (
+          {(hasHeading || hasShortText) && (
             <Reveal className="flex flex-col gap-6 max-md:gap-4">
-              {heading && <h2 className="cs-h2 cs-highlight cs-rich max-w-[985px] text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
-              {short_text && <div className="cs-p2 cs-rich max-w-[680px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
+              {hasHeading && <h2 className="cs-h2 cs-highlight cs-rich max-w-[985px] text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+              {hasShortText && <div className="cs-p2 cs-rich max-w-[680px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
             </Reveal>
           )}
         </div>
+        )}
 
         {/* Slides bleed to the right edge of the screen; the left side is clipped at the container edge */}
         <div className="[clip-path:inset(-24px_-100vw_-24px_0)]">

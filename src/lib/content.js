@@ -169,6 +169,14 @@ export function isEnabled(field) {
   return String(raw ?? "").trim().toLowerCase() !== "disable";
 }
 
+/** True when a CMS text field has visible content. ACF can send "", whitespace or empty markup
+ *  ("<p></p>", "&nbsp;"), which must not render an element (or its wrapper's gap/margin) that adds empty height.
+ *  Numbers count as content (counter values). Objects/arrays are not text: check those with their own fields/length. */
+export function hasText(v) {
+  if (typeof v === "number") return true;
+  return typeof v === "string" && v.replace(/<[^>]*>|&nbsp;|&#160;/gi, "").trim() !== "";
+}
+
 /** Spacing tab (padding_top / padding_bottom) -> data attributes, only for the sides that are disabled. */
 export function spacingAttrs(block) {
   const attrs = {};

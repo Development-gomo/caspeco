@@ -2,17 +2,22 @@
 
 import React from "react";
 import CountUp from "@/components/ui/CountUp";
+import { hasText } from "@/lib/content";
 
 export default function ResultSection({ data }) {
   if (!data) return null;
 
   const { sub_heading, heading, counters = [] } = data;
 
+  const hasSub = hasText(sub_heading);
+  const hasHeading = hasText(heading);
+  if (!hasSub && !hasHeading && !(counters && counters.length > 0)) return null;
+
   return (
     <section className="py-15 md:py-30 bg-white">
       <div className="web-width px-6">
         {/* SUB HEADING */}
-        {sub_heading && (
+        {hasSub && (
           <div className="flex items-center gap-2 mb-4">
             <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
             <span className="subheading-label text-[#8C8FA3] uppercase">
@@ -22,7 +27,7 @@ export default function ResultSection({ data }) {
         )}
 
         {/* MAIN HEADING */}
-        {heading && (
+        {hasHeading && (
           <div
             className="section-heading max-w-[990px] mb-8 md:mb-14"
             dangerouslySetInnerHTML={{ __html: heading }}
@@ -44,7 +49,7 @@ export default function ResultSection({ data }) {
                     <div className="relative ">
                       <CountUp value={String(item.number ?? "")} className="text-[80px] leading-[70px] font-medium" />
 
-                      {item.suffix && (
+                      {hasText(item.suffix) && (
                         <span className="suffix-text text-[40px] leading-[40px] font-medium text-[var(--color-yellow)] ml-1 absolute top-[-5px]">
                           {item.suffix}
                         </span>
@@ -52,7 +57,7 @@ export default function ResultSection({ data }) {
                     </div>
 
                     {/* DESCRIPTION */}
-                    {item.short_text && (
+                    {hasText(item.short_text) && (
                       <div
                         className="text-[18px] mt-6"
                         dangerouslySetInnerHTML={{ __html: item.short_text }}

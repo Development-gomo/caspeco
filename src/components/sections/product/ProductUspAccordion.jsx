@@ -22,7 +22,7 @@ import IconStaff from "../../../../public/case/staff.svg";
 import IconBooking from "../../../../public/case/booking.png";
 import IconAnalytics from "../../../../public/case/Analtic.svg";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
 // enable_gradient (ICP "USP Accordion"): Figma "USP's" fill — #DADCDD 80% → #FFFFFF 50%, top to
 // bottom, over #FDFDFD
@@ -98,24 +98,32 @@ export default function ProductUspAccordion({ data, lang = DEFAULT_LANG, variant
   const items = rows(data?.items).filter((i) => i.title);
   const [open, setOpen] = React.useState(0);
   const { heading, short_text, sub_text, cta_text, cta_url } = data || {};
-  if (!heading && items.length === 0) return null;
+  const hasHeading = hasText(heading);
+  const hasShort = hasText(short_text);
+  const hasSubText = hasText(sub_text);
+  const hasCta = hasText(cta_text) && cta_url;
+  if (!hasHeading && items.length === 0) return null;
 
   return (
     <section className="py-18 lg:py-36 max-md:py-16 max-md:overflow-x-clip" style={sectionBackground(data, { background: data?.enable_gradient ? GRADIENT : "var(--color-light-grey)" })}>
       <div className="cs-container flex flex-col gap-12 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
+        {(hasHeading || hasShort || hasSubText || hasCta) && (
         <Reveal className="flex flex-col items-start gap-10 max-md:gap-6 lg:max-w-[507px]">
+          {(hasHeading || hasShort || hasSubText) && (
           <div className="flex flex-col gap-4">
-            {heading && <h2 className={`cs-h3 cs-title cs-highlight text-black ${variant === "icp" ? "font-extrabold!" : "font-extrabold"}`} dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
-            {short_text && <div className={`cs-p2 cs-rich text-(--color-grey-dark) ${variant === "icp" ? "" : "max-md:font-light"}`} dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
+            {hasHeading && <h2 className={`cs-h3 cs-title cs-highlight text-black ${variant === "icp" ? "font-extrabold!" : "font-extrabold"}`} dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+            {hasShort && <div className={`cs-p2 cs-rich text-(--color-grey-dark) ${variant === "icp" ? "" : "max-md:font-light"}`} dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
             {/* optional second paragraph — Figma ICP "USP's": Bold 20/24, 24 below the text */}
-            {sub_text && <div className="cs-p2 cs-rich mt-2 max-md:mt-0 font-bold text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(sub_text) }} />}
+            {hasSubText && <div className="cs-p2 cs-rich mt-2 max-md:mt-0 font-bold text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(sub_text) }} />}
           </div>
-          {cta_text && cta_url && (
+          )}
+          {hasCta && (
             <div className="max-md:hidden">
               <CtaButton href={langHref(cta_url.trim(), lang)}>{cta_text}</CtaButton>
             </div>
           )}
         </Reveal>
+        )}
 
         {items.length > 0 && (
           <div className="flex w-full flex-col gap-2 lg:max-w-[671px]">
@@ -128,7 +136,7 @@ export default function ProductUspAccordion({ data, lang = DEFAULT_LANG, variant
         )}
 
         {/* mobile: button below the list, 48 under it (Figma Product 601:9591 / ICP 601:14114) */}
-        {cta_text && cta_url && (
+        {hasCta && (
           <div className="md:hidden">
             <CtaButton href={langHref(cta_url.trim(), lang)}>{cta_text}</CtaButton>
           </div>

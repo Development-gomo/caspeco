@@ -13,6 +13,7 @@
 import dynamic from "next/dynamic";
 import { DEFAULT_LANG, langHref } from "@/config";
 import { getKontaktByIds, getMediaByIds, getThemeOptions } from "@/lib/api";
+import { hasText } from "@/lib/content";
 import { parseHubspotEmbed } from "@/lib/hubspot";
 import { firstPostId, toPerson } from "@/lib/kontakt";
 
@@ -96,6 +97,10 @@ export default async function IcpContactFormSection({ block: raw, lang = DEFAULT
   const privacy = privacyHref === undefined ? opts.privacyHref : privacyHref;
   const globalForm = globalQuickForm === undefined ? opts.globalQuickForm : globalQuickForm;
   const m = media?.find((x) => x.id === mediaId);
+  // nothing configured (no text, no form, no team member) -> render nothing
+  const hasOwnText = hasText(raw.eyebrow) || hasText(raw.heading) || hasText(raw.short_text);
+  const hasForm = Boolean(postId(raw.select_form) || hubspot || (!enabled && globalForm));
+  if (!hasOwnText && !hasForm && !memberId) return null;
   const block = clientBlock(m ? { ...raw, bg_image: { url: m.source_url, alt: m.alt_text || "" } } : raw);
 
   if (!enabled) {

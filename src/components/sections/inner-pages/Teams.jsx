@@ -5,6 +5,7 @@ import Image from "next/image";
 import DownArrow from "../../../../public/down-arrow.svg";
 import Email from "../../../../public/email.svg";
 import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
+import { hasText } from "@/lib/content";
 
 import {
   buildTeamFilters,
@@ -35,32 +36,40 @@ export default function TeamSection({ data, lang, prefetchedTeam }) {
   const filteredTeam = filterTeamByType(team, activeFilter);
 
   if (team_cards === "Disable") return null;
+  const hasSub = hasText(sub_heading);
+  const hasHeading = hasText(heading);
+  const hasShortText = hasText(short_text);
+  const hasHeader = hasSub || hasHeading || hasShortText;
+  // no header text and no team members: skip the section
+  if (!hasHeader && team.length === 0) return null;
 
   return (
     <section className="team-section py-15 md:py-30 web-width px-6">
       {/* Section Heading */}
+      {hasHeader && (
       <div className="max-w-3xl mb-6">
-        {sub_heading && (
+        {hasSub && (
           <div className="flex items-center gap-2 mb-2 md:mb-4">
             <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
             <span className="subheading-label uppercase">{sub_heading}</span>
           </div>
         )}
 
-        {heading && (
+        {hasHeading && (
           <div
             className="section-heading mb-6"
             dangerouslySetInnerHTML={{ __html: heading }}
           />
         )}
 
-        {short_text && (
+        {hasShortText && (
           <div
             className="max-w-[510px]"
             dangerouslySetInnerHTML={{ __html: short_text }}
           />
         )}
       </div>
+      )}
 
       {/* Filter Dropdown */}
       <div className="mb-14">

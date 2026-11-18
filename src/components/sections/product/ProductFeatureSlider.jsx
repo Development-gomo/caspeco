@@ -24,7 +24,7 @@ import Reveal from "@/components/ui/Reveal";
 import SliderArrows from "@/components/ui/SliderArrows";
 import CheckList from "./CheckList";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
 const GRADIENT = "linear-gradient(180deg, rgba(218,220,221,0.8) 0.94%, rgba(255,255,255,0.5) 100.94%)";
 const pad = (n) => String(n).padStart(2, "0");
@@ -63,7 +63,7 @@ export default function ProductFeatureSlider({ data, lang = DEFAULT_LANG }) {
           >
             <div className="flex flex-col items-start gap-10 max-md:gap-6 lg:max-w-[488px] lg:shrink-0">
               <div className="flex flex-col gap-5 max-md:gap-4">
-                <h2 className="cs-h3 cs-title cs-highlight font-extrabold text-black" dangerouslySetInnerHTML={{ __html: toHtml(slide.heading) }} />
+                {hasText(slide.heading) && <h2 className="cs-h3 cs-title cs-highlight font-extrabold text-black" dangerouslySetInnerHTML={{ __html: toHtml(slide.heading) }} />}
                 {slide.short_text && <div className="cs-p2 cs-rich text-(--color-grey-dark) max-md:font-light" dangerouslySetInnerHTML={{ __html: toHtml(slide.short_text) }} />}
                 {/* Figma mobile "Benefits": 12 apart, X-Bold 18 / auto (22), no tracking, #171717 */}
                 <CheckList items={slide.checklist} className="max-md:gap-3 max-md:[&>li]:leading-[22px] max-md:[&>li]:tracking-normal max-md:[&>li]:text-[#171717]" />

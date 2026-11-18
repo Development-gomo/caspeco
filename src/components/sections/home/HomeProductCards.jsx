@@ -16,14 +16,11 @@ import Image from "next/image";
 import ArrowLink from "@/components/ui/ArrowLink";
 import { MOBILE_SLIDE, MOBILE_TRACK, SliderPoints } from "@/components/ui/MobileSlider";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
 // No inline style here, so the max-md: classes win; md+ stays var(--color-light-grey)
 const MOBILE_BG = "bg-(--color-light-grey)"; // client QA slide 73: mobile keeps the desktop light grey (no white gradient)
 
-// True when a CMS field has visible text. ACF can send "", whitespace or empty markup ("<p></p>", "&nbsp;"),
-// which must not render an element (or the intro wrapper and its gap) that adds empty height.
-const filled = (v) => typeof v === "string" && v.replace(/<[^>]*>|&nbsp;/g, "").trim() !== "";
 
 // zoom: the first two cards scale their image 1.1× on hover
 function ProductCard({ card, lang, zoom = false }) {
@@ -68,10 +65,10 @@ function ProductCard({ card, lang, zoom = false }) {
 export default function HomeProductCards({ data, lang = DEFAULT_LANG, mobileBleed = true }) {
   const cards = rows(data?.cards).filter((c) => c.title);
   const { heading, short_text, tagline } = data || {};
-  const hasHeading = filled(heading);
-  const hasText = filled(short_text);
-  const hasTagline = filled(tagline);
-  const hasIntro = hasHeading || hasText || hasTagline;
+  const hasHeading = hasText(heading);
+  const hasShortText = hasText(short_text);
+  const hasTagline = hasText(tagline);
+  const hasIntro = hasHeading || hasShortText || hasTagline;
   const trackRef = React.useRef(null);
   // Nothing to show: no section at all (no padding / background height)
   if (!hasIntro && cards.length === 0) return null;
@@ -84,7 +81,7 @@ export default function HomeProductCards({ data, lang = DEFAULT_LANG, mobileBlee
         {hasIntro && (
         <div className="flex flex-col gap-4">
           {hasHeading && <h2 className="cs-h2 cs-highlight text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
-          {hasText && <div className="cs-p1 cs-rich max-w-[636px] text-(--color-grey-dark) max-md:font-normal!" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
+          {hasShortText && <div className="cs-p1 cs-rich max-w-[636px] text-(--color-grey-dark) max-md:font-normal!" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
           {hasTagline && (
             <p className="text-[14px] lg:text-[16px] font-medium leading-5 tracking-[-0.32px] text-(--color-heading) max-md:mt-1 max-md:text-[18px] max-md:font-bold max-md:leading-[22px] max-md:tracking-[-0.36px]">
               {tagline}

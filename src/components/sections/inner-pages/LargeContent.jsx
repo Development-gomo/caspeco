@@ -7,7 +7,7 @@
 
 "use client";
 
-import { sectionBackground, toHtml } from "@/lib/content";
+import { hasText, sectionBackground, toHtml } from "@/lib/content";
 
 export default function LargeContent({ data }) {
   if (!data) return null;
@@ -22,6 +22,11 @@ export default function LargeContent({ data }) {
   const textAlign = { left: " text-left", right: " text-right", center: " text-center" }[align] || "";
   const place = isFull ? "" : { left: " mr-auto", right: " ml-auto", center: " m-auto" }[align] || " m-auto";
   const narrow = (isFull ? "" : " max-w-3xl") + place + textAlign;
+  const hasSub = hasText(sub_heading);
+  const hasHeading = hasText(heading);
+  const hasContent = hasText(content_section);
+  // no text at all: skip the section (and its padding)
+  if (!hasSub && !hasHeading && !hasContent) return null;
 
   return (
     <>
@@ -33,18 +38,18 @@ export default function LargeContent({ data }) {
         {/* inner wrapper keeps the original content width; the section itself stays full-bleed for the background */}
         <div className="web-width px-6">
         {/* SUB HEADING WITH DOT */}
-        {sub_heading && (
+        {hasSub && (
           <div className={`body-text${narrow}`}>
             <span className="subheading-label">{sub_heading}</span>
           </div>
         )}
-        {heading && (
+        {hasHeading && (
           <h2
             className={`cs-h3${narrow} cs-highlight cs-rich text-(--color-heading) max-md:text-black mb-6 md:mb-10`}
             dangerouslySetInnerHTML={{ __html: toHtml(heading) }}
           />
         )}
-        {content_section && (
+        {hasContent && (
           <div
             className={`privacy-text${narrow}`}
             dangerouslySetInnerHTML={{ __html: content_section }}

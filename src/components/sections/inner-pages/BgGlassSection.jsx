@@ -11,7 +11,7 @@
 
 import Image from "next/image";
 import Reveal from "@/components/ui/Reveal";
-import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
 // ACF "Title Colour" (same map as ProductResults); unknown/empty -> petrol
 const TITLE_COLOR = { petrol: "text-(--color-petrol)", yellow: "text-(--color-yellow)", white: "text-(--color-light-grey)", orange: "text-[#FF8D6B]" };
@@ -19,7 +19,9 @@ const TITLE_COLOR = { petrol: "text-(--color-petrol)", yellow: "text-(--color-ye
 export default function BgGlassSection({ data }) {
   const columns = rows(data?.columns).filter((c) => c.title || c.text).slice(0, 5);
   const { heading, short_text } = data || {};
-  if (!heading && columns.length === 0) return null;
+  const hasHeading = hasText(heading);
+  const hasShortText = hasText(short_text);
+  if (!hasHeading && columns.length === 0) return null;
   const bg = mediaUrl(data?.bg_image);
 
   return (
@@ -30,10 +32,12 @@ export default function BgGlassSection({ data }) {
       <div className={`cs-container flex ${data?.card_position === "left" ? "md:justify-start" : "md:justify-end"}`}>
         {/* backdrop-blur sits on the Reveal itself: on a child of the opacity-animating wrapper the blur breaks */}
         <Reveal y={40} className="flex w-full flex-col gap-8 rounded-lg border border-white/40 bg-[rgba(21,20,17,0.35)] px-6 py-10 shadow-[0px_4px_4px_rgba(0,0,0,0.25)] backdrop-blur-[40px] md:max-w-[572px] md:gap-10 md:rounded-[12px] md:p-14">
+          {(hasHeading || hasShortText) && (
           <div className="flex flex-col gap-4 text-(--color-light-grey)">
-            {heading && <h2 className="cs-highlight font-bold text-[32px] leading-[36px] tracking-[-0.64px] md:text-[40px] md:leading-[44px] md:tracking-[-0.8px]" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
-            {short_text && <div className="cs-rich cs-list font-medium text-[16px] leading-5 tracking-[-0.32px]" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
+            {hasHeading && <h2 className="cs-highlight font-bold text-[32px] leading-[36px] tracking-[-0.64px] md:text-[40px] md:leading-[44px] md:tracking-[-0.8px]" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+            {hasShortText && <div className="cs-rich cs-list font-medium text-[16px] leading-5 tracking-[-0.32px]" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
           </div>
+          )}
 
           {columns.length > 0 && (
             <ul className="flex flex-col">

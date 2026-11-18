@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import ArrowSvg from "../../../../public/right-arrow.svg";
+import { hasText } from "@/lib/content";
 
 export default function AskAI({ data }) {
   if (!data) return null;
@@ -17,6 +18,11 @@ export default function AskAI({ data }) {
   } = data;
 
   const ai_block = data?.ai_block || [];
+  const hasSub = hasText(sub_heading);
+  const hasHeading = hasText(heading);
+  const hasShort = hasText(short_text);
+  // nothing to show: no text, no cards
+  if (!hasSub && !hasHeading && !hasShort && ai_block.length === 0) return null;
 
   return (
     <section id="next" className="ai-section relative overflow-hidden bg-white">
@@ -26,6 +32,7 @@ export default function AskAI({ data }) {
 
        <div className="pb-15 md:pb-30 web-width px-6 ">
       {/* SUB HEADING WITH DOT */}
+      {hasSub && (
       <motion.div
         className="flex items-center gap-2 mb-2 md:mb-4"
         initial={{ opacity: 0, y: 20 }}
@@ -36,7 +43,9 @@ export default function AskAI({ data }) {
         <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
         <span className="subheading-label">{sub_heading}</span>
       </motion.div>
+      )}
 
+      {hasHeading && (
       <motion.div
         className="section-heading mb-6"
         dangerouslySetInnerHTML={{ __html: heading }}
@@ -45,9 +54,10 @@ export default function AskAI({ data }) {
         transition={{ duration: 0.6, delay: 0.15 }}
         viewport={{ once: true }}
       />
+      )}
 
       {/* SHORT TEXT */}
-      {short_text && (
+      {hasShort && (
         <motion.div
           className="body-text max-w-[500px] mb-6 md:mb-14"
           dangerouslySetInnerHTML={{ __html: short_text }}

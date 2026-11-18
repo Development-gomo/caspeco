@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { hasText } from "@/lib/content";
 import Quote from "../../../../public/quote-icon.png";
 
 export default function StorySection({ data }) {
@@ -17,12 +18,22 @@ export default function StorySection({ data }) {
     section_image,
   } = data;
 
+  const hasSub = hasText(sub_heading);
+  const hasHeading = hasText(heading);
+  const hasContentHeading = hasText(content_heading);
+  const hasShortText = hasText(short_text);
+  const hasReview = hasText(review_text);
+  const hasImage = !!section_image;
+  const hasRight = hasContentHeading || hasShortText || hasReview;
+  if (!hasSub && !hasHeading && !hasRight && !hasImage) return null;
+
   return (
     <>
       {" "}
+      {(hasSub || hasHeading || hasRight) && (
       <section className="py-15 md:py-30 web-width px-6">
         {/* Subheading with dot */}
-        {sub_heading && (
+        {hasSub && (
           <div className="flex items-center gap-2 mb-4">
             <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
             <span className="subheading-label uppercase">{sub_heading}</span>
@@ -30,7 +41,7 @@ export default function StorySection({ data }) {
         )}
 
         {/* Main Heading */}
-        {heading && (
+        {hasHeading && (
           <div
             className="section-heading mb-8 md:mb-14 max-w-[990px]"
             dangerouslySetInnerHTML={{ __html: heading }}
@@ -38,23 +49,24 @@ export default function StorySection({ data }) {
         )}
 
         {/* Two-Column Layout: Content + Quote */}
+        {hasRight && (
         <div className="flex flex-col lg:flex-row md:gap-25">
           {/* LEFT META COLUMN */}
           <div className="md:w-[35%]"></div>
           <div className="md:w-[65%]">
-            {content_heading && (
+            {hasContentHeading && (
               <div
                 className="cs-h4 mb-6 max-w-[560px]"
                 dangerouslySetInnerHTML={{ __html: content_heading }}
               />
             )}
-            {short_text && (
+            {hasShortText && (
               <div
                 className="body-text max-w-[560px] mb-8 md:mb-10"
                 dangerouslySetInnerHTML={{ __html: short_text }}
               />
             )}
-            {review_text && (
+            {hasReview && (
               <motion.div
                 initial={{ opacity: 0, y: 25 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -65,16 +77,18 @@ export default function StorySection({ data }) {
                     <Image src={Quote} width={24} height={24} alt="Quote Icon" className="block mb-3" />
                     {review_text}
                 </p>
-                {review_by && (
+                {hasText(review_by) && (
                   <p className="text-sm mt-5"><span className="h-2 w-2 rounded-full bg-white inline-block mr-2"></span> {review_by}</p>
                 )}
               </motion.div>
             )}
           </div>
         </div>
+        )}
 
         {/* Optional Image Section */}
       </section>
+      )}
       {section_image && (
         <section className="image-breaker">
           <motion.div
