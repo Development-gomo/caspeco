@@ -22,7 +22,7 @@ import DefaultIcon from "../../../../public/icons/home/industry-icon.svg";
 import ArrowLink from "@/components/ui/ArrowLink";
 import SliderArrows from "@/components/ui/SliderArrows";
 import { DEFAULT_LANG, entryHref, langHref } from "@/config";
-import { mediaUrl, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, mediaUrl, sectionBackground, toHtml } from "@/lib/content";
 
 const SWIPER_MODULES = [FreeMode, Mousewheel];
 const FREE_MODE = { enabled: true, sticky: true };
@@ -158,7 +158,11 @@ export default function HomeIndustrySlider({ data, lang = DEFAULT_LANG, prefetch
   const [pages, setPages] = React.useState(1);
   const [active, setActive] = React.useState(0);
   const { heading, short_text, tagline, cta_text, cta_url } = data || {};
-  if (!heading && cards.length === 0) return null;
+  const hasHeading = hasText(heading);
+  const hasShortText = hasText(short_text);
+  const hasTagline = hasText(tagline);
+  const hasIntro = hasHeading || hasShortText || hasTagline;
+  if (!hasHeading && cards.length === 0) return null;
   const customBg = Boolean(data?.bg_color || mediaUrl(data?.bg_image));
 
   const syncPages = (swiper) => {
@@ -172,15 +176,17 @@ export default function HomeIndustrySlider({ data, lang = DEFAULT_LANG, prefetch
       style={customBg ? sectionBackground(data) : undefined}
     >
       <div className="cs-container flex flex-col gap-10 lg:gap-16 max-md:gap-6">
-        <div className="flex flex-col gap-4 max-md:gap-6">
-          {heading && <h2 className="cs-h2 cs-highlight text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
-          {short_text && <div className="cs-p1 cs-rich max-w-[636px] text-(--color-grey-dark) max-md:font-normal!" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
-          {tagline && (
-            <p className="text-[14px] lg:text-[16px] font-medium leading-5 tracking-[-0.32px] text-(--color-heading) max-md:-mt-1 max-md:text-[18px] max-md:font-bold max-md:leading-[22px] max-md:tracking-[-0.36px]">
-              {tagline}
-            </p>
-          )}
-        </div>
+        {hasIntro && (
+          <div className="flex flex-col gap-4 max-md:gap-6">
+            {hasHeading && <h2 className="cs-h2 cs-highlight text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+            {hasShortText && <div className="cs-p1 cs-rich max-w-[636px] text-(--color-grey-dark) max-md:font-normal!" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
+            {hasTagline && (
+              <p className="text-[14px] lg:text-[16px] font-medium leading-5 tracking-[-0.32px] text-(--color-heading) max-md:-mt-1 max-md:text-[18px] max-md:font-bold max-md:leading-[22px] max-md:tracking-[-0.36px]">
+                {tagline}
+              </p>
+            )}
+          </div>
+        )}
 
         {cards.length > 0 && (
           <div className="flex flex-col items-center gap-8 max-md:gap-6">

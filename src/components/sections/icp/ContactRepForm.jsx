@@ -10,6 +10,7 @@
 
 import { useState } from "react";
 import { DEFAULT_LANG } from "@/config";
+import { hasText } from "@/lib/content";
 import { submitForm } from "@/lib/forms";
 
 // Figma "Contact form" (324:7364): label Bold 16/20 #3F3E3C, 8 above a 53px input (padding 16,
@@ -137,9 +138,9 @@ export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
         </div>
       </div>
 
-      {(data?.consent_text || data?.newsletter_text) && (
+      {(hasText(data?.consent_text) || hasText(data?.newsletter_text)) && (
         <div className="flex flex-col gap-3 max-md:gap-4">
-          {data?.consent_text && (
+          {hasText(data?.consent_text) && (
             <div>
               <label className="flex cursor-pointer items-start gap-2.5">
                 <input
@@ -157,7 +158,7 @@ export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
               {errors.consent && <p className="text-xs text-red-600">{errors.consent}</p>}
             </div>
           )}
-          {data?.newsletter_text && (
+          {hasText(data?.newsletter_text) && (
             <label className="flex cursor-pointer items-start gap-2.5">
               <input type="checkbox" checked={newsletter} onChange={(e) => setNewsletter(e.target.checked)} className={CHECKBOX} />
               <span className="text-[14px] leading-[17px] text-[#8F8D88] max-md:text-[13px] max-md:leading-4 max-md:text-(--color-grey-dark)">{data.newsletter_text}</span>

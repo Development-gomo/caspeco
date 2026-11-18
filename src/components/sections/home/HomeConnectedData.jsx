@@ -13,7 +13,7 @@ import CtaButton from "@/components/ui/CtaButton";
 import ArrowLink from "@/components/ui/ArrowLink";
 import Reveal from "@/components/ui/Reveal";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { mediaUrl, rows, toHtml } from "@/lib/content";
+import { hasText, mediaUrl, rows, toHtml } from "@/lib/content";
 
 // Light sections that end on the 72px half gap → this one starts with 72px too (Figma gap rule)
 const HALF_GAP_BEFORE = new Set(["data_insight_section", "product_cards_section", "home_tab_section"]);
@@ -138,7 +138,9 @@ export default function HomeConnectedData({ data, lang = DEFAULT_LANG }) {
   } = data || {};
   const image = mediaUrl(section_image);
   const bgImage = mediaUrl(data?.bg_image);
-  if (!heading && !image) return null;
+  const hasHeading = hasText(heading);
+  const hasShortText = hasText(short_text);
+  if (!hasHeading && !image) return null;
 
   const label = (r) => (typeof r?.label === "string" ? r.label.trim() : "");
   const disconnected = rows(data?.disconnected_items).filter(label).slice(0, 5);
@@ -170,23 +172,25 @@ export default function HomeConnectedData({ data, lang = DEFAULT_LANG }) {
       <div className="cs-container">
         {/* Top row: text (left) + dashboard visual (right); stacks below 1024 */}
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:gap-12 xl:gap-16">
-          <Reveal className="flex min-w-0 flex-col items-start gap-6">
-            {heading && (
-              <h2 className="cs-h2 cs-highlight cs-rich text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
-            )}
-            {short_text && (
-              <div
-                className="cs-p2 cs-rich text-(--color-grey-dark) lg:max-w-[520px]"
-                dangerouslySetInnerHTML={{ __html: toHtml(short_text) }}
-              />
-            )}
-            {(primaryHref || secondaryHref) && (
-              <div className="mt-4 flex w-full flex-wrap items-center gap-x-8 gap-y-5 max-md:mt-2 max-md:flex-col max-md:items-center">
-                {primaryHref && <CtaButton href={primaryHref}>{cta_text}</CtaButton>}
-                {secondaryHref && <ArrowLink href={secondaryHref}>{secondary_cta_text}</ArrowLink>}
-              </div>
-            )}
-          </Reveal>
+          {(hasHeading || hasShortText || primaryHref || secondaryHref) && (
+            <Reveal className="flex min-w-0 flex-col items-start gap-6">
+              {hasHeading && (
+                <h2 className="cs-h2 cs-highlight cs-rich text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
+              )}
+              {hasShortText && (
+                <div
+                  className="cs-p2 cs-rich text-(--color-grey-dark) lg:max-w-[520px]"
+                  dangerouslySetInnerHTML={{ __html: toHtml(short_text) }}
+                />
+              )}
+              {(primaryHref || secondaryHref) && (
+                <div className="mt-4 flex w-full flex-wrap items-center gap-x-8 gap-y-5 max-md:mt-2 max-md:flex-col max-md:items-center">
+                  {primaryHref && <CtaButton href={primaryHref}>{cta_text}</CtaButton>}
+                  {secondaryHref && <ArrowLink href={secondaryHref}>{secondary_cta_text}</ArrowLink>}
+                </div>
+              )}
+            </Reveal>
+          )}
 
           {image && (
             <Reveal delay={0.1} className="min-w-0">

@@ -12,7 +12,7 @@ import CtaButton from "@/components/ui/CtaButton";
 import CountUp from "@/components/ui/CountUp";
 import Reveal from "@/components/ui/Reveal";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { rows, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, rows, sectionBackground, toHtml } from "@/lib/content";
 
 // Figma "We handle the switch" fill: #FFFFFF@50% 0% → #DADCDD 80.6% (top → bottom)
 export const SWITCH_GRADIENT = "linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, #DADCDD 80.6%), #FFFFFF";
@@ -23,27 +23,35 @@ export default function SwitchSteps({ data, lang = DEFAULT_LANG, joined = false 
   const steps = rows(data?.steps).filter((s) => s.number || s.title);
   const { eyebrow, heading, heading_highlight, cta_text, cta_url } = data || {};
   const text = data?.text || data?.short_text; // short_text in "Page Builder ICP Page"
-  if (!heading && steps.length === 0) return null;
+  const hasEyebrow = hasText(eyebrow);
+  const hasHeading = hasText(heading);
+  const hasHighlight = hasText(heading_highlight);
+  const hasIntroText = hasText(text);
+  const hasCta = hasText(cta_text) && !!cta_url;
+  if (!hasHeading && steps.length === 0) return null;
 
   return (
     <section className={`cs-sec pt-18 lg:pt-36 ${joined ? "pb-0 max-md:[--sec-pb:0px]" : "pb-18 lg:pb-36"}`} style={joined ? undefined : sectionBackground(data, { background: SWITCH_GRADIENT })}>
       <div className="cs-container flex flex-col gap-12 lg:gap-[54px]">
+        {(hasEyebrow || hasHeading || hasHighlight || hasIntroText || hasCta) && (
         <div className="flex flex-col gap-8 max-md:gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
+          {(hasEyebrow || hasHeading || hasHighlight) && (
           <Reveal className="flex max-w-[724px] flex-col gap-3.5 max-md:gap-2">
-            {eyebrow && <p className="italic font-normal text-[18px] lg:text-[20px] leading-[26px] tracking-[-0.8px] text-(--color-dark-petrol) max-md:leading-[22px] max-md:tracking-[-0.36px] max-md:text-(--color-grey-dark)">{eyebrow}</p>}
-            {(heading || heading_highlight) && (
+            {hasEyebrow && <p className="italic font-normal text-[18px] lg:text-[20px] leading-[26px] tracking-[-0.8px] text-(--color-dark-petrol) max-md:leading-[22px] max-md:tracking-[-0.36px] max-md:text-(--color-grey-dark)">{eyebrow}</p>}
+            {(hasHeading || hasHighlight) && (
               <h2 className="cs-h2 cs-rich text-(--color-heading)">
-                {heading && <span className="block text-(--color-heading)! max-md:text-black!" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
-                {heading_highlight && <span className="block text-(--color-yellow) max-md:text-black!" dangerouslySetInnerHTML={{ __html: toHtml(heading_highlight) }} />}
+                {hasHeading && <span className="block text-(--color-heading)! max-md:text-black!" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+                {hasHighlight && <span className="block text-(--color-yellow) max-md:text-black!" dangerouslySetInnerHTML={{ __html: toHtml(heading_highlight) }} />}
               </h2>
             )}
           </Reveal>
+          )}
 
-          {(text || (cta_text && cta_url)) && (
+          {(hasIntroText || hasCta) && (
             // Figma: right column starts level with the title (10px above the highlight's baseline box)
             <Reveal delay={0.15} className="flex max-w-[484px] flex-col items-start gap-5 max-md:gap-6 lg:mb-2.5">
-              {text && <div className="cs-p2 cs-rich text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(text) }} />}
-              {cta_text && cta_url && (
+              {hasIntroText && <div className="cs-p2 cs-rich text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(text) }} />}
+              {hasCta && (
                 <div className="max-md:hidden">
                   <CtaButton href={langHref(cta_url.trim(), lang)} wrap className="max-w-full">
                     {cta_text}
@@ -53,6 +61,7 @@ export default function SwitchSteps({ data, lang = DEFAULT_LANG, joined = false 
             </Reveal>
           )}
         </div>
+        )}
 
         {steps.length > 0 && (
           <div className="grid grid-cols-1 gap-5 max-md:hidden md:grid-cols-3">

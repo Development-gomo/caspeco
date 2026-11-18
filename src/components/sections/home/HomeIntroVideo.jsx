@@ -11,7 +11,7 @@
 import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import CtaButton from "@/components/ui/CtaButton";
-import { rows, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, rows, sectionBackground, toHtml } from "@/lib/content";
 import { embedUrl, videoUrl, youtubePoster } from "@/lib/video";
 
 const ROLL_INTERVAL_MS = 2600;
@@ -19,7 +19,7 @@ const YT_ORIGIN = "https://www.youtube.com";
 const VIMEO_ORIGIN = "https://player.vimeo.com";
 
 export default function HomeIntroVideo({ data }) {
-  const words = rows(data?.rolling_words).map((r) => r.short_text || r.word).filter(Boolean);
+  const words = rows(data?.rolling_words).map((r) => r.short_text || r.word).filter(hasText);
   // video_url is an ACF url field; data.video is the old file field
   const videoSrc = videoUrl(data?.video_url) || videoUrl(data?.video);
   const embed = videoSrc ? embedUrl(videoSrc) : null; // null → direct file, plays in <video>
@@ -78,7 +78,7 @@ export default function HomeIntroVideo({ data }) {
     return () => window.removeEventListener("message", onMessage);
   }, [playing, player]);
 
-  if (!toHtml(heading) && !words.length && !toHtml(short_text) && !videoSrc) return null;
+  if (!hasText(heading) && !words.length && !hasText(short_text) && !hasText(sub_heading) && !videoSrc) return null;
 
   // Subscribe to the embed's play / pause events once its player has loaded
   const onEmbedLoad = () => {
@@ -148,7 +148,7 @@ export default function HomeIntroVideo({ data }) {
       <div className={`cs-container flex flex-col gap-12 ${centered ? "items-center" : "lg:flex-row lg:items-center lg:justify-between"}`}>
         {/* first:mt-0 — without heading / rolling words the column starts flush */}
         <div className={`flex flex-col ${centered ? "items-center text-center min-[1024px]:max-w-[700px] min-[1137px]:w-full min-[1137px]:max-w-none" : "lg:max-w-[700px] xl:max-w-[780px] items-start"}`}>
-          {heading && (
+          {hasText(heading) && (
             <h2 className="cs-h2 text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
           )}
 
@@ -177,7 +177,7 @@ export default function HomeIntroVideo({ data }) {
             </div>
           )}
 
-          {testimonial && sub_heading && (
+          {testimonial && hasText(sub_heading) && (
             <svg
               aria-hidden
               viewBox="0 0 64 50"
@@ -189,7 +189,7 @@ export default function HomeIntroVideo({ data }) {
             </svg>
           )}
 
-          {sub_heading && (
+          {hasText(sub_heading) && (
             <p
               className={
                 testimonial
@@ -201,11 +201,11 @@ export default function HomeIntroVideo({ data }) {
             </p>
           )}
 
-          {testimonial && short_text && (
+          {testimonial && hasText(short_text) && (
             <div aria-hidden className="mt-8 lg:mt-10 h-[3px] w-12 rounded-full bg-(--color-petrol)" />
           )}
 
-          {short_text && (
+          {hasText(short_text) && (
             <div
               className={
                 testimonial

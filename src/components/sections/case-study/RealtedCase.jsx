@@ -14,6 +14,7 @@ import "swiper/css/navigation";
 
 import { DEFAULT_LANG, entryHref } from "@/config";
 import CtaButton from "@/components/ui/CtaButton";
+import { hasText } from "@/lib/content";
 
 export default function RealtedCase({ data, lang = DEFAULT_LANG, prefetchedCases }) {
   const cases = prefetchedCases || [];
@@ -37,7 +38,7 @@ export default function RealtedCase({ data, lang = DEFAULT_LANG, prefetchedCases
       {/* FULL WIDTH WRAPPER */}
       <div className="w-full px-6 web-width">
         {/* SUB HEADING */}
-        {sub_heading && (
+        {hasText(sub_heading) && (
           <div className="flex items-center gap-2 mb-2 md:mb-4">
             <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
             <span className="subheading-label">{sub_heading}</span>
@@ -45,16 +46,20 @@ export default function RealtedCase({ data, lang = DEFAULT_LANG, prefetchedCases
         )}
 
         {/* TOP HEADING + CTA */}
+        {(hasText(heading) || (hasText(cta_text) && cta_url)) && (
         <div className="md:flex md:justify-between items-end mb-10 lg:mb-14">
-          <div
-            className="section-heading mb-4 md:mb-0"
-            dangerouslySetInnerHTML={{ __html: heading }}
-          />
+          {hasText(heading) && (
+            <div
+              className="section-heading mb-4 md:mb-0"
+              dangerouslySetInnerHTML={{ __html: heading }}
+            />
+          )}
 
-          {cta_text && cta_url && (
+          {hasText(cta_text) && cta_url && (
             <CtaButton href={cta_url}>{cta_text}</CtaButton>
           )}
         </div>
+        )}
       </div>
 
       {/* FULL WIDTH SLIDER */}

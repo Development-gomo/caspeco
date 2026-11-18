@@ -5,11 +5,11 @@
 import Image from "next/image";
 import CheckIcon from "../../../../public/icons/home/check.svg";
 import CheckYellow from "../../../../public/icons/home/check-yellow.svg";
-import { rows } from "@/lib/content";
+import { hasText, rows } from "@/lib/content";
 
 // onDark: below 768px the list sits on a dark image panel — light text and a yellow check (Figma "Benefits")
 export default function CheckList({ items, className = "", onDark = false }) {
-  const list = rows(items).map((r) => r.item || r.items || r.text).filter(Boolean);
+  const list = rows(items).map((r) => r.item || r.items || r.text).filter(hasText);
   if (!list.length) return null;
   return (
     <ul className={`flex flex-col gap-2 ${className}`}>

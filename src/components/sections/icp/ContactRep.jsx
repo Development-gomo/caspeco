@@ -9,14 +9,14 @@ import Image from "next/image";
 import Reveal from "@/components/ui/Reveal";
 import ContactRepForm from "./ContactRepForm";
 import { DEFAULT_LANG } from "@/config";
-import { mediaUrl, toHtml } from "@/lib/content";
+import { hasText, mediaUrl, toHtml } from "@/lib/content";
 
 // tone "light" (Page Builder contact_form_section): plain light page background, dark heading
 // (#151411) and grey text (#3F3E3C) — no photo background
 export default function ContactRep({ data, lang = DEFAULT_LANG, rep, form, tone = "dark" }) {
   const light = tone === "light";
   const { heading, short_text } = data || {};
-  if (!heading) return null;
+  if (!hasText(heading)) return null;
   const bg = light ? null : mediaUrl(data?.bg_image);
   const rep_name = rep?.name || data?.rep_name;
   const rep_role = rep?.role || data?.rep_role;
@@ -35,9 +35,9 @@ export default function ContactRep({ data, lang = DEFAULT_LANG, rep, form, tone 
       <div className="cs-container flex flex-col gap-12 max-md:gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
         <Reveal className={`flex flex-col gap-10 max-md:gap-6 lg:max-w-[549px] ${light ? "text-(--color-grey-dark)" : "text-white"}`}>
           <div className="flex flex-col gap-[30px] max-md:gap-5">
-            {eyebrow && <p className="-mb-3.5 italic text-[24px] leading-7 tracking-[-0.48px]">{eyebrow}</p>}
+            {hasText(eyebrow) && <p className="-mb-3.5 italic text-[24px] leading-7 tracking-[-0.48px]">{eyebrow}</p>}
             <h2 className={`cs-h2 cs-highlight cs-rich ${light ? "text-black" : ""}`} dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
-            {short_text && <div className="cs-p1 cs-rich max-md:font-medium!" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
+            {hasText(short_text) && <div className="cs-p1 cs-rich max-md:font-medium!" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
           </div>
 
           {photo && (

@@ -10,7 +10,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import CtaButton from "@/components/ui/CtaButton";
 import ToggleIcon from "../../../../public/icons/home/faq-closed.svg";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { rows, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, rows, sectionBackground, toHtml } from "@/lib/content";
 
 // Sections whose bottom padding already gives the FAQ its top spacing (same light
 // background, as on the homepage); after anything else the FAQ adds its own.
@@ -26,7 +26,10 @@ export default function HomeFaq({ data, lang = DEFAULT_LANG, prevLayout }) {
   const { heading, short_text, cta_text, cta_url } = data || {};
   // ACF faq_layout: "two" = heading on top, FAQs in two columns on desktop; "one"/empty/anything else = current layout
   const twoCols = String(data?.faq_layout ?? "").trim().toLowerCase() === "two" || String(data?.faq_layout ?? "").trim() === "2";
-  if (!heading && faqs.length === 0) return null;
+  const hasHeading = hasText(heading);
+  const hasShortText = hasText(short_text);
+  const hasCta = Boolean(cta_text && cta_url);
+  if (!hasHeading && faqs.length === 0) return null;
 
   const schema = faqs.length
     ? {
@@ -95,15 +98,17 @@ export default function HomeFaq({ data, lang = DEFAULT_LANG, prevLayout }) {
     // Title → 16 → intro (Regular 18/22) → 40 → list → 24 → button (the button moves below the list on mobile)
     <section id="faq-section" className={`${HALF_BEFORE.has(data?._next) ? "pb-12 max-md:pb-0 md:pb-[72px]" : "pb-18 max-md:pb-16 md:pb-36"} ${FLUSH_AFTER.has(prevLayout ?? data?._prev) ? "" : "pt-18 max-md:pt-16 md:pt-36"}`} style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       <div className={twoCols ? "cs-container grid grid-cols-1 gap-10 lg:gap-12" : "cs-container grid grid-cols-1 gap-10 lg:grid-cols-[549px_minmax(0,1fr)] lg:gap-[50px]"}>
-        <div className="flex flex-col items-start gap-5 max-md:gap-4">
-          {heading && <h2 className="cs-h2 cs-highlight text-(--color-heading) max-md:text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
-          {short_text && <div className="cs-p1 cs-rich max-w-[493px] text-(--color-grey-dark) max-md:font-normal!" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
-          {cta_text && cta_url && (
-            <div className="max-md:hidden">
-              <CtaButton href={langHref(cta_url.trim(), lang)}>{cta_text}</CtaButton>
-            </div>
-          )}
-        </div>
+        {(hasHeading || hasShortText || hasCta) && (
+          <div className="flex flex-col items-start gap-5 max-md:gap-4">
+            {hasHeading && <h2 className="cs-h2 cs-highlight text-(--color-heading) max-md:text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+            {hasShortText && <div className="cs-p1 cs-rich max-w-[493px] text-(--color-grey-dark) max-md:font-normal!" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
+            {hasCta && (
+              <div className="max-md:hidden">
+                <CtaButton href={langHref(cta_url.trim(), lang)}>{cta_text}</CtaButton>
+              </div>
+            )}
+          </div>
+        )}
 
         {faqs.length > 0 &&
           (twoCols ? (
@@ -117,7 +122,7 @@ export default function HomeFaq({ data, lang = DEFAULT_LANG, prevLayout }) {
             <div className="flex flex-col gap-4 max-md:gap-2">{faqs.map(renderFaq)}</div>
           ))}
 
-        {cta_text && cta_url && (
+        {hasCta && (
           <div className="md:hidden max-md:-mt-4">
             <CtaButton href={langHref(cta_url.trim(), lang)}>{cta_text}</CtaButton>
           </div>

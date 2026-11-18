@@ -14,7 +14,7 @@ import Link from "next/link";
 import Reveal from "@/components/ui/Reveal";
 import { MOBILE_SLIDE, MOBILE_TRACK, SliderPoints } from "@/components/ui/MobileSlider";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
 function Arrow() {
   return (
@@ -28,15 +28,17 @@ export default function StageCards({ data, lang = DEFAULT_LANG }) {
   const cards = rows(data?.cards).filter((c) => c.title);
   const { heading, short_text } = data || {};
   const trackRef = React.useRef(null);
-  if (!heading && cards.length === 0) return null;
+  const hasHeading = hasText(heading);
+  const hasShort = hasText(short_text);
+  if (!hasHeading && !hasShort && cards.length === 0) return null;
 
   return (
     <section className="cs-sec pt-12 pb-18 lg:pt-[72px] lg:pb-36" style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       <div className="cs-container flex flex-col gap-10 max-md:gap-12 lg:gap-16">
-        {(heading || short_text) && (
+        {(hasHeading || hasShort) && (
           <Reveal className="flex flex-col gap-6">
-            {heading && <h2 className="cs-h2 cs-highlight cs-rich max-w-[985px] text-(--color-heading) max-md:text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
-            {short_text && <div className="cs-p1 cs-rich max-w-[680px] text-(--color-grey-dark) max-md:font-normal!" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
+            {hasHeading && <h2 className="cs-h2 cs-highlight cs-rich max-w-[985px] text-(--color-heading) max-md:text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+            {hasShort && <div className="cs-p1 cs-rich max-w-[680px] text-(--color-grey-dark) max-md:font-normal!" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
           </Reveal>
         )}
 
@@ -66,7 +68,7 @@ export default function StageCards({ data, lang = DEFAULT_LANG }) {
                     <span className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0, 0, 0, 0) 19.8%, #000 100%)" }} aria-hidden />
                     <div className="relative flex flex-col gap-4">
                       <h3 className="font-bold text-[26px] lg:text-[32px] leading-[1.1] tracking-[-0.64px] normal-case max-md:leading-7 max-md:tracking-[-0.52px]">{card.title}</h3>
-                      {card.text && <div className="cs-rich text-[16px] lg:text-[18px] font-light leading-[22px] tracking-[-0.36px] max-md:text-[18px] max-md:font-normal" dangerouslySetInnerHTML={{ __html: toHtml(card.text) }} />}
+                      {hasText(card.text) && <div className="cs-rich text-[16px] lg:text-[18px] font-light leading-[22px] tracking-[-0.36px] max-md:text-[18px] max-md:font-normal" dangerouslySetInnerHTML={{ __html: toHtml(card.text) }} />}
                       {(card.link_text || card.href) && href && (
                         <span className="mt-4 inline-flex items-center gap-2 self-start text-[16px] font-medium leading-5 tracking-[-0.32px] text-(--color-yellow) max-md:-mb-0.5">
                           <span className="cs-link-redraw">{card.link_text || "Explore"}</span>

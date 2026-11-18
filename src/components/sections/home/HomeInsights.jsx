@@ -13,7 +13,7 @@ import CtaButton from "@/components/ui/CtaButton";
 import PostCard from "@/components/ui/PostCard";
 import { MOBILE_TRACK, SliderPoints } from "@/components/ui/MobileSlider";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { rows, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, rows, sectionBackground, toHtml } from "@/lib/content";
 
 export default function HomeInsights({ data, lang = DEFAULT_LANG, prefetchedPosts }) {
   const pool = Array.isArray(prefetchedPosts) ? prefetchedPosts : [];
@@ -22,20 +22,25 @@ export default function HomeInsights({ data, lang = DEFAULT_LANG, prefetchedPost
 
   const { heading, short_text, cta_text, cta_url, read_more_text, read_time_suffix } = data || {};
   const trackRef = React.useRef(null);
-  if (!heading && posts.length === 0) return null;
+  const hasHeading = hasText(heading);
+  const hasShortText = hasText(short_text);
+  const hasCta = Boolean(cta_text && cta_url);
+  if (!hasHeading && posts.length === 0) return null;
 
   return (
     <section className="cs-sec py-18 md:py-36" style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       <div className="cs-container flex flex-col gap-10 lg:gap-16">
-        <div className="flex flex-col items-start gap-6">
-          {heading && <h2 className="cs-h2 cs-highlight max-w-[985px] text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
-          {short_text && <div className="cs-p1 cs-rich max-w-[680px] text-(--color-grey-dark) max-md:font-normal!" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
-          {cta_text && cta_url && (
-            <CtaButton variant="outline-dark-grey" href={langHref(cta_url.trim(), lang)} className="mt-4 max-md:mt-0 max-md:hidden">
-              {cta_text}
-            </CtaButton>
-          )}
-        </div>
+        {(hasHeading || hasShortText || hasCta) && (
+          <div className="flex flex-col items-start gap-6">
+            {hasHeading && <h2 className="cs-h2 cs-highlight max-w-[985px] text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+            {hasShortText && <div className="cs-p1 cs-rich max-w-[680px] text-(--color-grey-dark) max-md:font-normal!" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
+            {hasCta && (
+              <CtaButton variant="outline-dark-grey" href={langHref(cta_url.trim(), lang)} className="mt-4 max-md:mt-0 max-md:hidden">
+                {cta_text}
+              </CtaButton>
+            )}
+          </div>
+        )}
 
         {posts.length > 0 && (
           <div

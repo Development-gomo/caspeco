@@ -24,7 +24,7 @@ import VideoModal from "@/components/ui/VideoModal";
 import SelectChevron from "../../../../public/icons/home/select-chevron.svg";
 import YoutubeIcon from "../../../../public/icons/home/youtube.svg"; // transparent (the old PNG had a white background)
 import { DEFAULT_LANG, entryHref } from "@/config";
-import { sectionBackground, toHtml } from "@/lib/content";
+import { hasText, sectionBackground, toHtml } from "@/lib/content";
 import { twinOptions } from "@/lib/caseStudies";
 import CountUp from "@/components/ui/CountUp";
 
@@ -177,7 +177,9 @@ export default function HomeBusinessTwin({ data, lang = DEFAULT_LANG, cases: all
   const images = cases.filter((c) => c.image?.url).slice(0, 2).map((c) => c.image);
 
   const { heading, short_text, cta_text, note_text } = data || {};
-  if (!heading) return null;
+  if (!hasText(heading)) return null;
+  const hasCta = hasText(cta_text);
+  const hasNote = hasText(note_text);
 
   const hasForm = industries.length > 0 || venueOptions.length > 0;
 
@@ -194,15 +196,16 @@ export default function HomeBusinessTwin({ data, lang = DEFAULT_LANG, cases: all
         <div className="flex flex-col items-start gap-10 lg:gap-[60px] lg:max-w-[631px] lg:pr-6 max-md:gap-6">
           <div className="flex flex-col gap-5 text-(--color-light-grey) max-md:gap-4">
             <h2 className="cs-h2 cs-highlight" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
-            {short_text && <div className="cs-p2 cs-rich lg:max-w-[603px]" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
+            {hasText(short_text) && <div className="cs-p2 cs-rich lg:max-w-[603px]" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
           </div>
 
-          {(hasForm || cta_text || note_text) && (
+          {(hasForm || hasCta || hasNote) && (
             <form
               onSubmit={onSubmit}
               // mobile: no white card — the dropdowns and button sit straight on the section background
               className="flex w-full max-w-[554px] flex-col gap-10 rounded-lg bg-[#fbfaf9] px-5 pt-8 pb-6 sm:px-8 sm:pt-10 sm:pb-8 shadow-[0px_2px_9px_0px_rgba(0,0,0,0.1)] max-md:rounded-none max-md:bg-transparent max-md:p-0! max-md:shadow-none"
             >
+              {(hasForm || hasCta) && (
               <div className="flex flex-col gap-6">
                 {hasForm && (
                   <div className="flex flex-col gap-4 max-md:gap-2">
@@ -214,14 +217,15 @@ export default function HomeBusinessTwin({ data, lang = DEFAULT_LANG, cases: all
                     )}
                   </div>
                 )}
-                {cta_text && (
+                {hasCta && (
                   // mobile: Figma padding 11/32/13 with a 24px line (48px tall)
                   <CtaButton type="submit" wrap className="w-full max-md:pt-[11px]! max-md:pb-[13px]! max-md:leading-6!">
                     {cta_text}
                   </CtaButton>
                 )}
               </div>
-              {note_text && (
+              )}
+              {hasNote && (
                 // hidden on mobile: not in the mobile mockup (and dark text on the now-transparent form)
                 <div className="cs-rich text-[14px] leading-4 tracking-[-0.28px] text-(--color-grey-dark) max-md:hidden" dangerouslySetInnerHTML={{ __html: toHtml(note_text) }} />
               )}

@@ -12,7 +12,7 @@ import CtaButton from "@/components/ui/CtaButton";
 import CheckIcon from "../../../../public/icons/home/check.svg";
 import CheckYellow from "../../../../public/icons/home/check-yellow.svg";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
 // Collage = the 4 image frames of the Figma component "Company size display" (612×408; one frame overhangs 5px at the bottom, as in Figma).
 // Its two variants are two layouts of the same frames; switching tabs Smart-Animates
@@ -154,9 +154,9 @@ function Collage({ images }) {
 }
 
 export default function HomeHelpTabs({ data, lang = DEFAULT_LANG }) {
-  const tabs = rows(data?.tabs).filter((t) => t.tab_label);
+  const tabs = rows(data?.tabs).filter((t) => hasText(t.tab_label));
   const [active, setActive] = React.useState(0);
-  if (!data?.heading && tabs.length === 0) return null;
+  if (!hasText(data?.heading) && tabs.length === 0) return null;
 
   const tab = tabs[active];
   const checklist = rows(tab?.checklist).map((r) => r.item || r.text).filter(Boolean);
@@ -173,15 +173,15 @@ export default function HomeHelpTabs({ data, lang = DEFAULT_LANG }) {
       style={sectionBackground(data, { background: "var(--color-light-grey)" })}
     >
       <div className="cs-container flex flex-col items-center gap-8 max-md:gap-12 lg:gap-[41px]">
-        {(data.heading || data.short_text) && (
+        {(hasText(data.heading) || hasText(data.short_text)) && (
           <div className="flex flex-col items-center gap-4 lg:gap-6">
-            {data.heading && (
+            {hasText(data.heading) && (
               <h2
                 className="cs-h2 cs-highlight cs-rich text-center text-(--color-heading) max-md:text-black"
                 dangerouslySetInnerHTML={{ __html: toHtml(data.heading) }}
               />
             )}
-            {data.short_text && (
+            {hasText(data.short_text) && (
               <div
                 className="cs-p2 cs-rich max-w-[680px] text-center text-(--color-grey-dark) max-md:text-black"
                 dangerouslySetInnerHTML={{ __html: toHtml(data.short_text) }}
@@ -234,9 +234,10 @@ export default function HomeHelpTabs({ data, lang = DEFAULT_LANG }) {
                   exit={{ opacity: 0, transition: TEXT_OUT }}
                   className="relative z-10 flex flex-col items-start gap-10 max-md:gap-6 xl:px-6 [grid-area:1/1]"
                 >
+                  {(hasText(tab.title) || hasText(tab.text) || checklist.length > 0) && (
                   <div className="flex flex-col gap-5 max-md:gap-4">
-                    {tab.title && <h3 className="cs-h4 text-black max-md:text-(--color-light-grey)" dangerouslySetInnerHTML={{ __html: titleHtml(tab.title) }} />}
-                    {tab.text && (
+                    {hasText(tab.title) && <h3 className="cs-h4 text-black max-md:text-(--color-light-grey)" dangerouslySetInnerHTML={{ __html: titleHtml(tab.title) }} />}
+                    {hasText(tab.text) && (
                       <div className="cs-p2 cs-rich text-(--color-grey-dark) max-md:text-(--color-light-grey)" dangerouslySetInnerHTML={{ __html: toHtml(tab.text) }} />
                     )}
                     {checklist.length > 0 && (
@@ -252,7 +253,8 @@ export default function HomeHelpTabs({ data, lang = DEFAULT_LANG }) {
                       </ul>
                     )}
                   </div>
-                  {ctaText && ctaUrl && (
+                  )}
+                  {hasText(ctaText) && ctaUrl && (
                     <>
                       <CtaButton variant="dark" href={langHref(ctaUrl, lang)} wrap className="max-w-full max-md:hidden">
                         {ctaText}

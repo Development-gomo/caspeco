@@ -13,7 +13,7 @@ import { motion } from "framer-motion";
 import KpiArrow from "../../../../public/icons/home/kpi-arrow.svg";
 import CircleInfo from "../../../../public/icons/home/circle-info.svg";
 import CheckYellow from "../../../../public/icons/home/check-yellow.svg";
-import { highlightHtml, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, highlightHtml, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 import CtaButton from "@/components/ui/CtaButton";
 import { DEFAULT_LANG, langHref } from "@/config";
 import CountUp from "@/components/ui/CountUp";
@@ -69,7 +69,7 @@ function KpiCard({ card, hint, index = 0 }) {
               <span aria-hidden className="absolute inset-0 bg-black/60" />
             </>
           )}
-          <span className="absolute left-6 top-6 max-w-[150px] max-md:left-auto max-md:top-auto max-md:relative max-md:z-10 max-md:order-2 max-md:max-w-[200px] text-[20px] leading-6 tracking-[-0.4px] max-md:text-[16px] max-md:leading-5 max-md:tracking-[-0.32px]">{card.label}</span>
+          {hasText(card.label) && <span className="absolute left-6 top-6 max-w-[150px] max-md:left-auto max-md:top-auto max-md:relative max-md:z-10 max-md:order-2 max-md:max-w-[200px] text-[20px] leading-6 tracking-[-0.4px] max-md:text-[16px] max-md:leading-5 max-md:tracking-[-0.32px]">{card.label}</span>}
           <span className="absolute left-6 top-[84px] max-md:relative max-md:z-10 max-md:top-auto max-md:left-auto font-bold text-[64px] leading-16 tracking-[-1.28px] md:text-[80px] md:tracking-[-1.6px] max-md:font-extrabold">
             {/* Figma: digits Tenon Bold, a trailing "%" Tenon Regular */}
             {String(card.value ?? "").trim().endsWith("%") ? (
@@ -84,10 +84,10 @@ function KpiCard({ card, hint, index = 0 }) {
           {/* Bottom-left info block (Figma "Circle-Info" + label: icon x22, text x42, last line ends
               5px above the card edge). Optional note (e.g. "*per month per venue") stacks above the hint;
               right edge stops before the slide dashes. */}
-          {(card.note || hint) && (
+          {(hasText(card.note) || hasText(hint)) && (
             <span className="absolute left-[22px] right-[72px] bottom-[5px] flex flex-col max-md:hidden">
-              {card.note && <InfoLine className="line-clamp-2">{card.note}</InfoLine>}
-              {hint && <InfoLine>{hint}</InfoLine>}
+              {hasText(card.note) && <InfoLine className="line-clamp-2">{card.note}</InfoLine>}
+              {hasText(hint) && <InfoLine>{hint}</InfoLine>}
             </span>
           )}
         </span>
@@ -132,12 +132,12 @@ const AFTER_DARK = new Set(["testimonial_slider_section", "industry_testimonials
 export default function HomeKpi({ data, lang = DEFAULT_LANG, variant }) {
   const icp = variant === "icp";
   const caseStudy = variant === "case"; // case pages: the section above gives no top spacing, so start our own
-  const cards = rows(data?.cards).filter((c) => c.label || c.value);
-  if (!data?.heading && cards.length === 0) return null;
+  const cards = rows(data?.cards).filter((c) => hasText(c.label) || hasText(c.value));
+  if (!hasText(data?.heading) && cards.length === 0) return null;
   // subtitle: short_text (Page Builder) or sub_heading (Page Builder ICP Page); card.note renders inside KpiCard
-  const subtitle = data.short_text || data.sub_heading;
+  const subtitle = [data.short_text, data.sub_heading].find(hasText);
   // note under the cards: bottom_text (Page Builder) or result_notes (Page Builder ICP Page)
-  const bottomText = data.bottom_text || data.result_notes;
+  const bottomText = [data.bottom_text, data.result_notes].find(hasText);
 
   return (
     // Homepage: the section above provides the top spacing (2px). After a dark section (ICP:
@@ -147,9 +147,9 @@ export default function HomeKpi({ data, lang = DEFAULT_LANG, variant }) {
     // (ICP: 40, with the body 16 under the H2 and the note + CTA 40 under the cards).
     <section className={`${AFTER_DARK.has(data?._prev) || caseStudy ? "pt-18 md:pt-36 max-md:pt-16" : `lg:pt-0.5 ${data?._prev === "intro_video_section" ? "max-md:pt-16" : ""}`} ${icp && data?._next === "data_insight_section" ? "pb-12 md:pb-[72px] max-md:pb-0" : "pb-18 md:pb-36 max-md:pb-16"}`} style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       <div className={`cs-container flex flex-col items-center gap-10 lg:gap-16 ${icp ? "" : "max-md:gap-12"}`}>
-        {(data.heading || subtitle) && (
+        {(hasText(data.heading) || subtitle) && (
           <div className="flex flex-col items-center gap-4 text-center">
-            {data.heading && (
+            {hasText(data.heading) && (
               <h2 className="cs-h2 cs-highlight text-black max-w-[1179px]" dangerouslySetInnerHTML={{ __html: highlightHtml(data.heading, "lastLine") }} />
             )}
             {subtitle && (
@@ -166,12 +166,12 @@ export default function HomeKpi({ data, lang = DEFAULT_LANG, variant }) {
           </div>
         )}
 
-        {(bottomText || (data.cta_text && data.cta_url)) && (
+        {(bottomText || (hasText(data.cta_text) && data.cta_url)) && (
           <div className={`flex max-w-[616px] flex-col items-center gap-6 text-center max-md:w-full ${icp ? "max-md:hidden" : ""}`}>
             {bottomText && (
               <div className={`cs-rich text-(--color-grey-dark) ${icp ? "text-[16px] font-light italic leading-[34px] tracking-[-0.32px] max-md:text-[18px] max-md:font-normal max-md:leading-[22px] max-md:tracking-[-0.36px]" : "text-[18px] lg:text-[20px] font-medium leading-[26px] tracking-[-0.4px]"}`} dangerouslySetInnerHTML={{ __html: toHtml(bottomText) }} />
             )}
-            {data.cta_text && data.cta_url && (
+            {hasText(data.cta_text) && data.cta_url && (
               <CtaButton href={langHref(data.cta_url.trim(), lang)} wrap className="max-w-full max-md:w-full">
                 {data.cta_text}
               </CtaButton>

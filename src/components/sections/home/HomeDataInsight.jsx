@@ -8,7 +8,7 @@ import React from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import ChevronDown from "../../../../public/icons/home/chevron-down.svg";
-import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
 // Bar fills from the Figma chart, top to bottom (repeats after four rows)
 const BAR_COLORS = ["var(--color-yellow)", "var(--color-yellow-dark-bg)", "var(--color-yellow-light-bg)", "var(--color-light-grey)"];
@@ -36,7 +36,7 @@ function Chart({ title, rows: chartRows, rowGap = "gap-[30px]" }) {
           "radial-gradient(ellipse 100% 100% at 0% 0%, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.2) 49%, rgba(218,220,221,0.2) 100%)",
       }}
     >
-      {title && <p className="font-medium text-[20px] lg:text-[24px] leading-6 tracking-[-0.48px] text-(--color-light-grey) max-md:pl-[5px] max-md:text-[22px] max-md:tracking-[-0.44px]">{title}</p>}
+      {hasText(title) && <p className="font-medium text-[20px] lg:text-[24px] leading-6 tracking-[-0.48px] text-(--color-light-grey) max-md:pl-[5px] max-md:text-[22px] max-md:tracking-[-0.44px]">{title}</p>}
       <div className={`mt-6 lg:mt-[26px] flex flex-col ${rowGap} max-md:mt-[18px] max-md:gap-5`}>
         {chartRows.map((row, i) => (
           <div key={i} className="flex flex-col gap-3 max-md:gap-1">
@@ -65,11 +65,11 @@ function Chart({ title, rows: chartRows, rowGap = "gap-[30px]" }) {
 // 18 apart (card 410 tall) and 144 below the card (followed by the dark testimonials)
 export default function HomeDataInsight({ data, variant }) {
   const icp = variant === "icp";
-  const usps = rows(data?.usps).filter((u) => u.title);
+  const usps = rows(data?.usps).filter((u) => hasText(u.title));
   const chartRows = rows(data?.chart_rows).filter((r) => r.label);
   const [open, setOpen] = React.useState(false);
   const { heading, card_heading, sub_heading, read_more_text, read_more_content, chart_title } = data || {};
-  if (!heading && !card_heading) return null;
+  if (!hasText(heading) && !hasText(card_heading)) return null;
 
   return (
     // Mobile (Figma Home "Frame 8934297" 601:9172): 64 top and bottom (cs-sec), H2 -> card 40 (ICP 32);
@@ -80,7 +80,7 @@ export default function HomeDataInsight({ data, variant }) {
       style={sectionBackground(data, { background: "var(--color-light-grey)" })}
     >
       <div className={`cs-container flex flex-col items-center gap-10 lg:gap-16 ${icp ? "max-md:gap-8" : ""}`}>
-        {heading && (
+        {hasText(heading) && (
           <h2 className="cs-h2 cs-highlight cs-rich text-center text-(--color-heading) max-md:text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
         )}
 
@@ -89,12 +89,14 @@ export default function HomeDataInsight({ data, variant }) {
           style={{ backgroundImage: "linear-gradient(180deg, #000 0%, rgba(0,0,0,0) 100%), linear-gradient(90deg, #0b2533 0%, #0b2533 100%)" }}
         >
           <div className="flex min-w-0 flex-col items-start text-(--color-light-grey) xl:max-w-[507px] xl:flex-1">
+            {(hasText(card_heading) || hasText(sub_heading)) && (
             <div className="flex flex-col gap-5">
-              {card_heading && <h3 className="cs-h3 cs-card-title max-md:text-white">{card_heading}</h3>}
-              {sub_heading && (
+              {hasText(card_heading) && <h3 className="cs-h3 cs-card-title max-md:text-white">{card_heading}</h3>}
+              {hasText(sub_heading) && (
                 <div className="cs-rich font-bold text-[18px] lg:text-[20px] leading-6 tracking-[-0.4px] lg:max-w-[446px] max-md:hidden" dangerouslySetInnerHTML={{ __html: toHtml(sub_heading) }} />
               )}
             </div>
+            )}
 
             {usps.length > 0 && (
               <ul className="mt-4 flex flex-col max-md:mt-8 max-md:gap-2">
@@ -109,14 +111,14 @@ export default function HomeDataInsight({ data, variant }) {
                     </span>
                     <span className="flex flex-col max-md:gap-1.5">
                       <span className={`font-extrabold text-[18px] leading-[1.1] tracking-[-0.36px] max-md:text-white ${i === 0 ? "max-md:leading-6" : "max-md:leading-[22px]"}`}>{usp.title}</span>
-                      {usp.text && <span className="font-bold text-[14px] leading-4 tracking-[-0.28px] max-md:hidden">{usp.text}</span>}
+                      {hasText(usp.text) && <span className="font-bold text-[14px] leading-4 tracking-[-0.28px] max-md:hidden">{usp.text}</span>}
                     </span>
                   </li>
                 ))}
               </ul>
             )}
 
-            {read_more_text && read_more_content && (
+            {hasText(read_more_text) && hasText(read_more_content) && (
               <div className="mt-4 max-md:mt-8">
                 <button
                   type="button"

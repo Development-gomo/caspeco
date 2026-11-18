@@ -31,7 +31,7 @@ import Reveal from "@/components/ui/Reveal";
 import SliderArrows from "@/components/ui/SliderArrows";
 import { GLASS_CLASS, GLASS_STYLE } from "@/components/ui/glass";
 import { DEFAULT_LANG, entryHref, langHref } from "@/config";
-import { curlyQuote, mediaUrl, toHtml } from "@/lib/content";
+import { curlyQuote, hasText, mediaUrl, toHtml } from "@/lib/content";
 import { postStrings } from "@/lib/postStrings";
 
 const pad = (n) => String(n).padStart(2, "0");
@@ -148,7 +148,7 @@ export default function IndustryTestimonials({ data, lang = DEFAULT_LANG, cases 
   // mobile shows one text link ("All cases"): the section's link, else its button
   const mobileLinkText = link_text && link_url ? link_text : cta_text;
   const mobileLinkUrl = link_text && link_url ? link_url : cta_url;
-  if (!heading && cards.length === 0) return null;
+  if (!hasText(heading) && cards.length === 0) return null;
 
   const bg = mediaUrl(data?.bg_image);
 
@@ -164,7 +164,7 @@ export default function IndustryTestimonials({ data, lang = DEFAULT_LANG, cases 
       <div className="absolute inset-0 -z-10" style={{ background: "linear-gradient(90deg, rgba(0, 0, 0, 0.5) -0.9%, rgba(0, 0, 0, 0) 110.8%)" }} aria-hidden />
 
       <div className="cs-container flex flex-col gap-10 lg:gap-16">
-        {heading && (
+        {hasText(heading) && (
           // Figma mobile H2: X-Bold 36/36, -4%
           <Reveal as="h2" className="cs-h3 cs-title cs-highlight cs-rich max-w-[660px] text-white max-md:leading-9! max-md:tracking-[-1.44px]!" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
         )}

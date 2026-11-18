@@ -12,7 +12,7 @@ import ContactForm from "../contact-form/ContactForm";
 import HubspotEmbed from "@/components/ui/HubspotEmbed";
 import { DEFAULT_LANG } from "@/config";
 import { parseHubspotEmbed } from "@/lib/hubspot";
-import { mediaUrl } from "@/lib/content";
+import { hasText, mediaUrl } from "@/lib/content";
 
 const firstId = (v) => {
   const x = Array.isArray(v) ? v[0] : v;
@@ -20,7 +20,7 @@ const firstId = (v) => {
 };
 
 export default function PageContactForm({ data, lang = DEFAULT_LANG, person }) {
-  if (!data?.heading) return null;
+  if (!hasText(data?.heading)) return null;
   const hubspot = parseHubspotEmbed(data.form_shortcode) ? data.form_shortcode : "";
   const cf7 = !hubspot && firstId(data.select_form);
   const form = hubspot ? (

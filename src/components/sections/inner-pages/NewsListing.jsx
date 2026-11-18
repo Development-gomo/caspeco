@@ -11,7 +11,7 @@ import React from "react";
 import CtaButton from "@/components/ui/CtaButton";
 import PostCard from "@/components/ui/PostCard";
 import { DEFAULT_LANG } from "@/config";
-import { sectionBackground, toHtml } from "@/lib/content";
+import { hasText, sectionBackground, toHtml } from "@/lib/content";
 import { postsPageQuery } from "@/lib/postsQuery";
 
 const DEFAULT_TEXT = { read_more_text: "Read more", load_more_text: "Load more" };
@@ -25,7 +25,10 @@ export default function NewsListing({ data, lang = DEFAULT_LANG, initial }) {
   const [failed, setFailed] = React.useState(false);
 
   const { sub_heading, heading, short_text, read_time_suffix } = data || {};
-  if (!heading && posts.length === 0) return null;
+  const hasSub = hasText(sub_heading);
+  const hasHeading = hasText(heading);
+  const hasShort = hasText(short_text);
+  if (!hasHeading && posts.length === 0) return null;
 
   const loadMore = async () => {
     if (loading) return;
@@ -53,16 +56,16 @@ export default function NewsListing({ data, lang = DEFAULT_LANG, initial }) {
   return (
     <section className="py-18 lg:py-36" style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       <div className="cs-container flex flex-col gap-10 lg:gap-16">
-        {(sub_heading || heading || short_text) && (
+        {(hasSub || hasHeading || hasShort) && (
           <div className="flex flex-col items-start gap-6">
-            {sub_heading && (
+            {hasSub && (
               <div className="flex items-center gap-2 -mb-4 md:-mb-2">
                 <span className="h-2 w-2 rounded-full bg-(--color-yellow)"></span>
                 <span className="subheading-label">{sub_heading}</span>
               </div>
             )}
-            {heading && <h2 className="cs-h2 cs-highlight max-w-[985px] text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
-            {short_text && <div className="cs-p1 cs-rich max-w-[680px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
+            {hasHeading && <h2 className="cs-h2 cs-highlight max-w-[985px] text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+            {hasShort && <div className="cs-p1 cs-rich max-w-[680px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
           </div>
         )}
 

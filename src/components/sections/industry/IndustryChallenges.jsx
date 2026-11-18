@@ -16,7 +16,7 @@ import CountUp from "@/components/ui/CountUp";
 import CtaButton from "@/components/ui/CtaButton";
 import Reveal from "@/components/ui/Reveal";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
 // Figma gradient over white
 const GRADIENT = "linear-gradient(180deg, rgba(218, 220, 221, 0.80) -0.94%, rgba(255, 255, 255, 0.50) 100.94%), #FFF";
@@ -59,19 +59,21 @@ function ChallengeCard({ item, index }) {
 export default function IndustryChallenges({ data, lang = DEFAULT_LANG }) {
   const items = rows(data?.items).filter((i) => i.value || i.text);
   const { heading, feature_value, feature_text, promise_title, promise_text, cta_text, cta_url } = data || {};
-  if (!heading && !feature_value && items.length === 0) return null;
-  const hasFeature = feature_value || feature_text || promise_title;
+  const hasHeading = hasText(heading);
+  const hasFeature = hasText(feature_value) || hasText(feature_text) || hasText(promise_title);
+  if (!hasHeading && !hasText(feature_value) && items.length === 0) return null;
   const fallback = { background: data?.enable_gradient ? GRADIENT : "var(--color-light-grey)" };
 
   return (
     <section className={`cs-sec pt-18 lg:pt-36 ${data?._next === "home_tab_section" ? "pb-12 max-md:[--sec-pb:0px] lg:pb-[72px]" : "pb-18 lg:pb-36"}`} style={sectionBackground(data, fallback)}>
       <div className="cs-container flex flex-col gap-10 max-md:gap-12 lg:gap-16">
-        {heading && (
+        {hasHeading && (
           // Mobile: the editor's forced line breaks are for desktop; below 768 they become a space so the
           // heading wraps naturally (Figma mobile: 3 lines)
           <Reveal as="h2" className="cs-h2 cs-highlight cs-rich max-w-[900px] text-black" dangerouslySetInnerHTML={{ __html: desktopBreaks(toHtml(heading)) }} />
         )}
 
+        {(hasFeature || items.length > 0) && (
         <div className="grid grid-cols-1 gap-6 max-md:gap-4 lg:grid-cols-[461fr_787fr]">
           {hasFeature && (
             <Reveal className="flex min-h-[400px] flex-col items-start justify-end gap-10 rounded-lg bg-(--color-dark-petrol) p-8 max-md:min-h-0 max-md:gap-6 max-md:px-6 max-md:pt-12 max-md:pb-6 text-(--color-light-grey) shadow-[0px_4px_6px_rgba(0,0,0,0.16)] lg:min-h-[480px] lg:p-10">
@@ -112,6 +114,7 @@ export default function IndustryChallenges({ data, lang = DEFAULT_LANG }) {
             </div>
           )}
         </div>
+        )}
       </div>
     </section>
   );

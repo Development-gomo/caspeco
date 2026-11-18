@@ -7,7 +7,7 @@
 import Image from "next/image";
 import CtaButton from "@/components/ui/CtaButton";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { highlightHtml, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, highlightHtml, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
 const OUTER_ROW = 6;
 const MIDDLE_ROW = 7;
@@ -64,7 +64,11 @@ function MarqueeRow({ logos, variant, reverse = false }) {
 export default function HomeIntegrations({ data, logos: themeLogos, lang = DEFAULT_LANG }) {
   const logos = (themeLogos?.length ? themeLogos : rows(data?.logos)).filter((l) => mediaUrl(l));
   const { heading, short_text, cta_text, cta_url } = data || {};
-  if (!heading && logos.length === 0) return null;
+  const hasHeading = hasText(heading);
+  const hasShortText = hasText(short_text);
+  const hasCta = Boolean(cta_text && cta_url);
+  const hasIntro = hasHeading || hasShortText || hasCta;
+  if (!hasHeading && logos.length === 0) return null;
 
   const top = logos.length ? take(logos, 0, OUTER_ROW) : [];
   const middle = logos.length ? take(logos, OUTER_ROW, MIDDLE_ROW) : [];
@@ -79,26 +83,28 @@ export default function HomeIntegrations({ data, logos: themeLogos, lang = DEFAU
         backgroundImage: "linear-gradient(180deg, #000 17.34%, rgba(0,0,0,0) 100%), linear-gradient(90deg, #0b2533 0%, #0b2533 100%)",
       })}
     >
-      <div className="cs-container flex flex-col items-center text-center text-(--color-light-grey)">
-        {heading && (
-          <h2
-            className="cs-highlight font-extrabold text-[48px] leading-[52px] tracking-[-1.92px] md:text-[72px] md:leading-[78px] xl:text-[96px] xl:leading-[104px] xl:tracking-[-3.84px] normal-case max-md:font-bold max-md:text-[64px] max-md:leading-[51.2px] max-md:tracking-[-1.28px]"
-            dangerouslySetInnerHTML={{ __html: highlightHtml(heading, "firstToken") }}
-          />
-        )}
-        {short_text && (
-          <div className="cs-p2 cs-rich mt-4 max-w-[686px] max-md:mt-6 max-md:text-white" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />
-        )}
-        {cta_text && cta_url && (
-          <CtaButton variant="outline-light-yellow" href={langHref(cta_url.trim(), lang)} className="mt-10 max-md:mt-6">
-            {cta_text}
-          </CtaButton>
-        )}
-      </div>
+      {hasIntro && (
+        <div className="cs-container flex flex-col items-center text-center text-(--color-light-grey)">
+          {hasHeading && (
+            <h2
+              className="cs-highlight font-extrabold text-[48px] leading-[52px] tracking-[-1.92px] md:text-[72px] md:leading-[78px] xl:text-[96px] xl:leading-[104px] xl:tracking-[-3.84px] normal-case max-md:font-bold max-md:text-[64px] max-md:leading-[51.2px] max-md:tracking-[-1.28px]"
+              dangerouslySetInnerHTML={{ __html: highlightHtml(heading, "firstToken") }}
+            />
+          )}
+          {hasShortText && (
+            <div className={`cs-p2 cs-rich max-w-[686px] max-md:text-white ${hasHeading ? "mt-4 max-md:mt-6" : ""}`} dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />
+          )}
+          {hasCta && (
+            <CtaButton variant="outline-light-yellow" href={langHref(cta_url.trim(), lang)} className={hasHeading || hasShortText ? "mt-10 max-md:mt-6" : ""}>
+              {cta_text}
+            </CtaButton>
+          )}
+        </div>
+      )}
 
       {logos.length > 0 && (
         <div
-          className="mt-16 lg:mt-[82px] flex flex-col items-center gap-6 lg:gap-8 max-md:mt-[42px] max-md:[--fade:17%]"
+          className={`${hasIntro ? "mt-16 lg:mt-[82px] max-md:mt-[42px]" : ""} flex flex-col items-center gap-6 lg:gap-8 max-md:[--fade:17%]`}
           style={{
             maskImage: "linear-gradient(90deg, transparent 0%, #000 var(--fade, 22%), #000 calc(100% - var(--fade, 22%)), transparent 100%)",
             WebkitMaskImage: "linear-gradient(90deg, transparent 0%, #000 var(--fade, 22%), #000 calc(100% - var(--fade, 22%)), transparent 100%)",

@@ -6,7 +6,7 @@
 // mobile cards; the link needs both text and URL. Empty fields → the cards render exactly as before.
 import ProductTestimonials from "./ProductTestimonials";
 import { DEFAULT_LANG, SUPPORTED_LANGS, langHref } from "@/config";
-import { mediaUrl, rows } from "@/lib/content";
+import { hasText, mediaUrl, rows } from "@/lib/content";
 
 // case_link (ACF text field) → site href. Site paths get the language prefix unless they already have one
 // (wpMask already turns pasted CMS URLs into "/en/..." paths, langHref would double it); caspeco.com URLs are reduced
@@ -41,7 +41,7 @@ export default function ClientQuoteSlider({ data, lang = DEFAULT_LANG }) {
         caseCta: ctaText && ctaHref ? { text: ctaText, href: ctaHref } : null,
       };
     })
-    .filter((s) => s.quote);
+    .filter((s) => hasText(s.quote));
   if (slides.length === 0) return null;
   return <ProductTestimonials data={{ heading: data?.heading, bg_color: data?.bg_color }} lang={lang} slides={slides} compact mobileGrid />;
 }

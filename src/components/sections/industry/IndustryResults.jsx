@@ -12,19 +12,19 @@
 import Image from "next/image";
 import CountUp from "@/components/ui/CountUp";
 import Reveal from "@/components/ui/Reveal";
-import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
 const GRADIENT = "linear-gradient(180deg, #f2f2f2 0%, #fdfdfd 100%)";
 
 export default function IndustryResults({ data }) {
   const cards = rows(data?.cards).filter((c) => c.result || c.outcome);
   const { heading } = data || {};
-  if (!heading && cards.length === 0) return null;
+  if (!hasText(heading) && cards.length === 0) return null;
 
   return (
     <section className="cs-sec py-18 lg:py-36" style={sectionBackground(data, { backgroundImage: GRADIENT })}>
       <div className="cs-container flex flex-col gap-10 max-md:gap-12 lg:gap-16">
-        {heading && (
+        {hasText(heading) && (
           <Reveal as="h2" className="cs-h2 cs-highlight cs-rich mx-auto max-w-[985px] text-center text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
         )}
 

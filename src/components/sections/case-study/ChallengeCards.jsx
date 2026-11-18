@@ -8,7 +8,7 @@
 import Image from "next/image";
 import Reveal from "@/components/ui/Reveal";
 import { GLASS_CLASS, GLASS_STYLE } from "@/components/ui/glass";
-import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
 const pad = (n) => String(n).padStart(2, "0");
 const FALLBACK_ICONS = ["/svgbank/charts-goal-icon.svg", "/svgbank/charts-trend-up-icon.svg", "/svgbank/editing-circle-success-icon.svg"];
@@ -30,13 +30,13 @@ function Card({ item, index }) {
                 <Image src={icon} alt="" width={18} height={18} className="size-[18px] object-contain brightness-0" />
               </span>
             )}
-            {item.label && <h3 className="text-[26px] font-bold leading-8 tracking-[0.6px] text-(--color-yellow)">{item.label}</h3>}
+            {hasText(item.label) && <h3 className="text-[26px] font-bold leading-8 tracking-[0.6px] text-(--color-yellow)">{item.label}</h3>}
           </span>
           <span className="text-[20px] font-medium leading-5 tracking-[0.1px] text-(--color-grey-medium)" aria-hidden>
             {pad(index + 1)}
           </span>
         </header>
-        {item.text && (
+        {hasText(item.text) && (
           <div className="cs-rich cs-text font-light max-md:font-normal text-[16px] lg:text-[18px] leading-[22px] tracking-[-0.36px] lg:leading-6" dangerouslySetInnerHTML={{ __html: toHtml(item.text) }} />
         )}
       </article>
@@ -45,19 +45,21 @@ function Card({ item, index }) {
 }
 
 export default function ChallengeCards({ data }) {
-  const items = rows(data?.cards).filter((c) => c.label || c.text);
+  const items = rows(data?.cards).filter((c) => hasText(c.label) || hasText(c.text));
   const { heading, sub_heading } = data || {};
-  if (!heading && !sub_heading && items.length === 0) return null;
+  const hasHeading = hasText(heading);
+  const hasSub = hasText(sub_heading);
+  if (!hasHeading && !hasSub && items.length === 0) return null;
   const hasPhoto = Boolean(mediaUrl(data?.bg_image));
 
   return (
     <section className="cs-sec relative isolate overflow-hidden py-18 lg:py-36 text-white" style={sectionBackground(data, { background: "var(--color-black)" })}>
       {hasPhoto && <span className="absolute inset-0 -z-10 bg-black/60" aria-hidden />}
       <div className="cs-container flex flex-col gap-10 max-md:gap-8 lg:gap-16">
-        {(heading || sub_heading) && (
+        {(hasHeading || hasSub) && (
           <Reveal className="flex flex-col gap-6">
-            {heading && <h2 className="cs-h2 cs-highlight cs-rich max-w-[900px] text-white" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
-            {sub_heading && <div className="cs-p2 cs-rich max-w-[680px] text-(--color-light-grey)" dangerouslySetInnerHTML={{ __html: toHtml(sub_heading) }} />}
+            {hasHeading && <h2 className="cs-h2 cs-highlight cs-rich max-w-[900px] text-white" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+            {hasSub && <div className="cs-p2 cs-rich max-w-[680px] text-(--color-light-grey)" dangerouslySetInnerHTML={{ __html: toHtml(sub_heading) }} />}
           </Reveal>
         )}
 

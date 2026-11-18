@@ -21,7 +21,7 @@ import CtaButton from "@/components/ui/CtaButton";
 import Reveal from "@/components/ui/Reveal";
 import { GLASS_CLASS, GLASS_STYLE } from "@/components/ui/glass";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { mediaUrl, rows, toHtml } from "@/lib/content";
+import { hasText, mediaUrl, rows, toHtml } from "@/lib/content";
 
 // Figma "Success" — 18px #FDFDFD box (radius 3) with a #3F3E3C check
 function Tick() {
@@ -36,7 +36,7 @@ function Tick() {
 // Figma "Line 405": 364×4, 2px #FFC120, round caps — exact path; starts 12px in from the title
 function Underline() {
   return (
-    <svg viewBox="-1 -1 366 6" preserveAspectRatio="none" aria-hidden className="absolute left-3 top-10 h-[6px] w-[calc(94.8%+2px)] overflow-visible max-md:left-[3px] max-md:top-auto max-md:bottom-[2px] max-md:w-[131px]">
+    <svg viewBox="-1 -1 366 6" preserveAspectRatio="none" aria-hidden className="absolute left-3 top-10 h-1.5 w-[calc(94.8%+2px)] overflow-visible max-md:left-[3px] max-md:top-auto max-md:bottom-[2px] max-md:w-[131px]">
       <path d="M 0 4 C 0 4 82.38 0.76 135.31 0.14 C 224.63 -0.89 363.96 4 363.96 4" fill="none" stroke="#FFC120" strokeWidth="2" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
     </svg>
   );
@@ -46,7 +46,11 @@ export default function SystemCheck({ data, lang = DEFAULT_LANG }) {
   const items = rows(data?.checklist).map((r) => r.item || r.text).filter(Boolean);
   const { eyebrow, heading, cta_text, cta_url, card_title, card_subtitle } = data || {};
   const text = data?.text || data?.short_text; // short_text in "Page Builder ICP Page"
-  if (!heading && items.length === 0) return null;
+  const hasEyebrow = hasText(eyebrow);
+  const hasHeading = hasText(heading);
+  const hasIntroText = hasText(text);
+  const hasCta = hasText(cta_text) && !!cta_url;
+  if (!hasHeading && items.length === 0) return null;
   const bg = mediaUrl(data?.bg_image);
 
   return (
@@ -57,17 +61,22 @@ export default function SystemCheck({ data, lang = DEFAULT_LANG }) {
       <div className="absolute inset-0 -z-10 bg-[rgba(0,0,0,0.4)] md:hidden" aria-hidden />
 
       <div className="cs-container flex flex-col gap-12 max-md:gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
+        {(hasEyebrow || hasHeading || hasIntroText || hasCta) && (
         <Reveal className="flex flex-col items-start gap-10 max-md:gap-6 lg:max-w-[507px]">
+          {(hasEyebrow || hasHeading || hasIntroText) && (
           <div className="flex flex-col gap-5 max-md:gap-4 text-white">
+            {(hasEyebrow || hasHeading) && (
             <div className="flex flex-col max-md:gap-2">
-              {eyebrow && <p className="italic font-normal text-[18px] lg:text-[20px] leading-[26px] tracking-[-0.8px] max-md:tracking-[-0.72px] text-(--color-yellow)">{eyebrow}</p>}
-              {heading && <h2 className="cs-h3 cs-title cs-highlight cs-rich" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+              {hasEyebrow && <p className="italic font-normal text-[18px] lg:text-[20px] leading-[26px] tracking-[-0.8px] max-md:tracking-[-0.72px] text-(--color-yellow)">{eyebrow}</p>}
+              {hasHeading && <h2 className="cs-h3 cs-title cs-highlight cs-rich" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
             </div>
-            {text && (
+            )}
+            {hasIntroText && (
               <div className="cs-rich max-w-[446px] font-bold text-[18px] lg:text-[20px] leading-6 tracking-[-0.4px] max-md:leading-[22px] max-md:tracking-[-0.36px]" dangerouslySetInnerHTML={{ __html: toHtml(text) }} />
             )}
           </div>
-          {cta_text && cta_url && (
+          )}
+          {hasCta && (
             <div className="max-md:hidden">
               <CtaButton href={langHref(cta_url.trim(), lang)} wrap className="max-w-full">
                 {cta_text}
@@ -75,6 +84,7 @@ export default function SystemCheck({ data, lang = DEFAULT_LANG }) {
             </div>
           )}
         </Reveal>
+        )}
 
         {(card_title || items.length > 0) && (
           <Reveal

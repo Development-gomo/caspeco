@@ -9,7 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import CtaButton from "@/components/ui/CtaButton";
 import { DEFAULT_LANG, entryHref, langHref } from "@/config";
-import { sectionBackground, toHtml } from "@/lib/content";
+import { hasText, sectionBackground, toHtml } from "@/lib/content";
 
 function PartnerCard({ partner, lang }) {
   const logo = partner?._embedded?.["wp:featuredmedia"]?.[0];
@@ -48,15 +48,18 @@ export default function IntegrationsListing({ data, lang = DEFAULT_LANG, categor
     .filter((cat) => cat.partners.length > 0);
 
   const { heading, short_text, cta_text, cta_url } = data || {};
+  const hasHeading = hasText(heading);
+  const hasShort = hasText(short_text);
+  const hasCta = hasText(cta_text) && cta_url;
 
   return (
     <section className="py-18 lg:py-36" style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       <div className="cs-container flex flex-col gap-10 lg:gap-16">
-        {(heading || short_text || (cta_text && cta_url)) && (
+        {(hasHeading || hasShort || hasCta) && (
           <div className="flex flex-col items-start gap-6">
-            {heading && <h2 className="cs-h2 cs-highlight max-w-[985px] text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
-            {short_text && <div className="cs-p1 cs-rich max-w-[680px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
-            {cta_text && cta_url && (
+            {hasHeading && <h2 className="cs-h2 cs-highlight max-w-[985px] text-(--color-heading)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+            {hasShort && <div className="cs-p1 cs-rich max-w-[680px] text-(--color-grey-dark)" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
+            {hasCta && (
               <CtaButton variant="outline-dark" href={langHref(cta_url.trim(), lang)}>
                 {cta_text}
               </CtaButton>

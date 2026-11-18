@@ -9,14 +9,14 @@ import { useState } from "react";
 import { LABEL_CLASSES, INPUT_CLASSES, QUICK_M } from "./ContactForm";
 import { DEFAULT_LANG } from "@/config";
 import { submitForm } from "@/lib/forms";
-import { rows } from "@/lib/content";
+import { hasText, rows } from "@/lib/content";
 
 const INPUT_TYPES = ["tel", "email", "text"];
 const CONSENT_KEY = "__consent";
 
 export default function QuickContactForm({ data, lang = DEFAULT_LANG }) {
   const fields = rows(data?.form_fields).filter((f) => f.name);
-  const consentText = data?.consent_text;
+  const consentText = hasText(data?.consent_text) ? data.consent_text : "";
   const empty = () => Object.fromEntries(fields.map((f) => [f.name, ""]));
 
   const [values, setValues] = useState(empty);

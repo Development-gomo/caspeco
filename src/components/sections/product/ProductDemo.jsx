@@ -17,16 +17,16 @@ import CtaButton from "@/components/ui/CtaButton";
 import Reveal from "@/components/ui/Reveal";
 import UspLine from "../../../../public/icons/product/usp-line.svg";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
 const GRADIENT = "linear-gradient(180deg, rgba(255,255,255,0.5) 0.94%, #dadcdd 80.71%)";
 
 export default function ProductDemo({ data, lang = DEFAULT_LANG }) {
-  const usps = rows(data?.usps).filter((u) => u.title);
+  const usps = rows(data?.usps).filter((u) => hasText(u.title));
   const { heading, short_text, cta_text, cta_url, image } = data || {};
   const hover = mediaUrl(data?.hover_image); // optional, cross-fades in on hover / tap
   const [active, setActive] = React.useState(false);
-  if (!heading) return null;
+  if (!hasText(heading)) return null;
 
   return (
     <section className="overflow-hidden py-18 lg:py-36 max-md:py-16" style={sectionBackground(data, { backgroundImage: GRADIENT })}>
@@ -34,7 +34,7 @@ export default function ProductDemo({ data, lang = DEFAULT_LANG }) {
         <Reveal className="flex flex-col items-start gap-4 lg:max-w-[488px] lg:shrink-0">
           <div className="flex flex-col gap-5 max-md:gap-4">
             <h2 className="cs-h3 cs-title cs-highlight font-extrabold text-black" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
-            {short_text && <div className="cs-p2 cs-rich text-(--color-grey-dark) max-md:font-light" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
+            {hasText(short_text) && <div className="cs-p2 cs-rich text-(--color-grey-dark) max-md:font-light" dangerouslySetInnerHTML={{ __html: toHtml(short_text) }} />}
           </div>
 
           {usps.length > 0 && (
@@ -45,7 +45,7 @@ export default function ProductDemo({ data, lang = DEFAULT_LANG }) {
                   <Image src={UspLine} alt="" width={6} height={33} className="shrink-0 self-stretch max-md:h-[33px] max-md:self-center" />
                   <span className="flex flex-col text-(--color-grey-dark) max-md:gap-0.5">
                     <span className="font-extrabold text-[18px] leading-[1.1] tracking-[-0.36px]">{usp.title}</span>
-                    {usp.text && <span className="text-[14px] leading-4 tracking-[-0.28px]">{usp.text}</span>}
+                    {hasText(usp.text) && <span className="text-[14px] leading-4 tracking-[-0.28px]">{usp.text}</span>}
                   </span>
                 </Reveal>
               ))}

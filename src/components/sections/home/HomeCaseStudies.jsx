@@ -20,7 +20,7 @@ import "swiper/css/navigation";
 import { DEFAULT_LANG } from "@/config";
 import CtaButton from "@/components/ui/CtaButton";
 import CaseCard from "@/components/ui/CaseCard";
-import { sectionBackground, toHtml } from "@/lib/content";
+import { hasText, sectionBackground, toHtml } from "@/lib/content";
 import { postStrings } from "@/lib/postStrings";
 
 const AUTOPLAY_DELAY = 5000;
@@ -46,6 +46,10 @@ export default function HomeCaseStudies({ data, lang = DEFAULT_LANG, prefetchedC
     data || {};
   const readMore = read_more_text || postStrings(lang).readFullCase;
 
+  const hasHeading = hasText(heading);
+  const hasShortText = hasText(short_text);
+  const hasCta = Boolean(cta_text && cta_url);
+
   if (!cases.length) return null;
 
   // Rail segments follow Swiper's real snap positions (with 2.1 slides visible the last two share one)
@@ -64,7 +68,7 @@ export default function HomeCaseStudies({ data, lang = DEFAULT_LANG, prefetchedC
 
         <div className="w-full px-6 web-width">
           {/* SUB HEADING */}
-          {sub_heading && (
+          {hasText(sub_heading) && (
             <motion.div
               className="flex items-center gap-2 mb-2 md:mb-4"
               initial={{ opacity: 0, y: 20 }}
@@ -78,29 +82,33 @@ export default function HomeCaseStudies({ data, lang = DEFAULT_LANG, prefetchedC
           )}
 
           {/* TOP HEADING + SHORT TEXT + CTA */}
-          <div className="md:flex md:justify-between items-end mb-10 lg:mb-14">
-            <motion.div
-              className="mb-4 md:mb-0"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.15 }}
-              viewport={{ once: true }}
-            >
-              {heading && (
-                <div className="section-heading" dangerouslySetInnerHTML={{ __html: heading }} />
+          {(hasHeading || hasShortText || hasCta) && (
+            <div className="md:flex md:justify-between items-end mb-10 lg:mb-14">
+              {(hasHeading || hasShortText) && (
+                <motion.div
+                  className="mb-4 md:mb-0"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.15 }}
+                  viewport={{ once: true }}
+                >
+                  {hasHeading && (
+                    <div className="section-heading" dangerouslySetInnerHTML={{ __html: heading }} />
+                  )}
+                  {hasShortText && (
+                    <div
+                      className="cs-p2 cs-rich max-w-[680px] mt-4 text-(--color-grey-dark)"
+                      dangerouslySetInnerHTML={{ __html: toHtml(short_text) }}
+                    />
+                  )}
+                </motion.div>
               )}
-              {short_text && (
-                <div
-                  className="cs-p2 cs-rich max-w-[680px] mt-4 text-(--color-grey-dark)"
-                  dangerouslySetInnerHTML={{ __html: toHtml(short_text) }}
-                />
-              )}
-            </motion.div>
 
-            {cta_text && cta_url && (
-              <CtaButton href={cta_url}>{cta_text}</CtaButton>
-            )}
-          </div>
+              {hasCta && (
+                <CtaButton href={cta_url}>{cta_text}</CtaButton>
+              )}
+            </div>
+          )}
 
           {/* SLIDER — same card width as the listing grid (3 columns, 24px gap) on desktop */}
           <motion.div

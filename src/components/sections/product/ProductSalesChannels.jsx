@@ -15,7 +15,7 @@ import CtaButton from "@/components/ui/CtaButton";
 import Reveal from "@/components/ui/Reveal";
 import CheckList from "./CheckList";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 import { revealTab, titleHtml } from "../home/HomeHelpTabs";
 
 // panel halves: image enters from the left, copy from the right
@@ -55,7 +55,7 @@ export default function ProductSalesChannels({ data, lang = DEFAULT_LANG, defaul
   const reduce = useReducedMotion();
   const pillId = React.useId();
   const tabScroller = React.useRef(null);
-  if (!data?.heading && tabs.length === 0) return null;
+  if (!hasText(data?.heading) && tabs.length === 0) return null;
 
   const tab = tabs[active];
   // single image field; named "images" in the Page Builder Products group
@@ -66,10 +66,10 @@ export default function ProductSalesChannels({ data, lang = DEFAULT_LANG, defaul
     <section className={`cs-sec ${icp ? sectionPadding(data) : "py-18 lg:py-36"} ${mobilePanel ? "max-md:[--sec-pb:0px]" : ""}`} style={sectionBackground(data, { background: "var(--color-light-grey)" })}>
       {/* mobile: Product 48 between headline / tabs+image / text, ICP 40 (Figma auto-layout gaps) */}
       <div className={`cs-container flex flex-col items-center gap-10 lg:gap-14 ${icp && !panel ? "" : "max-md:gap-12"}`}>
-        {(data.heading || data.sub_heading) && (
+        {(hasText(data.heading) || hasText(data.sub_heading)) && (
           <Reveal className="flex max-w-[905px] flex-col items-center gap-5 text-center max-md:gap-4">
-            {data.heading && <h2 className={`cs-h3 cs-title cs-highlight cs-rich ${icp ? "font-extrabold! text-black" : "font-extrabold text-black max-md:text-black"}`} dangerouslySetInnerHTML={{ __html: toHtml(data.heading) }} />}
-            {data.sub_heading && <p className={`cs-card-title font-bold text-[22px] lg:text-[32px] leading-8 tracking-[-0.64px] ${icp ? "text-black" : "text-black"}`}>{data.sub_heading}</p>}
+            {hasText(data.heading) && <h2 className={`cs-h3 cs-title cs-highlight cs-rich ${icp ? "font-extrabold! text-black" : "font-extrabold text-black max-md:text-black"}`} dangerouslySetInnerHTML={{ __html: toHtml(data.heading) }} />}
+            {hasText(data.sub_heading) && <p className={`cs-card-title font-bold text-[22px] lg:text-[32px] leading-8 tracking-[-0.64px] ${icp ? "text-black" : "text-black"}`}>{data.sub_heading}</p>}
           </Reveal>
         )}
 
@@ -152,8 +152,8 @@ export default function ProductSalesChannels({ data, lang = DEFAULT_LANG, defaul
                   {/* mobile: title ICP Bold 26/28 (cs-h4) / Product X-Bold 36 (cs-title); body ICP Regular / Product Light 18/22;
                       benefits 12 apart, X-Bold 18/22 (ICP -2% #3F3E3C, Product 0 #171717) */}
                   <div className="flex flex-col gap-5 max-md:gap-4">
-                    {tab.title && <h3 className={`cs-h4 ${icp ? "text-black" : "cs-title text-black max-md:text-black"} ${panel ? "max-md:text-(--color-light-grey)" : ""}`} dangerouslySetInnerHTML={{ __html: mobilePanel ? titleHtml(tab.title) : toHtml(tab.title) }} />}
-                    {tab.text && <div className={`cs-p2 cs-rich text-(--color-grey-dark) ${icp ? "" : "max-md:font-light"} ${panel ? "max-md:text-(--color-light-grey)" : ""}`} dangerouslySetInnerHTML={{ __html: toHtml(tab.text) }} />}
+                    {hasText(tab.title) && <h3 className={`cs-h4 ${icp ? "text-black" : "cs-title text-black max-md:text-black"} ${panel ? "max-md:text-(--color-light-grey)" : ""}`} dangerouslySetInnerHTML={{ __html: mobilePanel ? titleHtml(tab.title) : toHtml(tab.title) }} />}
+                    {hasText(tab.text) && <div className={`cs-p2 cs-rich text-(--color-grey-dark) ${icp ? "" : "max-md:font-light"} ${panel ? "max-md:text-(--color-light-grey)" : ""}`} dangerouslySetInnerHTML={{ __html: toHtml(tab.text) }} />}
                     <CheckList
                       items={tab.checklist}
                       onDark={panel}

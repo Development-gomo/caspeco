@@ -33,7 +33,7 @@ import CtaButton from "@/components/ui/CtaButton";
 import SliderArrows from "@/components/ui/SliderArrows";
 import Reveal from "@/components/ui/Reveal";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { curlyQuote, mediaUrl, toHtml } from "@/lib/content";
+import { curlyQuote, hasText, mediaUrl, toHtml } from "@/lib/content";
 import { GLASS_CLASS, GLASS_STYLE } from "@/components/ui/glass";
 import { MOBILE_SLIDE, MOBILE_TRACK, SliderPoints } from "@/components/ui/MobileSlider";
 
@@ -100,7 +100,7 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
 
       <div className={`cs-container py-16 ${compact ? "lg:py-20" : "lg:py-36"} ${isCase ? "max-md:pt-12" : "max-md:pt-40"} max-md:pb-12`}>
         <Reveal className="flex flex-col items-start gap-12 lg:gap-16">
-          {heading && (
+          {hasText(heading) && (
             <h2 className="cs-h3 cs-title cs-highlight cs-rich max-w-[660px] font-extrabold text-(--color-light-grey)" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
           )}
 

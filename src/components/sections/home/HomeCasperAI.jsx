@@ -22,7 +22,7 @@ import AvatarLarge from "../../../../public/icons/home/ai-avatar.svg";
 import AvatarSmall from "../../../../public/icons/home/ai-avatar-small.svg";
 import SendIcon from "../../../../public/icons/home/send.svg";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { mediaUrl, rows, toHtml } from "@/lib/content";
+import { hasText, mediaUrl, rows, toHtml } from "@/lib/content";
 
 // section_image is an ACF File field: an image or a video (mp4 / webm / mov / ogg). ACF returns mime_type / type for
 // the array format; the file extension is the fallback.
@@ -110,7 +110,7 @@ function ChatCard({ question, answer, placeholder, href }) {
       className="relative w-full max-w-[570px] rounded-lg p-4 sm:px-7 sm:pt-[30px] sm:pb-[29px] max-md:mx-px max-md:w-auto max-md:px-6! max-md:pt-[30px]! max-md:pb-[29px]! shadow-[0px_5.333px_16px_0px_rgba(0,0,0,0.16)] backdrop-blur-md border border-white/10"
       style={{ backgroundImage: CHAT_GLASS_BG }}
     >
-      {question && (
+      {hasText(question) && (
         <motion.p
           initial={{ opacity: 0, y: 8 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -122,7 +122,7 @@ function ChatCard({ question, answer, placeholder, href }) {
         </motion.p>
       )}
 
-      {answer && (
+      {hasText(answer) && (
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -148,11 +148,11 @@ function ChatCard({ question, answer, placeholder, href }) {
 
 export default function HomeCasperAI({ data, lang = DEFAULT_LANG }) {
   const { sub_heading, heading, short_text, cta_text, cta_url, chat_question, chat_answer, input_placeholder } = data || {};
-  if (!heading) return null;
+  if (!hasText(heading)) return null;
 
   const bgImage = mediaUrl(data?.bg_image);
   const sectionImage = data?.section_image;
-  const hasChat = chat_question || chat_answer || input_placeholder;
+  const hasChat = hasText(chat_question) || hasText(chat_answer) || hasText(input_placeholder);
   const hasAnimation =
     rows(data?.chat_exchanges).some((row) => String(row.question || "").trim() || String(row.answer || "").trim()) ||
     rows(data?.chat_suggestions).some((row) => String(row.text || "").trim());
@@ -171,15 +171,15 @@ export default function HomeCasperAI({ data, lang = DEFAULT_LANG }) {
       {/* desktop (lg+): the text column and the media box are vertically centred against each other */}
       <div className="cs-container relative flex flex-col gap-12 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col items-start text-(--color-light-grey) lg:max-w-[507px]">
-          {sub_heading && <p className="italic text-[18px] lg:text-[20px] leading-[26px] tracking-[-0.8px] text-[#fbfaf9] max-md:tracking-[-0.72px]">{sub_heading}</p>}
+          {hasText(sub_heading) && <p className="italic text-[18px] lg:text-[20px] leading-[26px] tracking-[-0.8px] text-[#fbfaf9] max-md:tracking-[-0.72px]">{sub_heading}</p>}
           <h2 className="cs-h3 cs-highlight mt-0 max-md:mt-2 max-md:font-extrabold! max-md:text-[36px]! max-md:leading-9! max-md:tracking-[-1.44px]!" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />
-          {short_text && (
+          {hasText(short_text) && (
             <div
               className="cs-rich mt-5 max-md:mt-4 font-bold text-[18px] lg:text-[20px] leading-6 tracking-[-0.4px] lg:max-w-[446px] max-md:leading-[22px] max-md:tracking-[-0.36px]"
               dangerouslySetInnerHTML={{ __html: toHtml(short_text) }}
             />
           )}
-          {cta_text && href && (
+          {hasText(cta_text) && href && (
             <div className="max-md:hidden">
               <CtaButton variant="outline-light-yellow" href={href} className="mt-10">
                 {cta_text}
@@ -227,7 +227,7 @@ export default function HomeCasperAI({ data, lang = DEFAULT_LANG }) {
           )
         )}
 
-        {cta_text && href && (
+        {hasText(cta_text) && href && (
           <div className="md:hidden max-md:-mt-6">
             <CtaButton variant="outline-light-yellow" href={href}>
               {cta_text}

@@ -12,7 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
 const toPercent = (v) => {
   const n = parseFloat(String(v ?? "").replace(",", "."));
@@ -55,7 +55,7 @@ function Hotspot({ spot, open, onToggle, onHover, lang }) {
       </button>
 
       <AnimatePresence>
-        {open && (spot.title || text) && (
+        {open && (hasText(spot.title) || hasText(text)) && (
           <motion.div
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
@@ -64,14 +64,14 @@ function Hotspot({ spot, open, onToggle, onHover, lang }) {
             // mobile: Figma tooltip card 158×77 (padding 7.1/13.4/11.8, radius 6.3, no shadow)
             className={`absolute top-[calc(100%+12px)] w-[260px] rounded-lg bg-(--color-light-grey)/80 backdrop-blur-[8px] px-[17px] pt-[9px] pb-[15px] text-(--color-grey-dark) shadow-[0px_8px_24px_rgba(0,0,0,0.25)] max-md:top-[calc(100%+9.5px)] max-md:w-[158px] max-md:rounded-[6.3px] max-md:px-[13.4px] max-md:pt-[7.1px] max-md:pb-[11.8px] max-md:shadow-none ${alignRight ? "right-0" : "left-0"} ${mobileRight ? "max-md:right-0 max-md:left-auto" : "max-md:left-0 max-md:right-auto"} ${mobileAbove ? "max-md:top-auto max-md:bottom-[calc(100%+9.5px)]" : ""}`}
           >
-            {spot.title && <p className="font-bold text-[20px] leading-[1.1] tracking-[-0.4px] max-md:text-[15.8px] max-md:tracking-[-0.32px]">{spot.title}</p>}
-            {text && (
+            {hasText(spot.title) && <p className="font-bold text-[20px] leading-[1.1] tracking-[-0.4px] max-md:text-[15.8px] max-md:tracking-[-0.32px]">{spot.title}</p>}
+            {hasText(text) && (
               <div
                 className="cs-rich mt-1 text-[14px] leading-4 tracking-[-0.28px] max-md:mt-[3.2px] max-md:text-[11px] max-md:leading-[12.6px] max-md:tracking-[-0.22px]"
                 dangerouslySetInnerHTML={{ __html: toHtml(text) }}
               />
             )}
-            {spot.cta_text && spot.cta_url && (
+            {hasText(spot.cta_text) && spot.cta_url && (
               <Link href={langHref(spot.cta_url, lang)} className="mt-2 inline-block text-[14px] font-medium underline text-(--color-petrol)">
                 {spot.cta_text}
               </Link>
@@ -100,7 +100,7 @@ export default function HomeRestaurantMap({ data, lang = DEFAULT_LANG }) {
     return () => document.removeEventListener("pointerdown", close);
   }, [active]);
 
-  if (!data?.heading && !imageUrl) return null;
+  if (!hasText(data?.heading) && !imageUrl) return null;
 
   return (
     <section
@@ -116,7 +116,7 @@ export default function HomeRestaurantMap({ data, lang = DEFAULT_LANG }) {
             }
       }
     >
-      {data.heading && (
+      {hasText(data.heading) && (
         <div className="cs-container">
           <h2
             className="cs-h2 cs-highlight mx-auto max-w-[839px] text-center text-(--color-light-grey) max-md:leading-9! max-md:tracking-[-1.44px]! mb-10"

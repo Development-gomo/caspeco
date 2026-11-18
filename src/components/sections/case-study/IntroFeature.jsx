@@ -12,7 +12,7 @@ import CtaButton from "@/components/ui/CtaButton";
 import ReadMoreText from "./ReadMoreText";
 import VideoCta from "./VideoCta";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { rows, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, rows, sectionBackground, toHtml } from "@/lib/content";
 
 const pills = (text) =>
   String(text || "")
@@ -21,24 +21,29 @@ const pills = (text) =>
     .filter(Boolean);
 
 export default function IntroFeature({ data, lang = DEFAULT_LANG }) {
-  const cards = rows(data?.cards).filter((c) => c.title);
+  const cards = rows(data?.cards).filter((c) => hasText(c.title));
   const { heading, short_text, cta_text, cta_url, video_url } = data || {};
   const video = typeof video_url === "string" ? video_url.trim() : "";
-  if (!heading && !short_text && cards.length === 0) return null;
+  const hasHeading = hasText(heading);
+  const hasShort = hasText(short_text);
+  const hasCta = hasText(cta_text) && (Boolean(video) || Boolean(cta_url?.trim?.()));
+  if (!hasHeading && !hasShort && !hasCta && cards.length === 0) return null;
 
   return (
     <section className="cs-sec py-18 lg:py-36" style={sectionBackground(data, { background: "var(--color-white)" })}>
       <div className="cs-container flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-16">
+        {(hasHeading || hasShort || hasCta) && (
         <Reveal className="flex flex-col items-start gap-6 lg:w-1/2">
-          {heading && <h2 className="cs-h2 cs-highlight cs-rich text-(--color-heading) xl:text-[56px]! xl:leading-[56px]! xl:tracking-[-2.24px]!" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
-          {short_text && <ReadMoreText lang={lang} moreLabel={data.read_more_text} lessLabel={data.read_less_text} className="cs-p2 cs-rich max-w-[560px] text-(--color-grey-dark)" html={toHtml(short_text)} />}
+          {hasHeading && <h2 className="cs-h2 cs-highlight cs-rich text-(--color-heading) xl:text-[56px]! xl:leading-[56px]! xl:tracking-[-2.24px]!" dangerouslySetInnerHTML={{ __html: toHtml(heading) }} />}
+          {hasShort && <ReadMoreText lang={lang} moreLabel={data.read_more_text} lessLabel={data.read_less_text} className="cs-p2 cs-rich max-w-[560px] text-(--color-grey-dark)" html={toHtml(short_text)} />}
           {/* Video CTA text + Video URL → button opening the video popup; a plain CTA URL still works as a link */}
-          {cta_text && video ? (
+          {hasText(cta_text) && video ? (
             <VideoCta url={video} mobileVariant="outline-dark-grey">{cta_text}</VideoCta>
           ) : (
-            cta_text && cta_url && <CtaButton href={langHref(cta_url.trim(), lang)}>{cta_text}</CtaButton>
+            hasText(cta_text) && cta_url && <CtaButton href={langHref(cta_url.trim(), lang)}>{cta_text}</CtaButton>
           )}
         </Reveal>
+        )}
 
         {cards.length > 0 && (
           <Reveal delay={0.15} className="rounded-lg bg-(--color-dark-petrol) p-6 text-white shadow-[0px_4px_6px_rgba(0,0,0,0.16)] lg:w-1/2 lg:p-8">
@@ -61,7 +66,7 @@ export default function IntroFeature({ data, lang = DEFAULT_LANG }) {
                           ))}
                         </ul>
                       ) : (
-                        card.text && <div className={`cs-rich text-[18px] ${i === 0 ? "font-bold" : "font-medium"} leading-6 tracking-[-0.36px] lg:text-[20px]`} dangerouslySetInnerHTML={{ __html: toHtml(card.text) }} />
+                        hasText(card.text) && <div className={`cs-rich text-[18px] ${i === 0 ? "font-bold" : "font-medium"} leading-6 tracking-[-0.36px] lg:text-[20px]`} dangerouslySetInnerHTML={{ __html: toHtml(card.text) }} />
                       )}
                     </dd>
                   </div>

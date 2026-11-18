@@ -10,13 +10,13 @@ import CtaButton from "@/components/ui/CtaButton";
 import Reveal from "@/components/ui/Reveal";
 import HeroLabels from "@/components/ui/HeroLabels";
 import { DEFAULT_LANG, langHref } from "@/config";
-import { mediaUrl, toHtml } from "@/lib/content";
+import { hasText, mediaUrl, toHtml } from "@/lib/content";
 
 // overlay: CSS background drawn over the image (ICP hero: black 70% → 30%)
 export default function ProductHero({ data, lang = DEFAULT_LANG, overlay }) {
   const { heading, cta_text, cta_url, secondary_cta_text, secondary_cta_url } = data || {};
   const text = data?.short_heading || data?.short_text;
-  if (!heading) return null;
+  if (!hasText(heading)) return null;
 
   const bgImage = mediaUrl(data?.bg_image);
   const bgVideo = mediaUrl(data?.bg_video);
@@ -56,7 +56,7 @@ export default function ProductHero({ data, lang = DEFAULT_LANG, overlay }) {
               className="cs-highlight cs-rich normal-case font-extrabold text-[48px] leading-12 tracking-[-1.92px] md:text-[80px] md:leading-[78px] md:tracking-[-3.2px] xl:text-[112px] xl:leading-[104px] xl:tracking-[-4.48px]"
               dangerouslySetInnerHTML={{ __html: toHtml(heading) }}
             />
-            {text && <Reveal onMount delay={0.2} className="cs-p1 cs-rich max-w-[850px] max-md:text-(--color-grey-medium)" dangerouslySetInnerHTML={{ __html: toHtml(text) }} />}
+            {hasText(text) && <Reveal onMount delay={0.2} className="cs-p1 cs-rich max-w-[850px] max-md:text-(--color-grey-medium)" dangerouslySetInnerHTML={{ __html: toHtml(text) }} />}
           </div>
           {((cta_text && cta_url) || (secondary_cta_text && secondary_cta_url)) && (
             <Reveal onMount delay={0.4} className="flex flex-wrap items-center gap-6 max-md:flex-col max-md:items-start max-md:gap-4">
