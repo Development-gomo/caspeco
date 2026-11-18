@@ -405,7 +405,17 @@ export async function submitCf7FormProxy(formId, payload) {
   });
 
   const json = await res.json().catch(() => ({}));
-  if (!res.ok) throw json;
+  // Only a confirmed CF7 "mail_sent" (or an explicit success flag from the proxy) counts as sent.
+  // A non-JSON body (e.g. a host CAPTCHA page with HTTP 202) or any other CF7 status must surface as an error.
+  const status = json?.status ?? json?.cf7?.status;
+  const sent = status ? status === "mail_sent" : json?.success === true || json?.ok === true;
+  if (!res.ok || !sent) {
+    throw {
+      ...json,
+      message: json?.message || json?.cf7?.message || "Failed to send. Please try again.",
+      cf7: json?.cf7 ?? json,
+    };
+  }
   return json;
 }
 
@@ -431,10 +441,12 @@ export async function submitCf7Direct(formId, schemaHidden, values) {
     };
   }
 
-  if (json?.status && json.status !== "mail_sent") {
+  // Success only when CF7 confirms "mail_sent". An empty/non-JSON body (e.g. a host CAPTCHA page
+  // returned with HTTP 202, which res.ok treats as OK) must not be reported to the visitor as sent.
+  if (json?.status !== "mail_sent") {
     throw {
       ...json,
-      message: json?.message || "CF7 validation failed",
+      message: json?.message || "Failed to send. Please try again.",
       cf7: json,
     };
   }
