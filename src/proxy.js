@@ -38,8 +38,17 @@ async function getRedirects(event) {
   return rules ?? [];
 }
 
-// Lowercase a path but leave %XX escapes untouched (%C3%A5 must not become %c3%a5).
-const lowerPath = (p) => p.replace(/%[0-9A-Fa-f]{2}|[^%]+/g, (m) => (m[0] === "%" ? m : m.toLowerCase()));
+// Lower-case a path but leave %XX escapes untouched (%C3%A5 must not become %c3%a5).
+// A path with a malformed escape (e.g. "%E0%A4%A") is returned as is: it can't be decoded, so it is
+// left to the not-found / error handling instead of being redirected.
+const lowerPath = (p) => {
+  try {
+    decodeURIComponent(p);
+  } catch {
+    return p;
+  }
+  return p.replace(/%[0-9A-Fa-f]{2}|[^%]+/g, (m) => (m[0] === "%" ? m : m.toLowerCase()));
+};
 
 // ─── Proxy ───────────────────────────────────────────────────────────────────
 export async function proxy(request, event) {
@@ -71,8 +80,8 @@ export async function proxy(request, event) {
     return NextResponse.redirect(new URL(hit.location, origin), { status: hit.status });
   }
 
-  // 2. Uppercase letters in the path -> 301 to the lowercase URL. %XX escapes keep their case
-  // (only the literal runs between them are lowercased); the query string is kept as is.
+  // 2. Upper-case letters in the path -> 301 to the lower-case URL. %XX escapes keep their case
+  // (only the literal runs between them are changed); the query string is kept as is.
   const lower = lowerPath(pathname);
   if (lower !== pathname) return NextResponse.redirect(new URL(lower + search, origin), 301);
 
