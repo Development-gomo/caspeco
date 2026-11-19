@@ -46,6 +46,9 @@ const nextConfig = {
 
   async redirects() {
     return [
+      // the default language has no prefix: /sv/... is a duplicate of /...
+      { source: `/${DEFAULT_LANG}`, destination: "/", statusCode: 301 },
+      { source: `/${DEFAULT_LANG}/:path*`, destination: "/:path*", statusCode: 301 },
       ...SUPPORTED_LANGS.map((lang) => ({
         source: lang === DEFAULT_LANG ? "/frontpage" : `/${lang}/frontpage`,
         destination: lang === DEFAULT_LANG ? "/" : `/${lang}`,

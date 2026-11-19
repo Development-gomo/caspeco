@@ -38,6 +38,9 @@ async function getRedirects(event) {
   return rules ?? [];
 }
 
+// Lowercase a path but leave %XX escapes untouched (%C3%A5 must not become %c3%a5).
+const lowerPath = (p) => p.replace(/%[0-9A-Fa-f]{2}|[^%]+/g, (m) => (m[0] === "%" ? m : m.toLowerCase()));
+
 // ─── Proxy ───────────────────────────────────────────────────────────────────
 export async function proxy(request, event) {
   const { pathname, search, origin } = request.nextUrl;
@@ -68,7 +71,12 @@ export async function proxy(request, event) {
     return NextResponse.redirect(new URL(hit.location, origin), { status: hit.status });
   }
 
-  // 2. Pass through — x-lang, x-pathname and x-page-type for layouts / not-found pages.
+  // 2. Uppercase letters in the path -> 301 to the lowercase URL. %XX escapes keep their case
+  // (only the literal runs between them are lowercased); the query string is kept as is.
+  const lower = lowerPath(pathname);
+  if (lower !== pathname) return NextResponse.redirect(new URL(lower + search, origin), 301);
+
+  // 3. Pass through — x-lang, x-pathname and x-page-type for layouts / not-found pages.
   // Set on the forwarded request (what headers() reads in the layout) and on the response.
   const firstSegment = pathname.split("/")[1] || "";
   const lang = SUPPORTED_LANGS.includes(firstSegment) ? firstSegment : DEFAULT_LANG;

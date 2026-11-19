@@ -50,7 +50,9 @@ export async function generateStaticParams() {
 }
 
 // Shared by the page and generateMetadata (fetches are deduped by fetchWP as well)
-const resolveRoute = cache(async (lang, segments) => {
+// Keyed on a string: React's cache() compares arguments by identity, so an array would never hit.
+const resolveRoute = cache(async (lang, key) => {
+  const segments = JSON.parse(key);
   const [base, slug] = segments;
   const type = segments.length === 2 ? typeFromBase(base, lang) : null;
 
@@ -105,13 +107,23 @@ const resolveRoute = cache(async (lang, segments) => {
   return null;
 });
 
+// null on a malformed %-escape (decodeURIComponent throws) -> treated as an unknown URL
+function decodeSegments(list) {
+  try {
+    return list.map((s) => decodeURIComponent(s));
+  } catch {
+    return null;
+  }
+}
+
 async function routeFromParams(params) {
   const parsed = resolveParams(await params);
   const lang = parsed?.lang || DEFAULT_LANG;
+  if (!SUPPORTED_LANGS.includes(lang)) return { lang: DEFAULT_LANG, route: null };
   const rest = Array.isArray(parsed?.rest) ? parsed.rest : [parsed?.rest].filter(Boolean);
-  const segments = [parsed?.slug, ...rest].filter(Boolean).map((s) => decodeURIComponent(s));
-  if (segments.length < 2) return { lang, route: null };
-  return { lang, route: await resolveRoute(lang, segments) };
+  const segments = decodeSegments([parsed?.slug, ...rest].filter(Boolean));
+  if (!segments || segments.length < 2) return { lang, route: null };
+  return { lang, route: await resolveRoute(lang, JSON.stringify(segments)) };
 }
 
 export default async function LocalizedEntryPage({ params }) {

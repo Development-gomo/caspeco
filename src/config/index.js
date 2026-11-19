@@ -8,6 +8,8 @@ export const WP_BASE = typeof window === "undefined" ? process.env.NEXT_PUBLIC_W
 
 // ─── Add new languages here — everything else updates automatically ───────────
 // Codes must match the WPML language codes in WordPress.
+// NOTE: an sv page whose slug equals a language code (or "sv") can't be reached: /{slug} is read as a
+// language prefix, and /sv/... is redirected to /... (next.config.mjs).
 export const SUPPORTED_LANGS = ["sv", "en", "no", "fr", "frbg", "nl"];
 
 // Locale map for OG/SEO tags (matches WPML "Default locale")
