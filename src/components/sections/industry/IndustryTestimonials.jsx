@@ -31,7 +31,8 @@ import Reveal from "@/components/ui/Reveal";
 import SliderArrows from "@/components/ui/SliderArrows";
 import { GLASS_CLASS, GLASS_STYLE } from "@/components/ui/glass";
 import { DEFAULT_LANG, entryHref, langHref } from "@/config";
-import { curlyQuote, hasText, mediaUrl, toHtml } from "@/lib/content";
+import { curlyQuote, hasText, mediaUrl, rows, toHtml } from "@/lib/content";
+import { caseHref } from "@/components/sections/product/ClientQuoteSlider";
 import { postStrings } from "@/lib/postStrings";
 
 const pad = (n) => String(n).padStart(2, "0");
@@ -102,9 +103,9 @@ function QuoteCard({ card, lang, accent, readMore }) {
         )}
       </figcaption>
       </div>
-      {card.slug && (
+      {(card.slug || (card.link_text && card.href)) && (
         // QA slide 86: invisible link over the whole card (the text links above sit on z-10, so they still win)
-        <Link href={entryHref("casestudy", card.slug, lang)} draggable={false} tabIndex={-1} aria-hidden className="absolute inset-0 rounded-lg" />
+        <Link href={card.slug ? entryHref("casestudy", card.slug, lang) : card.href} draggable={false} tabIndex={-1} aria-hidden className="absolute inset-0 rounded-lg" />
       )}
       {card.slug && (
         // mobile only: text link + 16px arrow, bottom-right (17.81 from the edges)
@@ -127,7 +128,27 @@ const caseToCard = (c) => ({
 });
 
 export default function IndustryTestimonials({ data, lang = DEFAULT_LANG, cases = [], variant }) {
-  const cards = (Array.isArray(cases) ? cases : []).filter((c) => c.quote || c.personName || mediaUrl(c.logo)).slice(0, MAX_CASES).map(caseToCard); // newest first
+  // "Add manually" repeater (add_manually: client_logo / case_logo, quote, client_name, company_name, case_cta_text, case_link):
+  // rows are appended after the case cards and use the same card design
+  const readMoreDefault = data?.read_case_cta_text || data?.read_more_text || postStrings(lang).readFullCase;
+  const manualCards = rows(data?.add_manually)
+    .filter((r) => hasText(r.quote))
+    .map((r) => {
+      const href = caseHref(r.case_link, lang);
+      const linkText = typeof r.case_cta_text === "string" ? r.case_cta_text.trim() : "";
+      return {
+        logo: r.case_logo?.url ? r.case_logo : r.client_logo,
+        quote: r.quote,
+        name: r.client_name,
+        company: r.company_name,
+        href,
+        link_text: href ? linkText || readMoreDefault : "",
+      };
+    });
+  const cards = [
+    ...(Array.isArray(cases) ? cases : []).filter((c) => c.quote || c.personName || mediaUrl(c.logo)).slice(0, MAX_CASES).map(caseToCard), // newest first
+    ...manualCards,
+  ];
   const swiperRef = React.useRef(null);
   const [index, setIndex] = React.useState(0);
   // Below 768 the Swiper is re-created (key) without loop and with Figma's 24px gap
