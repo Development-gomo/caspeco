@@ -12,7 +12,7 @@ import { hasText, mediaUrl, rows } from "@/lib/content";
 // case_link (ACF text field) → site href. Site paths get the language prefix unless they already have one
 // (wpMask already turns pasted CMS URLs into "/en/..." paths, langHref would double it); caspeco.com URLs are reduced
 // to their path; any other absolute URL is used as entered.
-function caseHref(raw, lang) {
+export function caseHref(raw, lang) {
   const v = typeof raw === "string" ? raw.trim() : "";
   if (!v) return "";
   if (/^https?:\/\//i.test(v)) {
