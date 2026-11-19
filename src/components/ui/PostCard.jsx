@@ -25,12 +25,22 @@ const SLIDE = {
   title: "max-md:text-[26px]",
   link: "max-md:gap-[5.85px] max-md:text-[11.7px] max-md:leading-[14.63px] max-md:tracking-[-0.234px] max-md:[&_img]:h-auto max-md:[&_img]:w-[11.7px]",
 };
+// catch-all category names (News in the site languages)
+const GENERIC_CATEGORY = /^(news|nyheter|nyhet|nieuws|actualit[eé]s?|nouvelles|uncategorized|okategoriserad)$/i;
 const NONE = { card: "", image: "", meta: "", category: "", content: "", title: "", link: "" };
 
 export default function PostCard({ post, readMore, readSuffix, lang = DEFAULT_LANG, slide = false }) {
   const m = slide ? SLIDE : NONE;
   const image = post?._embedded?.["wp:featuredmedia"]?.[0];
-  const category = (post?._embedded?.["wp:term"]?.[0] || []).find((t) => t.taxonomy === "category");
+  // Primary category (Yoast "Make primary"): the REST field `primary_category` (term id, needs a small WP snippet) or the
+  // registered meta. Without it (field not exposed yet / not set) fall back to the first topic category, skipping the
+  // catch-all "News" category every post carries.
+  const categories = (post?._embedded?.["wp:term"]?.[0] || []).filter((t) => t.taxonomy === "category");
+  const primaryId = Number(post?.primary_category ?? post?.meta?._yoast_wpseo_primary_category) || 0;
+  const category =
+    (primaryId && categories.find((t) => t.id === primaryId)) ||
+    categories.find((t) => !GENERIC_CATEGORY.test(t.slug || "") && !GENERIC_CATEGORY.test(t.name || "")) ||
+    categories[0];
   const href = entryHref("post", post.slug, lang);
   const title = post?.title?.rendered || "";
   const strings = postStrings(lang);
@@ -52,7 +62,8 @@ export default function PostCard({ post, readMore, readSuffix, lang = DEFAULT_LA
         <span className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_40%,rgba(0,0,0,0.7)_100%)]" />
         {category?.name && (
           <span className={`relative text-[12px] font-bold uppercase tracking-[1px] text-(--color-light-grey) ${m.meta} ${m.category}`}>
-            {category.name}
+            {/* WP sends names HTML-encoded ("POS &amp; PAYMENTS") */}
+            {category.name.replace(/&(?:amp|#0?38);/gi, "&")}
           </span>
         )}
       </div>
