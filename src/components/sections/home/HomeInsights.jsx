@@ -17,7 +17,8 @@ import { hasText, rows, sectionBackground, toHtml } from "@/lib/content";
 
 export default function HomeInsights({ data, lang = DEFAULT_LANG, prefetchedPosts }) {
   const pool = Array.isArray(prefetchedPosts) ? prefetchedPosts : [];
-  const picked = rows(data?.posts).map((p) => (typeof p === "object" ? p.ID || p.id : p));
+  // hand-picked posts: ACF "select_post" (current field) or the older "posts"
+  const picked = rows([data?.select_post, data?.posts].find((v) => Array.isArray(v) && v.length) || []).map((p) => (typeof p === "object" ? p.ID || p.id : p));
   const posts = (picked.length ? picked.map((id) => pool.find((p) => p.id === id)).filter(Boolean) : pool).slice(0, 3);
 
   const { heading, short_text, cta_text, cta_url, read_more_text, read_time_suffix } = data || {};
