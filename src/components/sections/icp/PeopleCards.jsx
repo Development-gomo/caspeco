@@ -50,7 +50,8 @@ export default function PeopleCards({ data, joined = false }) {
                   <div className="flex flex-col gap-4 p-6">
                     {hasText(person.tag) && <p className="font-bold text-[14px] leading-4 tracking-[1px] text-(--color-petrol)">{person.tag}</p>}
                     <div className="flex items-center gap-3">
-                      <span className="h-12 w-[3px] shrink-0 rounded-[10px] bg-(--color-yellow)" aria-hidden />
+                      {/* QA slide 91: the yellow line stretches to the full name + title height (a title on 2 lines made it too short) */}
+                      <span className="min-h-12 w-[3px] shrink-0 self-stretch rounded-[10px] bg-(--color-yellow)" aria-hidden />
                       <div className="flex flex-col gap-1">
                         <span className="font-bold text-[22px] lg:text-[24px] max-md:text-[24px] leading-7 tracking-[-0.48px] text-(--color-grey-dark)">{person.name}</span>
                         {hasText(person.role) && <span className="font-medium text-[16px] lg:text-[18px] max-md:text-[18px] leading-6 tracking-[0.15px] text-(--color-grey-dark)">{person.role}</span>}

@@ -2,9 +2,8 @@
 // ACF layout: feature_slider_section — "A smarter POS means more orders".
 // Each slide: heading, text, checklist, CTA and a device screenshot shown in full
 // on the right. Tablet/desktop: CTA under the checklist, arrows centred under the slide.
-// The screenshot is scroll-linked on tablet/desktop (mobile: static, no scroll animation): it slides in from the right as the section scrolls
-// into view, holds while it is in focus, and slides back out as you scroll past
-// (reverses when scrolling up).
+// The screenshot slides in from the right once on tablet/desktop (mobile: static, no animation), as soon as it is visible,
+// and then stays (QA slide 88: it no longer slides back out while you scroll).
 // Mobile (< 768, Figma 601:9645, 390 frame): solid #F4F5F5, padding 64/24, blocks 48 apart:
 //   image 342×223 (full container width, cover, radius 4.56, two-layer shadow; static)
 //   → text (title 36/102%, text Light 18/22, checklist 12 apart, 16 between)
@@ -18,7 +17,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import CtaButton from "@/components/ui/CtaButton";
 import Reveal from "@/components/ui/Reveal";
 import SliderArrows from "@/components/ui/SliderArrows";
@@ -33,12 +32,7 @@ export default function ProductFeatureSlider({ data, lang = DEFAULT_LANG }) {
   const slides = rows(data?.slides).filter((s) => s.heading);
   const [index, setIndex] = React.useState(0);
 
-  const sectionRef = React.useRef(null);
   const reduce = useReducedMotion();
-  // 0 = section top hits the viewport bottom, 1 = section bottom leaves the viewport top
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
-  const imageX = useTransform(scrollYProgress, [0.1, 0.4, 0.65, 0.95], reduce ? ["0%", "0%", "0%", "0%"] : ["110%", "0%", "0%", "110%"]);
-  const imageOpacity = useTransform(scrollYProgress, [0.1, 0.35, 0.7, 0.95], [0, 1, 1, 0]);
 
   if (slides.length === 0) return null;
 
@@ -50,7 +44,7 @@ export default function ProductFeatureSlider({ data, lang = DEFAULT_LANG }) {
   const anchorId = String(data?.anchor_link || "").trim().replace(/^#+/, "").replace(/\s+/g, "-");
 
   return (
-    <section id={anchorId || undefined} ref={sectionRef} className={`scroll-mt-[72px] lg:scroll-mt-[84px] overflow-hidden py-18 lg:py-36 max-md:py-16 ${customBg ? "" : "max-md:bg-none! max-md:bg-[#F4F5F5]!"}`} style={sectionBackground(data, { backgroundImage: GRADIENT })}>
+    <section id={anchorId || undefined} className={`scroll-mt-[72px] lg:scroll-mt-[84px] overflow-hidden py-18 lg:py-36 max-md:py-16 ${customBg ? "" : "max-md:bg-none! max-md:bg-[#F4F5F5]!"}`} style={sectionBackground(data, { backgroundImage: GRADIENT })}>
       <Reveal className="cs-container flex flex-col items-center gap-12 lg:gap-16">
         <AnimatePresence mode="wait">
           <motion.div
@@ -80,7 +74,13 @@ export default function ProductFeatureSlider({ data, lang = DEFAULT_LANG }) {
               // Figma "coursing1": a 523×400 box 955px from the content edge (x 1075 at 1512),
               // 11px above the text column, bleeding past the viewport (section clips it).
               // Outer: scroll-linked slide in/out. Inner: slides in on every slide change.
-              <motion.div style={{ x: imageX, opacity: imageOpacity }} className="flex w-full justify-center max-md:order-first max-md:transform-none! max-md:opacity-100! lg:absolute lg:left-[955px] lg:top-[-11px] lg:w-[523px]">
+              // QA slide 88: slides in from the right once, as soon as it is visible, and then stays (no scroll-linked slide back out)
+              <motion.div
+                initial={reduce ? false : { x: "110%", opacity: 0 }}
+                whileInView={{ x: "0%", opacity: 1 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                className="flex w-full justify-center max-md:order-first max-md:transform-none! max-md:opacity-100! lg:absolute lg:left-[955px] lg:top-[-11px] lg:w-[523px]">
                 {/* mobile: Figma 342×223 frame, radius 4.56, shadow 0 2.28 6.84 2.28 /15% + 0 1.14 2.28 /30% */}
                 <motion.div
                   className="relative aspect-[523/400] w-full max-w-[640px] max-md:aspect-[342/223] max-md:max-w-none max-md:overflow-hidden max-md:rounded-[4.56px] max-md:shadow-[0_2.28px_6.84px_2.28px_rgba(0,0,0,0.15),0_1.14px_2.28px_rgba(0,0,0,0.3)] lg:w-[523px] lg:max-w-none"
