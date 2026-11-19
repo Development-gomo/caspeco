@@ -173,7 +173,9 @@ export default function HomeBusinessTwin({ data, lang = DEFAULT_LANG, cases: all
 
   // Industry and venue options both come from all cases, so every venue range (1, 2-4, 5+) stays
   // selectable even when the chosen industry has no case for it
-  const { industries, venues: venueOptions } = twinOptions(cases);
+  const { industries, venues: allVenueOptions } = twinOptions(cases);
+  // Once an industry is picked the venue dropdown lists only the venue ranges that industry has a case for
+  const venueOptions = industry ? allVenueOptions.filter((o) => cases.some((c) => c.industry === industry && c.venues === o.value)) : allVenueOptions;
   const images = cases.filter((c) => c.image?.url).slice(0, 2).map((c) => c.image);
 
   const { heading, short_text, cta_text, note_text } = data || {};
@@ -186,6 +188,8 @@ export default function HomeBusinessTwin({ data, lang = DEFAULT_LANG, cases: all
   const onSubmit = (e) => {
     e.preventDefault();
     if (!cases.length) return;
+    // nothing selected: keep the default view instead of swapping in an unrelated case
+    if (!industry && !venues) { setResult(null); return; }
     setResult(findMatch(cases, industry, venues));
   };
 
@@ -210,7 +214,7 @@ export default function HomeBusinessTwin({ data, lang = DEFAULT_LANG, cases: all
                 {hasForm && (
                   <div className="flex flex-col gap-4 max-md:gap-2">
                     {industries.length > 0 && (
-                      <Select placeholder={text(data, "industry_placeholder")} options={industries} value={industry} onChange={setIndustry} />
+                      <Select placeholder={text(data, "industry_placeholder")} options={industries} value={industry} onChange={(v) => { setIndustry(v); setVenues(""); }} />
                     )}
                     {venueOptions.length > 0 && (
                       <Select placeholder={text(data, "venues_placeholder")} options={venueOptions} value={venues} onChange={setVenues} />
