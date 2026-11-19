@@ -1,7 +1,7 @@
 "use client";
 
 import { DEFAULT_LANG } from "@/config";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import {
   getCf7FormSchema,
   submitCf7Direct,
@@ -26,18 +26,47 @@ export const QUICK_M = {
   msg: "max-md:order-3",
 };
 
-function Field({ field, value, setValue, error, quick = false }) {
-  const label = field.label || field.key;
+// The headless CF7 endpoint builds field labels from the field names in English ("Your Name", "Tel 836", ...).
+// Those defaults are replaced per language here; a label typed by an editor (anything that is not a default) is left as it is.
+const DEFAULT_LABELS = {
+  "your-name": /^your name$/i,
+  "your-email": /^your e-?mail$/i,
+  "your-message": /^your message$/i,
+  "your-subject": /^your subject$/i,
+};
+const CF7_LABELS = {
+  name: { en: "Name", sv: "Namn", no: "Navn", fr: "Nom", frbg: "Nom", nl: "Naam" },
+  email: { en: "Email", sv: "E-post", no: "E-post", fr: "E-mail", frbg: "E-mail", nl: "E-mail" },
+  phone: { en: "Phone number", sv: "Telefonnummer", no: "Telefonnummer", fr: "Téléphone", frbg: "Téléphone", nl: "Telefoonnummer" },
+  message: { en: "Message", sv: "Meddelande", no: "Melding", fr: "Message", frbg: "Message", nl: "Bericht" },
+  subject: { en: "Subject", sv: "Ämne", no: "Emne", fr: "Objet", frbg: "Objet", nl: "Onderwerp" },
+};
+function fieldLabel(field, lang) {
+  const raw = field.label || field.key;
+  const pick = (k) => CF7_LABELS[k][lang] || CF7_LABELS[k].en;
+  if (DEFAULT_LABELS["your-name"].test(raw)) return pick("name");
+  if (DEFAULT_LABELS["your-email"].test(raw)) return pick("email");
+  if (DEFAULT_LABELS["your-message"].test(raw)) return pick("message");
+  if (DEFAULT_LABELS["your-subject"].test(raw)) return pick("subject");
+  // CF7 auto-names an unnamed tel field "tel-836" → label "Tel 836"
+  if (field.type === "tel" && /^tel[\s-]?\d*$/i.test(raw)) return pick("phone");
+  return raw;
+}
+
+function Field({ field, value, setValue, error, quick = false, lang = DEFAULT_LANG }) {
+  const id = useId();
+  const label = fieldLabel(field, lang);
   const borderClass = error ? "border-red-500" : `border-[#e2e8f0] focus:border-(--color-grey-medium-dark) ${quick ? QUICK_M.border : ""}`;
   const labelClass = `${LABEL_CLASSES} ${quick ? QUICK_M.label : ""}`;
 
   if (field.type === "textarea") {
     return (
       <div className="space-y-2 w-full">
-        <label className={labelClass}>
+        <label htmlFor={id} className={labelClass}>
           {label} {field.required ? "*" : ""}
         </label>
         <textarea
+          id={id}
           className={`${INPUT_CLASSES} ${borderClass} min-h-[140px]`}
           value={value || ""}
           placeholder={field.placeholder || ""}
@@ -51,10 +80,11 @@ function Field({ field, value, setValue, error, quick = false }) {
   if (field.type === "select") {
     return (
       <div className="space-y-2 w-full">
-        <label className={labelClass}>
+        <label htmlFor={id} className={labelClass}>
           {label} {field.required ? "*" : ""}
         </label>
         <select
+          id={id}
           className={`${INPUT_CLASSES} ${borderClass} ${quick ? QUICK_M.input : ""}`}
           value={value || ""}
           onChange={(e) => setValue(field.key, e.target.value)}
@@ -99,10 +129,11 @@ function Field({ field, value, setValue, error, quick = false }) {
 
   return (
     <div className="space-y-2 w-full">
-      <label className={labelClass}>
+      <label htmlFor={id} className={labelClass}>
         {label} {field.required ? "*" : ""}
       </label>
       <input
+        id={id}
         className={`${INPUT_CLASSES} ${borderClass} ${quick ? QUICK_M.input : ""}`}
         type={type}
         value={value || ""}
@@ -292,6 +323,7 @@ export default function ContactForm({ formId = 982, lang = DEFAULT_LANG, submitL
             setValue={setValue}
             error={errors[f.key]}
             quick={quick}
+            lang={lang}
           />
         ))}
       </div>
@@ -312,7 +344,7 @@ export default function ContactForm({ formId = 982, lang = DEFAULT_LANG, submitL
 
       {acceptanceFields.map((f) => (
         <div key={f.key} className={quick ? QUICK_M.consent : undefined}>
-          <Field field={f} value={values[f.key]} setValue={setValue} error={errors[f.key]} quick={quick} />
+          <Field field={f} value={values[f.key]} setValue={setValue} error={errors[f.key]} quick={quick} lang={lang} />
         </div>
       ))}
 

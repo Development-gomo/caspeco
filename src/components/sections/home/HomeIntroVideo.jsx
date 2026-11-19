@@ -4,14 +4,16 @@
 // Play / pause: "Watch Video" and the yellow circle toggle files, YouTube and Vimeo (postMessage APIs); Loom only starts.
 // testimonial_ui ("enable"): testimonial look — video left on lg+, quote icon, sub_heading = quote,
 // short_text = name (bold) + role, teal bar above them. Default "disable" = unchanged.
+// section_image (optional image): with no video it replaces the player — the image alone in the same box, no play button, no CTA. A video always wins.
 // centered_content ("enable"): one centred column — heading, rolling words, text, button, then the video below.
 
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import CtaButton from "@/components/ui/CtaButton";
-import { hasText, rows, sectionBackground, toHtml } from "@/lib/content";
+import { hasText, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 import { embedUrl, videoUrl, youtubePoster } from "@/lib/video";
 
 const ROLL_INTERVAL_MS = 2600;
@@ -24,6 +26,8 @@ export default function HomeIntroVideo({ data }) {
   const videoSrc = videoUrl(data?.video_url) || videoUrl(data?.video);
   const embed = videoSrc ? embedUrl(videoSrc) : null; // null → direct file, plays in <video>
   const poster = videoUrl(data?.poster_image) || youtubePoster(videoSrc);
+  // section_image: shown on its own (no play button / CTA) only when there is no video
+  const sectionImage = !videoSrc ? mediaUrl(data?.section_image) : "";
   const { heading, sub_heading, short_text, cta_text } = data || {};
   const label = cta_text;
   const testimonial = data?.testimonial_ui === "enable";
@@ -78,7 +82,7 @@ export default function HomeIntroVideo({ data }) {
     return () => window.removeEventListener("message", onMessage);
   }, [playing, player]);
 
-  if (!hasText(heading) && !words.length && !hasText(short_text) && !hasText(sub_heading) && !videoSrc) return null;
+  if (!hasText(heading) && !words.length && !hasText(short_text) && !hasText(sub_heading) && !videoSrc && !sectionImage) return null;
 
   // Subscribe to the embed's play / pause events once its player has loaded
   const onEmbedLoad = () => {
@@ -224,6 +228,12 @@ export default function HomeIntroVideo({ data }) {
             </div>
           )}
         </div>
+
+        {sectionImage && (
+          <div className="relative w-full lg:w-[568px] aspect-[568/320] shrink-0 overflow-hidden rounded-[4.675px] max-md:rounded-lg bg-(--color-dark-petrol)">
+            <Image src={sectionImage} alt={data?.section_image?.alt || ""} fill sizes="(min-width: 1024px) 568px, 100vw" className="object-cover" />
+          </div>
+        )}
 
         {videoSrc && (
           <div className="group relative w-full lg:w-[568px] aspect-[568/320] shrink-0 overflow-hidden rounded-[4.675px] max-md:rounded-lg bg-(--color-dark-petrol)">
