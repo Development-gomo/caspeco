@@ -7,7 +7,7 @@
 // background_color (used when there is no image), hero_height (25–100, % of the viewport), enable_overlay (button group "enable"/"disable"; dark overlay over bg_image).
 // mobile_bg_image / mobile_bg_video (optional, < md only): replace bg_image / bg_video on mobile, each falling back to the default; neither set → the original render.
 // heading_tag (h1 / h2 / p, default h1) only swaps the heading's HTML tag — same type style. content_alignmenet (left / center / right) aligns the text block.
-// short_text lists (ul) use the brand yellow bullets (.cs-list).
+// short_text lists (ul) use white ticks (.cs-list.cs-ticks.cs-ticks-white).
 
 "use client";
 
@@ -135,7 +135,7 @@ export default function InnerHero({ data, lang = DEFAULT_LANG }) {
               initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.2 }}
-              className="cs-rich cs-list font-medium text-base leading-[22px] lg:max-w-[850px] lg:text-[24px] lg:leading-7 lg:tracking-[-0.48px]"
+              className="cs-rich cs-list cs-ticks cs-ticks-white font-medium text-base leading-[22px] lg:max-w-[850px] lg:text-[24px] lg:leading-7 lg:tracking-[-0.48px]"
               dangerouslySetInnerHTML={{ __html: toHtml(shortText) }}
             />
           )}
