@@ -14,6 +14,7 @@
 import React from "react";
 import Image from "next/image";
 import ArrowLink from "@/components/ui/ArrowLink";
+import CtaButton from "@/components/ui/CtaButton";
 import { MOBILE_SLIDE, MOBILE_TRACK, SliderPoints } from "@/components/ui/MobileSlider";
 import { DEFAULT_LANG, langHref } from "@/config";
 import { hasText, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
@@ -62,7 +63,8 @@ function ProductCard({ card, lang, zoom = false }) {
   );
 }
 
-export default function HomeProductCards({ data, lang = DEFAULT_LANG, mobileBleed = true }) {
+// cta ({ text, href }, optional): outline button under the intro text (dynamic_product_card_section); other callers pass none
+export default function HomeProductCards({ data, lang = DEFAULT_LANG, mobileBleed = true, cta = null }) {
   const cards = rows(data?.cards).filter((c) => c.title);
   const { heading, short_text, tagline } = data || {};
   const hasHeading = hasText(heading);
@@ -86,6 +88,11 @@ export default function HomeProductCards({ data, lang = DEFAULT_LANG, mobileBlee
             <p className="text-[14px] lg:text-[16px] font-medium leading-5 tracking-[-0.32px] text-(--color-heading) max-md:mt-1 max-md:text-[18px] max-md:font-bold max-md:leading-[22px] max-md:tracking-[-0.36px]">
               {tagline}
             </p>
+          )}
+          {cta?.text && cta?.href && (
+            <CtaButton variant="outline-dark-grey" href={langHref(cta.href, lang)} className="mt-4 max-md:mt-2 self-start">
+              {cta.text}
+            </CtaButton>
           )}
         </div>
         )}
