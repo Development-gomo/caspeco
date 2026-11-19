@@ -1076,6 +1076,12 @@ span.subheading-label.text-\[var\(--color-accent\)\],
 .cs-list li::before { content: ""; position: absolute; left: 0; top: calc(0.5lh - 4px); width: 8px; height: 8px; border-radius: 9999px; background: var(--color-yellow); }
 /* QA slide 20: content_section lists (IcpIntro adds .cs-ticks) use the grey tick of CheckList instead of the yellow dot; other .cs-list users keep the dot for now */
 .cs-list.cs-ticks li::before { top: calc(0.5lh - 8px); width: 14px; height: 16px; border-radius: 0; background: url("/icons/home/check.svg") no-repeat center / 14px 16px; }
+/* hero (dark background): same tick turned white */
+.cs-list.cs-ticks.cs-ticks-white li::before { filter: brightness(0) invert(1); }
+/* FAQ answers (HomeFaq): bullet lists get a black tick; text stays at the old 24px start (ordered lists untouched) */
+.cs-faq-ticks ul { list-style: none; padding-left: 0; }
+.cs-faq-ticks ul > li { position: relative; padding-left: 24px; }
+.cs-faq-ticks ul > li::before { content: ""; position: absolute; left: 0; top: calc(0.5lh - 8px); width: 14px; height: 16px; background: url("/icons/home/check.svg") no-repeat center / 14px 16px; filter: brightness(0); }
 .cs-list li a { text-decoration: underline; text-underline-offset: 2px; }
 /* Headings typed into the rich text (h2 / h3): site heading scale instead of the bare global h tag */
 .cs-list :is(h2, h3, h4) { font-family: var(--font-primary); text-transform: none; color: inherit; margin: 24px 0 8px; }
