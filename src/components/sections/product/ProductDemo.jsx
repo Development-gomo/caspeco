@@ -14,15 +14,15 @@
 
 import React from "react";
 import Image from "next/image";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import CtaButton from "@/components/ui/CtaButton";
 import Reveal from "@/components/ui/Reveal";
 import UspLine from "../../../../public/icons/product/usp-line.svg";
 import { DEFAULT_LANG, langHref } from "@/config";
 import { hasText, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
 
-// Scroll-linked slide of the device image (client QA slide 81): it follows the scroll from the right (+SLIDE px) to its
-// place as the section moves from the bottom of the viewport to its centre, and back again when scrolling up.
+// Slide of the device image (client QA slides 81 + 88): it slides in from the right (+SLIDE px) once, as soon as it is
+// visible, and then stays (no scroll-linked slide back out).
 const SLIDE = 240;
 
 const GRADIENT = "linear-gradient(180deg, rgba(255,255,255,0.5) 0.94%, #dadcdd 80.71%)";
@@ -32,15 +32,11 @@ export default function ProductDemo({ data, lang = DEFAULT_LANG }) {
   const { heading, short_text, cta_text, cta_url, image } = data || {};
   const hover = mediaUrl(data?.hover_image); // optional, cross-fades in on hover / tap
   const [active, setActive] = React.useState(false);
-  const sectionRef = React.useRef(null);
   const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "center center"] });
-  const slideX = useTransform(scrollYProgress, [0, 1], [reduce ? 0 : SLIDE, 0]);
-  const slideOpacity = useTransform(scrollYProgress, [0, 0.35], [0.2, 1]);
   if (!hasText(heading)) return null;
 
   return (
-    <section ref={sectionRef} className="overflow-hidden py-18 lg:py-36 max-md:py-16" style={sectionBackground(data, { backgroundImage: GRADIENT })}>
+    <section className="overflow-hidden py-18 lg:py-36 max-md:py-16" style={sectionBackground(data, { backgroundImage: GRADIENT })}>
       <div className="cs-container relative flex flex-col gap-12 lg:flex-row lg:items-center lg:justify-between xl:min-h-[532px]">
         <Reveal className="flex flex-col items-start gap-4 lg:max-w-[488px] lg:shrink-0">
           <div className="flex flex-col gap-5 max-md:gap-4">
@@ -79,7 +75,10 @@ export default function ProductDemo({ data, lang = DEFAULT_LANG }) {
           // On scroll it slides in from the right, tied to the scroll position (slideX).
           <div className="flex w-full justify-center max-md:order-first max-md:-mx-6 max-md:w-[calc(100%+48px)] max-md:justify-start lg:absolute lg:left-[max(745px,calc(50vw-11px))] lg:top-0 lg:w-[696px]">
             <motion.div
-              style={{ x: slideX, opacity: reduce ? 1 : slideOpacity }}
+              initial={reduce ? false : { x: SLIDE, opacity: 0 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              viewport={{ once: true, amount: 0.25 }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
               {...(hover && {
                 role: "button",
                 tabIndex: 0,
