@@ -97,7 +97,7 @@ export default function IcpIntro({ data, lang = DEFAULT_LANG }) {
               // Figma: Regular 20/24 #3F3E3C; the emphasised phrase is Medium Italic #000
               // Mobile: 18/20 (Opening soon) or 16/20 (Levelling up, rolling heading); emphasis on the same 20px line
               <div
-                className={`cs-p2 cs-rich text-(--color-grey-dark) [&_em]:font-medium [&_em]:leading-8 [&_em]:text-(--color-heading) [&_strong]:font-medium [&_strong]:leading-8 [&_strong]:text-(--color-heading) max-md:[&_em]:text-(--color-grey-dark) max-md:[&_strong]:text-(--color-grey-dark) max-md:leading-5! max-md:[&_em]:leading-5 max-md:[&_strong]:leading-5 ${data?.listStyle ? "cs-list" : ""} ${rolling.length ? "max-w-[474px] max-md:text-[16px]! max-md:tracking-[-0.32px]!" : "max-w-[600px]"}`}
+                className={`cs-p2 cs-rich text-(--color-grey-dark) [&_em]:font-medium [&_em]:leading-8 [&_em]:text-(--color-heading) [&_strong]:font-medium [&_strong]:leading-8 [&_strong]:text-(--color-heading) max-md:[&_em]:text-(--color-grey-dark) max-md:[&_strong]:text-(--color-grey-dark) max-md:leading-5! max-md:[&_em]:leading-5 max-md:[&_strong]:leading-5 ${data?.listStyle ? "cs-list cs-ticks" : ""} ${rolling.length ? "max-w-[474px] max-md:text-[16px]! max-md:tracking-[-0.32px]!" : "max-w-[600px]"}`}
                 dangerouslySetInnerHTML={{ __html: toHtml(text) }}
               />
             )}

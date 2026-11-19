@@ -1074,6 +1074,8 @@ span.subheading-label.text-\[var\(--color-accent\)\],
 .cs-list li + li { margin-top: 16px; }
 /* top: half the line box minus half the 8px dot, so it centres on the first line at every breakpoint (lh = line-height) */
 .cs-list li::before { content: ""; position: absolute; left: 0; top: calc(0.5lh - 4px); width: 8px; height: 8px; border-radius: 9999px; background: var(--color-yellow); }
+/* QA slide 20: content_section lists (IcpIntro adds .cs-ticks) use the grey tick of CheckList instead of the yellow dot; other .cs-list users keep the dot for now */
+.cs-list.cs-ticks li::before { top: calc(0.5lh - 8px); width: 14px; height: 16px; border-radius: 0; background: url("/icons/home/check.svg") no-repeat center / 14px 16px; }
 .cs-list li a { text-decoration: underline; text-underline-offset: 2px; }
 /* Headings typed into the rich text (h2 / h3): site heading scale instead of the bare global h tag */
 .cs-list :is(h2, h3, h4) { font-family: var(--font-primary); text-transform: none; color: inherit; margin: 24px 0 8px; }
