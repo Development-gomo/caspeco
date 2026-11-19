@@ -161,9 +161,9 @@ async function prefetchSectionData(sections, lang) {
     )
       needs.logos = true;
     if (block._layout === "insights_section") {
-      const ids = Array.isArray(block.posts)
-        ? block.posts.map((p) => (typeof p === "object" ? p.ID || p.id : p))
-        : [];
+      // hand-picked posts: ACF field "select_post" (current), "posts" (older rows)
+      const picked = [block.select_post, block.posts].find((v) => Array.isArray(v) && v.length) || [];
+      const ids = picked.map((p) => (typeof p === "object" ? p.ID || p.id : p));
       if (ids.length) pickedPostIds.push(...ids);
       else needs.posts = true;
     }
