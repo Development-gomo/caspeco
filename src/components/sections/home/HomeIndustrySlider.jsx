@@ -15,7 +15,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { FreeMode, Mousewheel } from "swiper/modules";
+import { FreeMode, Keyboard, Mousewheel } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/free-mode";
 import DefaultIcon from "../../../../public/icons/home/industry-icon.svg";
@@ -24,8 +24,10 @@ import SliderArrows from "@/components/ui/SliderArrows";
 import { DEFAULT_LANG, entryHref, langHref } from "@/config";
 import { hasText, mediaUrl, sectionBackground, toHtml } from "@/lib/content";
 
-const SWIPER_MODULES = [FreeMode, Mousewheel];
+const SWIPER_MODULES = [FreeMode, Mousewheel, Keyboard];
 const FREE_MODE = { enabled: true, sticky: true };
+// QA slide 67: left / right arrow keys page the cards (only while the slider is in the viewport)
+const KEYBOARD = { enabled: true, onlyInViewport: true };
 const WHEEL = { forceToAxis: true };
 
 // CPT entry → card data
@@ -200,6 +202,7 @@ export default function HomeIndustrySlider({ data, lang = DEFAULT_LANG, prefetch
               modules={SWIPER_MODULES}
               freeMode={FREE_MODE}
               mousewheel={WHEEL}
+              keyboard={KEYBOARD}
               slidesPerView="auto"
               spaceBetween={32}
               breakpoints={{ 768: { spaceBetween: 24 }, 1024: { spaceBetween: 48 } }}
