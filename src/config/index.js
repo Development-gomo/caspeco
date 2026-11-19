@@ -6,6 +6,13 @@ export const DEFAULT_LANG = process.env.NEXT_PUBLIC_DEFAULT_LANG || "sv";
 // CMS host never appears client-side; Next compiles `typeof window` away per bundle.
 export const WP_BASE = typeof window === "undefined" ? process.env.NEXT_PUBLIC_WP_BASE : "/api/content";
 
+// Public site origin without a trailing slash: SITE_URL, else the Vercel production domain, else "".
+// Reads process.env at call time only, so nothing is inlined into a client bundle.
+export function siteUrl() {
+  const raw = process.env.SITE_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "");
+  return raw.replace(/\/+$/, "");
+}
+
 // ─── Add new languages here — everything else updates automatically ───────────
 // Codes must match the WPML language codes in WordPress.
 // NOTE: an sv page whose slug equals a language code (or "sv") can't be reached: /{slug} is read as a

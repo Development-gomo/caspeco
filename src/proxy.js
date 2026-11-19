@@ -3,7 +3,7 @@
 // 2. Fetches redirects straight from the WP Redirection API (lib/redirects.js) and applies them.
 
 import { NextResponse } from "next/server";
-import { SUPPORTED_LANGS, DEFAULT_LANG, pageTypeFromPath } from "@/config";
+import { SUPPORTED_LANGS, DEFAULT_LANG, pageTypeFromPath, siteUrl } from "@/config";
 import { fetchRules, normalizeRules, matchRedirect } from "@/lib/redirects";
 
 // ─── In-memory redirect cache ────────────────────────────────────────────────
@@ -55,14 +55,13 @@ export async function proxy(request, event) {
   const { pathname, search, origin } = request.nextUrl;
 
   // Serve custom robots.txt with Content-Signal directives.
-  // Middleware intercepts before the static robots.js metadata route runs.
+  // This proxy is the only source of /robots.txt (there is no app/robots.js).
   if (pathname === "/robots.txt") {
-    const siteUrl = process.env.SITE_URL;
     const body = [
       "User-agent: *",
       "Allow: /",
       "Disallow: /api/",
-      `Sitemap: ${siteUrl}/sitemap.xml`,
+      `Sitemap: ${siteUrl()}/sitemap.xml`,
       "",
       "# AI content usage preferences (contentsignals.org)",
       "Content-Signal: ai-train=no, search=yes, ai-input=no",

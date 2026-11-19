@@ -1,9 +1,12 @@
 /** @type {import('next').NextConfig} */
-import { SUPPORTED_LANGS, DEFAULT_LANG, legacyBaseRedirects } from "./src/config/index.js";
+import { SUPPORTED_LANGS, DEFAULT_LANG, legacyBaseRedirects, siteUrl } from "./src/config/index.js";
 
 const wpHostname = new URL(process.env.NEXT_PUBLIC_WP_BASE).hostname;
 // WP site URL without /wp-json — media is served from it under /assets (see src/lib/wpMask.js)
 const wpSite = process.env.NEXT_PUBLIC_WP_BASE.replace(/\/wp-json\/?$/, "").replace(/\/$/, "");
+if (process.env.VERCEL_ENV === "production" && !process.env.SITE_URL) {
+  console.warn("[config] SITE_URL is not set on a production build: falling back to VERCEL_PROJECT_PRODUCTION_URL for the sitemap, robots.txt and Link header. Set SITE_URL to the public origin.");
+}
 const nonDefaultLangs = SUPPORTED_LANGS.filter((l) => l !== DEFAULT_LANG);
 
 const nextConfig = {
@@ -21,8 +24,8 @@ const nextConfig = {
   },
 
   async headers() {
-    const siteUrl = process.env.SITE_URL;
-    return [ 
+    const site = siteUrl();
+    return [
       {
         source: "/(.*)",
         headers: [
@@ -37,7 +40,7 @@ const nextConfig = {
         headers: [
           {
             key: "Link",
-            value: `<${siteUrl}/sitemap.xml>; rel="sitemap", <${siteUrl}/robots.txt>; rel="robots"`,
+            value: `<${site}/sitemap.xml>; rel="sitemap", <${site}/robots.txt>; rel="robots"`,
           },
         ],
       },
