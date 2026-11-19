@@ -89,13 +89,13 @@ function QuoteCard({ card, lang, accent, readMore }) {
           </span>
         )}
         {card.link_text && (card.href || card.link_url) && (
-          <ArrowLink tone="light" href={card.href || langHref(card.link_url.trim(), lang)} className="shrink-0">
+          <ArrowLink tone="light" href={card.href || langHref(card.link_url.trim(), lang)} className="relative z-10 shrink-0">
             {card.link_text}
           </ArrowLink>
         )}
         {card.slug && (
           // desktop (>= 768): same text link, bottom-right in the name/company row (mobile: the absolute link below)
-          <Link href={entryHref("casestudy", card.slug, lang)} draggable={false} className="group flex shrink-0 items-center gap-2 whitespace-nowrap text-[16px] leading-5 font-medium tracking-[-0.32px] text-[#FDFDFD] max-md:hidden">
+          <Link href={entryHref("casestudy", card.slug, lang)} draggable={false} className="group relative z-10 flex shrink-0 items-center gap-2 whitespace-nowrap text-[16px] leading-5 font-medium tracking-[-0.32px] text-[#FDFDFD] max-md:hidden">
             <span className="underline decoration-1 underline-offset-2">{readMore}</span>
             <CaseArrow className="transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
@@ -103,8 +103,12 @@ function QuoteCard({ card, lang, accent, readMore }) {
       </figcaption>
       </div>
       {card.slug && (
+        // QA slide 86: invisible link over the whole card (the text links above sit on z-10, so they still win)
+        <Link href={entryHref("casestudy", card.slug, lang)} draggable={false} tabIndex={-1} aria-hidden className="absolute inset-0 rounded-lg" />
+      )}
+      {card.slug && (
         // mobile only: text link + 16px arrow, bottom-right (17.81 from the edges)
-        <Link href={entryHref("casestudy", card.slug, lang)} draggable={false} className="absolute right-[17.81px] bottom-[17.81px] hidden items-center gap-2 text-[16px] leading-5 font-medium tracking-[-0.32px] text-[#FDFDFD] max-md:flex">
+        <Link href={entryHref("casestudy", card.slug, lang)} draggable={false} className="absolute right-[17.81px] bottom-[17.81px] z-10 hidden items-center gap-2 text-[16px] leading-5 font-medium tracking-[-0.32px] text-[#FDFDFD] max-md:flex">
           <span className="underline decoration-1 underline-offset-2">{readMore}</span>
           <CaseArrow />
         </Link>

@@ -98,7 +98,8 @@ export default function CaseCard({ item, lang = DEFAULT_LANG, readMore, index = 
       <ArrowLink
         tone="light"
         href={entryHref("casestudy", item.slug, lang)}
-        className="mt-4 self-end"
+        // after: stretches the link over the whole card (QA slide 86: the full card is clickable)
+        className="mt-4 self-end after:absolute after:inset-0 after:content-['']"
       >
         {readMore}
       </ArrowLink>
