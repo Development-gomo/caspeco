@@ -19,27 +19,56 @@ const revalidateFor = (seconds) => {
 // That used to become null -> "page not found" and the 404 was then cached by ISR ("refresh twice" to get the page).
 // Now a failed attempt is retried (fresh, uncached) and only a still-failing request returns null.
 // null always means "the request failed"; a real "not found" is an empty list / WP error object.
+// Rules: each attempt times out after 8s; 403 (security plugin / WAF block) is a failure and is not retried
+// (retrying would feed a lockout); 408 / 429 / 5xx / network errors / non-JSON bodies are retried; other 4xx
+// (rest_no_route, 400, 401) are final answers. Returns { data, total, totalPages } (WP paging headers) or null.
 const RETRIES = 2;
+const TIMEOUT_MS = 8000;
 const _fetchWP = cache(async function _fetchWP(url, revalidate) {
   for (let attempt = 0; attempt <= RETRIES; attempt++) {
     try {
-      const res = await fetch(url, attempt === 0 ? { next: { revalidate: revalidateFor(revalidate) } } : { cache: "no-store" });
-      // other 4xx (e.g. rest_no_route) are final answers; 408 / 429 and 5xx are worth retrying
+      const init = attempt === 0 ? { next: { revalidate: revalidateFor(revalidate) } } : { cache: "no-store" };
+      const res = await fetch(url, { ...init, signal: AbortSignal.timeout(TIMEOUT_MS) });
+      // 403 = security plugin / WAF block (AIOS): a failure, never "not found"; not retried (don't feed a lockout)
+      if (res.status === 403) return null;
+      // 2xx, and other 4xx except 408/429 (rest_no_route, rest_post_invalid_id, 401 rest_forbidden, 400) are final answers
       const final = res.ok || (res.status >= 400 && res.status < 500 && res.status !== 408 && res.status !== 429);
-      if (final) return maskWp(await res.json()); // an HTML body throws here and is retried
+      if (final) {
+        return {
+          data: maskWp(await res.json()), // an HTML body throws here and is retried
+          total: Number(res.headers.get("x-wp-total")) || 0,
+          totalPages: Number(res.headers.get("x-wp-totalpages")) || 0,
+        };
+      }
     } catch {
-      // network error or non-JSON body: retry
+      // network error, TimeoutError or non-JSON body: retry
     }
     if (attempt < RETRIES) await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
   }
   return null;
 });
 
-// Generic fetch helper with ISR revalidation (60s by default).
-export function fetchWP(endpoint, { revalidate = 60 } = {}) {
-  const url = `${WP_BASE}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
-  return _fetchWP(url, revalidate);
+const wpUrl = (endpoint) => `${WP_BASE}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
+
+// Generic fetch helper with ISR revalidation (60s by default). Returns the parsed JSON (a list, an object, or a
+// WP error object) or null when the request failed.
+export async function fetchWP(endpoint, { revalidate = 60 } = {}) {
+  const r = await _fetchWP(wpUrl(endpoint), revalidate);
+  return r ? r.data : null;
 }
+
+// Same request, plus WP's paging totals: { data, total, totalPages } | null
+export function fetchWPPaged(endpoint, { revalidate = 60 } = {}) {
+  return _fetchWP(wpUrl(endpoint), revalidate);
+}
+
+// WP REST error object, e.g. { code: "rest_no_route", message: "...", data: { status: 404 } }
+export function isWpError(x) {
+  return !!x && typeof x === "object" && !Array.isArray(x) && typeof x.code === "string" && typeof x.message === "string";
+}
+
+// A failed request (null) or a WP error object becomes an empty list, so the section is hidden instead of crashing the page
+const asList = (x) => (Array.isArray(x) ? x : []);
 
 // Pages
 async function getSingleEntry(endpoint, slug, lang = DEFAULT_LANG, query = "") {
@@ -197,24 +226,19 @@ export async function getPostBySlug(slug, lang = DEFAULT_LANG) {
 }
 
 export async function getAllTeam(lang = DEFAULT_LANG) {
-  return await fetchWP(
-    `/wp/v2/teammembers?per_page=100&_embed&lang=${lang}`
-  );
+  return asList(await fetchWP(`/wp/v2/teammembers?per_page=100&_embed&lang=${lang}`));
 }
 
 export async function getMediaById(id) {
   if (!id) return null;
-  try {
-    return await fetchWP(`/wp/v2/media/${id}`);
-  } catch (err) {
-    return null;
-  }
+  const m = await fetchWP(`/wp/v2/media/${id}`);
+  return isWpError(m) ? null : m;
 }
 
 // Theme options (logo, header menu, footer, logo galleries). A language whose options
 // pages aren't translated in WPML returns [] (e.g. nl) — fall back to the default
 // language so the header/footer never render empty.
-const hasOptions = (o) => o && !Array.isArray(o) && typeof o === "object" && Object.keys(o).length > 0;
+const hasOptions = (o) => !!o && typeof o === "object" && !Array.isArray(o) && !isWpError(o) && Object.keys(o).length > 0;
 
 export async function getThemeOptions(lang = DEFAULT_LANG) {
   try {
@@ -246,11 +270,11 @@ export async function getLogoGalleries(lang = DEFAULT_LANG) {
 }
 
 export async function getCaseStudies(lang = DEFAULT_LANG) {
-  return await fetchWP(`/wp/v2/casestudies?lang=${lang}&per_page=100&_embed`);
+  return asList(await fetchWP(`/wp/v2/casestudies?lang=${lang}&per_page=100&_embed`));
 }
 
 export async function getAllPosts(lang) {
-  return fetchWP(`/wp/v2/posts?lang=${lang}&per_page=10&_embed`);
+  return asList(await fetchWP(`/wp/v2/posts?lang=${lang}&per_page=10&_embed`));
 }
 
 // Case studies for the Business Twin section — newest first, without the post body
@@ -278,18 +302,9 @@ export async function getCategoriesByIds(ids, lang = DEFAULT_LANG) {
 
 // One page of posts plus WP's totals (X-WP-Total / X-WP-TotalPages) for "Load more"
 export async function getPostsPage(lang = DEFAULT_LANG, page = 1, perPage = POSTS_PER_PAGE) {
-  try {
-    const res = await fetch(`${WP_BASE}${postsPageQuery(lang, page, perPage)}`, { next: { revalidate: revalidateFor(60) } });
-    if (!res.ok) return { posts: [], total: 0, totalPages: 0 };
-    const posts = maskWp(await res.json());
-    return {
-      posts: Array.isArray(posts) ? posts : [],
-      total: Number(res.headers.get("x-wp-total")) || 0,
-      totalPages: Number(res.headers.get("x-wp-totalpages")) || 0,
-    };
-  } catch {
-    return { posts: [], total: 0, totalPages: 0 };
-  }
+  const r = await fetchWPPaged(postsPageQuery(lang, page, perPage));
+  const posts = asList(r?.data);
+  return { posts, total: posts.length ? r.total : 0, totalPages: posts.length ? r.totalPages : 0 };
 }
 
 export async function getPostsByIds(ids, lang) {
@@ -305,11 +320,11 @@ export async function getProductsByIds(ids, lang = DEFAULT_LANG) {
 }
 
 export async function getAllProducts(lang = DEFAULT_LANG) {
-  return await fetchWP(`/wp/v2/products?lang=${lang}&per_page=100&_embed`);
+  return asList(await fetchWP(`/wp/v2/products?lang=${lang}&per_page=100&_embed`));
 }
 
 export async function getAllIndustries(lang = DEFAULT_LANG) {
-  return await fetchWP(`/wp/v2/industries?lang=${lang}&per_page=100&_embed`);
+  return asList(await fetchWP(`/wp/v2/industries?lang=${lang}&per_page=100&_embed`));
 }
 
 // WPML translation map for one entry: { "<lang>": { id, slug, title, lang } } (includes the current lang).
@@ -319,7 +334,7 @@ export async function getTranslationMap(entryId, lang = DEFAULT_LANG) {
   // every route is dynamic (headers() in the root layout) → build-time renders are discarded; don't spend WP calls on them
   if (process.env.NEXT_PHASE === "phase-production-build") return null;
   const map = await fetchWP(`/myroutes/v1/translations/${entryId}?lang=${lang}`, { revalidate: 300 });
-  const ok = map && typeof map === "object" && !Array.isArray(map) && !map.code &&
+  const ok = map && typeof map === "object" && !Array.isArray(map) && !isWpError(map) &&
     Object.values(map).some((t) => typeof t?.slug === "string" && t.slug);
   return ok ? map : null;
 }
@@ -392,7 +407,8 @@ export function getTeamImage(member) {
 
 // ✅ schema endpoint you already exposed
 export async function getCf7FormSchema(formId, lang = DEFAULT_LANG) {
-  return await fetchWP(`/headless/v1/cf7-form/${formId}?lang=${lang}`);
+  const s = await fetchWP(`/headless/v1/cf7-form/${formId}?lang=${lang}`);
+  return isWpError(s) ? null : s;
 }
 
 // ✅ recommended: submit via your proxy endpoint (stable)
