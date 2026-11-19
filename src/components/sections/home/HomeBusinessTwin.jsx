@@ -156,7 +156,7 @@ function CaseCard({ match, lang, clipText, readMoreText }) {
         )}
         {readMoreText && match.slug && (
           // mobile: Tenon Bold 16/20 and a 16px-wide arrow (8px gap from ArrowLink)
-          <ArrowLink tone="light" href={entryHref("casestudy", match.slug, lang)} className="max-md:font-bold max-md:[&_img]:h-auto max-md:[&_img]:w-4">
+          <ArrowLink tone="light" href={entryHref("casestudy", match.slug, lang)} className="max-md:font-bold max-md:[&_img]:h-auto max-md:[&_img]:w-4 after:absolute after:inset-0 after:content-['']">
             {readMoreText}
           </ArrowLink>
         )}
