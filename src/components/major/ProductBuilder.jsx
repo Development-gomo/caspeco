@@ -12,6 +12,7 @@ import PageBuilder from "./PageBuilder";
 import Reveal from "@/components/ui/Reveal";
 import { withSpacing } from "@/components/ui/SectionSpacing";
 import ProductRelated from "../sections/product/ProductRelated";
+import DynamicProductCards from "../sections/product/DynamicProductCards";
 import IcpContactFormSection from "@/components/sections/contact-form/IcpContactFormSection";
 import { getTwinCaseStudies, getMediaByIds, getLogoGalleries } from "@/lib/api";
 import { mapTwinCases, twinMediaIds } from "@/lib/caseStudies";
@@ -91,6 +92,14 @@ export default async function ProductBuilder({ sections: rawSections, lang = DEF
             return (
               <Reveal key={i} y={40}>
                 {withSpacing(block, <ProductRelated data={{ ...block, bg_color: block.bg_color || CARDS_GRADIENT }} lang={lang} currentId={currentId} />)}
+              </Reveal>
+            );
+
+          // Industry pages: same cards, products picked in select_products (else the latest 4)
+          case "dynamic_product_card_section":
+            return (
+              <Reveal key={i} y={40}>
+                {withSpacing(block, <DynamicProductCards data={{ ...block, bg_color: block.bg_color || CARDS_GRADIENT }} lang={lang} currentId={currentId} />)}
               </Reveal>
             );
 
