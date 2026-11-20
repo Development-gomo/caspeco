@@ -9,7 +9,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 
-import { DEFAULT_LANG } from "@/config";
+import { DEFAULT_LANG, normalizeHref } from "@/config";
 import CtaButton from "@/components/ui/CtaButton";
 import CaseCard from "@/components/ui/CaseCard";
 import { hasText, sectionBackground, toHtml } from "@/lib/content";
@@ -107,7 +107,7 @@ export default function CaseStudyListing({
             ) : null}
 
             {hasCta && (
-              <CtaButton href={cta_url}>{cta_text}</CtaButton>
+              <CtaButton href={normalizeHref(cta_url)}>{cta_text}</CtaButton>
             )}
           </div>
           )}

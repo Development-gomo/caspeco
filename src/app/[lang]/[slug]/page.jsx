@@ -30,6 +30,7 @@ export default async function SinglePage({ params }) {
   const lang = parsed?.lang || DEFAULT_LANG;
   const slug = parsed?.slug;
 
+  if (!SUPPORTED_LANGS.includes(lang)) notFound();
   if (!slug) notFound();
 
   const [data, themeOptions] = await Promise.all([
@@ -58,6 +59,7 @@ export async function generateMetadata({ params }) {
   const resolved = await params;
   const parsed = resolveParams(resolved);
   const lang = parsed?.lang || DEFAULT_LANG;
+  if (!SUPPORTED_LANGS.includes(lang)) return buildMetadataFromYoast(null, { fallbackTitle: "Caspeco", lang: DEFAULT_LANG });
   const slug = parsed?.slug;
   const data = await getPageBySlug(slug, lang);
   // child pages 404 here (they live under their parent), so they get no canonical/robots

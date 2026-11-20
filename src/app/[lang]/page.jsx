@@ -19,6 +19,7 @@ export async function generateStaticParams() {
 export default async function LangHomePage({ params }) {
   const resolvedParams = resolveParams(await params);
   const lang = resolvedParams.lang || DEFAULT_LANG;
+  if (!SUPPORTED_LANGS.includes(lang)) notFound();
 
   // Fetch page + header/footer data in parallel (single round-trip)
   const [page, themeOptions] = await Promise.all([
@@ -46,6 +47,9 @@ export default async function LangHomePage({ params }) {
 
 export async function generateMetadata({ params }) {
   const resolvedParams = resolveParams(await params);
+  if (!SUPPORTED_LANGS.includes(resolvedParams.lang)) {
+    return buildMetadataFromYoast(null, { fallbackTitle: "Caspeco", lang: DEFAULT_LANG });
+  }
   const page = await getPageBySlug("frontpage", resolvedParams.lang);
   return buildMetadataFromYoast(page, {
     lang: resolvedParams.lang,

@@ -5,7 +5,7 @@ import React from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import CtaButton from "@/components/ui/CtaButton";
 import HeroLabels from "@/components/ui/HeroLabels";
-import { DEFAULT_LANG } from "@/config";
+import { DEFAULT_LANG, normalizeHref } from "@/config";
 import { breakAfterPeriods, hasText } from "@/lib/content";
 
 // Mobile = below Tailwind md (768px) — same query as HomeHelpTabs / ProductTestimonials
@@ -160,12 +160,12 @@ export default function HomeHero({ data, lang = DEFAULT_LANG }) {
           {(primaryCtaText || secondaryCtaText) && (
             <div className="flex flex-wrap items-center gap-6">
               {primaryCtaText && primaryCtaUrl && (
-                <CtaButton href={primaryCtaUrl}>{primaryCtaText}</CtaButton>
+                <CtaButton href={normalizeHref(primaryCtaUrl)}>{primaryCtaText}</CtaButton>
               )}
 
               {secondaryCtaText && secondaryCtaUrl && (
                 // Figma hero "Light / Secondary" button, 24px right of the primary
-                <CtaButton variant="outline-light-gold" href={secondaryCtaUrl}>
+                <CtaButton variant="outline-light-gold" href={normalizeHref(secondaryCtaUrl)}>
                   {secondaryCtaText}
                 </CtaButton>
               )}

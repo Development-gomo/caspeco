@@ -50,7 +50,9 @@ export async function generateStaticParams() {
 }
 
 // Shared by the page and generateMetadata (fetches are deduped by fetchWP as well)
-const resolveRoute = cache(async (lang, segments) => {
+// Keyed on a string: React's cache() compares arguments by identity, so an array would never hit.
+const resolveRoute = cache(async (lang, key) => {
+  const segments = JSON.parse(key);
   const [base, slug] = segments;
   const type = segments.length === 2 ? typeFromBase(base, lang) : null;
 
@@ -105,25 +107,35 @@ const resolveRoute = cache(async (lang, segments) => {
   return null;
 });
 
+// null on a malformed %-escape (decodeURIComponent throws) -> treated as an unknown URL
+function decodeSegments(list) {
+  try {
+    return list.map((s) => decodeURIComponent(s));
+  } catch {
+    return null;
+  }
+}
+
 async function segmentsFromParams(params) {
   const parsed = resolveParams(await params);
   const lang = parsed?.lang || DEFAULT_LANG;
+  if (!SUPPORTED_LANGS.includes(lang)) return { lang: DEFAULT_LANG, segments: null };
   const rest = Array.isArray(parsed?.rest) ? parsed.rest : [parsed?.rest].filter(Boolean);
-  const segments = [parsed?.slug, ...rest].filter(Boolean).map((s) => decodeURIComponent(s));
-  return { lang, segments };
+  return { lang, segments: decodeSegments([parsed?.slug, ...rest].filter(Boolean)) };
 }
+
+const lookup = (lang, segments) => (!segments || segments.length < 2 ? null : resolveRoute(lang, JSON.stringify(segments)));
 
 async function routeFromParams(params) {
   const { lang, segments } = await segmentsFromParams(params);
-  if (segments.length < 2) return { lang, route: null };
-  return { lang, route: await resolveRoute(lang, segments) };
+  return { lang, route: await lookup(lang, segments) };
 }
 
 export default async function LocalizedEntryPage({ params }) {
   const { lang, segments } = await segmentsFromParams(params);
   // header/footer options only depend on the language: fetch them alongside the route (never rejects)
   const themeOptionsPromise = getThemeOptions(lang);
-  const route = segments.length < 2 ? null : await resolveRoute(lang, segments);
+  const route = await lookup(lang, segments);
   if (!route) notFound();
 
   const themeOptions = await themeOptionsPromise;
