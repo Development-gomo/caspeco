@@ -304,13 +304,23 @@ function bubbleFrame(step, t) {
   let typed = 0;
   while (typed < step.times.length && step.times[typed] <= t) typed++;
   const caretOn = t >= step.start && t < step.caretOff && (t - step.start + T.caretPhase) % T.caretPeriod < T.caretPeriod / 2;
+  const x = SHIFT.bubbleX * shift;
+  const y = SHIFT.bubbleY * shift + out.y;
   return {
-    style: motionStyle({
-      opacity: easeOut(prog(d, 0, T.bubbleFade)) * out.fade,
-      x: SHIFT.bubbleX * shift,
-      y: SHIFT.bubbleY * shift + out.y,
-      blur: BLUR.bubble * (1 - easeInOut(prog(d, T.bubbleBlurHold, T.bubbleBlur))) + out.blur,
-    }),
+    style: {
+      ...motionStyle({
+        opacity: easeOut(prog(d, 0, T.bubbleFade)) * out.fade,
+        x,
+        y,
+        blur: BLUR.bubble * (1 - easeInOut(prog(d, T.bubbleBlurHold, T.bubbleBlur))) + out.blur,
+      }),
+      // Safari: the question text flickered because the bubble dropped out of / re-entered its own compositing layer
+      // (transform and filter switching on and off as the entrance settles), which flips the text anti-aliasing.
+      // A permanent translate3d keeps one stable layer for the whole life of the bubble.
+      transform: `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)`,
+      WebkitBackfaceVisibility: "hidden",
+      backfaceVisibility: "hidden",
+    },
     typed,
     caretOn,
   };
@@ -586,19 +596,28 @@ export default function CasperChatAnimation({ exchanges, suggestions, casperLabe
     if (!root) return undefined;
     let frame = 0;
     let alive = true;
-    const measure = () => {
+    let measuredKey = "";
+    // The fitted widths depend only on the root's size and the loaded fonts, so a pass is skipped when the root has not
+    // changed. Without this, Safari / WebKit looped forever: clearing the fitted widths resized the observed column and
+    // chips, which fired the observer again, which cleared the widths again - the question bubbles visibly flickered
+    // (Chrome settled after one pass). `force` is for the first pass and the font load.
+    const measure = (force) => {
       if (!alive) return;
+      const key = `${root.clientWidth}x${root.clientHeight}`;
+      if (!force && key === measuredKey) return;
+      measuredKey = key;
       flushSync(() => setLayout((l) => (l?.fits ? { ...l, fits: null } : l)));
       setLayout(readLayout(root));
     };
-    const schedule = () => {
+    const schedule = (force) => {
       cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(measure);
+      frame = requestAnimationFrame(() => measure(force === true));
     };
-    const ro = new ResizeObserver(schedule);
+    const ro = new ResizeObserver(() => schedule(false));
     ro.observe(root);
     root.querySelectorAll("[data-chat-column], [data-chat-chips]").forEach((el) => ro.observe(el));
-    document.fonts?.ready.then(schedule);
+    schedule(true);
+    document.fonts?.ready.then(() => schedule(true));
     return () => {
       alive = false;
       cancelAnimationFrame(frame);
@@ -616,7 +635,7 @@ export default function CasperChatAnimation({ exchanges, suggestions, casperLabe
   const fit = (key) => (layout?.fits?.[key] ? `${layout.fits[key]}px` : undefined);
 
   return (
-    <div ref={rootRef} className={`relative h-full w-full overflow-hidden text-[13.1px] leading-[15px] text-white ${className}`}>
+    <div ref={rootRef} className={`relative h-full w-full overflow-hidden text-[13.1px] leading-[15px] text-white antialiased ${className}`}>
       <div className="sr-only">
         {rows.map((ex, i) => (
           <React.Fragment key={i}>
