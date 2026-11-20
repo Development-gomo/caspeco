@@ -45,7 +45,8 @@ export default async function sitemap() {
   for (const type of CONTENT_TYPES) {
     const results = await Promise.all(
       SUPPORTED_LANGS.map((lang) =>
-        fetchWP(`${type.endpoint}?per_page=100&lang=${lang}`)
+        // only what's read below (count: terms; meta: Yoast noindex) — full items are ~1 MB per language
+        fetchWP(`${type.endpoint}?per_page=100&lang=${lang}&_fields=slug,parent,modified,date,meta,count`)
       )
     );
 

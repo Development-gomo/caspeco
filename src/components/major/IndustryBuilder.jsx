@@ -29,12 +29,14 @@ export default async function IndustryBuilder({ sections: rawSections, lang = DE
   const needsIndustries = sections.some((b) => b._layout === "industry_slider_section");
   // Testimonial carousel → slides/cards come from the case studies
   const needsCases = sections.some((b) => b._layout === "industry_testimonials_section");
-  const [industries, casePosts] = await Promise.all([
+  // the case media lookup is chained onto the case list, so it doesn't wait for the industries
+  const [industries, cases] = await Promise.all([
     needsIndustries ? getAllIndustries(lang) : null,
-    needsCases ? getTwinCaseStudies(lang) : null,
+    needsCases
+      ? getTwinCaseStudies(lang).then(async (casePosts) => (casePosts?.length ? mapTwinCases(casePosts, await getMediaByIds(twinMediaIds(casePosts))) : []))
+      : [],
   ]);
   const otherIndustries = Array.isArray(industries) ? industries.filter((p) => p.id !== currentId) : [];
-  const cases = casePosts?.length ? mapTwinCases(casePosts, await getMediaByIds(twinMediaIds(casePosts))) : [];
 
   return (
     <>

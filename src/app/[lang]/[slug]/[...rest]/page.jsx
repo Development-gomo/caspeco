@@ -105,20 +105,28 @@ const resolveRoute = cache(async (lang, segments) => {
   return null;
 });
 
-async function routeFromParams(params) {
+async function segmentsFromParams(params) {
   const parsed = resolveParams(await params);
   const lang = parsed?.lang || DEFAULT_LANG;
   const rest = Array.isArray(parsed?.rest) ? parsed.rest : [parsed?.rest].filter(Boolean);
   const segments = [parsed?.slug, ...rest].filter(Boolean).map((s) => decodeURIComponent(s));
+  return { lang, segments };
+}
+
+async function routeFromParams(params) {
+  const { lang, segments } = await segmentsFromParams(params);
   if (segments.length < 2) return { lang, route: null };
   return { lang, route: await resolveRoute(lang, segments) };
 }
 
 export default async function LocalizedEntryPage({ params }) {
-  const { lang, route } = await routeFromParams(params);
+  const { lang, segments } = await segmentsFromParams(params);
+  // header/footer options only depend on the language: fetch them alongside the route (never rejects)
+  const themeOptionsPromise = getThemeOptions(lang);
+  const route = segments.length < 2 ? null : await resolveRoute(lang, segments);
   if (!route) notFound();
 
-  const themeOptions = await getThemeOptions(lang);
+  const themeOptions = await themeOptionsPromise;
   const common = { lang, slug: route.slug, themeOptions };
 
   switch (route.type) {

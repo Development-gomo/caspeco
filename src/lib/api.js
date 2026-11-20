@@ -109,20 +109,27 @@ export async function getPartnerBySlug(slug, lang = DEFAULT_LANG) {
 
 // Child page by its full path (["articles", "blackbox-sce-2-0"]): the last segment is
 // the page slug, and its parent chain must match the earlier segments.
+// The candidates and every page carrying one of the parent slugs are fetched in parallel (one round
+// trip instead of one request per parent level); the parent chain is then checked in memory.
 export async function getPageByPath(segments, lang = DEFAULT_LANG) {
   if (!Array.isArray(segments) || segments.length === 0) return null;
-  const candidates = await fetchWP(
-    `/wp/v2/pages?slug=${encodeURIComponent(segments.at(-1))}&lang=${lang}`
-  );
+  const parentSlugs = [...new Set(segments.slice(0, -1))];
+  const [candidates, ancestors] = await Promise.all([
+    fetchWP(`/wp/v2/pages?slug=${encodeURIComponent(segments.at(-1))}&lang=${lang}`),
+    parentSlugs.length
+      ? fetchWP(`/wp/v2/pages?slug=${parentSlugs.map(encodeURIComponent).join(",")}&lang=${lang}&per_page=100&_fields=id,slug,parent`)
+      : [],
+  ]);
   if (candidates === null) throw new Error(`WordPress request failed: pages / ${segments.join("/")}`);
   if (!Array.isArray(candidates)) return null;
+  const byId = new Map((Array.isArray(ancestors) ? ancestors : []).map((p) => [p.id, p]));
 
   for (const page of candidates) {
     let parentId = page.parent;
     let ok = true;
     for (let i = segments.length - 2; i >= 0; i--) {
-      const parent = parentId ? await fetchWP(`/wp/v2/pages/${parentId}?lang=${lang}&_fields=id,slug,parent`) : null;
-      if (parentId && parent === null) throw new Error(`WordPress request failed: pages / ${parentId}`);
+      if (parentId && ancestors === null) throw new Error(`WordPress request failed: pages / ${segments.slice(0, -1).join("/")}`);
+      const parent = parentId ? byId.get(parentId) : null;
       if (!parent || parent.slug !== segments[i]) {
         ok = false;
         break;
@@ -143,10 +150,14 @@ export async function getPartnerCategoryBySlug(slug, lang = DEFAULT_LANG) {
   return Array.isArray(terms) && terms.length ? terms[0] : null;
 }
 
+// Partner cards (PartnerCategoryTemplate, PartnerTemplate) read only id, slug, title and the logo
+// (_links is needed for _embedded to be returned)
+const PARTNER_CARD_FIELDS = "id,slug,title,_links,_embedded";
+
 export async function getPartnersByCategory(termId, lang = DEFAULT_LANG) {
   if (!termId) return [];
   const partners = await fetchWP(
-    `/wp/v2/partner?partner_category=${termId}&lang=${lang}&per_page=100&orderby=title&order=asc&_embed=wp:featuredmedia`
+    `/wp/v2/partner?partner_category=${termId}&lang=${lang}&per_page=100&orderby=title&order=asc&_embed=wp:featuredmedia&_fields=${PARTNER_CARD_FIELDS}`
   );
   return Array.isArray(partners) ? partners : [];
 }
@@ -154,7 +165,7 @@ export async function getPartnersByCategory(termId, lang = DEFAULT_LANG) {
 // Other partners (logo + name cards under a partner page), the current one excluded
 export async function getOtherPartners(excludeId, lang = DEFAULT_LANG, limit = 3) {
   const partners = await fetchWP(
-    `/wp/v2/partner?lang=${lang}&per_page=${limit + 1}&orderby=title&order=asc&_embed=wp:featuredmedia`
+    `/wp/v2/partner?lang=${lang}&per_page=${limit + 1}&orderby=title&order=asc&_embed=wp:featuredmedia&_fields=${PARTNER_CARD_FIELDS}`
   );
   return Array.isArray(partners) ? partners.filter((p) => p.id !== excludeId).slice(0, limit) : [];
 }
@@ -172,23 +183,39 @@ export async function getAllPartners(lang = DEFAULT_LANG) {
   return Array.isArray(partners) ? partners : [];
 }
 
+// _embed=wp:featuredmedia: the hero image comes with the post (PostTemplate falls back to /media/{id})
 export async function getPostBySlug(slug, lang = DEFAULT_LANG) {
-  const post = await getSingleEntry("posts", slug, lang);
+  const post = await getSingleEntry("posts", slug, lang, "&_embed=wp:featuredmedia");
 
   if (post) {
+    // moved to post.featuredMedia so the entry keeps its previous shape (lib/seo.js reads _embedded for og:image)
+    if (post._embedded) {
+      post.featuredMedia = post._embedded["wp:featuredmedia"]?.[0] || null;
+      delete post._embedded;
+    }
+
+    // Start what PostTemplate / Shell read next (hero category pills, language switcher) now, alongside
+    // the related posts; fetchWP's per-request cache hands them the same requests. Neither rejects.
+    getCategoriesByIds(post.categories, lang);
+    getTranslationMap(post.id, lang);
+
     // Up to 3 related posts for PostCard: same category first, topped up with the latest.
     // Same fields/embeds as the news listing (image, category, content for read time).
+    // Both lists are fetched in parallel: the 3 latest (current post excluded) always contain the
+    // top-up, because at most the same-category posts among them are dropped.
     const RELATED = 3;
     const cardFields = "&_embed=wp:featuredmedia,wp:term&_fields=id,slug,date,title,content,_links,_embedded";
     const categoryIds = Array.isArray(post.categories) && post.categories.length > 0 ? post.categories.join(",") : null;
-    const sameCategory = categoryIds
-      ? await fetchWP(`/wp/v2/posts?exclude=${post.id}&per_page=${RELATED}&lang=${lang}&categories=${categoryIds}${cardFields}`)
-      : [];
+    const [sameCategory, latest] = await Promise.all([
+      categoryIds
+        ? fetchWP(`/wp/v2/posts?exclude=${post.id}&per_page=${RELATED}&lang=${lang}&categories=${categoryIds}${cardFields}`)
+        : [],
+      fetchWP(`/wp/v2/posts?exclude=${post.id}&per_page=${RELATED}&lang=${lang}${cardFields}`),
+    ]);
     let related = Array.isArray(sameCategory) ? sameCategory : [];
-    if (related.length < RELATED) {
-      const exclude = [post.id, ...related.map((p) => p.id)].join(",");
-      const latest = await fetchWP(`/wp/v2/posts?exclude=${exclude}&per_page=${RELATED - related.length}&lang=${lang}${cardFields}`);
-      if (Array.isArray(latest)) related = [...related, ...latest];
+    if (related.length < RELATED && Array.isArray(latest)) {
+      const taken = new Set(related.map((p) => p.id));
+      related = [...related, ...latest.filter((p) => !taken.has(p.id)).slice(0, RELATED - related.length)];
     }
     post.relatedPosts = related;
   }
@@ -245,12 +272,17 @@ export async function getLogoGalleries(lang = DEFAULT_LANG) {
   return { partners, integrations };
 }
 
+// Case cards (CaseCard, RealtedCase, HomeCaseStudies, PageBuilder logo lookup) and generateStaticParams
+// read id, slug, date, title, acf and the featured image only
 export async function getCaseStudies(lang = DEFAULT_LANG) {
-  return await fetchWP(`/wp/v2/casestudies?lang=${lang}&per_page=100&_embed`);
+  return await fetchWP(`/wp/v2/casestudies?lang=${lang}&per_page=100&_embed=wp:featuredmedia&_fields=id,slug,date,title,acf,_links,_embedded`);
 }
 
+// Fields PostCard reads (image, category terms, content for the read time, primary category)
+const POST_CARD_QUERY = "&_embed=wp:featuredmedia,wp:term&_fields=id,slug,title,content,primary_category,meta,_links,_embedded";
+
 export async function getAllPosts(lang) {
-  return fetchWP(`/wp/v2/posts?lang=${lang}&per_page=10&_embed`);
+  return fetchWP(`/wp/v2/posts?lang=${lang}&per_page=10${POST_CARD_QUERY}`);
 }
 
 // Case studies for the Business Twin section — newest first, without the post body
@@ -294,13 +326,14 @@ export async function getPostsPage(lang = DEFAULT_LANG, page = 1, perPage = POST
 
 export async function getPostsByIds(ids, lang) {
   if (!Array.isArray(ids) || ids.length === 0) return [];
-  const posts = await fetchWP(`/wp/v2/posts?include=${ids.join(",")}&orderby=include&per_page=${ids.length}&_embed&lang=${lang}`);
+  const posts = await fetchWP(`/wp/v2/posts?include=${ids.join(",")}&orderby=include&per_page=${ids.length}${POST_CARD_QUERY}&lang=${lang}`);
   return Array.isArray(posts) ? posts : [];
 }
 
+// Product cards (ProductRelated, DynamicProductCards) read id, slug, title, excerpt and the featured image
 export async function getProductsByIds(ids, lang = DEFAULT_LANG) {
   if (!Array.isArray(ids) || ids.length === 0) return [];
-  const products = await fetchWP(`/wp/v2/products?include=${ids.join(",")}&orderby=include&per_page=${ids.length}&_embed&lang=${lang}`);
+  const products = await fetchWP(`/wp/v2/products?include=${ids.join(",")}&orderby=include&per_page=${ids.length}&_embed=wp:featuredmedia&_fields=id,slug,title,excerpt,_links,_embedded&lang=${lang}`);
   return Array.isArray(products) ? products : [];
 }
 

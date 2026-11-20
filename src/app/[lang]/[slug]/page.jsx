@@ -1,20 +1,19 @@
 // src/app/[lang]/[slug]/page.jsx
 
-import { getPageBySlug, fetchWP, getThemeOptions, getTranslationMap } from "@/lib/api";
+import { getPageBySlug, fetchWP, getThemeOptions } from "@/lib/api";
 import { resolveParams } from "@/lib/params";
 import PageBuilder from "@/components/major/PageBuilder";
-import Header from "@/components/major/Header";
+import { LangHeader } from "@/components/templates/Shell";
 import Footer from "@/components/major/Footer";
 import { buildMetadataFromYoast } from "@/lib/seo";
 import { notFound } from "next/navigation";
-import { altLangUrls } from "@/lib/translations";
 import { DEFAULT_LANG, SUPPORTED_LANGS, langHref, langHome } from "@/config";
 
 export const revalidate = 300;
 
 export async function generateStaticParams() {
   const results = await Promise.all(
-    SUPPORTED_LANGS.map((lang) => fetchWP(`/wp/v2/pages?per_page=100&lang=${lang}`))
+    SUPPORTED_LANGS.map((lang) => fetchWP(`/wp/v2/pages?per_page=100&lang=${lang}&_fields=slug`))
   );
   return SUPPORTED_LANGS.flatMap((lang, i) =>
     (Array.isArray(results[i]) ? results[i] : []).map((p) => ({ lang, slug: p.slug }))
@@ -41,16 +40,11 @@ export default async function SinglePage({ params }) {
   // child pages only live under their parent's path ([lang]/[slug]/[...rest])
   if (!data || data.parent) notFound();
   const acf = data?.acf || {};
-  const map = await getTranslationMap(data.id, lang);
 
   return (
     <>
-      <Header
-        lang={lang}
-        altLangUrls={altLangUrls(lang, { map, linkEntry: true })}
-        prefetchedOptions={themeOptions || {}}
-        logoUrl={themeOptions?.logo_light?.url || ""}
-      />
+      {/* language switcher: the translation lookup runs alongside the PageBuilder data, not before it */}
+      <LangHeader lang={lang} entryId={data.id} themeOptions={themeOptions} />
       <main>
         <PageBuilder sections={acf.page_builder} lang={lang} />
       </main>

@@ -15,8 +15,9 @@ import { readingMinutes } from "@/lib/content";
 import { langHref } from "@/config";
 
 export default async function PostTemplate({ post, lang, slug, themeOptions }) {
+  // hero image: embedded with the post (lib/api.js → getPostBySlug); /media/{id} only when it wasn't
   const [featuredMedia, categories] = await Promise.all([
-    getMediaById(post.featured_media),
+    post.featuredMedia?.source_url ? post.featuredMedia : getMediaById(post.featured_media),
     getCategoriesByIds(post.categories, lang),
   ]);
   // Related posts arrive with image/category embedded (lib/api.js → getPostBySlug)

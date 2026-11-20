@@ -70,15 +70,17 @@ async function prefetch(sections, lang) {
   const needsIcps = sections.some((b) => b._layout === "related_icp");
   const needsOptions = sections.some((b) => b._layout === "contact_form_section");
 
-  const [casePosts, icps, members, media, options] = await Promise.all([
-    needsCases ? getTwinCaseStudies(lang) : null,
+  // the case media lookup is chained onto the case list, so it doesn't wait for the other requests
+  const [cases, icps, members, media, options] = await Promise.all([
+    needsCases
+      ? getTwinCaseStudies(lang).then(async (casePosts) => (casePosts?.length ? mapTwinCases(casePosts, await getMediaByIds(twinMediaIds(casePosts))) : []))
+      : [],
     needsIcps ? getAllIcps(lang) : null,
     memberIds.filter(Boolean).length ? getKontaktByIds(memberIds, lang) : [],
     mediaIds.length ? getMediaByIds(mediaIds) : [],
     needsOptions ? getThemeOptions(lang).catch(() => null) : null,
   ]);
 
-  const cases = casePosts?.length ? mapTwinCases(casePosts, await getMediaByIds(twinMediaIds(casePosts))) : [];
   const people = peopleById(members);
   const mediaById = new Map((media || []).map((m) => [m.id, { url: m.source_url, alt: m.alt_text || "" }]));
   return {

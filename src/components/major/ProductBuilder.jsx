@@ -52,12 +52,14 @@ async function prefetchSectionData(sections, lang) {
         .flatMap((b) => rows(b.slider_type).map((r) => r.image).filter(isAttachmentId).map(Number)),
     ]),
   ];
-  const [twinPosts, logos, bgMedia] = await Promise.all([
-    needsTwin ? getTwinCaseStudies(lang) : null,
+  // the case media lookup is chained onto the case list, so it doesn't wait for the other requests
+  const [twinCases, logos, bgMedia] = await Promise.all([
+    needsTwin
+      ? getTwinCaseStudies(lang).then(async (twinPosts) => mapTwinCases(twinPosts, await getMediaByIds(twinMediaIds(twinPosts))))
+      : null,
     needsLogos ? getLogoGalleries(lang) : null,
     bgIds.length ? getMediaByIds(bgIds) : null,
   ]);
-  const twinCases = twinPosts ? mapTwinCases(twinPosts, await getMediaByIds(twinMediaIds(twinPosts))) : null;
   const bgById = bgMedia ? Object.fromEntries(bgMedia.map((m) => [m.id, { url: m.source_url, alt: m.alt_text || "" }])) : {};
   return { twinCases, logos, bgById };
 }

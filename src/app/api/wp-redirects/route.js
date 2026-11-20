@@ -18,7 +18,10 @@ export async function GET() {
     const res = await fetch(
       `${WP_BASE}/redirection/v1/redirect?per_page=${PER_PAGE}&page=${page}`,
       {
-        cache: "no-store",
+        // Served from the Next data cache (refreshed every 5 min, purge with revalidateTag('redirects'))
+        // so the proxy's cold-instance lookups don't each pay the paginated WP round trips.
+        // Explicit revalidate is required — fetch() is uncached by default in Next 15+.
+        next: { revalidate: 300, tags: ["redirects"] },
         headers: { Authorization: `Basic ${credentials}` },
       }
     );

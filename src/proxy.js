@@ -6,22 +6,25 @@ import { NextResponse } from "next/server";
 import { SUPPORTED_LANGS, DEFAULT_LANG, pageTypeFromPath } from "@/config";
 
 // ─── In-memory redirect cache ────────────────────────────────────────────────
+// The proxy runs on every request (incl. RSC navigations and prefetches), so the lookup
+// must almost always be a memory hit. Any valid result is cached — an empty list too —
+// so a site with no rules (or missing WP credentials → []) doesn't refetch per request.
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const ERROR_TTL_MS = 60 * 1000; // endpoint failing/slow: back off for 1 minute
+const FETCH_TIMEOUT_MS = 800; // never hold a page request longer than this for redirects
 let _redirectsCache = null;
 let _cacheExpiry = 0;
+let _inflight = null; // shared pending fetch, so a burst on a cold instance triggers one call
 
-async function getRedirects(origin) {
-  if (_redirectsCache !== null && Date.now() < _cacheExpiry) {
-    return _redirectsCache;
-  }
-
+async function fetchRedirects(origin) {
   try {
     const res = await fetch(`${origin}/api/wp-redirects`, {
       cache: "no-store",
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     });
     if (res.ok) {
       const data = await res.json();
-      if (Array.isArray(data) && data.length > 0) {
+      if (Array.isArray(data)) {
         _redirectsCache = data;
         _cacheExpiry = Date.now() + CACHE_TTL_MS;
         return _redirectsCache;
@@ -29,8 +32,23 @@ async function getRedirects(origin) {
     }
   } catch {}
 
-  // Don't cache failures — retry on next request
-  return _redirectsCache ?? [];
+  // Timeout / error / bad payload: fail open (last good list, else no redirects)
+  // and cache that briefly so a failing endpoint isn't hit on every request.
+  _redirectsCache = _redirectsCache ?? [];
+  _cacheExpiry = Date.now() + ERROR_TTL_MS;
+  return _redirectsCache;
+}
+
+async function getRedirects(origin) {
+  if (_redirectsCache !== null && Date.now() < _cacheExpiry) {
+    return _redirectsCache;
+  }
+  if (!_inflight) {
+    _inflight = fetchRedirects(origin).finally(() => {
+      _inflight = null;
+    });
+  }
+  return _inflight;
 }
 
 // ─── Match pathname against redirect list ─────────────────────────────────────
