@@ -184,7 +184,8 @@ export default async function IcpBuilder({ sections: rawSections, lang = DEFAULT
                 text: decode(p.excerpt?.rendered),
                 image: featured(p),
                 href: entryHref("icp", p.slug, lang),
-                link_text: "Explore",
+                // ACF read_more_text on the related_icp layout; empty -> "Explore"
+                link_text: typeof block.read_more_text === "string" && block.read_more_text.trim() ? block.read_more_text.trim() : "Explore",
               }));
             return <StageCards key={i} data={{ ...block, cards }} lang={lang} />;
           }
