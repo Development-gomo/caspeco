@@ -16,7 +16,8 @@ export default function CaseHero({ data, lang = DEFAULT_LANG }) {
   const logo = data?.logo?.url || "";
 
   return (
-    <section id="inner-hero" className="relative w-full overflow-hidden hero">
+    // isolate + bg-[#000]: black fallback while the background image loads, so the white hero text stays readable
+    <section id="inner-hero" className="relative isolate w-full overflow-hidden bg-[#000] hero">
       {/* BG IMAGE/VIDEO */}
       <div className="absolute inset-0 -z-10">
         {bgImage &&  
