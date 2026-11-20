@@ -26,7 +26,7 @@ export default function ProductHero({ data, lang = DEFAULT_LANG, overlay }) {
   const overlayOn = (overlayField?.value ?? overlayField) === "enable";
 
   return (
-    <section className="relative isolate flex min-h-[640px] w-full items-end overflow-hidden bg-black lg:min-h-[982px] max-md:min-h-[672px]">
+    <section className="relative isolate flex min-h-[640px] w-full items-end overflow-hidden bg-[#000] lg:min-h-[982px] max-md:min-h-[672px]">
       {/* background settles from a slight zoom on load */}
       <Reveal onMount y={0} scale={1.08} duration={1.6} className="absolute inset-0 -z-10">
         {bgVideo ? (
