@@ -461,7 +461,7 @@ function Bubble({ step, segments, t, width }) {
     <div
       data-chat-item={step.index}
       data-fit={`q${step.index}`}
-      className="relative w-fit max-w-[56%] self-end rounded-[3.9px] border-[0.65px] border-[#636769] bg-[#2f3336] px-[13.1px] py-[9.1px] whitespace-pre-line text-pretty"
+      className="relative w-fit max-w-[56%] max-md:max-w-[82%] self-end rounded-[3.9px] border-[0.65px] border-[#636769] bg-[#2f3336] px-[13.1px] py-[9.1px] whitespace-pre-line text-pretty max-md:text-wrap"
       style={{ ...f.style, width }}
     >
       <p data-fit-text>
