@@ -1,4 +1,4 @@
-import { DEFAULT_LANG } from "@/config";
+import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
 import { WP_BASE } from "@/config";
 import { cache } from "react";
 import { maskWp } from "@/lib/wpMask";
@@ -126,10 +126,22 @@ export async function getAllIcps(lang = DEFAULT_LANG) {
 // and contact sections (ACF post objects don't include the photo).
 // WPML filters by language, so the entry's lang is required (ids are language-specific)
 export async function getKontaktByIds(ids, lang = DEFAULT_LANG) {
-  const list = (ids || []).filter(Boolean);
+  const list = [...new Set((ids || []).filter(Boolean))];
   if (!list.length) return [];
-  const res = await fetchWP(`/wp/v2/kontakt?include=${list.join(",")}&lang=${lang}&per_page=${list.length}&_embed=wp:featuredmedia&acf_format=standard`);
-  return Array.isArray(res) ? res : [];
+  const query = (l, include) =>
+    fetchWP(`/wp/v2/kontakt?include=${include.join(",")}&lang=${l}&per_page=${include.length}&_embed=wp:featuredmedia&acf_format=standard`).then((r) => (Array.isArray(r) ? r : []));
+  const found = await query(lang, list);
+  // A team member picked on a translated page is often the post of another language (WPML does not link the separate
+  // per-language contact posts, and the ?lang= filter then returns nothing), so the section showed no team.
+  // Look the missing ones up in the other languages instead of dropping them.
+  let missing = list.filter((id) => !found.some((m) => m.id === id));
+  for (const other of [DEFAULT_LANG, ...SUPPORTED_LANGS].filter((l, i, a) => l !== lang && a.indexOf(l) === i)) {
+    if (!missing.length) break;
+    const more = await query(other, missing);
+    found.push(...more);
+    missing = missing.filter((id) => !more.some((m) => m.id === id));
+  }
+  return found;
 }
 
 export async function getPartnerBySlug(slug, lang = DEFAULT_LANG) {
