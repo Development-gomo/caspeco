@@ -139,7 +139,7 @@ export default function ProductSalesChannels({ data, lang = DEFAULT_LANG, defaul
                   // mobile: full-bleed 393×285, no radius (Figma "New image"), also for image_size "small"
                   <motion.div variants={side(-1, reduce)} className={`relative aspect-[500/363] w-full max-w-[500px] shrink-0 lg:ml-16 ${panel ? "max-md:absolute max-md:inset-0 max-md:z-0 max-md:ml-0 max-md:h-full max-md:w-full max-md:max-w-none max-md:aspect-auto" : "max-md:-mx-6 max-md:w-[calc(100%+48px)] max-md:max-w-none max-md:aspect-[393/285]"}`}>
                     <div className={`absolute overflow-hidden max-md:inset-0 max-md:rounded-none ${data.image_size === "small" ? "inset-[8.7%] rounded-[6.6px]" : "inset-0 rounded-lg"}`}>
-                      <Image src={image} alt={imageField?.alt || ""} fill sizes="(min-width: 1024px) 500px, 100vw" className={`object-cover ${panel ? "max-md:brightness-[0.32]" : ""}`} />
+                      <Image src={image} alt={imageField?.alt || ""} fill sizes="(min-width: 1024px) 500px, 100vw" className={`object-cover md:object-contain ${panel ? "max-md:brightness-[0.32]" : ""}`} />
                     </div>
                   </motion.div>
                 ) : image && (
