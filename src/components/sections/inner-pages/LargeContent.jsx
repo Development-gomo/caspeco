@@ -32,7 +32,7 @@ export default function LargeContent({ data }) {
     <>
       <section
         id="next"
-        className="about-section py-15 md:py-30"
+        className="about-section py-18 md:py-36"
         style={sectionBackground(data)}
       >
         {/* inner wrapper keeps the original content width; the section itself stays full-bleed for the background */}
