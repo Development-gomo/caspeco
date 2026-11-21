@@ -30,9 +30,9 @@ function ProductCard({ card, lang, zoom = false }) {
   const href = card.cta_url ? langHref(card.cta_url, lang) : "";
 
   return (
-    <article className={`group relative flex h-full min-h-[394px] ${MOBILE_SLIDE} max-md:w-[296px] flex-col overflow-hidden rounded-lg bg-(--color-light-grey) px-6 pt-12 pb-8 shadow-[0px_2px_9px_0px_rgba(0,0,0,0.1)] transition duration-300 hover:-translate-y-1 hover:shadow-[0px_8px_24px_0px_rgba(0,0,0,0.12)]`}>
+    <article className={`group relative flex h-full min-h-[394px] ${MOBILE_SLIDE} max-md:w-[296px] flex-col overflow-hidden rounded-lg bg-(--color-light-grey) px-6 pt-8 pb-8 shadow-[0px_2px_9px_0px_rgba(0,0,0,0.1)] transition duration-300 hover:-translate-y-1 hover:shadow-[0px_8px_24px_0px_rgba(0,0,0,0.12)]`}>
       {image && (
-        <div className={`relative mx-auto h-[150px] w-full max-w-[200px] ${zoom ? "transition-transform duration-300 ease-out group-hover:scale-105" : ""}`}>
+        <div className={`relative mx-auto h-[167px] w-full ${zoom ? "transition-transform duration-300 ease-out group-hover:scale-105" : ""}`}>
           <Image
             src={image}
             alt={card.image?.alt || ""}
