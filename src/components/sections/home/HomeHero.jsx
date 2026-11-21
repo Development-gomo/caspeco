@@ -55,7 +55,9 @@ export default function HomeHero({ data, lang = DEFAULT_LANG }) {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full min-h-screen overflow-hidden hero xl:min-h-240 max-md:min-h-[672px]"
+      // isolate + bg-[#000]: black fallback while the background image / video loads, so the white hero text stays readable
+      // (isolate gives the section its own stacking context, so the -z-10 media still paints above this background)
+      className="relative isolate w-full min-h-screen overflow-hidden bg-[#000] hero xl:min-h-240 max-md:min-h-[672px]"
     >
       {/* BG IMAGE/VIDEO */}
       {/* overlay on: the parallax lifts the image up to 2%, which would leave an image-less strip at the bottom under the static overlay (a grey band) — extend the image box so it always covers */}

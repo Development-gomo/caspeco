@@ -89,7 +89,7 @@ export default function ProductDemo({ data, lang = DEFAULT_LANG }) {
                 onPointerUp: (e) => e.pointerType !== "mouse" && setActive((v) => !v),
                 onKeyDown: (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), setActive((v) => !v)),
               })}
-              className={`relative aspect-[696/532] w-full max-w-[696px] max-md:w-[120%] max-md:shrink-0 max-md:max-w-none drop-shadow-[0px_2.3px_5.2px_rgba(0,0,0,0.1)] max-md:drop-shadow-[0px_1px_4.5px_rgba(0,0,0,0.1)] outline-none ${hover ? "cursor-pointer" : ""}`}
+              className={`relative aspect-[696/532] w-full max-w-[696px] max-md:w-full max-md:shrink-0 max-md:max-w-none drop-shadow-[0px_2.3px_5.2px_rgba(0,0,0,0.1)] max-md:drop-shadow-[0px_1px_4.5px_rgba(0,0,0,0.1)] outline-none ${hover ? "cursor-pointer" : ""}`}
             >
               <Image
                 src={mediaUrl(image)}

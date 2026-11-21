@@ -123,6 +123,28 @@ function pickCases(value, cases) {
   return ids.map((id) => (cases || []).find((c) => c.id === id)).filter(Boolean);
 }
 
+// Case study listing cards: acf.logo is a media ID → swap in {url, alt}
+async function withCaseLogos(cases) {
+  if (Array.isArray(cases)) {
+    const logoIds = [
+      ...new Set(cases.map((c) => Number(c?.acf?.logo)).filter(Boolean)),
+    ];
+    if (logoIds.length) {
+      const byId = new Map(
+        (await getMediaByIds(logoIds)).map((m) => [
+          m.id,
+          { url: m.source_url, alt: m.alt_text || "" },
+        ]),
+      );
+      for (const c of cases) {
+        const logo = byId.get(Number(c?.acf?.logo));
+        if (logo) c.acf.logo = logo;
+      }
+    }
+  }
+  return cases;
+}
+
 // Detect which data the page needs and fetch it all in parallel (server-side)
 async function prefetchSectionData(sections, lang) {
   if (!sections) return {};
@@ -169,55 +191,36 @@ async function prefetchSectionData(sections, lang) {
     }
   }
 
+  // The two media lookups (case listing logos, Business Twin logos/clips) are chained onto their own
+  // list request, so each starts as soon as its list arrives instead of after every request here.
   const [
     cases,
     posts,
     team,
     pickedPosts,
     industries,
-    twinPosts,
+    twinCases,
     logos,
     newsPage,
     partnerCategories,
     partners,
     members,
   ] = await Promise.all([
-    needs.cases ? getCaseStudies(lang) : null,
+    needs.cases ? getCaseStudies(lang).then(withCaseLogos) : null,
     needs.posts ? getAllPosts(lang) : null,
     needs.team ? getAllTeam(lang) : null,
     pickedPostIds.length ? getPostsByIds(pickedPostIds, lang) : null,
     needs.industries ? getAllIndustries(lang) : null,
-    needs.twin ? getTwinCaseStudies(lang) : null,
+    // Business Twin: resolve logo/clip media IDs, then reduce to small objects for the client
+    needs.twin
+      ? getTwinCaseStudies(lang).then(async (twinPosts) => mapTwinCases(twinPosts, await getMediaByIds(twinMediaIds(twinPosts))))
+      : null,
     needs.logos ? getLogoGalleries(lang) : null,
     needs.newsPage ? getPostsPage(lang, 1) : null, // NewsListing: first 9 + totals
     needs.partners ? getPartnerCategories(lang) : null,
     needs.partners ? getAllPartners(lang) : null,
     memberIds.length ? getKontaktByIds(memberIds, lang) : null,
   ]);
-
-  // Business Twin: resolve logo/clip media IDs, then reduce to small objects for the client
-  const twinCases = twinPosts
-    ? mapTwinCases(twinPosts, await getMediaByIds(twinMediaIds(twinPosts)))
-    : null;
-
-  // Case study listing cards: acf.logo is a media ID → swap in {url, alt}
-  if (Array.isArray(cases)) {
-    const logoIds = [
-      ...new Set(cases.map((c) => Number(c?.acf?.logo)).filter(Boolean)),
-    ];
-    if (logoIds.length) {
-      const byId = new Map(
-        (await getMediaByIds(logoIds)).map((m) => [
-          m.id,
-          { url: m.source_url, alt: m.alt_text || "" },
-        ]),
-      );
-      for (const c of cases) {
-        const logo = byId.get(Number(c?.acf?.logo));
-        if (logo) c.acf.logo = logo;
-      }
-    }
-  }
 
   return {
     cases,
