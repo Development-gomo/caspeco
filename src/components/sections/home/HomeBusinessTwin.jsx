@@ -6,7 +6,7 @@
 // venues dropdowns are built from the case studies' select_industry / select_venues
 // values; on submit the best-matching case study replaces the images.
 // Section fields: heading, short_text, cta_text, note_text,
-//   industry_placeholder, venues_placeholder, clip_text, read_more_text (optional — fall back to DEFAULT_TEXT).
+//   industry_placeholder, venues_placeholder, clip_text, read_more_text (optional).
 // Mobile (< 768px, Figma "Customer card" 601:9245; tablet/desktop unchanged): 64px section padding,
 //   heading → 16 → text → 24 → form; NO white card behind the form (pill dropdowns #FBFAF9 with 8px
 //   gap, 48px button, note_text hidden — not in the mobile mockup). Default state is the latest
@@ -26,6 +26,7 @@ import YoutubeIcon from "../../../../public/icons/home/youtube.svg"; // transpar
 import { DEFAULT_LANG, entryHref } from "@/config";
 import { hasText, sectionBackground, toHtml } from "@/lib/content";
 import { twinOptions } from "@/lib/caseStudies";
+import { postStrings } from "@/lib/postStrings";
 import CountUp from "@/components/ui/CountUp";
 
 // Image stack slots from Figma (560×472 group): back card (2nd latest), front card (latest)
@@ -36,13 +37,16 @@ const STACK = [
 const pct = (v, total) => `${(v / total) * 100}%`;
 
 // Used when the section's ACF text fields are left empty
-const DEFAULT_TEXT = {
-  industry_placeholder: "Industry",
-  venues_placeholder: "Number of venues",
-  clip_text: "See clip",
-  read_more_text: "Read full case",
+const TWIN_STRINGS = {
+  en: { industry: "Industry", venues: "Number of venues", clip: "See clip" },
+  sv: { industry: "Bransch", venues: "Antal enheter", clip: "Se klippet" },
+  no: { industry: "Bransje", venues: "Antall steder", clip: "Se klippet" },
+  fr: { industry: "Secteur", venues: "Nombre d’établissements", clip: "Voir la vidéo" },
+  nl: { industry: "Sector", venues: "Aantal vestigingen", clip: "Bekijk de video" },
+  frbg: { industry: "Secteur", venues: "Nombre d’établissements", clip: "Voir la vidéo" },
 };
-const text = (data, key) => (typeof data?.[key] === "string" && data[key].trim()) || DEFAULT_TEXT[key];
+
+const text = (data, key, fallback) => (typeof data?.[key] === "string" && data[key].trim()) || fallback;
 
 function Select({ placeholder, options, value, onChange }) {
   return (
@@ -180,6 +184,9 @@ export default function HomeBusinessTwin({ data, lang = DEFAULT_LANG, cases: all
 
   const { heading, short_text, cta_text, note_text } = data || {};
   if (!hasText(heading)) return null;
+  const strings = TWIN_STRINGS[lang] || TWIN_STRINGS.en;
+  const clipText = text(data, "clip_text", strings.clip);
+  const readMoreText = text(data, "read_more_text", postStrings(lang).readFullCase);
   const hasCta = hasText(cta_text);
   const hasNote = hasText(note_text);
 
@@ -214,10 +221,10 @@ export default function HomeBusinessTwin({ data, lang = DEFAULT_LANG, cases: all
                 {hasForm && (
                   <div className="flex flex-col gap-4 max-md:gap-2">
                     {industries.length > 0 && (
-                      <Select placeholder={text(data, "industry_placeholder")} options={industries} value={industry} onChange={(v) => { setIndustry(v); setVenues(""); }} />
+                      <Select placeholder={text(data, "industry_placeholder", strings.industry)} options={industries} value={industry} onChange={(v) => { setIndustry(v); setVenues(""); }} />
                     )}
                     {venueOptions.length > 0 && (
-                      <Select placeholder={text(data, "venues_placeholder")} options={venueOptions} value={venues} onChange={setVenues} />
+                      <Select placeholder={text(data, "venues_placeholder", strings.venues)} options={venueOptions} value={venues} onChange={setVenues} />
                     )}
                   </div>
                 )}
@@ -248,7 +255,7 @@ export default function HomeBusinessTwin({ data, lang = DEFAULT_LANG, cases: all
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.4 }}
               >
-                <CaseCard match={result} lang={lang} clipText={text(data, "clip_text")} readMoreText={text(data, "read_more_text")} />
+                <CaseCard match={result} lang={lang} clipText={clipText} readMoreText={readMoreText} />
               </motion.div>
             ) : (
               (images.length > 0 || cases[0]) && (
@@ -263,7 +270,7 @@ export default function HomeBusinessTwin({ data, lang = DEFAULT_LANG, cases: all
                   {/* Mobile default (Figma 601:9259): the latest case's full card instead of the image stack */}
                   {cases[0] && (
                     <div className="md:hidden">
-                      <CaseCard match={cases[0]} lang={lang} clipText={text(data, "clip_text")} readMoreText={text(data, "read_more_text")} />
+                      <CaseCard match={cases[0]} lang={lang} clipText={clipText} readMoreText={readMoreText} />
                     </div>
                   )}
                   {images.length > 0 && (
