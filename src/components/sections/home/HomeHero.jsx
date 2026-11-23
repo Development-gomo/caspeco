@@ -1,6 +1,6 @@
 "use client";
 
-import Image, { getImageProps } from "next/image";
+import Image from "next/image";
 import React from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import CtaButton from "@/components/ui/CtaButton";
@@ -17,8 +17,6 @@ const subscribeMobile = (onChange) => {
 };
 const isMobileViewport = () => window.matchMedia(MOBILE_MQ).matches;
 const viewportUnknown = () => null; // server + hydration render: viewport not known yet
-// 1×1 transparent GIF for a <picture> slot whose viewport shows no image, so no file is fetched there
-const BLANK_IMG = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 export default function HomeHero({ data, lang = DEFAULT_LANG }) {
   const sectionRef = React.useRef(null);
@@ -40,8 +38,26 @@ export default function HomeHero({ data, lang = DEFAULT_LANG }) {
   const mobileStill = mobileImage || bgImage;
   const desktopStill = bgVideo ? "" : bgImage; // desktop as before: no image under bg_video
   const isMobile = React.useSyncExternalStore(subscribeMobile, isMobileViewport, viewportUnknown);
-  // mounted after hydration, so the other viewport's video is never fetched
-  const activeVideo = isMobile === null ? "" : isMobile ? mobileVideo : bgVideo;
+  // The mobile video (several MB) must not compete with the hero still (the LCP) for bandwidth: it is mounted only
+  // after the page has loaded and the browser is idle; the still shows until then. Desktop has no still under its
+  // video, so it mounts right after hydration as before.
+  const [mobileVideoReady, setMobileVideoReady] = React.useState(false);
+  React.useEffect(() => {
+    if (!isMobile || !mobileVideo) return;
+    let cancelled = false;
+    let idleId;
+    const start = () => {
+      idleId = (window.requestIdleCallback || ((cb) => setTimeout(cb, 300)))(() => !cancelled && setMobileVideoReady(true), { timeout: 3000 });
+    };
+    if (document.readyState === "complete") start();
+    else window.addEventListener("load", start, { once: true });
+    return () => {
+      cancelled = true;
+      window.removeEventListener("load", start);
+      if (idleId && window.cancelIdleCallback) window.cancelIdleCallback(idleId);
+    };
+  }, [isMobile, mobileVideo]);
+  const activeVideo = isMobile === null ? "" : isMobile ? (mobileVideoReady ? mobileVideo : "") : bgVideo;
   // enable_overlay: ACF Button Group ("enable" / "disable"), may arrive as "enable" or { value: "enable" };
   // adds a dark overlay over the background image / video (off by default)
   const overlayField = data?.enable_overlay;
@@ -67,23 +83,22 @@ export default function HomeHero({ data, lang = DEFAULT_LANG }) {
       <motion.div className="absolute hero-bg inset-0 -z-10" style={{ y: bgY, bottom: "-3%" }}>
         {hasMobileMedia ? (
           <>
-            {/* one <picture> picks the still per viewport (only that file downloads); the desktop video mounts
-                after hydration on desktop only, so mobile never fetches it */}
-            {(mobileStill || desktopStill) && (
-              <picture>
-                <source media={MOBILE_MQ} srcSet={mobileStill || BLANK_IMG} />
-                <img
-                  {...getImageProps({
-                    src: desktopStill || BLANK_IMG,
-                    alt: "",
-                    fill: true,
-                    priority: true,
-                    className: "object-cover object-top -top-[123px]",
-                  }).props}
-                  alt=""
-                  fetchPriority="high"
-                />
-              </picture>
+            {/* The still is a next/image with priority (fetchPriority high, preloaded, optimized AVIF/WebP at the phone's
+                width), so the browser starts it as soon as the HTML names it. Mobile uses mobileStill; the desktop
+                video has no still under it (md:hidden), a desktop-only still is shown above md. */}
+            {mobileStill && (
+              <Image
+                src={mobileStill}
+                alt=""
+                fill
+                priority
+                sizes="100vw"
+                quality={75}
+                className={`object-cover object-top -top-[123px] ${!desktopStill ? "md:hidden" : desktopStill !== mobileStill ? "md:hidden" : ""}`}
+              />
+            )}
+            {desktopStill && desktopStill !== mobileStill && (
+              <Image src={desktopStill} alt="" fill priority sizes="100vw" quality={75} className="object-cover object-top -top-[123px] max-md:hidden" />
             )}
             {activeVideo && (
               <video
