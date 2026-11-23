@@ -64,9 +64,11 @@ const nextConfig = {
 
   async rewrites() {
     return [
-      // CMS media under our own domain: only /assets/uploads/... -> WP wp-content/uploads (proxied, host hidden).
+      // CMS media under our own domain: /assets/uploads/... is a route handler (src/app/assets/uploads)
+      // that fetches wp-content/uploads from the CMS, so the host stays hidden. Pass-through keeps the
+      // default-language catch-all below from grabbing it.
+      { source: "/assets/uploads/:path*", destination: "/assets/uploads/:path*" },
       // Everything else under /assets and /static (plugins, themes, wp-includes) is a plain 404 (/api/gone).
-      { source: "/assets/uploads/:path*", destination: `${wpSite}/wp-content/uploads/:path*` },
       { source: "/assets/:path*", destination: "/api/gone" },
       { source: "/static/:path*", destination: "/api/gone" },
       // API routes (incl. dynamic /api/content/…) must not fall into the default-language rewrite
