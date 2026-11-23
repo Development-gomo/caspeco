@@ -1,7 +1,7 @@
 // src/lib/wpMask.js
 // Hides the WordPress backend from the browser (server-side only).
 // Every string in WP responses is rewritten before it reaches a page or client:
-//   https://cms-host/caspeco/wp-content/…  → unchanged for now (was /assets/…, see maskWpString)
+//   https://cms-host/caspeco/wp-content/…  → /assets/…        (src/app/assets/uploads route)
 //   https://cms-host/caspeco/wp-json/…     → /api/content/…  (src/app/api/content)
 //   https://cms-host/caspeco/en/page/      → /en/page/       (permalinks become site paths)
 // Works on plain and JSON-escaped ("https:\/\/…") URLs, e.g. inside Yoast's yoast_head.
@@ -29,11 +29,8 @@ export function maskWpString(value) {
   if (!SITE_RE || typeof value !== "string" || !value.includes(HOST)) return value;
   return value.replace(SITE_RE, (match, sep, kind, sep2, nl, offset, whole) => {
     if (nl) return `${sep2}nl`; // /nl-nl/… → /nl/… (WPML directory differs from our language code)
-    // Media stays on the CMS host for now: proxying it through /assets made Vercel's servers
-    // fetch every file from SiteGround, whose anti-bot answers them with a CAPTCHA (202 HTML)
-    // instead of the image. Browsers fetching directly are not challenged. Restore
-    // `${sep}assets` once SiteGround allowlists Vercel or media moves to a CDN domain.
-    if (kind === "wp-content") return match;
+    // Media is served from our own domain (/assets/uploads/…, route handler in src/app/assets/uploads)
+    if (kind === "wp-content") return `${sep}assets`;
     if (kind === "wp-json") return `${sep}api${sep}content`;
     if (kind === "wp-includes") return `${sep}static`; // core media icons, proxied in next.config.mjs
     if (kind === "wp-admin") return `${sep}admin`; // never linked publicly; just don't name it
