@@ -35,15 +35,34 @@ export default function HubspotEmbed({ code, className = "", variant = "quick" }
     const id = `hs-form-${config.formId}`;
     target.id = id;
     let cancelled = false;
-    loadHubspot(config.region)
-      .then(() => {
-        if (cancelled || !window.hbspt?.forms) return;
-        target.innerHTML = "";
-        window.hbspt.forms.create({ region: config.region, portalId: config.portalId, formId: config.formId, target: `#${id}` });
-      })
-      .catch(() => {});
+    const mount = () =>
+      loadHubspot(config.region)
+        .then(() => {
+          if (cancelled || !window.hbspt?.forms) return;
+          target.innerHTML = "";
+          window.hbspt.forms.create({ region: config.region, portalId: config.portalId, formId: config.formId, target: `#${id}` });
+        })
+        .catch(() => {});
+    // The embed script is ~200 KB and ~800 ms of main-thread work: load it only when the form is about to be
+    // seen (400px ahead of the viewport), not with the page.
+    if (typeof IntersectionObserver === "undefined") {
+      mount();
+      return () => {
+        cancelled = true;
+      };
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        mount();
+      },
+      { rootMargin: "400px 0px" }
+    );
+    io.observe(target);
     return () => {
       cancelled = true;
+      io.disconnect();
     };
   }, [config]);
 

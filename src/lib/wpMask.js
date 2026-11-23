@@ -51,11 +51,24 @@ const RENAME_KEYS = {
   class_list: "classes", // entry.classes, without WP's "hentry"
 };
 
+// ACF image/file objects carry ~1.3 KB of metadata nobody renders (every generated size, author, uploaded_to,
+// menu_order …). Props passed to client components are serialized into the page twice (HTML + hydration data),
+// so keep only what the code reads: url, alt, size, and mime_type / type (the hero video check).
+const isMediaObject = (o) => typeof o.url === "string" && typeof o.mime_type === "string" && o.sizes && typeof o.sizes === "object";
+function slimMedia(o) {
+  const out = { url: maskWpString(o.url), alt: typeof o.alt === "string" ? o.alt : "", mime_type: o.mime_type, type: o.type };
+  if (o.ID ?? o.id) out.id = o.ID ?? o.id;
+  if (o.width) out.width = o.width;
+  if (o.height) out.height = o.height;
+  return out;
+}
+
 /** Deep-copy WP JSON with every CMS URL masked and plugin keys neutralised. */
 export function maskWp(data) {
   if (typeof data === "string") return maskWpString(data);
   if (Array.isArray(data)) return data.map(maskWp);
   if (data && typeof data === "object") {
+    if (isMediaObject(data)) return slimMedia(data);
     const out = {};
     for (const [k, v] of Object.entries(data)) {
       if (DROP_KEYS.has(k)) continue;
