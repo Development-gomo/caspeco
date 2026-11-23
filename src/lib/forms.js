@@ -9,6 +9,7 @@
 // and resolves on success or throws { message, fieldErrors? }.
 
 import { getCf7FormSchema, submitCf7Direct } from "@/lib/api";
+import { postStrings } from "@/lib/postStrings";
 
 // CF7 form reference from a raw shortcode ([contact-form-7 id="982" title="..."]) or a bare ID
 export function cf7FormId(shortcode) {
@@ -19,22 +20,24 @@ export function cf7FormId(shortcode) {
 const ADAPTERS = {
   // Contact Form 7: ACF field names must equal the CF7 field names (e.g. your-phone)
   async cf7(values, { form_shortcode, lang }) {
+    const t = postStrings(lang);
     const formId = cf7FormId(form_shortcode);
-    if (!formId) throw { message: "Form is not connected yet." };
+    if (!formId) throw { message: t.notConnected };
     const schema = await getCf7FormSchema(formId, lang).catch(() => null);
     try {
       return await submitCf7Direct(formId, schema?.hidden || {}, values);
     } catch (err) {
       const fieldErrors = {};
-      (err?.cf7?.invalid_fields || []).forEach((f) => f?.field && (fieldErrors[f.field] = f.message || "Invalid"));
-      throw { message: err?.message || "Failed to send. Please try again.", fieldErrors };
+      (err?.cf7?.invalid_fields || []).forEach((f) => f?.field && (fieldErrors[f.field] = f.message || t.invalid));
+      throw { message: err?.message || t.sendFail, fieldErrors };
     }
   },
 
   // HubSpot Forms API v3 (public, no API key): ACF field names must equal the
   // HubSpot property names (e.g. phone, company)
-  async hubspot(values, { hubspot_portal_id, hubspot_form_id }) {
-    if (!hubspot_portal_id || !hubspot_form_id) throw { message: "Form is not connected yet." };
+  async hubspot(values, { hubspot_portal_id, hubspot_form_id, lang }) {
+    const t = postStrings(lang);
+    if (!hubspot_portal_id || !hubspot_form_id) throw { message: t.notConnected };
     const hutk = typeof document !== "undefined" ? document.cookie.match(/(?:^|;\s*)hubspotutk=([^;]+)/)?.[1] : undefined;
     const res = await fetch(
       `https://api.hsforms.com/submissions/v3/integration/submit/${encodeURIComponent(hubspot_portal_id)}/${encodeURIComponent(hubspot_form_id)}`,
@@ -48,13 +51,13 @@ const ADAPTERS = {
       },
     );
     const json = await res.json().catch(() => ({}));
-    if (!res.ok) throw { message: json?.errors?.[0]?.message || json?.message || "Failed to send. Please try again." };
+    if (!res.ok) throw { message: json?.errors?.[0]?.message || json?.message || t.sendFail };
     return json;
   },
 
   // Placeholder until the client's form service is chosen — never pretends to send
-  async none() {
-    throw { message: "Form is not connected yet." };
+  async none(values, { lang } = {}) {
+    throw { message: postStrings(lang).notConnected };
   },
 };
 

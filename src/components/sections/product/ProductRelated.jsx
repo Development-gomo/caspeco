@@ -8,6 +8,7 @@ import HomeProductCards from "../home/HomeProductCards";
 import { getAllProducts, getProductsByIds } from "@/lib/api";
 import { DEFAULT_LANG, entryHref } from "@/config";
 import { rows } from "@/lib/content";
+import { postStrings } from "@/lib/postStrings";
 
 const MAX_CARDS = 4;
 
@@ -36,7 +37,7 @@ export default async function ProductRelated({ data, lang = DEFAULT_LANG, curren
       image: media?.source_url ? { url: media.source_url, alt: media.alt_text || "" } : null,
       title: stripTags(p.title?.rendered),
       text: stripTags(p.excerpt?.rendered),
-      cta_text: data?.explore_text || "Explore",
+      cta_text: data?.explore_text || postStrings(lang).explore,
       cta_url: unprefixed(entryHref("product", p.slug, lang), lang),
     };
   });

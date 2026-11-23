@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import DownSvg from "../../../public/down-arrow.svg";
 import { DEFAULT_LANG, LANGUAGES, LANGUAGE_LABEL, LOCALE_MAP, langHref, langHome, langName, altLangs as otherLangs } from "@/config";
+import { postStrings } from "@/lib/postStrings";
 
 // WPML-style flag for a language code (files in /public/flags)
 function LangFlag({ code, className = "" }) {
@@ -268,7 +269,7 @@ export default function Header({
                                     target={item.card.button.target}
                                     className="mt-2 text-sm font-bold text-(--color-yellow) hover:underline"
                                   >
-                                    {item.card.button.title || "Learn more"}
+                                    {item.card.button.title || postStrings(lang).learnMore}
                                   </NavLink>
                                 )}
                               </div>
@@ -394,7 +395,7 @@ export default function Header({
           )}
           <button
             type="button"
-            aria-label="Open menu"
+            aria-label={postStrings(lang).openMenu}
             aria-expanded={mobileOpen}
             // md:h-9 keeps the tablet bar at its original 68px (the old ☰ glyph was 36px tall)
             className="flex cursor-pointer items-center justify-center md:h-9"
@@ -413,11 +414,11 @@ export default function Header({
             <div className="absolute right-0 top-0 h-full w-72 bg-black shadow-xl flex flex-col" onClick={(e) => e.stopPropagation()}>
               {/* HEADER */}
               <div className="p-6 flex items-center justify-between">
-                <span className="text-white font-semibold">Menu</span>
+                <span className="text-white font-semibold">{postStrings(lang).menu}</span>
                 {/* Figma mobile "Menu" (Open): the bars cross into a #FFC120 X */}
                 <button
                   type="button"
-                  aria-label="Close menu"
+                  aria-label={postStrings(lang).closeMenu}
                   className="flex cursor-pointer items-center justify-center"
                   onClick={() => {
                     setMobileOpen(false);

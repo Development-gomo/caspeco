@@ -10,6 +10,7 @@
 
 import { useState } from "react";
 import { DEFAULT_LANG } from "@/config";
+import { postStrings } from "@/lib/postStrings";
 import { hasText } from "@/lib/content";
 import { submitForm } from "@/lib/forms";
 
@@ -30,7 +31,7 @@ export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
   const [newsletter, setNewsletter] = useState(false);
   const [errors, setErrors] = useState({});
   const [state, setState] = useState({ submitting: false, ok: false, msg: "" });
-  const requiredMsg = t("required_message", "This field is required");
+  const requiredMsg = t("required_message", postStrings(lang).required);
 
   const set = (name, value) => {
     setValues((v) => ({ ...v, [name]: value }));
@@ -60,7 +61,7 @@ export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
       setNewsletter(false);
     } catch (err) {
       setErrors(err?.fieldErrors || {});
-      setState({ submitting: false, ok: false, msg: err?.message || "Failed to send. Please try again." });
+      setState({ submitting: false, ok: false, msg: err?.message || postStrings(lang).sendFail });
     }
   }
 
@@ -173,7 +174,7 @@ export default function ContactRepForm({ data, lang = DEFAULT_LANG }) {
           disabled={state.submitting}
           className="cursor-pointer select-none rounded-full bg-(--color-yellow) px-[38px] py-4 max-md:h-12 max-md:w-full max-md:py-0 text-[18px] font-bold leading-[22px] text-(--color-grey-dark) transition-colors duration-600 ease-out hover:bg-(--color-gold) hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {state.submitting ? t("sending_text", "Sending…") : t("cta_text", "Send")}
+          {state.submitting ? t("sending_text", postStrings(lang).sending) : t("cta_text", postStrings(lang).send)}
         </button>
         {state.msg && (
           <p role="status" className={`text-sm ${state.ok ? "text-green-700" : "text-red-700"}`}>

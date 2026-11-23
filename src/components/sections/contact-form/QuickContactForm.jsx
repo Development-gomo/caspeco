@@ -8,6 +8,7 @@
 import { useState } from "react";
 import { LABEL_CLASSES, INPUT_CLASSES, QUICK_M } from "./ContactForm";
 import { DEFAULT_LANG } from "@/config";
+import { postStrings } from "@/lib/postStrings";
 import { submitForm } from "@/lib/forms";
 import { hasText, rows } from "@/lib/content";
 
@@ -26,7 +27,7 @@ export default function QuickContactForm({ data, lang = DEFAULT_LANG }) {
 
   if (fields.length === 0) return null;
 
-  const requiredMsg = data?.required_message || "This field is required";
+  const requiredMsg = data?.required_message || postStrings(lang).required;
 
   function setValue(name, value) {
     setValues((v) => ({ ...v, [name]: value }));
@@ -46,12 +47,12 @@ export default function QuickContactForm({ data, lang = DEFAULT_LANG }) {
     if (consentText && data?.consent_field_name) payload[data.consent_field_name] = consent ? "1" : "";
     try {
       await submitForm(data?.form_provider, payload, { ...data, lang });
-      setState({ submitting: false, ok: true, msg: data?.success_message || "Thank you! We will contact you shortly." });
+      setState({ submitting: false, ok: true, msg: data?.success_message || postStrings(lang).thanks });
       setValues(empty());
       setConsent(false);
     } catch (err) {
       setErrors(err?.fieldErrors || {});
-      setState({ submitting: false, ok: false, msg: err?.message || "Failed to send. Please try again." });
+      setState({ submitting: false, ok: false, msg: err?.message || postStrings(lang).sendFail });
     }
   }
 
@@ -93,7 +94,7 @@ export default function QuickContactForm({ data, lang = DEFAULT_LANG }) {
         disabled={state.submitting}
         className={`w-full cursor-pointer select-none rounded-[100px] bg-(--color-yellow) px-6 py-4 text-[18px] font-bold leading-[22px] text-(--color-grey-dark) transition-colors duration-400 ease-out hover:bg-(--color-gold) hover:text-white disabled:cursor-not-allowed disabled:opacity-50 ${QUICK_M.button}`}
       >
-        {state.submitting ? data?.sending_text || "Sending…" : data?.cta_text || "Get a call"}
+        {state.submitting ? data?.sending_text || postStrings(lang).sending : data?.cta_text || postStrings(lang).getCall}
       </button>
 
       {consentText && (

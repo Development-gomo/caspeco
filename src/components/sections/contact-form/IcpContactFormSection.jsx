@@ -16,6 +16,7 @@ import { getKontaktByIds, getMediaByIds, getThemeOptions } from "@/lib/api";
 import { hasText } from "@/lib/content";
 import { parseHubspotEmbed } from "@/lib/hubspot";
 import { firstPostId, toPerson } from "@/lib/kontakt";
+import { postStrings, repFormStrings } from "@/lib/postStrings";
 
 const ContactRep = dynamic(() => import("../icp/ContactRep"));
 const QuickContact = dynamic(() => import("./QuickContact"));
@@ -48,29 +49,31 @@ function clientBlock(block) {
 // Figma 324:7454 "Contact form" copy (labels / placeholders); the rep's first name is filled in.
 // The CF7 form picked in "Select Form" must use these field names: full_name, company,
 // contact_method (call | email), email, phone, message, consent, newsletter
-function repFormData(block, rep, privacyHref) {
+function repFormData(block, rep, privacyHref, lang) {
   const first = (rep?.name || "").split(" ")[0] || "us";
-  const privacy = privacyHref ? `<a href="${privacyHref}">privacy policy.</a>` : "privacy policy.";
+  const t = repFormStrings(lang);
+  const fill = (str) => str.replace("{first}", first);
+  const privacy = privacyHref ? `<a href="${privacyHref}">${t.privacy}</a>` : t.privacy;
   return {
     ...block,
     form_provider: "cf7",
     form_shortcode: String(postId(block.select_form) || ""),
-    name_label: "Full name",
+    name_label: t.name,
     name_placeholder: "Anna Lindqvist",
-    company_label: "Restaurant or company",
+    company_label: t.company,
     company_placeholder: "Bistro Norr",
-    method_label: `How should ${first} reach you?`,
-    email_label: "Email",
+    method_label: fill(t.method),
+    email_label: t.email,
     email_placeholder: "anna@bistronorr.se",
-    phone_label: "Phone",
+    phone_label: t.phone,
     phone_placeholder: "+46 70 123 45 67",
-    message_label: "Anything we should know? (optional)",
-    message_placeholder: "E.g. number of venues, opening date, current system",
-    consent_text: `I agree that Caspeco stores my details to contact me, as described in the ${privacy}`,
+    message_label: t.message,
+    message_placeholder: t.messagePh,
+    consent_text: `${t.consent} ${privacy}`,
     consent_field_name: "consent",
-    newsletter_text: "Send me occasional tips and news for restaurants. (optional)",
+    newsletter_text: t.newsletter,
     newsletter_field_name: "newsletter",
-    cta_text: rep?.name ? `Send to ${first}` : block.cta_text || "Send",
+    cta_text: rep?.name ? fill(t.sendTo) : block.cta_text || postStrings(lang).send,
   };
 }
 
@@ -126,7 +129,7 @@ export default async function IcpContactFormSection({ block: raw, lang = DEFAULT
   // Figma form (ContactRepForm) sending to the selected CF7 form; a pasted HubSpot form replaces it
   return (
     <ContactRep
-      data={repFormData(block, rep, privacy)}
+      data={repFormData(block, rep, privacy, lang)}
       lang={lang}
       rep={rep ? { name: rep.name, role: rep.role, photo: rep.photo?.url } : undefined}
       form={hubspot ? <HubspotEmbed code={hubspot} variant="rep" /> : undefined}

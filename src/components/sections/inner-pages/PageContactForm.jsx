@@ -11,6 +11,7 @@ import ContactRep from "../icp/ContactRep";
 import ContactForm from "../contact-form/ContactForm";
 import HubspotEmbed from "@/components/ui/HubspotEmbed";
 import { DEFAULT_LANG } from "@/config";
+import { postStrings } from "@/lib/postStrings";
 import { parseHubspotEmbed } from "@/lib/hubspot";
 import { hasText, mediaUrl } from "@/lib/content";
 
@@ -26,7 +27,7 @@ export default function PageContactForm({ data, lang = DEFAULT_LANG, person }) {
   const form = hubspot ? (
     <HubspotEmbed code={hubspot} variant="rep" />
   ) : cf7 ? (
-    <ContactForm formId={cf7} lang={lang} submitLabel={data.cta_text || "Send"} />
+    <ContactForm formId={cf7} lang={lang} submitLabel={data.cta_text || postStrings(lang).send} />
   ) : null;
   const photo = mediaUrl(data.section_image);
 

@@ -11,6 +11,7 @@ import ContactForm from "./ContactForm";
 import QuickContactForm from "./QuickContactForm";
 import CtaButton from "@/components/ui/CtaButton";
 import { DEFAULT_LANG, langHref } from "@/config";
+import { postStrings } from "@/lib/postStrings";
 import { hasText, mediaUrl, toHtml, rows } from "@/lib/content";
 import { cf7FormId } from "@/lib/forms";
 import { parseHubspotEmbed } from "@/lib/hubspot";
@@ -99,7 +100,7 @@ export default function QuickContact({ data, lang = DEFAULT_LANG, id, form, vari
           {hasAcfForm ? (
             <QuickContactForm data={data} lang={lang} />
           ) : (
-            <ContactForm formId={cf7Id} lang={lang} submitLabel={cta_text || "Get a call"} quick />
+            <ContactForm formId={cf7Id} lang={lang} submitLabel={cta_text || postStrings(lang).getCall} quick />
           )}
         </div>
       ) : (

@@ -88,8 +88,8 @@ export default function SwitchSteps({ data, lang = DEFAULT_LANG, joined = false 
         {/* mobile: one timeline card (Figma "switch-steps-card") */}
         {steps.length > 0 && (
           <div className="rounded-lg bg-[#13222F] px-5 pt-[29px] pb-8 text-(--color-light-grey) md:hidden">
-            <p className="font-bold text-[14px] leading-[17px] text-(--color-yellow) uppercase">{data?.steps_heading || "How the switch works"}</p>
-            <ol className="mt-[22px] flex flex-col gap-12">
+            {hasText(data?.steps_heading) && <p className="mb-[22px] font-bold text-[14px] leading-[17px] text-(--color-yellow) uppercase">{data.steps_heading}</p>}
+            <ol className="flex flex-col gap-12">
               {steps.map((step, i) => (
                 <li key={i} className="relative flex items-start gap-4">
                   <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-(--color-yellow) font-bold text-[14px] text-black">{step.number}</span>

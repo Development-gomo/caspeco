@@ -15,6 +15,7 @@ import Reveal from "@/components/ui/Reveal";
 import { MOBILE_SLIDE, MOBILE_TRACK, SliderPoints } from "@/components/ui/MobileSlider";
 import { DEFAULT_LANG, langHref } from "@/config";
 import { hasText, mediaUrl, rows, sectionBackground, toHtml } from "@/lib/content";
+import { postStrings } from "@/lib/postStrings";
 
 function Arrow() {
   return (
@@ -71,7 +72,7 @@ export default function StageCards({ data, lang = DEFAULT_LANG }) {
                       {hasText(card.text) && <div className="cs-rich text-[16px] lg:text-[18px] font-light leading-[22px] tracking-[-0.36px] max-md:text-[18px] max-md:font-normal" dangerouslySetInnerHTML={{ __html: toHtml(card.text) }} />}
                       {(card.link_text || card.href) && href && (
                         <span className="mt-4 inline-flex items-center gap-2 self-start text-[16px] font-medium leading-5 tracking-[-0.32px] text-(--color-yellow) max-md:-mb-0.5">
-                          <span className="cs-link-redraw">{card.link_text || "Explore"}</span>
+                          <span className="cs-link-redraw">{card.link_text || postStrings(lang).explore}</span>
                           <Arrow />
                         </span>
                       )}

@@ -14,6 +14,7 @@
 import dynamic from "next/dynamic";
 import { DEFAULT_LANG, entryHref } from "@/config";
 import { withNeighbours } from "@/lib/content";
+import { postStrings } from "@/lib/postStrings";
 import ProductBuilder from "./ProductBuilder";
 import { withSpacing } from "@/components/ui/SectionSpacing";
 import { getAllIcps, getKontaktByIds, getMediaByIds, getThemeOptions, getTwinCaseStudies } from "@/lib/api";
@@ -185,7 +186,7 @@ export default async function IcpBuilder({ sections: rawSections, lang = DEFAULT
                 image: featured(p),
                 href: entryHref("icp", p.slug, lang),
                 // ACF read_more_text on the related_icp layout; empty -> "Explore"
-                link_text: typeof block.read_more_text === "string" && block.read_more_text.trim() ? block.read_more_text.trim() : "Explore",
+                link_text: typeof block.read_more_text === "string" && block.read_more_text.trim() ? block.read_more_text.trim() : postStrings(lang).explore,
               }));
             return <StageCards key={i} data={{ ...block, cards }} lang={lang} />;
           }

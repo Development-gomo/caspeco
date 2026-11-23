@@ -120,7 +120,7 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
                           anyCaseLogo && <span className="mb-6 block h-[35.6px] shrink-0" aria-hidden />
                         )}
                         <div className="flex flex-1 items-center">
-                          <blockquote className="font-normal italic text-[20px] leading-6" dangerouslySetInnerHTML={{ __html: toHtml(curlyQuote(slide.quote)) }} />
+                          <blockquote className="font-normal italic text-[20px] leading-6" dangerouslySetInnerHTML={{ __html: toHtml(curlyQuote(slide.quote, lang)) }} />
                         </div>
                         {(slide.name || slide.company || slide.caseCta) && (
                           <figcaption className="mt-6 flex items-center gap-3">
@@ -174,7 +174,7 @@ export default function ProductTestimonials({ data, lang = DEFAULT_LANG, cases =
                   )}
                   <blockquote
                     className="font-medium italic text-[28px] leading-9 max-md:font-normal max-md:text-[20px] max-md:leading-6 max-md:text-[#FFFFFF] md:text-[36px] md:leading-[46px] xl:text-[42px] xl:leading-[52px]"
-                    dangerouslySetInnerHTML={{ __html: toHtml(curlyQuote(slide.quote)) }}
+                    dangerouslySetInnerHTML={{ __html: toHtml(curlyQuote(slide.quote, lang)) }}
                   />
                   {(slide.name || slide.company) && (
                     <figcaption className="flex items-center gap-3">

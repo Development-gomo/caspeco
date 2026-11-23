@@ -6,6 +6,7 @@ import DownArrow from "../../../../public/down-arrow.svg";
 import Email from "../../../../public/email.svg";
 import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
 import { hasText } from "@/lib/content";
+import { postStrings } from "@/lib/postStrings";
 
 import {
   buildTeamFilters,
@@ -128,9 +129,9 @@ export default function TeamSection({ data, lang, prefetchedTeam }) {
                 <a
                   href={`mailto:${member.acf.email}`}
                   className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-[#1c2a7a] text-white transition hover:opacity-90"
-                  aria-label="Email"
+                  aria-label={postStrings(lang).email}
                 >
-                 <Image src={Email} alt="Email" width={11} height={11} />
+                 <Image src={Email} alt="" width={11} height={11} />
                 </a>
               )}
             </div>

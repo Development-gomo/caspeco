@@ -1,6 +1,7 @@
 "use client";
 
 import { DEFAULT_LANG } from "@/config";
+import { postStrings } from "@/lib/postStrings";
 import { useEffect, useId, useMemo, useState } from "react";
 import {
   getCf7FormSchema,
@@ -89,7 +90,7 @@ function Field({ field, value, setValue, error, quick = false, lang = DEFAULT_LA
           value={value || ""}
           onChange={(e) => setValue(field.key, e.target.value)}
         >
-          <option value="">{field.placeholder || "Select"}</option>
+          <option value="">{field.placeholder || postStrings(lang).select}</option>
           {(field.options || []).map((opt, idx) => (
             <option key={idx} value={opt.label}>
               {opt.label}
@@ -146,7 +147,7 @@ function Field({ field, value, setValue, error, quick = false, lang = DEFAULT_LA
 }
 
 // quick: rendered in the Quick contact card (QuickContact) — adds the Figma mobile field styling (QUICK_M)
-export default function ContactForm({ formId = 982, lang = DEFAULT_LANG, submitLabel = "Send Message", quick = false }) {
+export default function ContactForm({ formId = 982, lang = DEFAULT_LANG, submitLabel = "", quick = false }) {
   const [schema, setSchema] = useState(null);
   const [values, setValues] = useState({});
   const [errors, setErrors] = useState({});
@@ -180,7 +181,7 @@ export default function ContactForm({ formId = 982, lang = DEFAULT_LANG, submitL
           loading: false,
           submitting: false,
           ok: false,
-          msg: "Failed to load form.",
+          msg: postStrings(lang).loadFail,
         });
       }
     })();
@@ -200,11 +201,11 @@ export default function ContactForm({ formId = 982, lang = DEFAULT_LANG, submitL
     for (const f of fields) {
       if (!f.required) continue;
       if (f.type === "acceptance") {
-        if (!values[f.key]) next[f.key] = "This field is required";
+        if (!values[f.key]) next[f.key] = postStrings(lang).required;
         continue;
       }
       const v = (values[f.key] || "").toString().trim();
-      if (!v) next[f.key] = "This field is required";
+      if (!v) next[f.key] = postStrings(lang).required;
     }
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -219,7 +220,7 @@ export default function ContactForm({ formId = 982, lang = DEFAULT_LANG, submitL
         ...s,
         submitting: false,
         ok: false,
-        msg: "Please fill required fields.",
+        msg: postStrings(lang).fillRequired,
       }));
       return;
     }
@@ -285,7 +286,7 @@ export default function ContactForm({ formId = 982, lang = DEFAULT_LANG, submitL
       ) {
         const next = {};
         cf7.invalid_fields.forEach((f) => {
-          if (f?.field) next[f.field] = f?.message || "Invalid";
+          if (f?.field) next[f.field] = f?.message || postStrings(lang).invalid;
         });
         setErrors(next);
       }
@@ -294,7 +295,7 @@ export default function ContactForm({ formId = 982, lang = DEFAULT_LANG, submitL
         loading: false,
         submitting: false,
         ok: false,
-        msg: err?.message || err?.error || "Failed to send. Please try again.",
+        msg: err?.message || err?.error || postStrings(lang).sendFail,
       });
     }
   }
@@ -339,7 +340,7 @@ export default function ContactForm({ formId = 982, lang = DEFAULT_LANG, submitL
                     ${quick ? QUICK_M.button : ""}
                   `}
       >
-        {state.submitting ? "Sending…" : submitLabel}
+        {state.submitting ? postStrings(lang).sending : submitLabel || postStrings(lang).send}
       </button>
 
       {acceptanceFields.map((f) => (

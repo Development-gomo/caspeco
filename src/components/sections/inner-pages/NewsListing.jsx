@@ -13,9 +13,11 @@ import PostCard from "@/components/ui/PostCard";
 import { DEFAULT_LANG } from "@/config";
 import { hasText, sectionBackground, toHtml } from "@/lib/content";
 import { postsPageQuery } from "@/lib/postsQuery";
+import { postStrings } from "@/lib/postStrings";
 
-const DEFAULT_TEXT = { read_more_text: "Read more", load_more_text: "Load more" };
-const text = (data, key) => (typeof data?.[key] === "string" && data[key].trim()) || DEFAULT_TEXT[key];
+// Section texts typed in the CMS win; otherwise the per-language defaults (lib/postStrings.js)
+const DEFAULT_KEYS = { read_more_text: "readMore", load_more_text: "loadMore" };
+const text = (data, key, lang) => (typeof data?.[key] === "string" && data[key].trim()) || postStrings(lang)[DEFAULT_KEYS[key]];
 
 export default function NewsListing({ data, lang = DEFAULT_LANG, initial }) {
   const [posts, setPosts] = React.useState(Array.isArray(initial?.posts) ? initial.posts : []);
@@ -72,7 +74,7 @@ export default function NewsListing({ data, lang = DEFAULT_LANG, initial }) {
         {posts.length > 0 && (
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3" aria-live="polite">
             {posts.map((post) => (
-              <PostCard key={post.id} post={post} readMore={text(data, "read_more_text")} readSuffix={read_time_suffix} lang={lang} />
+              <PostCard key={post.id} post={post} readMore={text(data, "read_more_text", lang)} readSuffix={read_time_suffix} lang={lang} />
             ))}
           </div>
         )}
@@ -80,7 +82,7 @@ export default function NewsListing({ data, lang = DEFAULT_LANG, initial }) {
         {page < totalPages && (
           <div className="flex flex-col items-center gap-3">
             <CtaButton variant="outline-dark-grey" onClick={loadMore} disabled={loading} aria-busy={loading} className="disabled:cursor-wait disabled:opacity-60">
-              {text(data, "load_more_text")}
+              {text(data, "load_more_text", lang)}
             </CtaButton>
             {failed && <p className="text-[14px] text-(--color-grey-dark)">Couldn&apos;t load more posts. Please try again.</p>}
           </div>

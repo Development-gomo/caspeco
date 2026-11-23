@@ -9,6 +9,7 @@ import HomeProductCards from "../home/HomeProductCards";
 import { getAllProducts, getProductsByIds } from "@/lib/api";
 import { DEFAULT_LANG, entryHref } from "@/config";
 import { rows } from "@/lib/content";
+import { postStrings } from "@/lib/postStrings";
 
 const MAX_CARDS = 4;
 
@@ -32,7 +33,7 @@ export default async function DynamicProductCards({ data, lang = DEFAULT_LANG, c
     products = (Array.isArray(all) ? all : []).filter((p) => p.id !== Number(currentId));
   }
 
-  const readMore = typeof data?.read_more_text === "string" && data.read_more_text.trim() ? data.read_more_text.trim() : "Explore";
+  const readMore = typeof data?.read_more_text === "string" && data.read_more_text.trim() ? data.read_more_text.trim() : postStrings(lang).explore;
   const cards = products.slice(0, MAX_CARDS).map((p) => {
     const media = p?._embedded?.["wp:featuredmedia"]?.[0];
     return {

@@ -2,8 +2,10 @@
 
 import CtaButton from "@/components/ui/CtaButton";
 import { hasText } from "@/lib/content";
+import { postStrings } from "@/lib/postStrings";
+import { DEFAULT_LANG } from "@/config";
 
-export default function CaseIntroduction({ data }) {
+export default function CaseIntroduction({ data, lang = DEFAULT_LANG }) {
   if (!data) return null;
 
   const {
@@ -65,7 +67,7 @@ export default function CaseIntroduction({ data }) {
             {/* Client */}
             {hasClient && (
               <div>
-                <p className="uppercase text-xs tracking-widest mb-2">Client</p>
+                <p className="uppercase text-xs tracking-widest mb-2">{postStrings(lang).client}</p>
                 <p className="text-black font-medium">{client_name}</p>
               </div>
             )}
@@ -109,7 +111,7 @@ export default function CaseIntroduction({ data }) {
             {/* Date */}
             {hasDate && (
               <div>
-                <p className="uppercase text-xs tracking-widest mb-2">Date</p>
+                <p className="uppercase text-xs tracking-widest mb-2">{postStrings(lang).date}</p>
                 <p className="text-black font-medium">{date}</p>
               </div>
             )}

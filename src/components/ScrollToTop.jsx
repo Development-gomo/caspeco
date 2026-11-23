@@ -8,10 +8,13 @@ import React from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import ArrowActive from "../../public/icons/product/slider-arrow-active.svg";
+import { useLang } from "@/lib/useLang";
+import { postStrings } from "@/lib/postStrings";
 
 const SHOW_AFTER_PX = 600;
 
 export default function ScrollToTop() {
+  const lang = useLang();
   const [visible, setVisible] = React.useState(false);
   const reduce = useReducedMotion();
 
@@ -27,7 +30,7 @@ export default function ScrollToTop() {
       {visible && (
         <motion.button
           type="button"
-          aria-label="Scroll to top"
+          aria-label={postStrings(lang).scrollTop}
           onClick={() => window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" })}
           initial={{ opacity: 0, y: 16, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}

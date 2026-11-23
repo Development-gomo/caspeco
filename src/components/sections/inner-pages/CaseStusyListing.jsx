@@ -13,6 +13,7 @@ import { DEFAULT_LANG, normalizeHref } from "@/config";
 import CtaButton from "@/components/ui/CtaButton";
 import CaseCard from "@/components/ui/CaseCard";
 import { hasText, sectionBackground, toHtml } from "@/lib/content";
+import { postStrings } from "@/lib/postStrings";
 
 const INITIAL_COUNT = 9;
 const LOAD_MORE_STEP = 9;
@@ -126,7 +127,7 @@ export default function CaseStudyListing({
           {hasMore && (
             <div className="flex justify-center mt-10">
               <CtaButton onClick={() => setVisibleCount((prev) => prev + LOAD_MORE_STEP)}>
-                {load_more_text || "Load More"}
+                {load_more_text || postStrings(lang).loadMore}
               </CtaButton>
             </div>
           )}

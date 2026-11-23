@@ -76,7 +76,7 @@ function QuoteCard({ card, lang, accent, readMore }) {
       {card.quote && (
         <blockquote
           className="font-medium italic text-[26px] leading-8 tracking-[-0.52px] max-md:font-normal max-md:text-[20px] max-md:leading-[24px] max-md:tracking-[-0.4px] max-md:text-[#FDFDFD] lg:text-[32px] lg:leading-8 lg:tracking-[-0.64px]"
-          dangerouslySetInnerHTML={{ __html: toHtml(curlyQuote(card.quote)) }}
+          dangerouslySetInnerHTML={{ __html: toHtml(curlyQuote(card.quote, lang)) }}
         />
       )}
       <figcaption className="mt-auto flex items-end justify-between gap-4">

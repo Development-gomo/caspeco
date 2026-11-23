@@ -472,7 +472,7 @@ export async function submitCf7FormProxy(formId, payload) {
   if (!res.ok || !sent) {
     throw {
       ...json,
-      message: json?.message || json?.cf7?.message || "Failed to send. Please try again.",
+      message: json?.message || json?.cf7?.message || "",
       cf7: json?.cf7 ?? json,
     };
   }
@@ -506,7 +506,7 @@ export async function submitCf7Direct(formId, schemaHidden, values) {
   if (json?.status !== "mail_sent") {
     throw {
       ...json,
-      message: json?.message || "Failed to send. Please try again.",
+      message: json?.message || "",
       cf7: json,
     };
   }

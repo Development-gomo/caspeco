@@ -7,6 +7,8 @@
 import React from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { useLang } from "@/lib/useLang";
+import { postStrings } from "@/lib/postStrings";
 
 // Uploaded / direct video files play in a <video>; YouTube and Vimeo in their players;
 // any other link (Loom, Wistia, a hosted player page …) is embedded as an iframe.
@@ -60,6 +62,7 @@ function embedUrl(url) {
 }
 
 export default function VideoModal({ open, url, title = "", onClose }) {
+  const lang = useLang();
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => setMounted(true), []);
 
@@ -101,7 +104,7 @@ export default function VideoModal({ open, url, title = "", onClose }) {
             <button
               type="button"
               onClick={onClose}
-              aria-label="Close"
+              aria-label={postStrings(lang).close}
               className="absolute -top-12 right-0 flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-[28px] leading-none text-white transition-colors hover:bg-white/30"
             >
               ×

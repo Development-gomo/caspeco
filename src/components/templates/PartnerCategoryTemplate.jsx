@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Shell from "./Shell";
 import { entryHref } from "@/config";
+import { postStrings } from "@/lib/postStrings";
 
 export default function PartnerCategoryTemplate({ term, partners, lang, slug, themeOptions }) {
   return (
@@ -39,7 +40,7 @@ export default function PartnerCategoryTemplate({ term, partners, lang, slug, th
             })}
           </ul>
         ) : (
-          <p className="text-(--color-grey-medium-dark)">No partners in this category yet.</p>
+          <p className="text-(--color-grey-medium-dark)">{postStrings(lang).noPartners}</p>
         )}
       </section>
     </Shell>
