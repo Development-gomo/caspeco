@@ -63,8 +63,8 @@ export default function HomeHero({ data, lang = DEFAULT_LANG }) {
       className="relative isolate w-full min-h-screen overflow-hidden bg-[#000] hero xl:min-h-240 max-md:min-h-[672px]"
     >
       {/* BG IMAGE/VIDEO */}
-      {/* overlay on: the parallax lifts the image up to 2%, which would leave an image-less strip at the bottom under the static overlay (a grey band) — extend the image box so it always covers */}
-      <motion.div className="absolute hero-bg inset-0 -z-10" style={overlay ? { y: bgY, bottom: "-3%" } : { y: bgY }}>
+      {/* the parallax lifts the media up to 2% (at the top of the page), which would leave a media-less strip at the bottom of the hero (a black gap above the next section) — the box always extends 3% below so it covers */}
+      <motion.div className="absolute hero-bg inset-0 -z-10" style={{ y: bgY, bottom: "-3%" }}>
         {hasMobileMedia ? (
           <>
             {/* one <picture> picks the still per viewport (only that file downloads); the desktop video mounts
