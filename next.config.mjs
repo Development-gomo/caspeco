@@ -13,10 +13,11 @@ const nextConfig = {
   reactStrictMode: true,
 
   images: {
-    // Serve CMS images as-is (via /assets) instead of through Vercel Image Optimization —
-    // the account's optimization quota returns 402 once exceeded and every image breaks.
-    // WP already generates resized sizes; set to false again on a plan with quota.
-    unoptimized: true,
+    // Vercel Image Optimization (AVIF/WebP + right-sized files): the account is on Pro now. It was switched off
+    // when the Hobby quota returned 402 and broke every image; unoptimized: true is the emergency switch.
+    unoptimized: false,
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 2678400, // optimized files are cached for 31 days (media URLs carry the upload date)
     remotePatterns: [
       { protocol: "https", hostname: wpHostname, pathname: "/**" },
       { protocol: "https", hostname: `www.${wpHostname}`, pathname: "/**" },
