@@ -12,6 +12,10 @@ const nonDefaultLangs = SUPPORTED_LANGS.filter((l) => l !== DEFAULT_LANG);
 const nextConfig = {
   reactStrictMode: true,
 
+  // Inline the (~34 KB) global CSS into the HTML: the stylesheet request was render-blocking (~800 ms on throttled
+  // mobile) before first paint. Fonts already use next/font (display: swap, preloaded).
+  experimental: { inlineCss: true },
+
   images: {
     // Vercel Image Optimization (AVIF/WebP + right-sized files): the account is on Pro now. It was switched off
     // when the Hobby quota returned 402 and broke every image; unoptimized: true is the emergency switch.
