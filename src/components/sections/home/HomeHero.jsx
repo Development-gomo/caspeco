@@ -30,15 +30,18 @@ export default function HomeHero({ data, lang = DEFAULT_LANG }) {
 
   const bgImage = data?.bg_image?.url || "";
   const bgVideo = data?.bg_video?.url || "";
-  // Mobile (< md): NO video is loaded or played (QA: video disabled on mobile). The hero shows the still image:
-  // mobile_bg_image when set, otherwise bg_image. Desktop is unchanged (bg_video plays, else bg_image).
-  // Neither a video nor a mobile image set → the default image renders exactly as before on every viewport.
+  // Mobile (< md) never loads the desktop bg_video: it shows the still image (mobile_bg_image when set, otherwise
+  // bg_image) and, when the editor uploaded a separate mobile_bg_video, plays that one over the still (the still is
+  // the poster while the file loads). Desktop is unchanged (bg_video plays, else bg_image).
+  // No video and no mobile image set → the default image renders exactly as before on every viewport.
   const mobileImage = data?.mobile_bg_image?.url || "";
-  const hasMobileMedia = Boolean(bgVideo || mobileImage);
+  const mobileVideo = data?.mobile_bg_video?.url || "";
+  const hasMobileMedia = Boolean(bgVideo || mobileImage || mobileVideo);
   const mobileStill = mobileImage || bgImage;
   const desktopStill = bgVideo ? "" : bgImage; // desktop as before: no image under bg_video
   const isMobile = React.useSyncExternalStore(subscribeMobile, isMobileViewport, viewportUnknown);
-  const activeVideo = isMobile === null || isMobile ? "" : bgVideo; // desktop only, mounted after hydration
+  // mounted after hydration, so the other viewport's video is never fetched
+  const activeVideo = isMobile === null ? "" : isMobile ? mobileVideo : bgVideo;
   // enable_overlay: ACF Button Group ("enable" / "disable"), may arrive as "enable" or { value: "enable" };
   // adds a dark overlay over the background image / video (off by default)
   const overlayField = data?.enable_overlay;
