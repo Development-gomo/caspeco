@@ -7,7 +7,12 @@ import ScrollProgress from "@/components/ScrollProgress";
 import ScrollToTop from "@/components/ScrollToTop";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
-//import Script from "next/script"; // uncomment when adding tracking scripts
+import Script from "next/script";
+
+// Cookiebot (Usercentrics) banner. The domain-group ID is read from the environment, so staging / preview / production
+// can use different ones; no ID = no banner. Cookiebot's banner language follows the site language.
+const COOKIEBOT_ID = process.env.NEXT_PUBLIC_COOKIEBOT_ID || "";
+const COOKIEBOT_CULTURE = { sv: "sv", en: "en", no: "nb", fr: "fr", frbg: "fr", nl: "nl" };
 
 const tenon = localFont({
   src: [
@@ -38,15 +43,17 @@ export default async function RootLayout({ children }) {
   return (
     <html lang={lang} className={tenon.variable} suppressHydrationWarning>
       <head>
-        {/* ── Cookiebot ── add data-cbid and uncomment when live
-        <Script
-          id="cookiebot"
-          src="https://consent.cookiebot.com/uc.js"
-          data-cbid="YOUR-COOKIEBOT-ID"
-          data-blockingmode="auto"
-          strategy="beforeInteractive"
-        />
-        */}
+        {/* Cookiebot loads first (beforeInteractive) so consent is known before any tracking script runs */}
+        {COOKIEBOT_ID && (
+          <Script
+            id="Cookiebot"
+            src="https://consent.cookiebot.com/uc.js"
+            data-cbid={COOKIEBOT_ID}
+            data-blockingmode="auto"
+            data-culture={COOKIEBOT_CULTURE[lang] || "en"}
+            strategy="beforeInteractive"
+          />
+        )}
 
         {/* ── Google Tag Manager ── add GTM-XXXXXX and uncomment when live 
         <Script
