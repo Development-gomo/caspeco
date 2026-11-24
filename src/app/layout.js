@@ -12,6 +12,12 @@ import Script from "next/script";
 // Cookiebot (Usercentrics) banner. The domain-group ID is read from the environment, so staging / preview / production
 // can use different ones; no ID = no banner. Cookiebot's banner language follows the site language.
 const COOKIEBOT_ID = process.env.NEXT_PUBLIC_COOKIEBOT_ID || "";
+// Google Tag Manager container (GTM-XXXXXXX). Only a well-formed ID is used; no ID = no GTM.
+const GTM_ID = /^GTM-[A-Z0-9]+$/.test(process.env.NEXT_PUBLIC_GTM_ID || "") ? process.env.NEXT_PUBLIC_GTM_ID : "";
+// Google Consent Mode v2 defaults: everything denied until the visitor chooses in the Cookiebot banner (Cookiebot
+// then sends the update through the same dataLayer). Runs before Cookiebot and GTM.
+const CONSENT_DEFAULTS = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',functionality_storage:'denied',personalization_storage:'denied',security_storage:'granted',wait_for_update:500});gtag('set','ads_data_redaction',true);gtag('set','url_passthrough',true);`;
+const gtmSnippet = (id) => `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${id}');`;
 const COOKIEBOT_CULTURE = { sv: "sv", en: "en", no: "nb", fr: "fr", frbg: "fr", nl: "nl" };
 
 const tenon = localFont({
@@ -43,7 +49,9 @@ export default async function RootLayout({ children }) {
   return (
     <html lang={lang} className={tenon.variable} suppressHydrationWarning>
       <head>
-        {/* Cookiebot loads first (beforeInteractive) so consent is known before any tracking script runs */}
+        {/* Consent defaults (denied) come first, then Cookiebot (beforeInteractive), so consent is known before any
+            tracking script runs; GTM loads afterInteractive and waits for the consent update */}
+        {GTM_ID && <Script id="consent-defaults" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: CONSENT_DEFAULTS }} />}
         {COOKIEBOT_ID && (
           <Script
             id="Cookiebot"
@@ -55,22 +63,16 @@ export default async function RootLayout({ children }) {
           />
         )}
 
-        {/* ── Google Tag Manager ── add GTM-XXXXXX and uncomment when live 
-        <Script
-          id="gtm"
-          src="https://www.googletagmanager.com/gtm.js?id=GTM-"
-          strategy="afterInteractive"
-        />*/}
+        {GTM_ID && <Script id="gtm" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: gtmSnippet(GTM_ID) }} />}
 
         {/* ── Other tracking scripts go here ── */}
       </head>
       <body className={pageType} suppressHydrationWarning>
-        {/* ── GTM noscript fallback ── uncomment when live */}
-        {/* <noscript>
-          <iframe
-            src="https://www.googletagmanager.com/ns.html?id=GTM-" height="0" width="0" style={{ display: "none", visibility: "hidden" }}
-          />
-        </noscript> */}
+        {GTM_ID && (
+          <noscript>
+            <iframe src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`} height="0" width="0" style={{ display: "none", visibility: "hidden" }} title="Google Tag Manager" />
+          </noscript>
+        )}
 
         <LangSyncer />
         <ScrollProgress />
