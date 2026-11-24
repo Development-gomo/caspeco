@@ -21,12 +21,13 @@ export default function Reveal({ as: Tag = "div", children, className = "", dela
     }
     const io = new IntersectionObserver(
       (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
+        // 20% of the element, or half the viewport for elements taller than 2.5 screens (their 20% is never reached)
+        if (entries.some((e) => e.isIntersecting && (e.intersectionRatio >= 0.2 || e.intersectionRect.height >= (e.rootBounds?.height || window.innerHeight) * 0.5))) {
           io.disconnect();
           show();
         }
       },
-      { threshold: 0.2 }
+      { threshold: [0, 0.2, 0.4, 0.6, 0.8, 1] }
     );
     io.observe(el);
     return () => io.disconnect();
