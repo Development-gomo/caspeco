@@ -31,8 +31,35 @@ const GRADIENT = "linear-gradient(180deg, rgba(218, 220, 221, 0.80) -0.94%, rgba
 // Fallback icons for items with no icon assigned in ACF, by position: POS, staff, booking, analytics
 const FALLBACK_ICONS = [IconPos, IconStaff, IconBooking, IconAnalytics];
 
-function AccordionItem({ item, index, isOpen, onToggle, lang, variant }) {
+// An item can open only when it has body text or a complete link; otherwise it is a plain row (no chevron, not clickable)
+const isExpandable = (item) => hasText(item.text) || Boolean(item.link_text && item.link_url);
+
+function AccordionItem({ item, index, isOpen: open, onToggle, lang, variant }) {
   const icon = mediaUrl(item.icon) || FALLBACK_ICONS[index % FALLBACK_ICONS.length];
+  const expandable = isExpandable(item);
+  const isOpen = open && expandable;
+  const rowClass = `flex w-full items-start gap-4 pt-[21px] text-left max-md:gap-3 max-md:pt-5 ${isOpen ? "pb-[11px] max-md:pb-[15px]" : "pb-[21px] max-md:pb-5"}`;
+  const rowContent = (
+    <>
+      <span className="relative flex size-7 shrink-0 items-center justify-center">
+        {icon && (
+          <Image src={icon} alt="" width={28} height={28} className={`max-h-7 w-auto object-contain transition ${isOpen ? "brightness-0 invert" : ""}`} />
+        )}
+      </span>
+      <span className={`flex-1 font-medium text-[18px] max-md:text-[20px] lg:text-[20px] leading-6 tracking-[-0.4px] ${isOpen ? "text-(--color-light-grey)" : "text-(--color-grey-dark)"}`}>
+        {item.title}
+      </span>
+      {expandable && (
+        <Image
+          src={Chevron}
+          alt=""
+          width={14}
+          height={8}
+          className={`mt-2 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180 brightness-0 invert max-md:mt-0" : "max-md:mt-2.5"}`}
+        />
+      )}
+    </>
+  );
   return (
     <div
       className={`rounded-lg pl-5 pr-6 lg:pr-8 max-md:pr-5 transition-colors duration-300 ${
@@ -44,23 +71,13 @@ function AccordionItem({ item, index, isOpen, onToggle, lang, variant }) {
       <h3 className="normal-case">
         {/* Figma: icon box 28, title line 24 at the top of the row, chevron centred on the title;
             open item 21 + 24 + 15 + text + 15 + link + 21 (the icon column doesn't add height) */}
-        <button type="button" onClick={onToggle} aria-expanded={isOpen} className={`flex w-full cursor-pointer items-start gap-4 pt-[21px] text-left max-md:gap-3 max-md:pt-5 ${isOpen ? "pb-[11px] max-md:pb-[15px]" : "pb-[21px] max-md:pb-5"}`}>
-          <span className="relative flex size-7 shrink-0 items-center justify-center">
-            {icon && (
-              <Image src={icon} alt="" width={28} height={28} className={`max-h-7 w-auto object-contain transition ${isOpen ? "brightness-0 invert" : ""}`} />
-            )}
-          </span>
-          <span className={`flex-1 font-medium text-[18px] max-md:text-[20px] lg:text-[20px] leading-6 tracking-[-0.4px] ${isOpen ? "text-(--color-light-grey)" : "text-(--color-grey-dark)"}`}>
-            {item.title}
-          </span>
-          <Image
-            src={Chevron}
-            alt=""
-            width={14}
-            height={8}
-            className={`mt-2 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180 brightness-0 invert max-md:mt-0" : "max-md:mt-2.5"}`}
-          />
-        </button>
+        {expandable ? (
+          <button type="button" onClick={onToggle} aria-expanded={isOpen} className={`${rowClass} cursor-pointer`}>
+            {rowContent}
+          </button>
+        ) : (
+          <div className={rowClass}>{rowContent}</div>
+        )}
       </h3>
 
       <AnimatePresence initial={false}>
@@ -96,7 +113,8 @@ function AccordionItem({ item, index, isOpen, onToggle, lang, variant }) {
 // variant "icp": heading X-Bold (Figma ICP "USP's"); the global .cs-h3 weight would win otherwise
 export default function ProductUspAccordion({ data, lang = DEFAULT_LANG, variant }) {
   const items = rows(data?.items).filter((i) => i.title);
-  const [open, setOpen] = React.useState(0);
+  const firstExpandable = items.findIndex(isExpandable); // -1 when no item has content: nothing opens
+  const [open, setOpen] = React.useState(firstExpandable === -1 ? null : firstExpandable);
   const { heading, short_text, sub_text, cta_text, cta_url } = data || {};
   const hasHeading = hasText(heading);
   const hasShort = hasText(short_text);
