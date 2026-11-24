@@ -12,11 +12,20 @@ const nonDefaultLangs = SUPPORTED_LANGS.filter((l) => l !== DEFAULT_LANG);
 const nextConfig = {
   reactStrictMode: true,
 
+  // Inline the (~34 KB) global CSS into the HTML: the stylesheet request was render-blocking (~800 ms on throttled
+  // mobile) before first paint. Fonts already use next/font (display: swap, preloaded).
+  experimental: { inlineCss: true },
+
   images: {
-    // Serve CMS images as-is (via /assets) instead of through Vercel Image Optimization —
-    // the account's optimization quota returns 402 once exceeded and every image breaks.
-    // WP already generates resized sizes; set to false again on a plan with quota.
-    unoptimized: true,
+    // Vercel Image Optimization (AVIF/WebP + right-sized files): the account is on Pro now. It was switched off
+    // when the Hobby quota returned 402 and broke every image; unoptimized: true is the emergency switch.
+    unoptimized: false,
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 2678400, // optimized files are cached for 31 days (media URLs carry the upload date)
+    // fewer srcset candidates per image (10 instead of 16): each next/image repeats its srcset in the HTML and in the
+    // hydration data, ~185 KB of the page with the default list
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [64, 128, 256, 384],
     remotePatterns: [
       { protocol: "https", hostname: wpHostname, pathname: "/**" },
       { protocol: "https", hostname: `www.${wpHostname}`, pathname: "/**" },

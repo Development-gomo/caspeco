@@ -1314,4 +1314,26 @@ span.subheading-label.text-\[var\(--color-accent\)\],
 [data-sec-pb="off"] > section,
 [data-sec-pb="off"] > div > section { padding-bottom: 0 !important; }
 
-
+/* Reveal (components/ui/Reveal.jsx): fade-up on first view, once. Unlayered on purpose: it must win over the
+   Tailwind transition / transform utilities that sit on some of the wrapped elements. */
+.cs-reveal {
+  opacity: 0;
+  transform: translate3d(var(--rv-x, 0), var(--rv-y, 24px), 0) scale(var(--rv-s, 1));
+  transition: opacity var(--rv-d, 0.7s) cubic-bezier(0.22, 1, 0.36, 1) var(--rv-delay, 0s), transform var(--rv-d, 0.7s) cubic-bezier(0.22, 1, 0.36, 1) var(--rv-delay, 0s);
+}
+.cs-reveal[data-in] {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cs-reveal {
+    transform: none;
+    transition: opacity 0.2s linear;
+  }
+}
+@media (scripting: none) {
+  .cs-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
