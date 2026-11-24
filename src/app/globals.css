@@ -177,6 +177,10 @@ em {
 }
 
 @media (min-width: 768px) {
+  .privacy-text.text-left .full {
+    display: flex;
+    gap: 40px;
+  }
   .about-panel-heading,
   .about-panel-heading p,
   .about-panel-heading h2 {
@@ -247,6 +251,27 @@ h1.normal-case small {
     font-size: 22px;
     letter-spacing: 0px;
     line-height: 24px;
+}
+
+/* Kicker line inside a section heading (CMS: <h2><small>Kicker</small><br>Heading</h2>): its own smaller line above
+   the heading, same treatment as the hero title above. Without this the browser's default small (0.8em) leaves it
+   almost as large as the heading, and the <br> after it is hidden so the block does not add an empty line. */
+:is(.cs-h1, .cs-h2, .cs-h3, .cs-h4) > small {
+  display: block;
+  font-size: 22px;
+  line-height: 24px;
+  letter-spacing: 0;
+  margin-bottom: 8px;
+}
+:is(.cs-h1, .cs-h2, .cs-h3, .cs-h4) > small + br {
+  display: none;
+}
+@media (max-width: 767.98px) {
+  :is(.cs-h1, .cs-h2, .cs-h3, .cs-h4) > small {
+    font-size: 18px;
+    line-height: 22px;
+    margin-bottom: 6px;
+  }
 }
 
 /* ==========================================
