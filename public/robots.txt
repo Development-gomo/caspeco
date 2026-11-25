@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://caspeco.com/sitemap.xml
+Sitemap: https://www.caspeco.com/sitemap.xml
