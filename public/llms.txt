@@ -1,0 +1,67 @@
+# Caspeco
+
+> Caspeco makes software for the hospitality industry (restaurants, bars, cafés, hotels, amusement parks and arenas): POS and payments, booking, staff management, analytics and AI assistants, sold as one connected system.
+
+The site is available in Swedish (the default, at the root), English (/en), Norwegian (/no), French (/fr), Belgian French (/frbg) and Dutch (/nl). Page paths differ per language; the links below are the English pages. For another language, use the language switcher or the sitemap.
+
+## Products
+
+- [POS system for restaurants](https://www.caspeco.com/en/pos-system-restaurant): Caspeco's POS system for restaurants, bars and hotels.
+- [POS features](https://www.caspeco.com/en/cash-system-functions): Key features of the POS system.
+- [Mobile POS](https://www.caspeco.com/en/mobile-pos-system): Take orders and payments at the table.
+- [Table service](https://www.caspeco.com/en/table-service-restaurant): Table service for restaurants.
+- [SoftPOS](https://www.caspeco.com/en/softpos): Accept contactless card payments on a phone, without a traditional card terminal.
+- [Caspeco Kiosk](https://www.caspeco.com/en/self-ordering-kiosk-caspeco-kiosk): Self-ordering kiosk for express checkout.
+- [Online ordering](https://www.caspeco.com/en/online-order): Online ordering for takeout and delivery.
+- [Delivery for restaurants](https://www.caspeco.com/en/delivery-restaurants): Delivery orders without extra printers and tablets.
+- [Trivec POS](https://www.caspeco.com/en/product/trivec-kassa): Trivec POS system for restaurants, bars and hotels.
+- [Terminals](https://www.caspeco.com/en/terminals): Payment terminals.
+- [Sunmi accessories and specifications](https://www.caspeco.com/en/sunmi): Hardware accessories and specifications.
+- [Booking system](https://www.caspeco.com/en/product/booking-system-for-restaurants-hotels-and-bars): Reservations for restaurants, bars and hotels.
+- [Booking system features](https://www.caspeco.com/en/booking-system-features): Key features of the booking system.
+- [Activity booking](https://www.caspeco.com/en/activity-booking-restaurant-industry): Activity booking for the restaurant industry.
+- [Staff management](https://www.caspeco.com/en/product/staff-management-system-for-bars-restaurants-and-hotels): Scheduling, performance and payroll.
+- [Staff system features](https://www.caspeco.com/en/personnel-system-functions): Payroll, time and scheduling features.
+- [Analytics](https://www.caspeco.com/en/product/powerful-analytics-for-the-restaurant-industry): Analytics for the restaurant industry.
+- [Analytics features](https://www.caspeco.com/en/analysis-functions): Advanced analytics features.
+- [Casper, AI assistant](https://www.caspeco.com/en/casper): AI assistant for hospitality: ask about sales, staffing and more.
+- [Guest Assistant](https://www.caspeco.com/en/guest-assistant): Answers guests 24/7 over phone, chat, Instagram or their own AI assistant, and takes bookings.
+- [Software overview](https://www.caspeco.com/en/software): Overview of Caspeco's software.
+- [Integrations](https://www.caspeco.com/en/integrations): Systems Caspeco integrates with.
+
+## Solutions by stage
+
+- [Opening soon](https://www.caspeco.com/en/solutions/opening-soon): Set up sales, staff, bookings and reporting before the first guest arrives.
+- [Levelling up](https://www.caspeco.com/en/solutions/levelling-up): Replace a patchwork of tools with a connected setup.
+- [Adding locations](https://www.caspeco.com/en/solutions/adding-locations): Run a second, third or fifth site consistently.
+- [Operating at scale](https://www.caspeco.com/en/solutions/operating-at-scale): Staff cost, payroll and margins for every venue in one view.
+
+## Industries
+
+- [Restaurants](https://www.caspeco.com/en/industry/refreshingly-easy-restaurant-managament)
+- [Cafés](https://www.caspeco.com/en/industry/refreshingly-easy-cafe-managament)
+- [Bars and nightclubs](https://www.caspeco.com/en/industry/the-perfect-mix-for-bars-and-nightclubs)
+- [Fast food and takeaway](https://www.caspeco.com/en/industry/system-with-plus-menu-for-fast-food-and-take-away)
+- [Hotels and hotel chains](https://www.caspeco.com/en/industry/check-out-a-complete-system-for-hotels-and-hotel-chains)
+- [Amusement parks and arenas](https://www.caspeco.com/en/industry/effortless-management-for-amusement-parks-and-arenas)
+- [Seasonal businesses](https://www.caspeco.com/en/industry/a-system-for-hot-summer-days-and-snow-covered-mountaintops)
+
+## Company, customers and news
+
+- [About us](https://www.caspeco.com/en/about-us)
+- [Case studies](https://www.caspeco.com/en/case-studies): Customer stories.
+- [News and articles](https://www.caspeco.com/en/news)
+- [Contact us](https://www.caspeco.com/en/contact-us)
+
+## Support and policies
+
+- [Support](https://www.caspeco.com/en/support)
+- [Help center](https://www.caspeco.com/en/help-center)
+- [Documents](https://www.caspeco.com/en/document): Documentation on Caspeco's services and products.
+- [Privacy policy](https://www.caspeco.com/en/privacy-policy)
+- [Cookie policy](https://www.caspeco.com/en/cookie-policy)
+- [Terms and GDPR](https://www.caspeco.com/en/gdpr)
+
+## Optional
+
+- [Sitemap](https://www.caspeco.com/sitemap.xml): All pages in all languages.
