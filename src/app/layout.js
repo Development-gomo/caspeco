@@ -49,9 +49,10 @@ export default async function RootLayout({ children }) {
   return (
     <html lang={lang} className={tenon.variable} suppressHydrationWarning>
       <head>
-        {/* Consent defaults (denied) come first, then Cookiebot (beforeInteractive), so consent is known before any
-            tracking script runs; GTM loads afterInteractive and waits for the consent update */}
-        {GTM_ID && <Script id="consent-defaults" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: CONSENT_DEFAULTS }} />}
+        {/* GTM sits at the very top of <head>. Plain inline <script> (not next/script) so it is emitted exactly here, as the
+            first thing in <head>. Consent Mode v2 defaults (denied) are in the same script, ahead of GTM, so consent is
+            known before any tag fires; Cookiebot then updates it. */}
+        {GTM_ID && <script id="gtm" dangerouslySetInnerHTML={{ __html: CONSENT_DEFAULTS + gtmSnippet(GTM_ID) }} />}
         {COOKIEBOT_ID && (
           <Script
             id="Cookiebot"
@@ -62,8 +63,6 @@ export default async function RootLayout({ children }) {
             strategy="beforeInteractive"
           />
         )}
-
-        {GTM_ID && <Script id="gtm" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: gtmSnippet(GTM_ID) }} />}
 
         {/* ── Other tracking scripts go here ── */}
       </head>
