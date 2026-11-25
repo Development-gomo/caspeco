@@ -17,7 +17,7 @@ const GTM_ID = /^GTM-[A-Z0-9]+$/.test(process.env.NEXT_PUBLIC_GTM_ID || "") ? pr
 // Google Consent Mode v2 defaults: everything denied until the visitor chooses in the Cookiebot banner (Cookiebot
 // then sends the update through the same dataLayer). Runs before Cookiebot and GTM.
 const CONSENT_DEFAULTS = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',functionality_storage:'denied',personalization_storage:'denied',security_storage:'granted',wait_for_update:500});gtag('set','ads_data_redaction',true);gtag('set','url_passthrough',true);`;
-const gtmSnippet = (id) => `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${id}');`;
+const gtmSnippet = (id) => `(function(w,d,s,l,i){function go(){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.defer=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);}function idle(){('requestIdleCallback' in w)?w.requestIdleCallback(go,{timeout:2000}):setTimeout(go,200);}d.readyState==='complete'?idle():w.addEventListener('load',idle);})(window,document,'script','dataLayer','${id}');`;
 const COOKIEBOT_CULTURE = { sv: "sv", en: "en", no: "nb", fr: "fr", frbg: "fr", nl: "nl" };
 
 const tenon = localFont({
@@ -49,8 +49,8 @@ export default async function RootLayout({ children }) {
   return (
     <html lang={lang} className={tenon.variable} suppressHydrationWarning>
       <head>
-        {/* GTM sits at the very top of <head>. Plain inline <script> (not next/script) so it is emitted exactly here, as the
-            first thing in <head>. Consent Mode v2 defaults (denied) are in the same script, ahead of GTM, so consent is
+        {/* GTM sits at the very top of <head>. Plain inline <script> (not next/script) so it is emitted exactly here, at the
+            top of <head>. The consent defaults run at once; the gtm.js download itself is deferred until the page has loaded and the browser is idle (defer has no effect on inline scripts, so it is done in the snippet). Consent Mode v2 defaults (denied) are in the same script, ahead of GTM, so consent is
             known before any tag fires; Cookiebot then updates it. */}
         {GTM_ID && <script id="gtm" dangerouslySetInnerHTML={{ __html: CONSENT_DEFAULTS + gtmSnippet(GTM_ID) }} />}
         {COOKIEBOT_ID && (
