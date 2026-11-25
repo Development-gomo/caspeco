@@ -5,6 +5,7 @@ import { resolveParams } from "@/lib/params";
 import PageBuilder from "@/components/major/PageBuilder";
 import { LangHeader } from "@/components/templates/Shell";
 import Footer from "@/components/major/Footer";
+import PageType from "@/components/ui/PageType";
 import { buildMetadataFromYoast } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import { DEFAULT_LANG, SUPPORTED_LANGS, langHref, langHome } from "@/config";
@@ -43,7 +44,7 @@ export default async function SinglePage({ params }) {
   const acf = data?.acf || {};
 
   return (
-    <>
+    <PageType type="page">
       {/* language switcher: the translation lookup runs alongside the PageBuilder data, not before it */}
       <LangHeader lang={lang} entryId={data.id} themeOptions={themeOptions} />
       <main>
@@ -51,7 +52,7 @@ export default async function SinglePage({ params }) {
       </main>
       {/* the footer Quick contact would repeat the page's own form */}
       <Footer lang={lang} currentSlug={slug} hideQuickContact={hasPageForm(acf.page_builder)} />
-    </>
+    </PageType>
   );
 }
 

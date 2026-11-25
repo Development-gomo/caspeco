@@ -24,7 +24,8 @@ import {
 } from "@/lib/api";
 import { resolveParams } from "@/lib/params";
 import { buildMetadataFromYoast } from "@/lib/seo";
-import { DEFAULT_LANG, SUPPORTED_LANGS, ROUTE_TYPES, typeFromBase, entryHref, langHref } from "@/config";
+import { DEFAULT_LANG, SUPPORTED_LANGS, ROUTE_TYPES, BODY_CLASS, typeFromBase, entryHref, langHref } from "@/config";
+import PageType from "@/components/ui/PageType";
 import PostTemplate from "@/components/templates/PostTemplate";
 import CaseStudyTemplate from "@/components/templates/CaseStudyTemplate";
 import EntryTemplate from "@/components/templates/EntryTemplate";
@@ -131,16 +132,7 @@ async function routeFromParams(params) {
   return { lang, route: await lookup(lang, segments) };
 }
 
-export default async function LocalizedEntryPage({ params }) {
-  const { lang, segments } = await segmentsFromParams(params);
-  // header/footer options only depend on the language: fetch them alongside the route (never rejects)
-  const themeOptionsPromise = getThemeOptions(lang);
-  const route = await lookup(lang, segments);
-  if (!route) notFound();
-
-  const themeOptions = await themeOptionsPromise;
-  const common = { lang, slug: route.slug, themeOptions };
-
+function renderRoute(route, common) {
   switch (route.type) {
     case "post":
       return <PostTemplate post={route.entry} {...common} />;
@@ -160,6 +152,20 @@ export default async function LocalizedEntryPage({ params }) {
       // child page: parent slugs differ per language, so the switcher falls back to the homepages
       return <EntryTemplate entry={route.entry} entryType="pages" linkTranslations={false} {...common} />;
   }
+}
+
+export default async function LocalizedEntryPage({ params }) {
+  const { lang, segments } = await segmentsFromParams(params);
+  // header/footer options only depend on the language: fetch them alongside the route (never rejects)
+  const themeOptionsPromise = getThemeOptions(lang);
+  const route = await lookup(lang, segments);
+  if (!route) notFound();
+
+  const themeOptions = await themeOptionsPromise;
+  const common = { lang, slug: route.slug, themeOptions };
+
+  // the page-type class (article, product, partner …) used to be the <body> class
+  return <PageType type={BODY_CLASS[route.type] || "page"}>{renderRoute(route, common)}</PageType>;
 }
 
 export async function generateMetadata({ params }) {

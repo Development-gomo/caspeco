@@ -3,6 +3,7 @@
 import Header from "@/components/major/Header";
 import PageBuilder from "@/components/major/PageBuilder";
 import Footer from "@/components/major/Footer";
+import PageType from "@/components/ui/PageType";
 import { getPageBySlug, getThemeOptions } from "@/lib/api";
 import { buildMetadataFromYoast } from "@/lib/seo";
 import { resolveParams } from "@/lib/params";
@@ -30,7 +31,7 @@ export default async function LangHomePage({ params }) {
   if (!page) notFound();
 
   return (
-    <>
+    <PageType type="home">
       <Header
         lang={lang}
         altLangUrls={altLangUrls(lang)}
@@ -41,7 +42,7 @@ export default async function LangHomePage({ params }) {
         <PageBuilder sections={page?.acf?.page_builder} lang={lang} />
       </main>
       <Footer lang={lang} />
-    </>
+    </PageType>
   );
 }
 
