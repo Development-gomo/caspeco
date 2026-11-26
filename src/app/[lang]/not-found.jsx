@@ -1,34 +1,39 @@
-// src/app/[lang]/not-found.jsx
+"use client";
 
+// src/app/[lang]/not-found.jsx
+// Client component on purpose. A server not-found that read request headers (to learn the language) was rendered
+// into the payload of EVERY page of the segment, which made all pages dynamic (no caching) and bloated each page.
+// The language comes from the URL (useLang), the header options are fetched from the same-origin proxy, so the
+// 404 page itself stays statically cacheable and costs the other pages nothing.
+
+import React from "react";
 import Header from "@/components/major/Header";
-import Footer from "@/components/major/Footer";
-import { DEFAULT_LANG, langFromPath, langHome } from "@/config";
-import { headers } from "next/headers";
 import CtaButton from "@/components/ui/CtaButton";
-import { getThemeOptions } from "@/lib/api";
+import { DEFAULT_LANG, langHome } from "@/config";
 import { altLangUrls } from "@/lib/translations";
 import { NOT_FOUND_MESSAGES } from "@/lib/notFoundMessages";
+import { useLang } from "@/lib/useLang";
 
-export default async function LangScopedNotFound() {
-  // next/navigation params are not passed to not-found components;
-  // read the request pathname from headers instead.
-  const h = await headers();
-  const pathname = h.get("x-pathname") ?? h.get("referer") ?? "";
-  const lang = langFromPath(pathname);
+export default function LangScopedNotFound() {
+  const lang = useLang();
+  const [options, setOptions] = React.useState(null);
 
-  const themeOptions = await getThemeOptions(lang);
+  React.useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/content/headless/v1/theme-options?lang=${lang}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => !cancelled && data && typeof data === "object" && setOptions(data))
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [lang]);
 
-  const currentMessages =
-    NOT_FOUND_MESSAGES[lang] || NOT_FOUND_MESSAGES[DEFAULT_LANG] || NOT_FOUND_MESSAGES.en;
+  const currentMessages = NOT_FOUND_MESSAGES[lang] || NOT_FOUND_MESSAGES[DEFAULT_LANG] || NOT_FOUND_MESSAGES.en;
 
   return (
     <>
-      <Header
-        lang={lang}
-        altLangUrls={altLangUrls(lang)}
-        prefetchedOptions={themeOptions || {}}
-        logoUrl={themeOptions?.logo_light?.url || ""}
-      />
+      <Header lang={lang} altLangUrls={altLangUrls(lang)} prefetchedOptions={options || {}} logoUrl={options?.logo_light?.url || ""} />
       <div className="h-28 w-full bg-black"></div>
       <main className="min-h-[60vh] flex flex-col items-center justify-center gap-6 px-4 py-16 text-center">
         <p className="text-sm uppercase tracking-[0.3em] text-(--color-grey-medium-dark)">404</p>
@@ -36,7 +41,6 @@ export default async function LangScopedNotFound() {
         <p className="text-(--color-grey-dark) max-w-xl">{currentMessages.description}</p>
         <CtaButton href={langHome(lang)}>{currentMessages.buttonText}</CtaButton>
       </main>
-      <Footer lang={lang} />
     </>
   );
 }
