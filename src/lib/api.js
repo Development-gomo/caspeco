@@ -376,6 +376,8 @@ export async function getAllIndustries(lang = DEFAULT_LANG) {
 // null = lookup failed / empty, so callers fall back to homepage links instead of hiding languages.
 export async function getTranslationMap(entryId, lang = DEFAULT_LANG) {
   if (!entryId) return null;
+  // every route is dynamic (headers() in the root layout) → build-time renders are discarded; don't spend WP calls on them
+  if (process.env.NEXT_PHASE === "phase-production-build") return null;
   const map = await fetchWP(`/myroutes/v1/translations/${entryId}?lang=${lang}`, { revalidate: 300 });
   const ok = map && typeof map === "object" && !Array.isArray(map) && !isWpError(map) &&
     Object.values(map).some((t) => typeof t?.slug === "string" && t.slug);

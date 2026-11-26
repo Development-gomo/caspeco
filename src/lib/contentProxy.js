@@ -9,8 +9,6 @@ const ENDPOINTS = {
   GET: [
     { re: /^wp\/v2\/posts$/, key: "posts", cache: "public, s-maxage=60, stale-while-revalidate=300" },
     { re: /^headless\/v1\/cf7-form\/\d{1,9}$/, key: "cf7-form", cache: "public, s-maxage=300, stale-while-revalidate=600" },
-    // header options for the client-rendered 404 page (app/[lang]/not-found.jsx)
-    { re: /^headless\/v1\/theme-options$/, key: "theme-options", cache: "public, s-maxage=300, stale-while-revalidate=600" },
   ],
   POST: [
     { re: /^contact-form-7\/v1\/contact-forms\/\d{1,9}\/feedback$/, key: "cf7-post" },
@@ -47,7 +45,6 @@ const POSTS_RULES = {
 const QUERY_RULES = {
   posts: POSTS_RULES,
   "cf7-form": { lang: POSTS_RULES.lang },
-  "theme-options": { lang: POSTS_RULES.lang },
   "cf7-post": {},
 };
 

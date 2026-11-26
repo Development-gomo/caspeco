@@ -8,7 +8,6 @@
 
 import { cache } from "react";
 import { notFound } from "next/navigation";
-import NotFoundView from "@/components/ui/NotFoundView";
 import {
   getPostBySlug,
   getCaseStudyBySlug,
@@ -25,8 +24,7 @@ import {
 } from "@/lib/api";
 import { resolveParams } from "@/lib/params";
 import { buildMetadataFromYoast } from "@/lib/seo";
-import { DEFAULT_LANG, SUPPORTED_LANGS, ROUTE_TYPES, BODY_CLASS, typeFromBase, entryHref, langHref } from "@/config";
-import PageType from "@/components/ui/PageType";
+import { DEFAULT_LANG, SUPPORTED_LANGS, ROUTE_TYPES, typeFromBase, entryHref, langHref } from "@/config";
 import PostTemplate from "@/components/templates/PostTemplate";
 import CaseStudyTemplate from "@/components/templates/CaseStudyTemplate";
 import EntryTemplate from "@/components/templates/EntryTemplate";
@@ -38,21 +36,17 @@ import PartnerCategoryTemplate from "@/components/templates/PartnerCategoryTempl
 
 export const revalidate = 300;
 
-// Pre-render every single-entry page (articles, case studies, products, industries, solutions, partners, partner
-// categories) so the first visitor never waits for a server render; new entries render on first request (then cached)
-const PRERENDER_TYPES = ["post", "product", "industry", "icp", "partner", "partnerCategory"];
+// Pre-render articles and case studies; other entries render on first request (then cached)
 export async function generateStaticParams() {
-  const [cases, ...lists] = await Promise.all([
+  const [posts, cases] = await Promise.all([
+    Promise.all(SUPPORTED_LANGS.map((lang) => fetchWP(`/wp/v2/posts?per_page=100&lang=${lang}&_fields=slug`))),
     Promise.all(SUPPORTED_LANGS.map((lang) => getCaseStudies(lang))),
-    ...PRERENDER_TYPES.map((type) =>
-      Promise.all(SUPPORTED_LANGS.map((lang) => fetchWP(`/wp/v2/${ROUTE_TYPES[type].rest}?per_page=100&lang=${lang}&_fields=slug`)))
-    ),
   ]);
-  const params = (type, byLang) =>
+  const params = (type, lists) =>
     SUPPORTED_LANGS.flatMap((lang, i) =>
-      (Array.isArray(byLang[i]) ? byLang[i] : []).map((e) => ({ lang, slug: ROUTE_TYPES[type].base[lang], rest: [e.slug] }))
+      (Array.isArray(lists[i]) ? lists[i] : []).map((e) => ({ lang, slug: ROUTE_TYPES[type].base[lang], rest: [e.slug] }))
     );
-  return [params("casestudy", cases), ...PRERENDER_TYPES.map((type, i) => params(type, lists[i]))].flat();
+  return [...params("post", posts), ...params("casestudy", cases)];
 }
 
 // Shared by the page and generateMetadata (fetches are deduped by fetchWP as well)
@@ -137,7 +131,16 @@ async function routeFromParams(params) {
   return { lang, route: await lookup(lang, segments) };
 }
 
-function renderRoute(route, common) {
+export default async function LocalizedEntryPage({ params }) {
+  const { lang, segments } = await segmentsFromParams(params);
+  // header/footer options only depend on the language: fetch them alongside the route (never rejects)
+  const themeOptionsPromise = getThemeOptions(lang);
+  const route = await lookup(lang, segments);
+  if (!route) notFound();
+
+  const themeOptions = await themeOptionsPromise;
+  const common = { lang, slug: route.slug, themeOptions };
+
   switch (route.type) {
     case "post":
       return <PostTemplate post={route.entry} {...common} />;
@@ -159,25 +162,8 @@ function renderRoute(route, common) {
   }
 }
 
-export default async function LocalizedEntryPage({ params }) {
-  const { lang, segments } = await segmentsFromParams(params);
-  if (!segments) notFound(); // unknown language prefix: the client not-found page handles it
-  // header/footer options only depend on the language: fetch them alongside the route (never rejects)
-  const themeOptionsPromise = getThemeOptions(lang);
-  const route = await lookup(lang, segments);
-  const themeOptions = await themeOptionsPromise;
-  if (!route) return <NotFoundView lang={lang} themeOptions={themeOptions} />;
-
-  const common = { lang, slug: route.slug, themeOptions };
-
-  // the page-type class (article, product, partner …) used to be the <body> class
-  return <PageType type={BODY_CLASS[route.type] || "page"}>{renderRoute(route, common)}</PageType>;
-}
-
 export async function generateMetadata({ params }) {
   const { lang, route } = await routeFromParams(params);
-  // missing entry: the page renders the 404 view with HTTP 200, so it must say noindex itself
-  if (!route) return { ...buildMetadataFromYoast(null, { fallbackTitle: "Caspeco", lang }), robots: { index: false, follow: false } };
   return buildMetadataFromYoast(route?.entry, {
     fallbackTitle: route?.entry?.name || "Caspeco",
     lang,
