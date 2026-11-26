@@ -6,6 +6,7 @@ import PageBuilder from "@/components/major/PageBuilder";
 import { LangHeader } from "@/components/templates/Shell";
 import Footer from "@/components/major/Footer";
 import PageType from "@/components/ui/PageType";
+import NotFoundView from "@/components/ui/NotFoundView";
 import { buildMetadataFromYoast } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import { DEFAULT_LANG, SUPPORTED_LANGS, langHref, langHome } from "@/config";
@@ -40,7 +41,7 @@ export default async function SinglePage({ params }) {
   ]);
 
   // child pages only live under their parent's path ([lang]/[slug]/[...rest])
-  if (!data || data.parent) notFound();
+  if (!data || data.parent) return <NotFoundView lang={lang} themeOptions={themeOptions} />;
   const acf = data?.acf || {};
 
   return (
@@ -65,6 +66,8 @@ export async function generateMetadata({ params }) {
   const data = await getPageBySlug(slug, lang);
   // child pages 404 here (they live under their parent), so they get no canonical/robots
   const indexable = data && !data.parent ? data : null;
+  // missing entry: the page renders the 404 view with HTTP 200, so it must say noindex itself
+  if (!indexable) return { ...buildMetadataFromYoast(null, { fallbackTitle: "Caspeco", lang }), robots: { index: false, follow: false } };
   return buildMetadataFromYoast(indexable, {
     fallbackTitle: "Caspeco",
     lang,

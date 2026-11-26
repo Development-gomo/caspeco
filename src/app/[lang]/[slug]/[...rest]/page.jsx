@@ -8,6 +8,7 @@
 
 import { cache } from "react";
 import { notFound } from "next/navigation";
+import NotFoundView from "@/components/ui/NotFoundView";
 import {
   getPostBySlug,
   getCaseStudyBySlug,
@@ -37,17 +38,21 @@ import PartnerCategoryTemplate from "@/components/templates/PartnerCategoryTempl
 
 export const revalidate = 300;
 
-// Pre-render articles and case studies; other entries render on first request (then cached)
+// Pre-render every single-entry page (articles, case studies, products, industries, solutions, partners, partner
+// categories) so the first visitor never waits for a server render; new entries render on first request (then cached)
+const PRERENDER_TYPES = ["post", "product", "industry", "icp", "partner", "partnerCategory"];
 export async function generateStaticParams() {
-  const [posts, cases] = await Promise.all([
-    Promise.all(SUPPORTED_LANGS.map((lang) => fetchWP(`/wp/v2/posts?per_page=100&lang=${lang}&_fields=slug`))),
+  const [cases, ...lists] = await Promise.all([
     Promise.all(SUPPORTED_LANGS.map((lang) => getCaseStudies(lang))),
+    ...PRERENDER_TYPES.map((type) =>
+      Promise.all(SUPPORTED_LANGS.map((lang) => fetchWP(`/wp/v2/${ROUTE_TYPES[type].rest}?per_page=100&lang=${lang}&_fields=slug`)))
+    ),
   ]);
-  const params = (type, lists) =>
+  const params = (type, byLang) =>
     SUPPORTED_LANGS.flatMap((lang, i) =>
-      (Array.isArray(lists[i]) ? lists[i] : []).map((e) => ({ lang, slug: ROUTE_TYPES[type].base[lang], rest: [e.slug] }))
+      (Array.isArray(byLang[i]) ? byLang[i] : []).map((e) => ({ lang, slug: ROUTE_TYPES[type].base[lang], rest: [e.slug] }))
     );
-  return [...params("post", posts), ...params("casestudy", cases)];
+  return [params("casestudy", cases), ...PRERENDER_TYPES.map((type, i) => params(type, lists[i]))].flat();
 }
 
 // Shared by the page and generateMetadata (fetches are deduped by fetchWP as well)
@@ -156,12 +161,13 @@ function renderRoute(route, common) {
 
 export default async function LocalizedEntryPage({ params }) {
   const { lang, segments } = await segmentsFromParams(params);
+  if (!segments) notFound(); // unknown language prefix: the client not-found page handles it
   // header/footer options only depend on the language: fetch them alongside the route (never rejects)
   const themeOptionsPromise = getThemeOptions(lang);
   const route = await lookup(lang, segments);
-  if (!route) notFound();
-
   const themeOptions = await themeOptionsPromise;
+  if (!route) return <NotFoundView lang={lang} themeOptions={themeOptions} />;
+
   const common = { lang, slug: route.slug, themeOptions };
 
   // the page-type class (article, product, partner …) used to be the <body> class
@@ -170,6 +176,8 @@ export default async function LocalizedEntryPage({ params }) {
 
 export async function generateMetadata({ params }) {
   const { lang, route } = await routeFromParams(params);
+  // missing entry: the page renders the 404 view with HTTP 200, so it must say noindex itself
+  if (!route) return { ...buildMetadataFromYoast(null, { fallbackTitle: "Caspeco", lang }), robots: { index: false, follow: false } };
   return buildMetadataFromYoast(route?.entry, {
     fallbackTitle: route?.entry?.name || "Caspeco",
     lang,
